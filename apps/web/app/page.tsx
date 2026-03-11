@@ -1,8 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@workspace/ui/components/button";
-import { IconArrowRight, IconBrandGithub } from "@tabler/icons-react";
+import {
+  IconArrowRight,
+  IconBrandGithub,
+  IconLayoutDashboard,
+  IconLogin,
+} from "@tabler/icons-react";
+import { UserButton, useAuth } from "@clerk/nextjs";
 
 export default function Home() {
+  const { isSignedIn } = useAuth();
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
       <header className="px-6 h-16 flex items-center justify-between border-b border-border/40 backdrop-blur-sm sticky top-0 z-50">
@@ -12,16 +21,36 @@ export default function Home() {
         >
           <span className="text-xl font-bold tracking-tight">Sentimeter</span>
         </Link>
-        <nav className="flex items-center gap-4">
-          <Button variant="default" asChild className="hidden sm:flex">
+        <nav className="flex items-center gap-3">
+          <Button variant="ghost" size="sm" asChild className="hidden sm:flex">
             <Link href="https://github.com/handshek/sentimeter">
               <IconBrandGithub className="w-4 h-4 mr-2" />
               GitHub
             </Link>
           </Button>
-          <Button asChild>
-            <Link href="/dashboard">Dashboard</Link>
-          </Button>
+
+          {/* Signed-out: show Sign In button */}
+          {!isSignedIn && (
+            <Button asChild>
+              <Link href="/sign-in">
+                <IconLogin className="w-4 h-4 mr-2" />
+                Sign In
+              </Link>
+            </Button>
+          )}
+
+          {/* Signed-in: show Dashboard link + avatar */}
+          {isSignedIn && (
+            <>
+              <Button asChild variant="default">
+                <Link href="/dashboard">
+                  <IconLayoutDashboard className="w-4 h-4 mr-2" />
+                  Dashboard
+                </Link>
+              </Button>
+              <UserButton />
+            </>
+          )}
         </nav>
       </header>
 
@@ -46,12 +75,23 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Button size="lg" asChild className="h-12 px-8 text-base">
-              <Link href="/dashboard">
-                Get Started
-                <IconArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-            </Button>
+            {/* CTA changes depending on auth state */}
+            {!isSignedIn ? (
+              <Button size="lg" asChild className="h-12 px-8 text-base">
+                <Link href="/sign-in">
+                  Get Started
+                  <IconArrowRight className="ml-2 w-4 h-4" />
+                </Link>
+              </Button>
+            ) : (
+              <Button size="lg" asChild className="h-12 px-8 text-base">
+                <Link href="/dashboard">
+                  Go to Dashboard
+                  <IconArrowRight className="ml-2 w-4 h-4" />
+                </Link>
+              </Button>
+            )}
+
             <Button
               variant="outline"
               size="lg"
