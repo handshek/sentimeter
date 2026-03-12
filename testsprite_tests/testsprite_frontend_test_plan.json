@@ -1,0 +1,160 @@
+[
+  {
+    "id": "TC001",
+    "title": "Landing page loads and shows primary Sign In call-to-action",
+    "description": "Verifies that a signed-out visitor can load the landing page and see a visible Sign In CTA.",
+    "category": "Signed-out navigation",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Sign In\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Sign In\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Landing page Sign In CTA navigates to Clerk sign-in page",
+    "description": "Verifies that clicking the Sign In CTA from the landing page routes the user to the Clerk sign-in page.",
+    "category": "Signed-out navigation",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Sign In\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/sign-in\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Sign in\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Sign in\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Landing page loads and shows primary Sign Up call-to-action",
+    "description": "Verifies that a signed-out visitor can load the landing page and see a visible Sign Up CTA.",
+    "category": "Signed-out navigation",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Sign Up\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Sign Up\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Landing page Sign Up CTA navigates to Clerk sign-up page",
+    "description": "Verifies that clicking the Sign Up CTA from the landing page routes the user to the Clerk sign-up page.",
+    "category": "Signed-out navigation",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Sign Up\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/sign-up\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Sign up\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Sign up\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Direct navigation to /sign-in renders Clerk sign-in widget for signed-out user",
+    "description": "Verifies that a visitor can directly open the sign-in route and see the Clerk sign-in UI.",
+    "category": "Signed-out navigation",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sign-in"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/sign-in\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Sign in\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Sign in\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Direct navigation to /sign-up renders Clerk sign-up widget for signed-out user",
+    "description": "Verifies that a visitor can directly open the sign-up route and see the Clerk sign-up UI.",
+    "category": "Signed-out navigation",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sign-up"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/sign-up\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Sign up\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Sign up\" is visible"
+      }
+    ]
+  }
+]
