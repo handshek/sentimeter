@@ -28,6 +28,8 @@ It consists of:
 
 **Do NOT run:** `bun run dev` (assume already running)
 
+Only use `bun` or `bunx` for installing dependencies
+
 ## Monorepo structure
 
 ```
