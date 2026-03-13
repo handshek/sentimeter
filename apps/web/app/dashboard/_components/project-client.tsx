@@ -132,15 +132,16 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   const feedbackWidgetType =
     widgetFilter === "all" ? undefined : (widgetFilter as "emoji" | "thumbs" | "star");
 
-  const analyticsArgs =
-    convexProjectId && projectQueryArgs !== "skip"
+  const analyticsArgs = useMemo(() => {
+    return convexProjectId && projectQueryArgs !== "skip"
       ? { projectId: convexProjectId, range, widgetType: feedbackWidgetType }
       : "skip";
+  }, [convexProjectId, feedbackWidgetType, projectQueryArgs, range]);
 
   const analytics = useQuery(api.feedback.getAnalytics, analyticsArgs);
   const volume = useQuery(api.feedback.getVolumeSeries, analyticsArgs);
-  const feedArgs =
-    convexProjectId && projectQueryArgs !== "skip"
+  const feedArgs = useMemo(() => {
+    return convexProjectId && projectQueryArgs !== "skip"
       ? {
           projectId: convexProjectId,
           limit: 50,
@@ -148,6 +149,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           widgetType: feedbackWidgetType,
         }
       : "skip";
+  }, [convexProjectId, feedbackWidgetType, projectQueryArgs, range]);
   const feed = useQuery(api.feedback.getFeedback, feedArgs);
 
   const chartData = useMemo(() => {

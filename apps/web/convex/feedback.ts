@@ -15,15 +15,19 @@ const widgetTypeValidator = v.union(
 type WidgetType = "emoji" | "thumbs" | "star";
 type RangePreset = "24h" | "7d" | "30d" | "all";
 
+const MAX_CREATED_AT = Number.MAX_SAFE_INTEGER;
+
 function clampLimit(limit: number, max = 200) {
   if (!Number.isFinite(limit)) return 50;
   return Math.max(1, Math.min(Math.floor(limit), max));
 }
 
-function getRangeBounds(range: RangePreset | undefined): { from?: number; to?: number } {
+function getRangeBounds(
+  range: RangePreset | undefined,
+): { from?: number; to: number } {
   const now = Date.now();
   const preset = range ?? "7d";
-  if (preset === "all") return {};
+  if (preset === "all") return { to: now };
   const ms =
     preset === "24h"
       ? 24 * 60 * 60 * 1000
@@ -100,33 +104,23 @@ export const getFeedback = query({
     await assertProjectOwner(ctx, args.projectId, user._id);
 
     const limit = clampLimit(args.limit ?? 50);
-    const { from, to } = getRangeBounds(args.range as RangePreset | undefined);
+    const { from } = getRangeBounds(args.range as RangePreset | undefined);
 
     if (args.widgetType) {
       const widgetType = args.widgetType;
       return await ctx.db
         .query("feedback")
         .withIndex("by_projectId_widgetType_createdAt", (q) => {
-          if (from !== undefined && to !== undefined) {
-            return q
-              .eq("projectId", args.projectId)
-              .eq("widgetType", widgetType)
-              .gte("createdAt", from)
-              .lt("createdAt", to);
-          }
           if (from !== undefined) {
             return q
               .eq("projectId", args.projectId)
               .eq("widgetType", widgetType)
-              .gte("createdAt", from);
+              .gte("createdAt", from)
+              .lt("createdAt", MAX_CREATED_AT);
           }
-          if (to !== undefined) {
-            return q
-              .eq("projectId", args.projectId)
-              .eq("widgetType", widgetType)
-              .lt("createdAt", to);
-          }
-          return q.eq("projectId", args.projectId).eq("widgetType", widgetType);
+          return q
+            .eq("projectId", args.projectId)
+            .eq("widgetType", widgetType);
         })
         .order("desc")
         .take(limit);
@@ -135,14 +129,11 @@ export const getFeedback = query({
     return await ctx.db
       .query("feedback")
       .withIndex("by_projectId_createdAt", (q) => {
-        if (from !== undefined && to !== undefined) {
-          return q.eq("projectId", args.projectId).gte("createdAt", from).lt("createdAt", to);
-        }
         if (from !== undefined) {
-          return q.eq("projectId", args.projectId).gte("createdAt", from);
-        }
-        if (to !== undefined) {
-          return q.eq("projectId", args.projectId).lt("createdAt", to);
+          return q
+            .eq("projectId", args.projectId)
+            .gte("createdAt", from)
+            .lt("createdAt", MAX_CREATED_AT);
         }
         return q.eq("projectId", args.projectId);
       })
@@ -164,7 +155,7 @@ export const getAnalytics = query({
     const user = await getUserByClerkIdOrThrow(ctx, identity.subject);
     await assertProjectOwner(ctx, args.projectId, user._id);
 
-    const { from, to } = getRangeBounds(args.range as RangePreset | undefined);
+    const { from } = getRangeBounds(args.range as RangePreset | undefined);
 
     const widgetType = args.widgetType;
 
@@ -172,42 +163,26 @@ export const getAnalytics = query({
       ? await ctx.db
           .query("feedback")
           .withIndex("by_projectId_widgetType_createdAt", (q) => {
-            if (from !== undefined && to !== undefined) {
-              return q
-                .eq("projectId", args.projectId)
-                .eq("widgetType", widgetType)
-                .gte("createdAt", from)
-                .lt("createdAt", to);
-            }
             if (from !== undefined) {
               return q
                 .eq("projectId", args.projectId)
                 .eq("widgetType", widgetType)
-                .gte("createdAt", from);
+                .gte("createdAt", from)
+                .lt("createdAt", MAX_CREATED_AT);
             }
-            if (to !== undefined) {
-              return q
-                .eq("projectId", args.projectId)
-                .eq("widgetType", widgetType)
-                .lt("createdAt", to);
-            }
-            return q.eq("projectId", args.projectId).eq("widgetType", widgetType);
+            return q
+              .eq("projectId", args.projectId)
+              .eq("widgetType", widgetType);
           })
           .collect()
       : await ctx.db
           .query("feedback")
           .withIndex("by_projectId_createdAt", (q) => {
-            if (from !== undefined && to !== undefined) {
+            if (from !== undefined) {
               return q
                 .eq("projectId", args.projectId)
                 .gte("createdAt", from)
-                .lt("createdAt", to);
-            }
-            if (from !== undefined) {
-              return q.eq("projectId", args.projectId).gte("createdAt", from);
-            }
-            if (to !== undefined) {
-              return q.eq("projectId", args.projectId).lt("createdAt", to);
+                .lt("createdAt", MAX_CREATED_AT);
             }
             return q.eq("projectId", args.projectId);
           })
@@ -261,14 +236,14 @@ export const getVolumeSeries = query({
     const user = await getUserByClerkIdOrThrow(ctx, identity.subject);
     await assertProjectOwner(ctx, args.projectId, user._id);
 
-    const now = Date.now();
     const requestedRange = (args.range as RangePreset | undefined) ?? "7d";
     const effectiveRange: Exclude<RangePreset, "all"> =
       requestedRange === "all" ? "30d" : requestedRange;
 
     const bounds = getRangeBounds(effectiveRange);
+    const now = bounds.to;
     const from = bounds.from ?? now - 7 * 24 * 60 * 60 * 1000;
-    const to = bounds.to ?? now;
+    const to = bounds.to;
 
     const widgetType = args.widgetType;
 
@@ -280,13 +255,16 @@ export const getVolumeSeries = query({
               .eq("projectId", args.projectId)
               .eq("widgetType", widgetType)
               .gte("createdAt", from)
-              .lt("createdAt", to),
+              .lt("createdAt", MAX_CREATED_AT),
           )
           .collect()
       : await ctx.db
           .query("feedback")
           .withIndex("by_projectId_createdAt", (q) =>
-            q.eq("projectId", args.projectId).gte("createdAt", from).lt("createdAt", to),
+            q
+              .eq("projectId", args.projectId)
+              .gte("createdAt", from)
+              .lt("createdAt", MAX_CREATED_AT),
           )
           .collect();
 
