@@ -40,6 +40,26 @@ Only use `bun` or `bunx` for installing dependencies
 │       │   ├── fonts
 │       │   │   ├── GeistMonoVF.woff *
 │       │   │   └── GeistVF.woff *
+│       │   ├── components
+│       │   │   └── convex-clerk-provider.tsx +
+│       │   ├── dashboard
+│       │   │   ├── _components
+│       │   │   │   ├── panel.tsx +
+│       │   │   │   ├── project-client.tsx +
+│       │   │   │   ├── projects-client.tsx +
+│       │   │   │   └── sync-user-gate.tsx +
+│       │   │   ├── projects
+│       │   │   │   └── [projectId]
+│       │   │   │       └── page.tsx +
+│       │   │   ├── error.tsx +
+│       │   │   ├── layout.tsx +
+│       │   │   └── page.tsx +
+│       │   ├── sign-in
+│       │   │   └── [[...sign-in]]
+│       │   │       └── page.tsx +
+│       │   ├── sign-up
+│       │   │   └── [[...sign-up]]
+│       │   │       └── page.tsx +
 │       │   ├── favicon.ico *
 │       │   ├── layout.tsx * +
 │       │   └── page.tsx * +
@@ -51,6 +71,25 @@ Only use `bun` or `bunx` for installing dependencies
 │       │   ├── turborepo-light.svg *
 │       │   ├── vercel.svg *
 │       │   └── window.svg *
+│       ├── convex
+│       │   ├── _generated
+│       │   │   ├── api.d.ts +
+│       │   │   ├── api.js +
+│       │   │   ├── dataModel.d.ts +
+│       │   │   ├── server.d.ts +
+│       │   │   └── server.js +
+│       │   ├── lib
+│       │   │   ├── auth.ts +
+│       │   │   └── nanoid.ts +
+│       │   ├── README.md
+│       │   ├── auth.config.ts +
+│       │   ├── feedback.ts +
+│       │   ├── http.ts +
+│       │   ├── httpActions.ts +
+│       │   ├── projects.ts +
+│       │   ├── schema.ts +
+│       │   ├── tsconfig.json
+│       │   └── users.ts +
 │       ├── .gitignore *
 │       ├── README.md *
 │       ├── components.json *
@@ -58,7 +97,8 @@ Only use `bun` or `bunx` for installing dependencies
 │       ├── next.config.js * +
 │       ├── package.json *
 │       ├── postcss.config.mjs *
-│       └── tsconfig.json *
+│       ├── tsconfig.json *
+│       └── proxy.ts +
 ├── packages
 │   ├── eslint-config
 │   │   ├── README.md *
@@ -88,14 +128,26 @@ Only use `bun` or `bunx` for installing dependencies
 │       ├── package.json *
 │       └── tsconfig.json *
 ├── testsprite_tests
-│   └── README.md *
+│   ├── README.md *
+│   ├── PRD.md
+│   ├── TC001_Landing_page_loads_and_shows_primary_Sign_In_call_to_action.py +
+│   ├── TC002_Landing_page_Sign_In_CTA_navigates_to_Clerk_sign_in_page.py +
+│   ├── TC003_Landing_page_loads_and_shows_primary_Sign_Up_call_to_action.py +
+│   ├── TC004_Landing_page_Sign_Up_CTA_navigates_to_Clerk_sign_up_page.py +
+│   ├── TC005_Direct_navigation_to_sign_in_renders_Clerk_sign_in_widget_for_signed_out_user.py +
+│   ├── TC006_Direct_navigation_to_sign_up_renders_Clerk_sign_up_widget_for_signed_out_user.py +
+│   ├── open_dashboard.mjs
+│   ├── run_mcp.mjs
+│   ├── standard_prd.json
+│   └── testsprite_frontend_test_plan.json
 ├── .gitignore *
 ├── .npmrc *
 ├── README.md *
 ├── bun.lock *
 ├── package.json *
 ├── test-output.css *
-└── turbo.json *
+├── turbo.json *
+└── AGENTS.md
 ```
 
 (\* denotes selected files)
@@ -103,5 +155,5 @@ Only use `bun` or `bunx` for installing dependencies
 
 ## Rules
 
-1. Ensure TestSprite MCP is used to generate test cases wherever _important_ without having to explicitly ask.
+1. Ensure TestSprite MCP is used to generate test cases wherever _important_.
 2. Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without having to explicitly ask.
