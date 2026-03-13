@@ -6,6 +6,7 @@ import {
   IconArrowRight,
   IconBrandGithub,
   IconLayoutDashboard,
+  IconLayoutGrid,
   IconLogin,
 } from "@tabler/icons-react";
 import { UserButton, useAuth } from "@clerk/nextjs";
@@ -23,9 +24,9 @@ export default function Home() {
         </Link>
         <nav className="flex items-center gap-3">
           <Button variant="ghost" size="sm" asChild className="hidden sm:flex">
-            <Link href="https://github.com/handshek/sentimeter">
-              <IconBrandGithub className="w-4 h-4 mr-2" />
-              GitHub
+            <Link href="/widgets">
+              <IconLayoutGrid className="w-4 h-4 mr-2" />
+              Widgets
             </Link>
           </Button>
 
