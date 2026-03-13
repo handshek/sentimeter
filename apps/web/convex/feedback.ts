@@ -39,6 +39,15 @@ function assertValue(widgetType: WidgetType, value: number) {
   return Number.isInteger(value) && value >= 1 && value <= 5;
 }
 
+function classifySentiment(widgetType: WidgetType, value: number) {
+  if (widgetType === "thumbs") {
+    return value === 1 ? ("positive" as const) : ("negative" as const);
+  }
+  if (value >= 4) return "positive" as const;
+  if (value <= 2) return "negative" as const;
+  return "neutral" as const;
+}
+
 export const submitFeedbackInternal = internalMutation({
   args: {
     apiKey: v.string(),
@@ -77,17 +86,66 @@ export const submitFeedbackInternal = internalMutation({
 });
 
 export const getFeedback = query({
-  args: { projectId: v.id("projects"), limit: v.optional(v.number()) },
+  args: {
+    projectId: v.id("projects"),
+    limit: v.optional(v.number()),
+    widgetType: v.optional(widgetTypeValidator),
+    range: v.optional(
+      v.union(v.literal("24h"), v.literal("7d"), v.literal("30d"), v.literal("all")),
+    ),
+  },
   handler: async (ctx, args) => {
     const identity = await requireIdentity(ctx);
     const user = await getUserByClerkIdOrThrow(ctx, identity.subject);
     await assertProjectOwner(ctx, args.projectId, user._id);
 
     const limit = clampLimit(args.limit ?? 50);
+    const { from, to } = getRangeBounds(args.range as RangePreset | undefined);
+
+    if (args.widgetType) {
+      const widgetType = args.widgetType;
+      return await ctx.db
+        .query("feedback")
+        .withIndex("by_projectId_widgetType_createdAt", (q) => {
+          if (from !== undefined && to !== undefined) {
+            return q
+              .eq("projectId", args.projectId)
+              .eq("widgetType", widgetType)
+              .gte("createdAt", from)
+              .lt("createdAt", to);
+          }
+          if (from !== undefined) {
+            return q
+              .eq("projectId", args.projectId)
+              .eq("widgetType", widgetType)
+              .gte("createdAt", from);
+          }
+          if (to !== undefined) {
+            return q
+              .eq("projectId", args.projectId)
+              .eq("widgetType", widgetType)
+              .lt("createdAt", to);
+          }
+          return q.eq("projectId", args.projectId).eq("widgetType", widgetType);
+        })
+        .order("desc")
+        .take(limit);
+    }
 
     return await ctx.db
       .query("feedback")
-      .withIndex("by_projectId_createdAt", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_projectId_createdAt", (q) => {
+        if (from !== undefined && to !== undefined) {
+          return q.eq("projectId", args.projectId).gte("createdAt", from).lt("createdAt", to);
+        }
+        if (from !== undefined) {
+          return q.eq("projectId", args.projectId).gte("createdAt", from);
+        }
+        if (to !== undefined) {
+          return q.eq("projectId", args.projectId).lt("createdAt", to);
+        }
+        return q.eq("projectId", args.projectId);
+      })
       .order("desc")
       .take(limit);
   },
@@ -157,6 +215,12 @@ export const getAnalytics = query({
 
     const byValue: Record<string, number> = {};
     const byLocation: Record<string, { total: number; byValue: Record<string, number> }> = {};
+    const byWidgetType: Record<WidgetType, number> = { emoji: 0, thumbs: 0, star: 0 };
+    const byWidgetTypeByValue: Record<WidgetType, Record<string, number>> = {
+      emoji: {},
+      thumbs: {},
+      star: {},
+    };
 
     for (const doc of docs) {
       const valueKey = String(doc.value);
@@ -166,14 +230,100 @@ export const getAnalytics = query({
       const locAgg = (byLocation[loc] ??= { total: 0, byValue: {} });
       locAgg.total += 1;
       locAgg.byValue[valueKey] = (locAgg.byValue[valueKey] ?? 0) + 1;
+
+      byWidgetType[doc.widgetType] += 1;
+      const widgetAgg = byWidgetTypeByValue[doc.widgetType];
+      widgetAgg[valueKey] = (widgetAgg[valueKey] ?? 0) + 1;
     }
 
     return {
       total: docs.length,
       byValue,
       byLocation,
+      byWidgetType,
+      byWidgetTypeByValue,
       range: args.range ?? "7d",
       widgetType: widgetType ?? null,
+    };
+  },
+});
+
+export const getVolumeSeries = query({
+  args: {
+    projectId: v.id("projects"),
+    widgetType: v.optional(widgetTypeValidator),
+    range: v.optional(
+      v.union(v.literal("24h"), v.literal("7d"), v.literal("30d"), v.literal("all")),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const identity = await requireIdentity(ctx);
+    const user = await getUserByClerkIdOrThrow(ctx, identity.subject);
+    await assertProjectOwner(ctx, args.projectId, user._id);
+
+    const now = Date.now();
+    const requestedRange = (args.range as RangePreset | undefined) ?? "7d";
+    const effectiveRange: Exclude<RangePreset, "all"> =
+      requestedRange === "all" ? "30d" : requestedRange;
+
+    const bounds = getRangeBounds(effectiveRange);
+    const from = bounds.from ?? now - 7 * 24 * 60 * 60 * 1000;
+    const to = bounds.to ?? now;
+
+    const widgetType = args.widgetType;
+
+    const docs = widgetType
+      ? await ctx.db
+          .query("feedback")
+          .withIndex("by_projectId_widgetType_createdAt", (q) =>
+            q
+              .eq("projectId", args.projectId)
+              .eq("widgetType", widgetType)
+              .gte("createdAt", from)
+              .lt("createdAt", to),
+          )
+          .collect()
+      : await ctx.db
+          .query("feedback")
+          .withIndex("by_projectId_createdAt", (q) =>
+            q.eq("projectId", args.projectId).gte("createdAt", from).lt("createdAt", to),
+          )
+          .collect();
+
+    const granularity = effectiveRange === "24h" ? ("hour" as const) : ("day" as const);
+    const bucketSizeMs =
+      granularity === "hour" ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
+
+    const start = from - (from % bucketSizeMs);
+    const bucketCount = Math.max(1, Math.ceil((to - start) / bucketSizeMs));
+
+    const buckets: Array<{ ts: number; total: number; positive: number; negative: number }> =
+      Array.from({ length: bucketCount }).map((_, idx) => ({
+        ts: start + idx * bucketSizeMs,
+        total: 0,
+        positive: 0,
+        negative: 0,
+      }));
+
+    for (const doc of docs) {
+      const idx = Math.floor((doc.createdAt - start) / bucketSizeMs);
+      if (idx < 0 || idx >= buckets.length) continue;
+      const bucket = buckets[idx];
+      if (!bucket) continue;
+      bucket.total += 1;
+      const sentiment = classifySentiment(doc.widgetType, doc.value);
+      if (sentiment === "positive") bucket.positive += 1;
+      if (sentiment === "negative") bucket.negative += 1;
+    }
+
+    return {
+      requestedRange,
+      effectiveRange,
+      widgetType: widgetType ?? null,
+      granularity,
+      from,
+      to,
+      points: buckets,
     };
   },
 });
