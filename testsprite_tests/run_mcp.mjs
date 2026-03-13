@@ -146,7 +146,7 @@ routes:
   - path: /dashboard
     file: apps/web/app/dashboard/page.tsx
     auth_required: true
-    description: Signed-in developer dashboard (placeholder analytics)
+    description: Signed-in developer dashboard with project overview and project creation capability
 features:
   - name: Signed-out navigation
     description: Visitor can browse landing page and access Clerk auth pages
@@ -161,16 +161,24 @@ features:
       - Click Sign Up and view Clerk sign-up widget
     api_calls: []
     auth_required: false
-  - name: Protected dashboard
-    description: Signed-in user can access dashboard; signed-out users are redirected
+  - name: Protected dashboard and Project Creation
+    description: Signed-in user can access dashboard, view projects, and create new projects.
     files:
       - apps/web/app/dashboard/page.tsx
+      - apps/web/app/dashboard/_components/project-client.tsx
+      - apps/web/app/dashboard/_components/projects-client.tsx
+      - apps/web/app/dashboard/_components/sync-user-gate.tsx
       - apps/web/proxy.ts
     entry_route: /dashboard
     user_interactions:
       - Visit /dashboard while signed out and get redirected to /sign-in
-      - Sign in via Clerk and view /dashboard with email visible
-    api_calls: []
+      - Sign in via Clerk and view /dashboard
+      - View list of projects on the dashboard
+      - Click 'Create Project' button
+      - Fill out project name and URL in the modal
+      - Submit modal to create project
+    api_calls:
+      - Create project via Convex
     auth_required: true
 known_limitations:
   - issue: Dashboard metrics are placeholders
@@ -468,7 +476,7 @@ async function main() {
         serverMode: "development",
         testIds: [],
         additionalInstruction:
-          "Base URL http://localhost:3000. Cover signed-out: `/` shows Sign In; `/dashboard` redirects to `/sign-in`; `/sign-in` and `/sign-up` render. Add 1–2 auth smoke tests: sign in with env credentials, land on `/dashboard`, assert the email is visible. Do not hardcode credentials; read from process.env.TEST_USER_EMAIL / process.env.TEST_USER_PASSWORD.",
+          "Base URL http://localhost:3000. Cover signed-out: `/` shows Sign In; `/dashboard` redirects to `/sign-in`; `/sign-in` and `/sign-up` render. Add auth smoke tests: sign in with env credentials, land on `/dashboard`, assert the email is visible. IMPORTANT: Also test the new project creation functionality on the dashboard - click 'Create Project', enter a project name and URL, submit the form, and verify that the new project card appears on the dashboard. Do not hardcode credentials; read from process.env.TEST_USER_EMAIL / process.env.TEST_USER_PASSWORD.",
       },
     },
     { timeoutMs: 3 * 60 * 1000 },

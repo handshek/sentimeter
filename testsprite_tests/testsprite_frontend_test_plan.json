@@ -1,117 +1,128 @@
 [
   {
     "id": "TC001",
-    "title": "Landing page loads and shows primary Sign In call-to-action",
-    "description": "Verifies that a signed-out visitor can load the landing page and see a visible Sign In CTA.",
-    "category": "Signed-out navigation",
+    "title": "Access dashboard after signing in and see main dashboard UI elements",
+    "description": "Verifies a signed-in user can reach the protected dashboard and sees the expected header, welcome message, and placeholder stats.",
+    "category": "Protected dashboard and Project Creation",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to /"
+        "description": "Navigate to /sign-in"
+      },
+      {
+        "type": "action",
+        "description": "Complete the sign-in form using \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
       },
       {
         "type": "assertion",
-        "description": "Verify URL contains \"/\""
+        "description": "Verify URL contains \"/dashboard\""
       },
       {
         "type": "assertion",
-        "description": "Verify text \"Sign In\" is visible"
+        "description": "Verify element \"top navigation\" is visible"
       },
       {
         "type": "assertion",
-        "description": "Verify element \"Sign In\" is visible"
+        "description": "Verify element \"user avatar\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"welcome headline\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"—\" is visible"
       }
     ]
   },
   {
     "id": "TC002",
-    "title": "Landing page Sign In CTA navigates to Clerk sign-in page",
-    "description": "Verifies that clicking the Sign In CTA from the landing page routes the user to the Clerk sign-in page.",
-    "category": "Signed-out navigation",
+    "title": "Create a new project successfully from the dashboard modal",
+    "description": "Verifies a signed-in user can open the Create Project modal, submit valid details, and see the new project appear in the list.",
+    "category": "Protected dashboard and Project Creation",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to /"
+        "description": "Navigate to /sign-in"
       },
       {
         "type": "action",
-        "description": "Click on \"Sign In\""
+        "description": "Complete the sign-in form using \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
+      },
+      {
+        "type": "action",
+        "description": "Click \"Create Project\" button"
       },
       {
         "type": "assertion",
-        "description": "Verify URL contains \"/sign-in\""
+        "description": "Verify element \"Create Project\" modal is visible"
+      },
+      {
+        "type": "action",
+        "description": "Type \"E2E Test Project\" into the project name field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"https://example.com\" into the project URL field"
+      },
+      {
+        "type": "action",
+        "description": "Click \"Submit\" in the modal"
       },
       {
         "type": "assertion",
-        "description": "Verify element \"Sign in\" is visible"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"Sign in\" is visible"
+        "description": "Verify text \"E2E Test Project\" is visible"
       }
     ]
   },
   {
     "id": "TC003",
-    "title": "Landing page loads and shows primary Sign Up call-to-action",
-    "description": "Verifies that a signed-out visitor can load the landing page and see a visible Sign Up CTA.",
-    "category": "Signed-out navigation",
+    "title": "Project creation validation: missing project name shows error and does not create project",
+    "description": "Verifies the modal validates required project name, keeps the modal open, and prevents project creation when name is empty.",
+    "category": "Protected dashboard and Project Creation",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to /"
+        "description": "Navigate to /sign-in"
+      },
+      {
+        "type": "action",
+        "description": "Complete the sign-in form using \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
+      },
+      {
+        "type": "action",
+        "description": "Click \"Create Project\" button"
       },
       {
         "type": "assertion",
-        "description": "Verify URL contains \"/\""
+        "description": "Verify element \"Create Project\" modal is visible"
+      },
+      {
+        "type": "action",
+        "description": "Type \"https://example.com\" into the project URL field"
+      },
+      {
+        "type": "action",
+        "description": "Click \"Submit\" in the modal"
       },
       {
         "type": "assertion",
-        "description": "Verify text \"Sign Up\" is visible"
+        "description": "Verify text \"project name\" is visible"
       },
       {
         "type": "assertion",
-        "description": "Verify element \"Sign Up\" is visible"
+        "description": "Verify element \"Create Project\" modal is visible"
       }
     ]
   },
   {
     "id": "TC004",
-    "title": "Landing page Sign Up CTA navigates to Clerk sign-up page",
-    "description": "Verifies that clicking the Sign Up CTA from the landing page routes the user to the Clerk sign-up page.",
-    "category": "Signed-out navigation",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /"
-      },
-      {
-        "type": "action",
-        "description": "Click on \"Sign Up\""
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/sign-up\""
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Sign up\" is visible"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"Sign up\" is visible"
-      }
-    ]
-  },
-  {
-    "id": "TC005",
-    "title": "Direct navigation to /sign-in renders Clerk sign-in widget for signed-out user",
-    "description": "Verifies that a visitor can directly open the sign-in route and see the Clerk sign-in UI.",
-    "category": "Signed-out navigation",
+    "title": "Dashboard shows Create Project entry point for signed-in users",
+    "description": "Verifies the signed-in dashboard exposes the primary Create Project action to the user.",
+    "category": "Protected dashboard and Project Creation",
     "priority": "Medium",
     "steps": [
       {
@@ -119,41 +130,53 @@
         "description": "Navigate to /sign-in"
       },
       {
-        "type": "assertion",
-        "description": "Verify URL contains \"/sign-in\""
+        "type": "action",
+        "description": "Complete the sign-in form using \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
       },
       {
         "type": "assertion",
-        "description": "Verify element \"Sign in\" is visible"
+        "description": "Verify URL contains \"/dashboard\""
       },
       {
         "type": "assertion",
-        "description": "Verify text \"Sign in\" is visible"
+        "description": "Verify element \"Create Project\" button is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click \"Create Project\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Create Project\" modal is visible"
       }
     ]
   },
   {
-    "id": "TC006",
-    "title": "Direct navigation to /sign-up renders Clerk sign-up widget for signed-out user",
-    "description": "Verifies that a visitor can directly open the sign-up route and see the Clerk sign-up UI.",
-    "category": "Signed-out navigation",
+    "id": "TC005",
+    "title": "Projects list area is visible on the dashboard after sign-in",
+    "description": "Verifies the dashboard renders the projects section/list container for a signed-in user.",
+    "category": "Protected dashboard and Project Creation",
     "priority": "Medium",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to /sign-up"
+        "description": "Navigate to /sign-in"
+      },
+      {
+        "type": "action",
+        "description": "Complete the sign-in form using \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
       },
       {
         "type": "assertion",
-        "description": "Verify URL contains \"/sign-up\""
+        "description": "Verify URL contains \"/dashboard\""
       },
       {
         "type": "assertion",
-        "description": "Verify element \"Sign up\" is visible"
+        "description": "Verify element \"projects list\" is visible"
       },
       {
         "type": "assertion",
-        "description": "Verify text \"Sign up\" is visible"
+        "description": "Verify element \"project\" is visible"
       }
     ]
   }
