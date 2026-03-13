@@ -8,13 +8,29 @@
  * @module
  */
 
+import type * as feedback from "../feedback.js";
+import type * as http from "../http.js";
+import type * as httpActions from "../httpActions.js";
+import type * as lib_auth from "../lib/auth.js";
+import type * as lib_nanoid from "../lib/nanoid.js";
+import type * as projects from "../projects.js";
+import type * as users from "../users.js";
+
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
 } from "convex/server";
 
-declare const fullApi: ApiFromModules<{}>;
+declare const fullApi: ApiFromModules<{
+  feedback: typeof feedback;
+  http: typeof http;
+  httpActions: typeof httpActions;
+  "lib/auth": typeof lib_auth;
+  "lib/nanoid": typeof lib_nanoid;
+  projects: typeof projects;
+  users: typeof users;
+}>;
 
 /**
  * A utility for referencing Convex functions in your app's public API.
