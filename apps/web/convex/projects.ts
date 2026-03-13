@@ -134,3 +134,28 @@ export const getProjects = query({
       .collect();
   },
 });
+
+export const getProject = query({
+  args: { projectId: v.id("projects") },
+  handler: async (ctx, args) => {
+    const identity = await requireIdentity(ctx);
+    const user = await getUserByClerkIdOrThrow(ctx, identity.subject);
+
+    const project = await assertProjectOwner(ctx, args.projectId, user._id);
+
+    const keys = await ctx.db
+      .query("apiKeys")
+      .withIndex("by_projectId_revokedAt", (q) => q.eq("projectId", project._id))
+      .collect();
+
+    const activeApiKey =
+      keys
+        .filter((k) => k.revokedAt === undefined)
+        .reduce<Doc<"apiKeys"> | null>((best, current) => {
+          if (!best) return current;
+          return current.createdAt > best.createdAt ? current : best;
+        }, null) ?? null;
+
+    return { project, activeApiKey };
+  },
+});

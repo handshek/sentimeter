@@ -9,8 +9,8 @@ export function nanoid(size: number) {
   const bytes = crypto.getRandomValues(new Uint8Array(size));
   let id = "";
   for (let i = 0; i < size; i++) {
-    id += DEFAULT_ALPHABET[bytes[i] & 63];
+    const byte = bytes[i]!;
+    id += DEFAULT_ALPHABET.charAt(byte & 63);
   }
   return id;
 }
-

@@ -28,9 +28,7 @@ export async function getOrCreateUser(
 
   const email = identity.email?.trim();
   if (!email) {
-    throw new ConvexError(
-      "missing_email_claim: add email to the Clerk JWT template used for Convex",
-    );
+    throw new ConvexError("missing_email_claim");
   }
 
   const userId = await ctx.db.insert("users", {
