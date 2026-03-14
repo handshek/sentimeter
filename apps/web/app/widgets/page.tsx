@@ -519,7 +519,7 @@ export default function WidgetsPlaygroundPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="pointer-events-none fixed inset-0 opacity-70 [background:radial-gradient(70%_50%_at_50%_0%,rgba(99,102,241,0.18),transparent_60%)]" />
-      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/50">
+      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/70 backdrop-blur supports-backdrop-filter:bg-background/50">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <Button asChild variant="ghost" size="sm">
@@ -657,8 +657,8 @@ export default function WidgetsPlaygroundPage() {
             icon={<IconCircleCheck size={16} />}
             description={
               isSignedIn
-                ? "Auto-fill API key from your project"
-                : "Sign in to auto-fill API keys"
+                ? "Auto-fill publishable key from your project"
+                : "Sign in to auto-fill publishable keys"
             }
           >
             {isSignedIn ? (
@@ -666,7 +666,7 @@ export default function WidgetsPlaygroundPage() {
                 <Field
                   id="project-select"
                   label="Project"
-                  description="Pick a project to auto-fill its active API key"
+                  description="Pick a project to auto-fill its active publishable key"
                 >
                   <Select
                     value={selectedProjectId}
@@ -695,11 +695,11 @@ export default function WidgetsPlaygroundPage() {
                       try {
                         await navigator.clipboard.writeText(activeApiKey);
                       } catch {
-                        window.prompt("Copy API key:", activeApiKey);
+                        window.prompt("Copy publishable key:", activeApiKey);
                       }
                     }}
                   >
-                    Copy API key
+                    Copy key
                   </Button>
                   <Button
                     type="button"
@@ -716,7 +716,7 @@ export default function WidgetsPlaygroundPage() {
             ) : (
               <div className="text-sm text-muted-foreground">
                 Sign in and open this page again to pick a project and auto-fill
-                the API key.
+                the publishable key.
               </div>
             )}
           </PlaygroundCard>
@@ -730,7 +730,7 @@ export default function WidgetsPlaygroundPage() {
               <Field
                 id="global-apiKey"
                 label="API Key"
-                description="Sentimeter project API key (string)"
+                description="Publishable Sentimeter project key (string)"
               >
                 <Input
                   id="global-apiKey"

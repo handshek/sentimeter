@@ -1,0 +1,64 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "sentimeter",
+  "homepage": "https://sentimeter.dev",
+  "items": [
+    {
+      "name": "feedback-system",
+      "type": "registry:block",
+      "title": "Feedback System",
+      "description": "Core types, submit function, and compound components for Sentimeter widgets.",
+      "dependencies": ["@tabler/icons-react"],
+      "registryDependencies": ["button", "textarea"],
+      "files": [
+        {
+          "path": "registry/sentimeter/feedback-system.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/feedback-system.tsx"
+        }
+      ]
+    },
+    {
+      "name": "emoji-feedback",
+      "type": "registry:block",
+      "title": "Emoji Feedback",
+      "description": "Emoji-based feedback widget with a 5-point scale.",
+      "registryDependencies": ["@sentimeter/feedback-system"],
+      "files": [
+        {
+          "path": "registry/sentimeter/emoji-feedback.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/emoji-feedback.tsx"
+        }
+      ]
+    },
+    {
+      "name": "like-dislike",
+      "type": "registry:block",
+      "title": "Like Dislike",
+      "description": "Thumbs up or thumbs down feedback widget.",
+      "registryDependencies": ["@sentimeter/feedback-system"],
+      "files": [
+        {
+          "path": "registry/sentimeter/like-dislike.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/like-dislike.tsx"
+        }
+      ]
+    },
+    {
+      "name": "star-rating",
+      "type": "registry:block",
+      "title": "Star Rating",
+      "description": "Five-star rating feedback widget.",
+      "registryDependencies": ["@sentimeter/feedback-system"],
+      "files": [
+        {
+          "path": "registry/sentimeter/star-rating.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/star-rating.tsx"
+        }
+      ]
+    }
+  ]
+}

@@ -52,12 +52,21 @@ function classifySentiment(widgetType: WidgetType, value: number) {
   return "neutral" as const;
 }
 
+function normalizeOrigin(origin: string) {
+  try {
+    return new URL(origin).origin;
+  } catch {
+    return null;
+  }
+}
+
 export const submitFeedbackInternal = internalMutation({
   args: {
     apiKey: v.string(),
     widgetType: widgetTypeValidator,
     value: v.number(),
     location: v.string(),
+    origin: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     if (!assertValue(args.widgetType, args.value)) {
@@ -75,6 +84,21 @@ export const submitFeedbackInternal = internalMutation({
 
     if (!keyRow || keyRow.revokedAt !== undefined) {
       return { ok: false as const, error: "invalid_key" as const };
+    }
+
+    const project = await ctx.db.get(keyRow.projectId);
+    if (!project) {
+      return { ok: false as const, error: "invalid_key" as const };
+    }
+
+    const allowedOrigins = project.allowedOrigins ?? [];
+    if (allowedOrigins.length > 0) {
+      const requestOrigin =
+        typeof args.origin === "string" ? normalizeOrigin(args.origin) : null;
+
+      if (!requestOrigin || !allowedOrigins.includes(requestOrigin)) {
+        return { ok: false as const, error: "origin_not_allowed" as const };
+      }
     }
 
     await ctx.db.insert("feedback", {

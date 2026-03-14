@@ -29,6 +29,7 @@ import {
 } from "@workspace/ui/components/chart";
 import { Progress } from "@workspace/ui/components/progress";
 import { Badge } from "@workspace/ui/components/badge";
+import { Textarea } from "@workspace/ui/components/textarea";
 import { Panel } from "./panel";
 import { SyncUserGate } from "./sync-user-gate";
 import { useEffect, useMemo, useState } from "react";
@@ -53,6 +54,9 @@ import {
   IconThumbUpFilled,
 } from "@tabler/icons-react";
 
+type RangeOption = "24h" | "7d" | "30d" | "all";
+type WidgetFilterOption = "all" | "emoji" | "thumbs" | "star";
+
 function formatDate(ms: number) {
   return new Date(ms).toLocaleString();
 }
@@ -66,9 +70,9 @@ function formatShortTime(ms: number) {
 }
 
 function maskKey(key: string) {
-  if (!key.startsWith("sk_")) return "••••••";
-  if (key.length <= 10) return "sk_••••";
-  const start = key.slice(0, 7); // sk_ + 4
+  if (!key.startsWith("pk_") && !key.startsWith("sk_")) return "••••••";
+  if (key.length <= 10) return `${key.slice(0, 3)}••••`;
+  const start = key.slice(0, 7);
   const end = key.slice(-4);
   return `${start}…${end}`;
 }
@@ -106,18 +110,20 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   const data = useQuery(api.projects.getProject, projectQueryArgs);
 
   const rotateKey = useMutation(api.projects.generateApiKey);
+  const updateAllowedOrigins = useMutation(api.projects.updateAllowedOrigins);
   const deleteProject = useMutation(api.projects.deleteProject);
 
   const [tab, setTab] = useState<"overview" | "live">("overview");
-  const [range, setRange] = useState<"24h" | "7d" | "30d" | "all">("7d");
-  const [widgetFilter, setWidgetFilter] = useState<
-    "all" | "emoji" | "thumbs" | "star"
-  >("all");
+  const [range, setRange] = useState<RangeOption>("7d");
+  const [widgetFilter, setWidgetFilter] = useState<WidgetFilterOption>("all");
 
   const [revealKey, setRevealKey] = useState(false);
   const [copied, setCopied] = useState(false);
   const [rotating, setRotating] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [originText, setOriginText] = useState("");
+  const [savingOrigins, setSavingOrigins] = useState(false);
+  const [savedOrigins, setSavedOrigins] = useState(false);
 
   useEffect(() => {
     if (projectQueryArgs !== "skip") return;
@@ -128,6 +134,12 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   const convexProjectId = project?._id;
   const activeKey = data?.activeApiKey?.key;
   const keyDisplay = !activeKey ? "—" : revealKey ? activeKey : maskKey(activeKey);
+  const hasOriginRestrictions = (project?.allowedOrigins?.length ?? 0) > 0;
+  const allowedOriginsValue = (project?.allowedOrigins ?? []).join("\n");
+
+  useEffect(() => {
+    setOriginText(allowedOriginsValue);
+  }, [allowedOriginsValue]);
 
   const feedbackWidgetType =
     widgetFilter === "all" ? undefined : (widgetFilter as "emoji" | "thumbs" | "star");
@@ -231,14 +243,14 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1200);
     } catch {
-      window.prompt("Copy API key:", activeKey);
+      window.prompt("Copy publishable key:", activeKey);
     }
   }
 
   async function onRotate() {
     if (!convexProjectId) return;
     if (
-      !window.confirm("Rotate API key? Existing widgets will stop working.")
+      !window.confirm("Rotate publishable key? Existing widgets will stop working.")
     ) {
       return;
     }
@@ -265,6 +277,25 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
       router.push("/dashboard");
     } finally {
       setDeleting(false);
+    }
+  }
+
+  async function onSaveOrigins() {
+    if (!convexProjectId || savingOrigins) return;
+
+    const allowedOrigins = originText
+      .split("\n")
+      .map((value) => value.trim())
+      .filter(Boolean);
+
+    setSavingOrigins(true);
+    setSavedOrigins(false);
+    try {
+      await updateAllowedOrigins({ projectId: convexProjectId, allowedOrigins });
+      setSavedOrigins(true);
+      window.setTimeout(() => setSavedOrigins(false), 1500);
+    } finally {
+      setSavingOrigins(false);
     }
   }
 
@@ -311,7 +342,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
         )}
 
         <div className="flex flex-wrap items-center gap-2">
-          <Select value={range} onValueChange={(v) => setRange(v as any)}>
+          <Select
+            value={range}
+            onValueChange={(v) => setRange(v as RangeOption)}
+          >
             <SelectTrigger className="h-9 w-[160px]">
               <SelectValue />
             </SelectTrigger>
@@ -323,7 +357,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             </SelectContent>
           </Select>
 
-          <Select value={widgetFilter} onValueChange={(v) => setWidgetFilter(v as any)}>
+          <Select
+            value={widgetFilter}
+            onValueChange={(v) => setWidgetFilter(v as WidgetFilterOption)}
+          >
             <SelectTrigger className="h-9 w-[160px]">
               <SelectValue />
             </SelectTrigger>
@@ -350,9 +387,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
         <div className="space-y-4">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <div className="text-sm font-semibold">API key</div>
+              <div className="text-sm font-semibold">Publishable key</div>
               <div className="mt-1 text-xs text-muted-foreground">
-                Use this key to authenticate public widget feedback writes.
+                Publishable write key for client-side widget feedback.
               </div>
             </div>
             <div className="inline-flex items-center gap-2">
@@ -392,6 +429,45 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             >
               {rotating ? "Rotating…" : "Rotate key"}
             </Button>
+          </div>
+        </div>
+      </Panel>
+
+      <Panel>
+        <div className="space-y-4">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="text-sm font-semibold">Allowed origins</div>
+              <div className="mt-1 text-xs text-muted-foreground">
+                Leave empty to allow all origins. Add one origin per line to lock
+                writes to specific deployed apps.
+              </div>
+            </div>
+            <Badge variant={hasOriginRestrictions ? "default" : "outline"}>
+              {hasOriginRestrictions ? "restricted" : "open"}
+            </Badge>
+          </div>
+
+          <Textarea
+            value={originText}
+            onChange={(e) => setOriginText(e.target.value)}
+            placeholder={"https://app.example.com\nhttps://staging.example.com"}
+            className="min-h-28 font-mono text-sm"
+          />
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onSaveOrigins}
+              disabled={!data || savingOrigins}
+            >
+              {savingOrigins ? "Saving…" : savedOrigins ? "Saved" : "Save origins"}
+            </Button>
+            <div className="text-xs text-muted-foreground">
+              Exact origins only, including localhost ports when you choose to use
+              them.
+            </div>
           </div>
         </div>
       </Panel>

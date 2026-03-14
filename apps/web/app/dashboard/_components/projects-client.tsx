@@ -19,7 +19,7 @@ export function ProjectsClient() {
       <div className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">Projects</h1>
         <p className="text-sm text-muted-foreground">
-          Create a project to generate an API key for widget feedback.
+          Create a project to generate a publishable key for widget feedback.
         </p>
       </div>
 
@@ -50,7 +50,7 @@ function ProjectsInner() {
         <div className="space-y-2">
           <div className="text-sm font-semibold">Create your first project</div>
           <div className="text-sm text-muted-foreground">
-            Projects group widgets and API keys. Start by naming one.
+            Projects group widgets and publishable keys. Start by naming one.
           </div>
         </div>
       </Panel>
@@ -92,7 +92,7 @@ function ProjectsInner() {
             </Button>
           </div>
           <div className="text-xs text-muted-foreground">
-            Creating a project automatically generates the first API key.
+            Creating a project automatically generates the first publishable key.
           </div>
         </form>
       </Panel>

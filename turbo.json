@@ -13,6 +13,9 @@
     "check-types": {
       "dependsOn": ["^check-types"]
     },
+    "registry:build": {
+      "outputs": ["public/r/**"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

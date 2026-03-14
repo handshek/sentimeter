@@ -19,6 +19,12 @@ function json(status: number, body: unknown) {
 }
 
 type WidgetType = "emoji" | "thumbs" | "star";
+type FeedbackBody = {
+  apiKey?: unknown;
+  widgetType?: unknown;
+  value?: unknown;
+  location?: unknown;
+};
 
 function isWidgetType(value: unknown): value is WidgetType {
   return value === "emoji" || value === "thumbs" || value === "star";
@@ -29,9 +35,9 @@ export const feedbackOptions = httpAction(async () => {
 });
 
 export const feedbackPost = httpAction(async (ctx, request) => {
-  let body: any;
+  let body: FeedbackBody;
   try {
-    body = await request.json();
+    body = (await request.json()) as FeedbackBody;
   } catch {
     return json(400, { error: "invalid_body" });
   }
@@ -41,6 +47,7 @@ export const feedbackPost = httpAction(async (ctx, request) => {
   const value = body?.value;
   const location =
     typeof body?.location === "string" ? body.location : undefined;
+  const origin = request.headers.get("origin") ?? undefined;
 
   if (
     !apiKey ||
@@ -58,12 +65,15 @@ export const feedbackPost = httpAction(async (ctx, request) => {
       widgetType,
       value,
       location,
+      origin,
     },
   );
 
   if (!result.ok) {
     if (result.error === "invalid_key")
       return json(401, { error: "invalid_key" });
+    if (result.error === "origin_not_allowed")
+      return json(403, { error: "origin_not_allowed" });
     if (result.error === "invalid_value")
       return json(400, { error: "invalid_value" });
     return json(400, { error: "invalid_body" });

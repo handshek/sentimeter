@@ -185,3 +185,4 @@ Only use `bun` or `bunx` for installing dependencies
 1. Ensure TestSprite MCP is used to generate test cases wherever _important_.
 2. Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without having to explicitly ask.
 3. Do not ever create custom UI components or SVG icons unless explicitly asked to. Always install new/missing components from shadcn-ui.
+4. If a task requires an interactive CLI prompt, login flow, or manual browser authorization, stop before starting it, ask the user to run that step themselves, and continue once they confirm it is done.

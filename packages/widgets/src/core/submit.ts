@@ -9,6 +9,17 @@ export async function submitFeedback(payload: WidgetPayload) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error("failed");
+
+  if (res.ok) return;
+
+  let error = "failed";
+  try {
+    const body = await res.json();
+    if (typeof body?.error === "string") error = body.error;
+  } catch {
+    // ignore
+  }
+
+  throw new Error(error);
 }
 

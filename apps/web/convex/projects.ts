@@ -9,8 +9,25 @@ import {
 } from "./lib/auth";
 import { nanoid } from "./lib/nanoid";
 
-function generateSecretKey() {
-  return `sk_${nanoid(24)}`;
+function generatePublicKey() {
+  return `pk_${nanoid(24)}`;
+}
+
+function normalizeOrigins(origins: string[]) {
+  return Array.from(
+    new Set(
+      origins
+        .map((origin) => origin.trim())
+        .filter(Boolean)
+        .map((origin) => {
+          try {
+            return new URL(origin).origin;
+          } catch {
+            throw new ConvexError("invalid_origin");
+          }
+        }),
+    ),
+  );
 }
 
 async function revokeAllActiveKeysForProject(
@@ -44,13 +61,14 @@ export const createProject = mutation({
     const projectId = await ctx.db.insert("projects", {
       userId: user._id,
       name,
+      allowedOrigins: [],
       createdAt: now,
     });
 
     const keyId = await ctx.db.insert("apiKeys", {
       projectId,
       userId: user._id,
-      key: generateSecretKey(),
+      key: generatePublicKey(),
       createdAt: now,
     });
 
@@ -111,13 +129,30 @@ export const generateApiKey = mutation({
     const apiKeyId = await ctx.db.insert("apiKeys", {
       projectId: args.projectId,
       userId: user._id,
-      key: generateSecretKey(),
+      key: generatePublicKey(),
       createdAt: now,
     });
 
     const apiKey = await ctx.db.get("apiKeys", apiKeyId);
     if (!apiKey) throw new ConvexError("insert_failed");
     return apiKey;
+  },
+});
+
+export const updateAllowedOrigins = mutation({
+  args: {
+    projectId: v.id("projects"),
+    allowedOrigins: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await requireIdentity(ctx);
+    const user = await getUserByClerkIdOrThrow(ctx, identity.subject);
+    await assertProjectOwner(ctx, args.projectId, user._id);
+
+    const allowedOrigins = normalizeOrigins(args.allowedOrigins);
+    await ctx.db.patch(args.projectId, { allowedOrigins });
+
+    return { ok: true, allowedOrigins };
   },
 });
 

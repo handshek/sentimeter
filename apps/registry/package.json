@@ -1,0 +1,17 @@
+{
+  "name": "registry",
+  "type": "module",
+  "scripts": {
+    "dev:registry": "wrangler dev",
+    "registry:build": "shadcn build",
+    "deploy": "wrangler deploy",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+  },
+  "dependencies": {
+    "hono": "^4.12.8"
+  },
+  "devDependencies": {
+    "shadcn": "^3.5.1-canary.0",
+    "wrangler": "^4.4.0"
+  }
+}
