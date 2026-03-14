@@ -425,7 +425,7 @@ async function submitToConvexSite(payload: WidgetPayload): Promise<void> {
   throw new Error(error);
 }
 
-export default function WidgetsPlaygroundPage() {
+function WidgetsPlaygroundContent() {
   const { isSignedIn } = useAuth();
   const searchParams = useSearchParams();
   const projectIdFromQuery = searchParams.get("projectId") ?? "";
@@ -961,5 +961,21 @@ export default function WidgetsPlaygroundPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function WidgetsPlaygroundPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="min-h-screen bg-background text-foreground">
+          <div className="mx-auto max-w-6xl px-6 py-10 text-sm text-muted-foreground">
+            Loading widgets playground...
+          </div>
+        </div>
+      }
+    >
+      <WidgetsPlaygroundContent />
+    </React.Suspense>
   );
 }

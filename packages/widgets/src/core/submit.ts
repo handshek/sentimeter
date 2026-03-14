@@ -1,7 +1,7 @@
 import type { WidgetPayload } from "../types";
 
 // Endpoint is hardcoded at build time. Developers never touch this.
-const ENDPOINT = "https://[your-deployment].convex.site/feedback";
+const ENDPOINT = "https://coordinated-perch-697.convex.site/feedback";
 
 export async function submitFeedback(payload: WidgetPayload) {
   const res = await fetch(ENDPOINT, {

@@ -74,7 +74,7 @@ type UseWidgetMachineArgs = {
   onSubmitError?: (error: unknown, payload: WidgetPayload) => void;
 };
 
-const ENDPOINT = "https://YOUR_DEPLOYMENT.convex.site/feedback";
+const ENDPOINT = "https://coordinated-perch-697.convex.site/feedback";
 
 const Ctx = React.createContext<FeedbackContextValue | null>(null);
 
