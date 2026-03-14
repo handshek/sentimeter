@@ -7,6 +7,7 @@ Sentimeter is a developer-first feedback collection system. Developers install o
 It consists of:
 
 - A Next.js 15 dashboard (apps/web)
+- A shadcn registry app (apps/registry) — Cloudflare Worker serving registry JSON so developers can `shadcn add @sentimeter/<widget>`
 - An embeddable widgets package (packages/widgets)
 - AI-generated test cases using TestSprite MCP (testsprite_tests)
 
@@ -22,6 +23,7 @@ It consists of:
 
 - `bun run dev` — Starts the dashboard and widgets in dev mode
 - `bun run build` — Builds all packages and apps
+- `bun run registry:build` — Builds the shadcn registry (outputs to apps/registry/public/r/**); run from repo root or from apps/registry
 - `bun run lint` — Lints the entire monorepo
 - `bun run format` — Formats the codebase with Prettier
 - `bun run check-types` — Runs type checking across the repo
@@ -34,6 +36,30 @@ Only use `bun` or `bunx` for installing dependencies
 
 ```
 ├── apps
+│   ├── registry
+│   │   ├── public
+│   │   │   └── r
+│   │   │   ├── emoji-feedback.json
+│   │   │   ├── feedback-system.json
+│   │   │   ├── like-dislike.json
+│   │   │   ├── registry.json
+│   │   │   └── star-rating.json
+│   │   ├── registry
+│   │   │   └── sentimeter
+│   │   │       ├── emoji-feedback.tsx +
+│   │   │       ├── feedback-system.tsx +
+│   │   │       ├── like-dislike.tsx +
+│   │   │       └── star-rating.tsx +
+│   │   ├── src
+│   │   │   └── index.ts +
+│   │   ├── .gitignore *
+│   │   ├── components.json *
+│   │   ├── package.json *
+│   │   ├── registry.json *
+│   │   ├── README.md *
+│   │   ├── tsconfig.json *
+│   │   ├── worker-configuration.d.ts
+│   │   └── wrangler.json
 │   └── web
 │       ├── app
 │       │   ├── fonts
@@ -137,6 +163,15 @@ Only use `bun` or `bunx` for installing dependencies
 │   │   └── tsconfig.json *
 │   └── widgets
 │       ├── src
+│       │   ├── compound
+│       │   │   ├── feedback-context.tsx +
+│       │   │   ├── feedback-description.tsx +
+│       │   │   ├── feedback-footer.tsx +
+│       │   │   ├── feedback-input.tsx +
+│       │   │   ├── feedback-rating.tsx +
+│       │   │   ├── feedback-title.tsx +
+│       │   │   ├── feedback-widget.tsx +
+│       │   │   └── index.ts +
 │       │   ├── core
 │       │   │   ├── submit.ts +
 │       │   │   ├── ui.ts +

@@ -8,6 +8,7 @@ import {
   IconLayoutDashboard,
   IconLayoutGrid,
   IconLogin,
+  IconPackage,
 } from "@tabler/icons-react";
 import { UserButton, useAuth } from "@clerk/nextjs";
 
@@ -23,6 +24,12 @@ export default function Home() {
           <span className="text-xl font-bold tracking-tight">Sentimeter</span>
         </Link>
         <nav className="flex items-center gap-3">
+          <Button variant="ghost" size="sm" asChild className="hidden sm:flex">
+            <Link href="/components">
+              <IconPackage className="w-4 h-4 mr-2" />
+              Components
+            </Link>
+          </Button>
           <Button variant="ghost" size="sm" asChild className="hidden sm:flex">
             <Link href="/widgets">
               <IconLayoutGrid className="w-4 h-4 mr-2" />
