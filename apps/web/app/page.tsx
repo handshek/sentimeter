@@ -21,7 +21,7 @@ import {
 } from "@repo/widgets";
 
 const INSTALL_CMD =
-  'npx shadcn@latest add "https://registry.sentimeter.dev/r/emoji-feedback.json"';
+  'npx shadcn@latest add "https://registry.handshek.workers.dev/r/emoji-feedback.json"';
 
 const mockSubmit: WidgetSubmit = () =>
   new Promise<void>((r) => setTimeout(r, 500));

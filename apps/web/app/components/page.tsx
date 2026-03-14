@@ -28,7 +28,7 @@ import {
 } from "@tabler/icons-react";
 import { cn } from "@workspace/ui/lib/utils";
 
-const REGISTRY_BASE = "https://registry.sentimeter.dev";
+const REGISTRY_BASE = "https://registry.handshek.workers.dev";
 
 function installCmd(runner: string, name: string) {
   const url = `${REGISTRY_BASE}/r/${name}.json`;
