@@ -24,6 +24,7 @@ type FeedbackBody = {
   widgetType?: unknown;
   value?: unknown;
   location?: unknown;
+  text?: unknown;
 };
 
 function isWidgetType(value: unknown): value is WidgetType {
@@ -47,6 +48,8 @@ export const feedbackPost = httpAction(async (ctx, request) => {
   const value = body?.value;
   const location =
     typeof body?.location === "string" ? body.location : undefined;
+  const rawText = typeof body?.text === "string" ? body.text.trim() : undefined;
+  const text = rawText && rawText.length > 0 ? rawText.slice(0, 500) : undefined;
   const origin = request.headers.get("origin") ?? undefined;
 
   if (
@@ -65,6 +68,7 @@ export const feedbackPost = httpAction(async (ctx, request) => {
       widgetType,
       value,
       location,
+      text,
       origin,
     },
   );

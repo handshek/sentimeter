@@ -34,6 +34,7 @@ export default defineSchema({
     ),
     value: v.number(),
     location: v.string(),
+    text: v.optional(v.string()),
     createdAt: v.number(),
   })
     .index("by_projectId_createdAt", ["projectId", "createdAt"])

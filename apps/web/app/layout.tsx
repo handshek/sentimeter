@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import "@workspace/ui/globals.css";
 import ConvexClientProvider from "./components/convex-clerk-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
   variable: "--font-sans",
 });
 const geistMono = localFont({
@@ -24,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={geistSans.variable}>
-      <body className={`${geistSans.variable} ${geistMono.variable} font-sans`}>
+    <html lang="en" className={jakarta.variable}>
+      <body className={`${jakarta.variable} ${geistMono.variable} font-sans`}>
         <ClerkProvider>
           <ConvexClientProvider>{children}</ConvexClientProvider>
         </ClerkProvider>

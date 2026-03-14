@@ -66,6 +66,7 @@ export const submitFeedbackInternal = internalMutation({
     widgetType: widgetTypeValidator,
     value: v.number(),
     location: v.string(),
+    text: v.optional(v.string()),
     origin: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -106,6 +107,7 @@ export const submitFeedbackInternal = internalMutation({
       widgetType: args.widgetType,
       value: args.value,
       location,
+      ...(args.text != null && args.text.length > 0 ? { text: args.text } : {}),
       createdAt: Date.now(),
     });
 
