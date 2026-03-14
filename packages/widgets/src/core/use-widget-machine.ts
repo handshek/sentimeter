@@ -55,34 +55,43 @@ export function useWidgetMachine({
     [disabled, onSelect, setStateSafe, state],
   );
 
-  const submitSelected = React.useCallback(async () => {
-    if (disabled) return;
-    if (state !== "selected") return;
-    if (selectedValue == null) return;
+  const submitSelected = React.useCallback(
+    async (text?: string) => {
+      if (disabled) return;
+      if (state !== "selected") return;
+      if (selectedValue == null) return;
 
-    const payload: WidgetPayload = { ...payloadBase, value: selectedValue };
-    setStateSafe("submitting");
-    onSubmitStart?.(payload);
+      const payload: WidgetPayload = {
+        ...payloadBase,
+        value: selectedValue,
+        ...(text ? { text } : {}),
+      };
+      setStateSafe("submitting");
+      onSubmitStart?.(payload);
 
-    try {
-      await submit(payload);
-      onSubmitSuccess?.(payload);
-      setStateSafe("done");
-    } catch (error) {
-      onSubmitError?.(error, payload);
-      setStateSafe("selected");
-    }
-  }, [
-    disabled,
-    onSubmitError,
-    onSubmitStart,
-    onSubmitSuccess,
-    payloadBase,
-    selectedValue,
-    setStateSafe,
-    state,
-    submit,
-  ]);
+      try {
+        await submit(payload);
+        onSubmitSuccess?.(payload);
+        setStateSafe("done");
+      } catch (error) {
+        onSubmitError?.(error, payload);
+        setStateSafe("selected");
+      }
+    },
+    [
+      disabled,
+      onSubmitError,
+      onSubmitStart,
+      onSubmitSuccess,
+      payloadBase,
+      selectedValue,
+      setStateSafe,
+      state,
+      submit,
+    ],
+  );
+
+  const hide = React.useCallback(() => setHidden(true), []);
 
   return {
     hidden,
@@ -90,6 +99,6 @@ export function useWidgetMachine({
     selectedValue,
     select,
     submitSelected,
+    hide,
   } as const;
 }
-

@@ -33,7 +33,6 @@ Only use `bun` or `bunx` for installing dependencies
 ## Monorepo structure
 
 ```
-/Users/abhi/dev/sentimeter
 ├── apps
 │   └── web
 │       ├── app
@@ -60,6 +59,8 @@ Only use `bun` or `bunx` for installing dependencies
 │       │   ├── sign-up
 │       │   │   └── [[...sign-up]]
 │       │   │       └── page.tsx +
+│       │   ├── widgets
+│       │   │   └── page.tsx +
 │       │   ├── favicon.ico *
 │       │   ├── layout.tsx * +
 │       │   └── page.tsx * +
@@ -114,7 +115,19 @@ Only use `bun` or `bunx` for installing dependencies
 │   ├── ui
 │   │   ├── src
 │   │   │   ├── components
-│   │   │   │   └── button.tsx * +
+│   │   │   │   ├── button.tsx * +
+│   │   │   │   ├── badge.tsx +
+│   │   │   │   ├── card.tsx +
+│   │   │   │   ├── chart.tsx +
+│   │   │   │   ├── input.tsx +
+│   │   │   │   ├── label.tsx +
+│   │   │   │   ├── progress.tsx +
+│   │   │   │   ├── select.tsx +
+│   │   │   │   ├── separator.tsx +
+│   │   │   │   ├── switch.tsx +
+│   │   │   │   ├── table.tsx +
+│   │   │   │   ├── tabs.tsx +
+│   │   │   │   └── textarea.tsx +
 │   │   │   ├── lib
 │   │   │   │   └── utils.ts * +
 │   │   │   └── styles
@@ -124,17 +137,31 @@ Only use `bun` or `bunx` for installing dependencies
 │   │   └── tsconfig.json *
 │   └── widgets
 │       ├── src
-│       │   └── index.ts * +
+│       │   ├── core
+│       │   │   ├── submit.ts +
+│       │   │   ├── ui.ts +
+│       │   │   └── use-widget-machine.ts +
+│       │   ├── index.ts * +
+│       │   ├── emoji-feedback.tsx +
+│       │   ├── like-dislike.tsx +
+│       │   ├── star-rating.tsx +
+│       │   └── types.ts +
 │       ├── package.json *
-│       └── tsconfig.json *
+│       ├── tsconfig.json *
+│       └── eslint.config.mjs
 ├── testsprite_tests
 │   ├── README.md *
 │   ├── PRD.md
+│   ├── TC001_Access_dashboard_after_signing_in_and_see_main_dashboard_UI_elements.py +
 │   ├── TC001_Landing_page_loads_and_shows_primary_Sign_In_call_to_action.py +
+│   ├── TC002_Create_a_new_project_successfully_from_the_dashboard_modal.py +
 │   ├── TC002_Landing_page_Sign_In_CTA_navigates_to_Clerk_sign_in_page.py +
 │   ├── TC003_Landing_page_loads_and_shows_primary_Sign_Up_call_to_action.py +
+│   ├── TC003_Project_creation_validation_missing_project_name_shows_error_and_does_not_create_project.py +
+│   ├── TC004_Dashboard_shows_Create_Project_entry_point_for_signed_in_users.py +
 │   ├── TC004_Landing_page_Sign_Up_CTA_navigates_to_Clerk_sign_up_page.py +
 │   ├── TC005_Direct_navigation_to_sign_in_renders_Clerk_sign_in_widget_for_signed_out_user.py +
+│   ├── TC005_Projects_list_area_is_visible_on_the_dashboard_after_sign_in.py +
 │   ├── TC006_Direct_navigation_to_sign_up_renders_Clerk_sign_up_widget_for_signed_out_user.py +
 │   ├── open_dashboard.mjs
 │   ├── run_mcp.mjs

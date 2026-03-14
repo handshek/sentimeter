@@ -90,6 +90,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@tabler/icons-react": "^3.40.0",
+        "@workspace/ui": "workspace:*",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
       },

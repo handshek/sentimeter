@@ -32,9 +32,16 @@ import {
   EmojiFeedback,
   LikeDislike,
   StarRating,
+  FeedbackWidget,
+  FeedbackTitle,
+  FeedbackDescription,
+  FeedbackRating,
+  FeedbackInput,
+  FeedbackFooter,
   type WidgetPayload,
   type WidgetState,
   type WidgetSubmit,
+  type WidgetSize,
 } from "@repo/widgets";
 import {
   IconArrowLeft,
@@ -160,17 +167,17 @@ function PlaygroundCard({
 }
 
 function useMockSubmit(outcome: MockOutcome, delayMs: number) {
-  return React.useCallback<WidgetSubmit>(
-    async () => {
-      await new Promise<void>((r) => window.setTimeout(r, delayMs));
-      if (outcome === "error") throw new Error("mock failure");
-    },
-    [delayMs, outcome],
-  );
+  return React.useCallback<WidgetSubmit>(async () => {
+    await new Promise<void>((r) => window.setTimeout(r, delayMs));
+    if (outcome === "error") throw new Error("mock failure");
+  }, [delayMs, outcome]);
 }
 
 function formatTime(ms: number) {
-  return new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return new Date(ms).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function WidgetRig({
@@ -193,13 +200,19 @@ function WidgetRig({
     submitLabel: string;
     submit: WidgetSubmit;
     submitMode: SubmitMode;
+    title: string;
+    description: string;
+    showInput: boolean;
+    size: WidgetSize;
   };
   emojiVariant?: "emoji" | "tabler";
   setEmojiVariant?: (v: "emoji" | "tabler") => void;
 }) {
   const [state, setState] = React.useState<WidgetState>("idle");
   const [selectedValue, setSelectedValue] = React.useState<number | null>(null);
-  const [lastPayload, setLastPayload] = React.useState<WidgetPayload | null>(null);
+  const [lastPayload, setLastPayload] = React.useState<WidgetPayload | null>(
+    null,
+  );
   const [lastResult, setLastResult] = React.useState<SubmitResult | null>(null);
   const [instance, setInstance] = React.useState(0);
 
@@ -212,7 +225,8 @@ function WidgetRig({
         await common.submit(payload);
         setLastResult({ ok: true, status: 200, at: Date.now() });
       } catch (error) {
-        const message = error instanceof Error ? error.message : "submit_failed";
+        const message =
+          error instanceof Error ? error.message : "submit_failed";
         setLastResult({ ok: false, status: 0, error: message, at: Date.now() });
         throw error;
       }
@@ -227,6 +241,10 @@ function WidgetRig({
     thankYouMessage: common.thankYouMessage,
     doneDurationMs: common.doneDurationMs,
     submitLabel: common.submitLabel,
+    title: common.title,
+    description: common.description,
+    showInput: common.showInput,
+    size: common.size,
     submit: wrappedSubmit,
     onSelect: (v: number) => setSelectedValue(v),
     onStateChange: (s: WidgetState) => setState(s),
@@ -311,7 +329,9 @@ function WidgetRig({
               </div>
               <div className="flex items-center justify-between gap-3">
                 <span className="text-muted-foreground">Submit mode</span>
-                <span className="font-mono text-[12px]">{common.submitMode}</span>
+                <span className="font-mono text-[12px]">
+                  {common.submitMode}
+                </span>
               </div>
               {lastResult ? (
                 <div className="flex items-center justify-between gap-3">
@@ -349,7 +369,9 @@ function WidgetRig({
           </div>
           {lastResult && !lastResult.ok ? (
             <div className="mt-3 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-[12px] text-muted-foreground">
-              <span className="font-semibold text-foreground">Submit failed:</span>{" "}
+              <span className="font-semibold text-foreground">
+                Submit failed:
+              </span>{" "}
               {lastResult.error}
             </div>
           ) : null}
@@ -411,9 +433,8 @@ export default function WidgetsPlaygroundPage() {
   const projects = useQuery(api.projects.getProjects, isSignedIn ? {} : "skip");
   const projectList = projects ?? [];
 
-  const [selectedProjectId, setSelectedProjectId] = React.useState<string>(
-    projectIdFromQuery,
-  );
+  const [selectedProjectId, setSelectedProjectId] =
+    React.useState<string>(projectIdFromQuery);
 
   const selectedProjectQueryArgs = React.useMemo(() => {
     if (!isSignedIn) return "skip";
@@ -422,7 +443,10 @@ export default function WidgetsPlaygroundPage() {
       : "skip";
   }, [isSignedIn, selectedProjectId]);
 
-  const selectedProject = useQuery(api.projects.getProject, selectedProjectQueryArgs);
+  const selectedProject = useQuery(
+    api.projects.getProject,
+    selectedProjectQueryArgs,
+  );
   const activeApiKey = selectedProject?.activeApiKey?.key ?? "";
 
   const [apiKey, setApiKey] = React.useState("demo-api-key");
@@ -436,6 +460,12 @@ export default function WidgetsPlaygroundPage() {
   const [emojiVariant, setEmojiVariant] = React.useState<"emoji" | "tabler">(
     "emoji",
   );
+  const [title, setTitle] = React.useState("Rate your experience");
+  const [description, setDescription] = React.useState(
+    "This helps us improve our product.",
+  );
+  const [showInput, setShowInput] = React.useState(false);
+  const [widgetSize, setWidgetSize] = React.useState<WidgetSize>("default");
 
   React.useEffect(() => {
     if (!isSignedIn) return;
@@ -450,12 +480,9 @@ export default function WidgetsPlaygroundPage() {
 
   const injectedMockSubmit = useMockSubmit(mockOutcome, mockDelayMs);
 
-  const realSubmit = React.useCallback<WidgetSubmit>(
-    async (payload) => {
-      await submitToConvexSite(payload);
-    },
-    [],
-  );
+  const realSubmit = React.useCallback<WidgetSubmit>(async (payload) => {
+    await submitToConvexSite(payload);
+  }, []);
 
   const submit = submitMode === "mock" ? injectedMockSubmit : realSubmit;
 
@@ -469,6 +496,10 @@ export default function WidgetsPlaygroundPage() {
       submitLabel: submitMode === "mock" ? "Submit (Mock)" : "Submit (Real)",
       submit,
       submitMode,
+      title,
+      description,
+      showInput,
+      size: widgetSize,
     }),
     [
       apiKey,
@@ -478,6 +509,10 @@ export default function WidgetsPlaygroundPage() {
       submit,
       submitMode,
       thankYouMessage,
+      title,
+      description,
+      showInput,
+      widgetSize,
     ],
   );
 
@@ -517,10 +552,12 @@ export default function WidgetsPlaygroundPage() {
             <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
               This page renders the exact production components from{" "}
               <code className="font-mono text-[12px]">@repo/widgets</code>. Mock
-              mode injects a <code className="font-mono text-[12px]">submit</code>{" "}
-              function; Real mode posts to{" "}
+              mode injects a{" "}
+              <code className="font-mono text-[12px]">submit</code> function;
+              Real mode posts to{" "}
               <code className="font-mono text-[12px]">
-                {process.env.NEXT_PUBLIC_CONVEX_SITE_URL ?? "[set NEXT_PUBLIC_CONVEX_SITE_URL]"}
+                {process.env.NEXT_PUBLIC_CONVEX_SITE_URL ??
+                  "[set NEXT_PUBLIC_CONVEX_SITE_URL]"}
                 /feedback
               </code>
               .
@@ -551,6 +588,27 @@ export default function WidgetsPlaygroundPage() {
                 </Select>
               </Field>
 
+              <Field
+                id="global-size"
+                label="Size"
+                description="Icon and button scale"
+              >
+                <Select
+                  value={widgetSize}
+                  onValueChange={(v) => setWidgetSize(v as WidgetSize)}
+                >
+                  <SelectTrigger id="global-size" className="w-full">
+                    <SelectValue placeholder="Size" />
+                  </SelectTrigger>
+                  <SelectContent position="popper">
+                    <SelectItem value="sm">Small</SelectItem>
+                    <SelectItem value="default">Default</SelectItem>
+                    <SelectItem value="md">Medium</SelectItem>
+                    <SelectItem value="lg">Large</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+
               {submitMode === "mock" ? (
                 <div className="grid gap-2 sm:grid-cols-2">
                   <Field
@@ -571,24 +629,22 @@ export default function WidgetsPlaygroundPage() {
                       </SelectContent>
                     </Select>
                   </Field>
-                  <Field
-                    id="global-delay"
-                    label="Mock delay"
-                    description="ms"
-                  >
+                  <Field id="global-delay" label="Mock delay" description="ms">
                     <Input
                       id="global-delay"
                       type="number"
                       min={0}
                       value={mockDelayMs}
-                      onChange={(e) => setMockDelayMs(Number(e.target.value || 0))}
+                      onChange={(e) =>
+                        setMockDelayMs(Number(e.target.value || 0))
+                      }
                     />
                   </Field>
                 </div>
               ) : (
                 <div className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2 text-[12px] text-muted-foreground">
-                  Tip: open your project dashboard in another tab to watch updates
-                  in realtime.
+                  Tip: open your project dashboard in another tab to watch
+                  updates in realtime.
                 </div>
               )}
             </div>
@@ -599,7 +655,11 @@ export default function WidgetsPlaygroundPage() {
           <PlaygroundCard
             title="Project Helper"
             icon={<IconCircleCheck size={16} />}
-            description={isSignedIn ? "Auto-fill API key from your project" : "Sign in to auto-fill API keys"}
+            description={
+              isSignedIn
+                ? "Auto-fill API key from your project"
+                : "Sign in to auto-fill API keys"
+            }
           >
             {isSignedIn ? (
               <div className="space-y-3">
@@ -712,9 +772,54 @@ export default function WidgetsPlaygroundPage() {
                   type="number"
                   min={0}
                   value={doneDurationMs}
-                  onChange={(e) => setDoneDurationMs(Number(e.target.value || 0))}
+                  onChange={(e) =>
+                    setDoneDurationMs(Number(e.target.value || 0))
+                  }
                 />
               </Field>
+
+              <Field
+                id="global-title"
+                label="Title"
+                description="The main heading for the widget"
+              >
+                <Input
+                  id="global-title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </Field>
+
+              <Field
+                id="global-description"
+                label="Description"
+                description="Subtitle explaining what feedback you're collecting"
+              >
+                <Input
+                  id="global-description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </Field>
+
+              <div className="flex items-center justify-between rounded-md border border-border/70 bg-background/40 px-3 py-2">
+                <div>
+                  <Label
+                    htmlFor="global-showInput"
+                    className="text-sm font-medium"
+                  >
+                    {showInput ? "Input visible" : "Input hidden"}
+                  </Label>
+                  <div className="text-[12px] text-muted-foreground">
+                    Shows the text area to collect qualitative feedback
+                  </div>
+                </div>
+                <Switch
+                  id="global-showInput"
+                  checked={showInput}
+                  onCheckedChange={setShowInput}
+                />
+              </div>
 
               <div className="flex items-center justify-between rounded-md border border-border/70 bg-background/40 px-3 py-2">
                 <div>
@@ -782,6 +887,76 @@ export default function WidgetsPlaygroundPage() {
               kind="stars"
               common={common}
             />
+          </WidgetSection>
+
+          <Separator className="opacity-60" />
+
+          <WidgetSection
+            tag="W04"
+            title="Compound"
+            subtitle="Composable compound components — build your own layout."
+          >
+            <div className="grid gap-6 lg:grid-cols-2">
+              <PlaygroundCard
+                title="With Input + Cancel"
+                icon={<IconRadar2 size={16} />}
+                description="Full-feature compound widget"
+              >
+                <div className="relative overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-6">
+                  <div className="pointer-events-none absolute inset-0 opacity-40 [background:repeating-linear-gradient(135deg,rgba(255,255,255,0.10)_0px,rgba(255,255,255,0.10)_1px,transparent_1px,transparent_10px)] dark:opacity-20" />
+                  <div className="relative flex items-center justify-center">
+                    <FeedbackWidget
+                      apiKey={common.apiKey}
+                      location={common.location}
+                      widgetType="emoji"
+                      disabled={common.disabled}
+                      submit={common.submit}
+                      doneDurationMs={common.doneDurationMs}
+                      closeButton
+                    >
+                      <FeedbackTitle>How was your experience?</FeedbackTitle>
+                      <FeedbackDescription>
+                        Your feedback shapes our product.
+                      </FeedbackDescription>
+                      <FeedbackRating variant="emoji" />
+                      <FeedbackInput placeholder="What could be better?" />
+                      <FeedbackFooter
+                        submitLabel={common.submitLabel}
+                        thankYouMessage={common.thankYouMessage}
+                        showCancel
+                      />
+                    </FeedbackWidget>
+                  </div>
+                </div>
+              </PlaygroundCard>
+
+              <PlaygroundCard
+                title="Minimal — Stars Only"
+                icon={<IconRadar2 size={16} />}
+                description="Just a rating, no text input"
+              >
+                <div className="relative overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-6">
+                  <div className="pointer-events-none absolute inset-0 opacity-40 [background:repeating-linear-gradient(135deg,rgba(255,255,255,0.10)_0px,rgba(255,255,255,0.10)_1px,transparent_1px,transparent_10px)] dark:opacity-20" />
+                  <div className="relative flex items-center justify-center">
+                    <FeedbackWidget
+                      apiKey={common.apiKey}
+                      location={common.location}
+                      widgetType="star"
+                      disabled={common.disabled}
+                      submit={common.submit}
+                      doneDurationMs={common.doneDurationMs}
+                    >
+                      <FeedbackTitle>Quick rating</FeedbackTitle>
+                      <FeedbackRating variant="stars" />
+                      <FeedbackFooter
+                        submitLabel={common.submitLabel}
+                        thankYouMessage={common.thankYouMessage}
+                      />
+                    </FeedbackWidget>
+                  </div>
+                </div>
+              </PlaygroundCard>
+            </div>
           </WidgetSection>
         </div>
       </main>
