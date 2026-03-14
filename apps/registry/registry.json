@@ -23,7 +23,7 @@
       "type": "registry:block",
       "title": "Emoji Feedback",
       "description": "Emoji-based feedback widget with a 5-point scale.",
-      "registryDependencies": ["@sentimeter/feedback-system"],
+      "registryDependencies": ["https://registry.handshek.workers.dev/r/feedback-system.json"],
       "files": [
         {
           "path": "registry/sentimeter/emoji-feedback.tsx",
@@ -37,7 +37,7 @@
       "type": "registry:block",
       "title": "Like Dislike",
       "description": "Thumbs up or thumbs down feedback widget.",
-      "registryDependencies": ["@sentimeter/feedback-system"],
+      "registryDependencies": ["https://registry.handshek.workers.dev/r/feedback-system.json"],
       "files": [
         {
           "path": "registry/sentimeter/like-dislike.tsx",
@@ -51,7 +51,7 @@
       "type": "registry:block",
       "title": "Star Rating",
       "description": "Five-star rating feedback widget.",
-      "registryDependencies": ["@sentimeter/feedback-system"],
+      "registryDependencies": ["https://registry.handshek.workers.dev/r/feedback-system.json"],
       "files": [
         {
           "path": "registry/sentimeter/star-rating.tsx",
