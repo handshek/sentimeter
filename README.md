@@ -1,159 +1,151 @@
-# Turborepo starter
+# Sentimeter
 
-This Turborepo starter is maintained by the Turborepo core team.
+Embed emoji, star, or thumbs feedback widgets anywhere. Get real-time analytics on a hosted dashboard.
 
-## Using this example
-
-Run the following command:
-
-```sh
-npx create-turbo@latest
+```bash
+bunx shadcn add https://registry.sentimeter.dev/r/emoji-feedback
 ```
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
+## How it works
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```
+  Developer installs widget        End user reacts        Developer sees it live
+  ──────────────────────────       ───────────────        ──────────────────────
+  bunx shadcn add                  clicks 😍              dashboard updates
+  sentimeter/emoji-feedback    →   hits POST /feedback →  instantly, no refresh
 ```
 
-Without global `turbo`, use your package manager:
+Three moving parts:
 
-```sh
-cd my-turborepo
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+```
+  ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐
+  │  apps/registry   │   │    apps/web      │   │   Convex Cloud   │
+  │  Hono + CF       │   │   Next.js 16     │   │   DB + HTTP      │
+  │  Workers         │   │   Vercel         │   │   actions        │
+  │                  │   │                  │   │                  │
+  │  Serves widget   │   │  Dashboard +     │   │  Stores feedback │
+  │  registry JSON   │   │  analytics       │   │  Validates keys  │
+  │  via shadcn      │   │  Clerk auth      │   │  Reactive subs   │
+  └──────────────────┘   └─────────┬────────┘   └─────────┬────────┘
+                                   │                      │
+                                   └──── useQuery ────────┘
+                                         (realtime)
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## Stack
 
-```sh
-turbo build --filter=docs
+|           |                                                      |
+| --------- | ---------------------------------------------------- |
+| Monorepo  | Turborepo + Bun                                      |
+| Dashboard | Next.js 15, Tailwind CSS v4, shadcn/ui               |
+| Auth      | Clerk → Convex (JWT)                                 |
+| Backend   | Convex (realtime DB, server functions, HTTP actions) |
+| Registry  | Hono + Cloudflare Workers                            |
+| Testing   | TestSprite MCP                                       |
+
+---
+
+## Getting started
+
+**Prerequisites:** [Bun](https://bun.sh), Node ≥ 18
+
+```bash
+git clone <repo> && cd sentimeter
+bun install
 ```
 
-Without global `turbo`:
+**1. Convex** — Create a project at [convex.dev](https://convex.dev), then:
 
-```sh
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+```bash
+cd apps/web && npx convex dev
 ```
 
-### Develop
+Note the `NEXT_PUBLIC_CONVEX_URL` and `NEXT_PUBLIC_CONVEX_SITE_URL` it prints.
 
-To develop all apps and packages, run the following command:
+**2. Clerk** — Create an app at [clerk.com](https://clerk.com). Copy the publishable and secret keys. Set the JWT issuer domain in your Convex dashboard:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+```
+CLERK_JWT_ISSUER_DOMAIN = https://<instance>.clerk.accounts.dev
 ```
 
-Without global `turbo`, use your package manager:
+**3. Env file**
 
-```sh
-cd my-turborepo
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+```bash
+cp apps/web/.env.example apps/web/.env.local
+# fill in Convex + Clerk values
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+**4. Run**
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
+```bash
+bun run dev
+# Dashboard → http://localhost:3000/dashboard
+# Widgets   → http://localhost:3000/widgets
 ```
 
-Without global `turbo`:
+---
 
-```sh
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+## Environment variables
+
+**`apps/web/.env.local`**
+
+| Variable                            | Purpose                        |
+| ----------------------------------- | ------------------------------ |
+| `NEXT_PUBLIC_CONVEX_URL`            | Convex deployment URL          |
+| `NEXT_PUBLIC_CONVEX_SITE_URL`       | Convex site URL (HTTP actions) |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key          |
+| `CLERK_SECRET_KEY`                  | Clerk secret key               |
+
+**Convex dashboard**
+
+| Variable                  | Purpose                   |
+| ------------------------- | ------------------------- |
+| `CLERK_JWT_ISSUER_DOMAIN` | Clerk Frontend API domain |
+
+**`apps/registry`** has no env vars. The feedback endpoint is compiled into registry output at build time.
+
+---
+
+## Commands
+
+| Command                  | What it does                                       |
+| ------------------------ | -------------------------------------------------- |
+| `bun run dev`            | Dashboard + widgets dev server                     |
+| `bun run build`          | Build everything                                   |
+| `bun run registry:build` | Generate registry JSON → `apps/registry/public/r/` |
+| `bun run lint`           | Lint the monorepo                                  |
+| `bun run check-types`    | Type-check                                         |
+
+Registry deploy (from `apps/registry`):
+
+```bash
+bun run registry:build
+bun run deploy
 ```
 
-### Remote Caching
+---
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+## Challenges
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+**Clerk two-step sign-in** — Clerk's flow is email → Continue → password → Continue, not a single form. TestSprite tests follow this sequence explicitly.
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+**TestSprite plan overwrite** — An empty MCP response overwrote the test plan JSON. Fixed by maintaining the plan manually and calling `generate_code_and_execute` directly.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+**Vercel monorepo deploy** — Setting the Vercel project root to `apps/web` caused `npm install` to run in isolation and break workspace deps. Fixed by deploying from repo root so Turborepo resolves the full workspace.
 
-```sh
-cd my-turborepo
-turbo login
-```
+**Registry install DX** — Using a scoped package name in `registryDependencies` forced consumers to edit `components.json`. Switched to full URLs so `bunx shadcn add <url>` works with zero config.
 
-Without global `turbo`, use your package manager:
+**Widget feedback endpoint** — Baked the production Convex site URL directly into `packages/widgets/src/core/submit.ts` and into registry-built output so installed widgets always hit the correct backend.
 
-```sh
-cd my-turborepo
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
+---
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+## Roadmap
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+- Production Clerk instance + custom domain (Clerk blocks production on `*.vercel.app`)
+- Additional widget variants and theme options
+- Rate limiting and origin allowlist on the public feedback endpoint
+- Public embed guide and HTTP API docs
