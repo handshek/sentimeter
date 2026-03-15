@@ -1,87 +1,221 @@
 [
   {
     "id": "TC001",
-    "title": "Access dashboard after signing in and see main dashboard UI elements",
-    "description": "Verifies a signed-in user can reach the protected dashboard and sees the expected header, welcome message, and placeholder stats.",
-    "category": "Protected dashboard and Project Creation",
+    "title": "Landing page shows primary Sign In CTA",
+    "description": "Verify the marketing page loads for signed-out users and exposes the primary Sign In action in the header.",
+    "category": "Signed-out navigation",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to /sign-in"
-      },
-      {
-        "type": "action",
-        "description": "Complete the sign-in form using \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
+        "description": "Navigate to /"
       },
       {
         "type": "assertion",
-        "description": "Verify URL contains \"/dashboard\""
+        "description": "Verify text \"Sentimeter\" is visible"
       },
       {
         "type": "assertion",
-        "description": "Verify element \"top navigation\" is visible"
+        "description": "Verify element \"Sign In\" is visible"
       },
       {
         "type": "assertion",
-        "description": "Verify element \"user avatar\" is visible"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"welcome headline\" is visible"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"—\" is visible"
+        "description": "Verify element \"Go to Dashboard\" is visible"
       }
     ]
   },
   {
     "id": "TC002",
-    "title": "Create a new project successfully from the dashboard modal",
-    "description": "Verifies a signed-in user can open the Create Project modal, submit valid details, and see the new project appear in the list.",
-    "category": "Protected dashboard and Project Creation",
+    "title": "Landing page Sign In CTA navigates to Clerk sign-in",
+    "description": "Verify the header Sign In CTA takes a signed-out user to the Clerk sign-in page.",
+    "category": "Signed-out navigation",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to /sign-in"
+        "description": "Navigate to /"
       },
       {
         "type": "action",
-        "description": "Complete the sign-in form using \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
-      },
-      {
-        "type": "action",
-        "description": "Click \"Create Project\" button"
+        "description": "Click \"Sign In\" in the header"
       },
       {
         "type": "assertion",
-        "description": "Verify element \"Create Project\" modal is visible"
-      },
-      {
-        "type": "action",
-        "description": "Type \"E2E Test Project\" into the project name field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"https://example.com\" into the project URL field"
-      },
-      {
-        "type": "action",
-        "description": "Click \"Submit\" in the modal"
+        "description": "Verify URL contains \"/sign-in\""
       },
       {
         "type": "assertion",
-        "description": "Verify text \"E2E Test Project\" is visible"
+        "description": "Verify Clerk sign-in UI is visible"
       }
     ]
   },
   {
     "id": "TC003",
-    "title": "Project creation validation: missing project name shows error and does not create project",
-    "description": "Verifies the modal validates required project name, keeps the modal open, and prevents project creation when name is empty.",
-    "category": "Protected dashboard and Project Creation",
+    "title": "Direct sign-in route renders Clerk UI",
+    "description": "Verify a signed-out user can open the dedicated /sign-in route and see the Clerk sign-in screen.",
+    "category": "Signed-out navigation",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sign-in"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/sign-in\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify Clerk sign-in UI is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Direct sign-up route renders Clerk UI",
+    "description": "Verify a signed-out user can open the dedicated /sign-up route and see the Clerk sign-up screen.",
+    "category": "Signed-out navigation",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sign-up"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/sign-up\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify Clerk sign-up UI is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Protected dashboard redirects signed-out users to sign-in",
+    "description": "Verify visiting /dashboard while signed out redirects to Clerk sign-in.",
+    "category": "Signed-out navigation",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/sign-in\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify Clerk sign-in UI is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Components page lists all installable widgets",
+    "description": "Verify the /components page loads and shows the three widget sections with installation blocks.",
+    "category": "Public product pages",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /components"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Components\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Emoji Feedback\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Like / Dislike\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Star Rating\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Installation\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Widgets playground renders core sections",
+    "description": "Verify the widgets playground page loads for public users and shows the core widget sections and controls.",
+    "category": "Public product pages",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /widgets"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Widgets Playground\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Real Data\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Global Props\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Emoji\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Thumbs\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Stars\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Widgets playground exposes mock controls",
+    "description": "Verify the widgets playground exposes mock mode controls needed for local UI testing.",
+    "category": "Public product pages",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /widgets"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Mock\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Success\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Reset widget\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Payload\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Clerk two-step sign-in reaches dashboard",
+    "description": "Verify sign-in uses the correct two-step Clerk flow: email then Continue, password then Continue, then redirect to /dashboard.",
+    "category": "Authenticated dashboard",
     "priority": "High",
     "steps": [
       {
@@ -90,39 +224,97 @@
       },
       {
         "type": "action",
-        "description": "Complete the sign-in form using \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
-      },
-      {
-        "type": "action",
-        "description": "Click \"Create Project\" button"
+        "description": "Enter \"{{LOGIN_USER}}\" into the email field and click \"Continue\""
       },
       {
         "type": "assertion",
-        "description": "Verify element \"Create Project\" modal is visible"
+        "description": "Verify the password field becomes visible after clicking Continue"
       },
       {
         "type": "action",
-        "description": "Type \"https://example.com\" into the project URL field"
-      },
-      {
-        "type": "action",
-        "description": "Click \"Submit\" in the modal"
+        "description": "Enter \"{{LOGIN_PASSWORD}}\" into the password field and click \"Continue\""
       },
       {
         "type": "assertion",
-        "description": "Verify text \"project name\" is visible"
+        "description": "Verify URL contains \"/dashboard\""
       },
       {
         "type": "assertion",
-        "description": "Verify element \"Create Project\" modal is visible"
+        "description": "Verify text \"Projects\" is visible"
       }
     ]
   },
   {
-    "id": "TC004",
-    "title": "Dashboard shows Create Project entry point for signed-in users",
-    "description": "Verifies the signed-in dashboard exposes the primary Create Project action to the user.",
-    "category": "Protected dashboard and Project Creation",
+    "id": "TC010",
+    "title": "Signed-in dashboard shows projects and create form",
+    "description": "Verify the dashboard renders the projects view, the new project form, and the projects list area after successful sign-in.",
+    "category": "Authenticated dashboard",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sign-in"
+      },
+      {
+        "type": "action",
+        "description": "Complete Clerk sign-in using the two-step flow with \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Projects\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"New project\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Project name\" input is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Your projects\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Create project inline form works",
+    "description": "Verify a signed-in user can create a project from the inline dashboard form and gets navigated to the project detail page.",
+    "category": "Authenticated dashboard",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sign-in"
+      },
+      {
+        "type": "action",
+        "description": "Complete Clerk sign-in using the two-step flow with \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"TestSprite Project\" into the \"Project name\" input"
+      },
+      {
+        "type": "action",
+        "description": "Click \"Create\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/dashboard/projects/\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Publishable key\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Empty project name cannot be submitted",
+    "description": "Verify the dashboard create button stays disabled or prevents submission when the project name is empty.",
+    "category": "Authenticated dashboard",
     "priority": "Medium",
     "steps": [
       {
@@ -131,31 +323,56 @@
       },
       {
         "type": "action",
-        "description": "Complete the sign-in form using \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
+        "description": "Complete Clerk sign-in using the two-step flow with \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
       },
       {
         "type": "assertion",
-        "description": "Verify URL contains \"/dashboard\""
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Create Project\" button is visible"
-      },
-      {
-        "type": "action",
-        "description": "Click \"Create Project\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Create Project\" modal is visible"
+        "description": "Verify the \"Create\" button is disabled when the \"Project name\" input is empty"
       }
     ]
   },
   {
-    "id": "TC005",
-    "title": "Projects list area is visible on the dashboard after sign-in",
-    "description": "Verifies the dashboard renders the projects section/list container for a signed-in user.",
-    "category": "Protected dashboard and Project Creation",
+    "id": "TC013",
+    "title": "Project detail page shows analytics controls",
+    "description": "Verify a signed-in user can open a project detail page and see the analytics controls, publishable key section, and overview tab.",
+    "category": "Project detail",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sign-in"
+      },
+      {
+        "type": "action",
+        "description": "Complete Clerk sign-in using the two-step flow with \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
+      },
+      {
+        "type": "action",
+        "description": "Open the first available project from the dashboard list, or create a project first if none exist"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/dashboard/projects/\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Publishable key\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Overview\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Live Feed\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Project detail page links to widgets testing",
+    "description": "Verify the project detail page exposes the \"Test in Widgets\" link so a signed-in user can jump into the widgets playground.",
+    "category": "Project detail",
     "priority": "Medium",
     "steps": [
       {
@@ -164,19 +381,192 @@
       },
       {
         "type": "action",
-        "description": "Complete the sign-in form using \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
+        "description": "Complete Clerk sign-in using the two-step flow with \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
+      },
+      {
+        "type": "action",
+        "description": "Open the first available project from the dashboard list, or create a project first if none exist"
       },
       {
         "type": "assertion",
-        "description": "Verify URL contains \"/dashboard\""
+        "description": "Verify text \"Test in Widgets\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click \"Test in Widgets\""
       },
       {
         "type": "assertion",
-        "description": "Verify element \"projects list\" is visible"
+        "description": "Verify URL contains \"/widgets\""
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Components page shows installation and usage blocks for widgets",
+    "description": "Verify the components page exposes installation and usage sections for the widget registry entries.",
+    "category": "Public product pages",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /components"
       },
       {
         "type": "assertion",
-        "description": "Verify element \"project\" is visible"
+        "description": "Verify text \"Installation\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Usage\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"page.tsx\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"emoji-feedback\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "Widgets page shows signed-out helper text",
+    "description": "Verify the widgets playground shows the signed-out helper copy for project key autofill when the user is not authenticated.",
+    "category": "Public product pages",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /widgets"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Project Helper\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Sign in and open this page again to pick a project and auto-fill the publishable key.\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Project detail shows publishable key controls",
+    "description": "Verify the project detail page exposes the publishable key section with Reveal, Copy, and Rotate key controls.",
+    "category": "Project detail",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sign-in"
+      },
+      {
+        "type": "action",
+        "description": "Complete Clerk sign-in using the two-step flow with \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
+      },
+      {
+        "type": "action",
+        "description": "Open the first available project from the dashboard list, or create a project first if none exist"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Publishable key\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Reveal\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Copy\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Rotate key\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC018",
+    "title": "Project detail shows allowed origins editor",
+    "description": "Verify the project detail page shows the Allowed origins section and save action for origin restrictions.",
+    "category": "Project detail",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sign-in"
+      },
+      {
+        "type": "action",
+        "description": "Complete Clerk sign-in using the two-step flow with \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
+      },
+      {
+        "type": "action",
+        "description": "Open the first available project from the dashboard list, or create a project first if none exist"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Allowed origins\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Save origins\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"open\" or text \"restricted\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC019",
+    "title": "Project detail filter controls expose range and widget options",
+    "description": "Verify the project detail page exposes the analytics range selector and widget filter selector with expected options.",
+    "category": "Project detail",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /sign-in"
+      },
+      {
+        "type": "action",
+        "description": "Complete Clerk sign-in using the two-step flow with \"{{LOGIN_USER}}\" and \"{{LOGIN_PASSWORD}}\""
+      },
+      {
+        "type": "action",
+        "description": "Open the first available project from the dashboard list, or create a project first if none exist"
+      },
+      {
+        "type": "action",
+        "description": "Open the date range selector on the project detail page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Last 24 hours\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Open the widget filter selector on the project detail page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"All widgets\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Emoji\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Thumbs\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Stars\" is visible"
       }
     ]
   }

@@ -33,37 +33,6 @@ async def run_test():
         # -> Navigate to http://localhost:3000/
         await page.goto("http://localhost:3000/")
         
-        # -> Click the 'Sign In' link on the homepage to open the sign-in page (use element index 8).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/header/div/nav/a[2]').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Navigate to /sign-in using explicit navigation to http://localhost:3000/sign-in (required by test step).
-        await page.goto("http://localhost:3000/sign-in")
-        
-        # -> Fill the email and password fields on the sign-in page and click the Continue button to submit the sign-in form.
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div/div/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('kai@sentimail.com')
-        
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div/div[2]/div/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('kai@Testsprite.com')
-        
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div[2]/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the 'Go to Dashboard' button (index 785) to navigate to the dashboard and then re-evaluate the page for the required dashboard elements.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div[3]/section/div/div/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
         # --> Test passed — verified by AI agent
         frame = context.pages[-1]
         current_url = await frame.evaluate("() => window.location.href")

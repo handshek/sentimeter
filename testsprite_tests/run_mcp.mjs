@@ -147,6 +147,14 @@ routes:
     file: apps/web/app/dashboard/page.tsx
     auth_required: true
     description: Signed-in developer dashboard with project overview and project creation capability
+  - path: /dashboard/projects/[projectId]
+    file: apps/web/app/dashboard/projects/[projectId]/page.tsx
+    auth_required: true
+    description: Project detail page with analytics, charts, feedback breakdown by widget type
+  - path: /widgets
+    file: apps/web/app/widgets/page.tsx
+    auth_required: false
+    description: Widget showcase with emoji, thumbs, star rating demos
 features:
   - name: Signed-out navigation
     description: Visitor can browse landing page and access Clerk auth pages
@@ -172,14 +180,26 @@ features:
     entry_route: /dashboard
     user_interactions:
       - Visit /dashboard while signed out and get redirected to /sign-in
-      - Sign in via Clerk and view /dashboard
+      - Sign in via Clerk (TWO-STEP: email then Continue, then password then Continue) and view /dashboard
       - View list of projects on the dashboard
+      - Click a project to open /dashboard/projects/[projectId]
       - Click 'Create Project' button
       - Fill out project name and URL in the modal
       - Submit modal to create project
     api_calls:
       - Create project via Convex
     auth_required: true
+  - name: Project detail and Widgets
+    description: Project analytics page and widget showcase
+    files:
+      - apps/web/app/dashboard/projects/[projectId]/page.tsx
+      - apps/web/app/widgets/page.tsx
+    entry_route: /dashboard
+    user_interactions:
+      - Open project from dashboard list to view analytics
+      - Visit /widgets to see emoji, thumbs, star rating widget demos
+    api_calls: []
+    auth_required: false
 known_limitations:
   - issue: Dashboard metrics are placeholders
     location: apps/web/app/dashboard/page.tsx
@@ -476,7 +496,7 @@ async function main() {
         serverMode: "development",
         testIds: [],
         additionalInstruction:
-          "Base URL http://localhost:3000. Cover signed-out: `/` shows Sign In; `/dashboard` redirects to `/sign-in`; `/sign-in` and `/sign-up` render. Add auth smoke tests: sign in with env credentials, land on `/dashboard`, assert the email is visible. IMPORTANT: Also test the new project creation functionality on the dashboard - click 'Create Project', enter a project name and URL, submit the form, and verify that the new project card appears on the dashboard. Do not hardcode credentials; read from process.env.TEST_USER_EMAIL / process.env.TEST_USER_PASSWORD.",
+          "Base URL http://localhost:3000. CRITICAL - Clerk sign-in is TWO-STEP: (1) Enter email, click Continue. (2) WAIT for password field to appear, enter password, click Continue. (3) Wait for redirect to /dashboard. NEVER fill email and password in the same form. Generate DIVERSE tests: landing Sign In/Up CTAs, unauthenticated redirect /dashboard->/sign-in, sign-in flow, sign-up flow, dashboard UI, Create Project modal + validation, project detail page /dashboard/projects/[id], widgets page /widgets. Aim for 12-15 tests. Use process.env.TEST_USER_EMAIL / process.env.TEST_USER_PASSWORD; do not hardcode credentials.",
       },
     },
     { timeoutMs: 3 * 60 * 1000 },

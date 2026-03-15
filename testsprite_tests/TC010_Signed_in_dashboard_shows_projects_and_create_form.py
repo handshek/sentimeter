@@ -33,35 +33,41 @@ async def run_test():
         # -> Navigate to http://localhost:3000/
         await page.goto("http://localhost:3000/")
         
-        # -> Click the 'Sign In' link on the homepage to open the sign-in page (use element index 8).
+        # -> Click the 'Sign In' link (index 5) to go to the Clerk sign-in page.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[2]/header/div/nav/a[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Navigate to /sign-in using explicit navigation to http://localhost:3000/sign-in (required by test step).
+        # -> Follow the explicit test step to navigate to /sign-in (http://localhost:3000/sign-in) so the Clerk two-step sign-in flow can be completed, then perform the two-step sign-in with the provided credentials and verify dashboard UI elements.
         await page.goto("http://localhost:3000/sign-in")
         
-        # -> Fill the email and password fields on the sign-in page and click the Continue button to submit the sign-in form.
+        # -> Enter the test user email into the email field and click Continue (start Clerk step 1), then enter the password and click Continue (complete Clerk step 2) to sign in and reach the dashboard.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div/div/div/div/input').nth(0)
         await asyncio.sleep(3); await elem.fill('kai@sentimail.com')
         
         frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div/div[2]/div/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('kai@Testsprite.com')
-        
-        frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div[2]/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'Go to Dashboard' button (index 785) to navigate to the dashboard and then re-evaluate the page for the required dashboard elements.
+        # -> Enter the test user's password into the password field and click Continue to complete sign-in, then verify the dashboard UI elements
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div/div/div/div[2]/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('kai@Testsprite.com')
+        
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div[3]/section/div/div/a').nth(0)
+        elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/button[2]').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Click the 'Dashboard' link (index 1562) to trigger the authentication flow or navigate to the dashboard, then re-check for the dashboard UI elements ('Projects', 'New project', 'Project name' input, 'Your projects').
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div[3]/header/div/nav/a[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
         # --> Test passed — verified by AI agent

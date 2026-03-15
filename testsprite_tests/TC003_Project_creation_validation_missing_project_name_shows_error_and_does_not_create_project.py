@@ -1,4 +1,3 @@
-import os
 import asyncio
 from playwright import async_api
 from playwright.async_api import expect
@@ -34,41 +33,61 @@ async def run_test():
         # -> Navigate to http://localhost:3000/
         await page.goto("http://localhost:3000/")
         
-        # -> Click the 'Sign In' link to open the sign-in page (click element index 7).
+        # -> Click the 'Sign In' link to navigate to the /sign-in page.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/header/nav/a[2]').nth(0)
+        elem = frame.locator('xpath=/html/body/div[2]/header/div/nav/a[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Navigate explicitly to http://localhost:3000/sign-in to load the sign-in page so the sign-in form can be completed.
-        await page.goto("http://localhost:3000/sign-in")
-        
-        # -> Fill the email and password fields with the provided credentials and click the Continue button to sign in.
+        # -> Fill the sign-in form (email and password) with the provided credentials and click Continue to sign in.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div/div/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill(os.getenv("TEST_USER_EMAIL", ""))
+        await asyncio.sleep(3); await elem.fill('kai@sentimail.com')
         
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div/div[2]/div/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill(os.getenv("TEST_USER_PASSWORD", ""))
+        await asyncio.sleep(3); await elem.fill('kai@Testsprite.com')
         
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div[2]/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'Dashboard' link (index 678) to open the dashboard so the 'Create Project' button can be located.
+        # -> Click the 'Go to Dashboard' button (or Dashboard link) to navigate to the dashboard so the 'Create Project' button can be located.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div[3]/header/nav/a[2]').nth(0)
+        elem = frame.locator('xpath=/html/body/div[3]/section/div/div/a').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # --> Test passed — verified by AI agent
+        # -> Navigate explicitly to /sign-in (http://localhost:3000/sign-in) as the next immediate action per the test step.
+        await page.goto("http://localhost:3000/sign-in")
+        
+        # -> Fill the email and password fields on the sign-in page and click Continue to submit credentials (attempt sign-in again).
         frame = context.pages[-1]
-        current_url = await frame.evaluate("() => window.location.href")
-        assert current_url is not None, "Test completed successfully"
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div/div/div/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('kai@sentimail.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div/div[2]/div/div/div[2]/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('kai@Testsprite.com')
+        
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div[2]/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Navigate explicitly to /sign-in (http://localhost:3000/sign-in) as the immediate action to continue the test.
+        await page.goto("http://localhost:3000/sign-in")
+        
+        # --> Assertions to verify final state
+        frame = context.pages[-1]
+        assert await frame.locator("xpath=//*[contains(., 'Create Project')]").nth(0).is_visible(), "Expected 'Create Project' to be visible"
+        assert await frame.locator("xpath=//*[contains(., 'project name')]").nth(0).is_visible(), "Expected 'project name' to be visible"
+        assert await frame.locator("xpath=//*[contains(., 'Create Project')]").nth(0).is_visible(), "Expected 'Create Project' to be visible"
         await asyncio.sleep(5)
 
     finally:

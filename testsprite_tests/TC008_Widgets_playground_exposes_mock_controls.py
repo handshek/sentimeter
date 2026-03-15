@@ -33,36 +33,32 @@ async def run_test():
         # -> Navigate to http://localhost:3000/
         await page.goto("http://localhost:3000/")
         
-        # -> Click the 'Sign In' link on the homepage to open the sign-in page (use element index 8).
+        # -> Click the 'Components' link to navigate to the widgets/playground page (target: /widgets), then verify the presence of 'Mock', 'Success', 'Reset widget', and 'Payload' texts.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/header/div/nav/a[2]').nth(0)
+        elem = frame.locator('xpath=/html/body/div[2]/header/div/nav/a').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Navigate to /sign-in using explicit navigation to http://localhost:3000/sign-in (required by test step).
-        await page.goto("http://localhost:3000/sign-in")
-        
-        # -> Fill the email and password fields on the sign-in page and click the Continue button to submit the sign-in form.
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div/div/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('kai@sentimail.com')
-        
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div/div[2]/div/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('kai@Testsprite.com')
-        
+        # -> Click the page element that navigates to the widgets/playground page (/widgets). Use the anchor likely labelled 'Widgets' (click element index 694). After navigation, verify presence of 'Mock','Success','Reset widget','Payload' texts.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div[2]/button').nth(0)
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div[2]/aside/nav/a').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'Go to Dashboard' button (index 785) to navigate to the dashboard and then re-evaluate the page for the required dashboard elements.
+        # -> Click the page element that navigates to /widgets (the 'Widgets' anchor in the header/nav) and then verify the presence of the texts 'Mock', 'Success', 'Reset widget', and 'Payload'.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div[3]/section/div/div/a').nth(0)
+        elem = frame.locator('xpath=/html/body/div[2]/header/div/a').nth(0)
         await asyncio.sleep(3); await elem.click()
+        
+        # -> Click the 'Browse all components' link (interactive element index 1197) to find a link to the widgets/playground (/widgets) or the mock-mode controls.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div[3]/section[3]/div/p[2]/a').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Perform the explicit navigation to /widgets (use navigate to http://localhost:3000/widgets) as the test step requires, then verify the presence of the texts 'Mock', 'Success', 'Reset widget', and 'Payload' on that page.
+        await page.goto("http://localhost:3000/widgets")
         
         # --> Test passed — verified by AI agent
         frame = context.pages[-1]

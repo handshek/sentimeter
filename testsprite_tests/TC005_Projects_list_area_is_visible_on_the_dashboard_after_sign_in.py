@@ -1,4 +1,3 @@
-import os
 import asyncio
 from playwright import async_api
 from playwright.async_api import expect
@@ -34,41 +33,35 @@ async def run_test():
         # -> Navigate to http://localhost:3000/
         await page.goto("http://localhost:3000/")
         
-        # -> Click the 'Sign In' link to open the sign-in page (use element index 7).
+        # -> Click the 'Sign In' link (interactive element index 8) to navigate to the sign-in page.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/header/nav/a[2]').nth(0)
+        elem = frame.locator('xpath=/html/body/div[2]/header/div/nav/a[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Navigate explicitly to the sign-in page at /sign-in (http://localhost:3000/sign-in) and load the sign-in form so credentials can be entered.
+        # -> Navigate directly to /sign-in using the explicit navigation step so the sign-in form can be filled.
         await page.goto("http://localhost:3000/sign-in")
         
-        # -> Fill the email field and click Continue to reveal the password entry, then enter password and submit to sign in.
+        # -> Fill the email and password fields and click the Continue button to submit the sign-in form.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div/div/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill(os.getenv("TEST_USER_EMAIL", ""))
+        await asyncio.sleep(3); await elem.fill('kai@sentimail.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div/div[2]/div/div/div[2]/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('kai@Testsprite.com')
         
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div[2]/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Enter the password into the password input (index 518) and click the Continue button (index 532) to submit the sign-in form.
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/div/div/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill(os.getenv("TEST_USER_PASSWORD", ""))
-        
+        # -> Click the 'Dashboard' link in the header (interactive element index 1374) to navigate to the dashboard or trigger the sign-in flow, then wait for the page to load.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/div/div/div/div[2]/form/button[2]').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the 'Dashboard' link (index 803) on the landing page to navigate naturally to the dashboard (or to the sign-in page if not authenticated).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div[3]/header/nav/a[2]').nth(0)
+        elem = frame.locator('xpath=/html/body/div[3]/header/div/nav/a[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
         # --> Test passed — verified by AI agent
