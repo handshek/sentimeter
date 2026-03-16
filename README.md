@@ -2,11 +2,18 @@
 
 Embed emoji, star, or thumbs feedback widgets anywhere. Get real-time analytics on a hosted dashboard.
 
+![Sentimeter demo](apps/web/public/sentimeter_demo.png)
+
 ```bash
 bunx shadcn add https://registry.sentimeter.dev/r/emoji-feedback
 ```
 
 ---
+
+## Links
+
+- **Live:** [https://try-sentimeter.vercel.app](https://try-sentimeter.vercel.app)
+- **YT Demo:** [https://youtu.be/EdtzrnbjEVI](https://youtu.be/EdtzrnbjEVI)
 
 ## How it works
 
@@ -149,3 +156,9 @@ bun run deploy
 - Additional widget variants and theme options
 - Rate limiting and origin allowlist on the public feedback endpoint
 - Public embed guide and HTTP API docs
+
+---
+
+## License
+
+Licensed under the MIT License.
