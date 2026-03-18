@@ -5,7 +5,7 @@ Embed emoji, star, or thumbs feedback widgets anywhere. Get real-time analytics 
 ![Sentimeter demo](apps/web/public/sentimeter_demo.png)
 
 ```bash
-bunx shadcn add https://registry.sentimeter.dev/r/emoji-feedback
+npx shadcn@latest add "https://registry.handshek.worker.dev/r/emoji-feedback
 ```
 
 ---
@@ -45,10 +45,10 @@ Three moving parts:
 
 ## Stack
 
-|           |                                                      |
+| Component | Tech / Service                                       |
 | --------- | ---------------------------------------------------- |
 | Monorepo  | Turborepo + Bun                                      |
-| Dashboard | Next.js 15, Tailwind CSS v4, shadcn/ui               |
+| Dashboard | Next.js 16, Tailwind CSS v4, shadcn/ui               |
 | Auth      | Clerk → Convex (JWT)                                 |
 | Backend   | Convex (realtime DB, server functions, HTTP actions) |
 | Registry  | Hono + Cloudflare Workers                            |
