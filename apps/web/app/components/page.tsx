@@ -96,13 +96,7 @@ const WIDGETS: WidgetDef[] = [
 
 /* ─── Utility components ─────────────────────────────────────────── */
 
-function CopyButton({
-  text,
-  className,
-}: {
-  text: string;
-  className?: string;
-}) {
+function CopyButton({ text, className }: { text: string; className?: string }) {
   const [copied, setCopied] = React.useState(false);
 
   return (
@@ -169,7 +163,58 @@ function PreviewContainer({ children }: { children: React.ReactNode }) {
   );
 }
 
-function CodeBlock({ code, label }: { code: string; label?: string }) {
+function HighlightedCode({
+  code,
+  lang = "tsx",
+}: {
+  code: string;
+  lang?: string;
+}) {
+  const [html, setHtml] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    import("shiki")
+      .then(({ codeToHtml }) =>
+        codeToHtml(code, {
+          lang,
+          theme: "tokyo-night",
+        }),
+      )
+      .then((result) => {
+        if (!cancelled) setHtml(result);
+      })
+      .catch((err) => console.error("Shiki error:", err));
+    return () => {
+      cancelled = true;
+    };
+  }, [code, lang]);
+
+  if (!html) {
+    return (
+      <pre className="overflow-x-auto p-4 text-[13px] leading-relaxed">
+        <code className="font-mono text-zinc-300">{code}</code>
+      </pre>
+    );
+  }
+
+  return (
+    <div
+      className="overflow-x-auto p-4 text-[13px] leading-relaxed [&_pre]:bg-transparent! [&_code]:font-mono"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
+}
+
+function CodeBlock({
+  code,
+  lang,
+  label,
+}: {
+  code: string;
+  lang?: string;
+  label?: string;
+}) {
   return (
     <div className="group/code relative overflow-hidden rounded-lg border border-border/70 bg-zinc-950">
       {label ? (
@@ -186,9 +231,7 @@ function CodeBlock({ code, label }: { code: string; label?: string }) {
           className="absolute right-2 top-2 text-zinc-600 opacity-0 transition-opacity hover:bg-white/6 hover:text-zinc-300 group-hover/code:opacity-100"
         />
       )}
-      <pre className="overflow-x-auto p-4 text-[13px] leading-relaxed">
-        <code className="font-mono text-zinc-300">{code}</code>
-      </pre>
+      <HighlightedCode code={code} lang={lang ?? "tsx"} />
     </div>
   );
 }
@@ -369,7 +412,7 @@ export default function ComponentsPage() {
 
                     <div className="mt-10 space-y-3">
                       <h3 className="text-base font-semibold">Usage</h3>
-                      <CodeBlock code={w.usage} label="page.tsx" />
+                      <CodeBlock code={w.usage} label="page.tsx" lang="tsx" />
                     </div>
 
                     {i < WIDGETS.length - 1 && (
