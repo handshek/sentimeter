@@ -12,8 +12,9 @@ import { Button } from "@workspace/ui/components/button";
 import { IconX } from "@tabler/icons-react";
 
 export type FeedbackWidgetProps = {
-  apiKey: string;
-  location: string;
+  apiKey?: string;
+  location?: string;
+  endpoint?: string;
   widgetType: WidgetType;
   disabled?: boolean;
   size?: WidgetSize;
@@ -73,6 +74,7 @@ function FeedbackWidgetInner({
 export function FeedbackWidget({
   apiKey,
   location,
+  endpoint,
   widgetType,
   disabled,
   size,
@@ -87,6 +89,7 @@ export function FeedbackWidget({
     <FeedbackProvider
       apiKey={apiKey}
       location={location}
+      endpoint={endpoint}
       widgetType={widgetType}
       disabled={disabled}
       size={size}

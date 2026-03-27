@@ -8,6 +8,7 @@ import type {
   WidgetSubmit,
   WidgetType,
 } from "../types";
+import { submitFeedback } from "../core/submit";
 import { useWidgetMachine } from "../core/use-widget-machine";
 
 export type WidgetSize = "sm" | "default" | "md" | "lg";
@@ -42,8 +43,9 @@ export function useFeedbackContext(): FeedbackContextValue {
 /* ── Provider props ────────────────────────────────────────── */
 
 export type FeedbackProviderProps = {
-  apiKey: string;
-  location: string;
+  apiKey?: string;
+  location?: string;
+  endpoint?: string;
   widgetType: WidgetType;
   disabled?: boolean;
   size?: WidgetSize;
@@ -53,8 +55,9 @@ export type FeedbackProviderProps = {
 } & WidgetCallbacks;
 
 export function FeedbackProvider({
-  apiKey,
-  location,
+  apiKey = "",
+  location = "/",
+  endpoint = "https://coordinated-perch-697.convex.site/feedback",
   widgetType,
   disabled = false,
   size = "default",
@@ -73,11 +76,16 @@ export function FeedbackProvider({
     [apiKey, location, widgetType],
   );
 
+  const defaultSubmit = React.useCallback<WidgetSubmit>(
+    (payload) => submitFeedback(payload, endpoint),
+    [endpoint],
+  );
+
   const machine = useWidgetMachine({
     payloadBase,
     disabled,
     doneDurationMs,
-    submit: submit ?? (async () => {}),
+    submit: submit ?? defaultSubmit,
     onSelect,
     onStateChange,
     onSubmitStart,

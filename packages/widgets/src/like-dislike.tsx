@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import type { WidgetCallbacks, WidgetSubmit } from "./types";
-import { submitFeedback } from "./core/submit";
 import {
   FeedbackWidget,
   FeedbackTitle,
@@ -13,9 +12,22 @@ import {
   type WidgetSize,
 } from "./compound";
 
+const DEFAULT_ENDPOINT = "https://coordinated-perch-697.convex.site/feedback";
+
+const DEFAULTS = {
+  apiKey: "",
+  location: "/",
+  title: "Was this helpful?",
+  showInput: false,
+  submitLabel: "Submit",
+  thankYouMessage: "Thanks!",
+  size: "default" as const,
+} as const;
+
 export type LikeDislikeProps = {
-  apiKey: string;
-  location: string;
+  apiKey?: string;
+  location?: string;
+  endpoint?: string;
   disabled?: boolean;
   className?: string;
   title?: React.ReactNode;
@@ -30,25 +42,27 @@ export type LikeDislikeProps = {
 } & WidgetCallbacks;
 
 export function LikeDislike({
-  apiKey,
-  location,
+  apiKey = DEFAULTS.apiKey,
+  location = DEFAULTS.location,
+  endpoint = DEFAULT_ENDPOINT,
   disabled,
   className,
-  title = "Was this helpful?",
+  title = DEFAULTS.title,
   description,
-  showInput = false,
-  submitLabel = "Submit",
-  thankYouMessage = "Thanks!",
+  showInput = DEFAULTS.showInput,
+  submitLabel = DEFAULTS.submitLabel,
+  thankYouMessage = DEFAULTS.thankYouMessage,
   doneDurationMs = 2000,
-  size = "default",
+  size = DEFAULTS.size,
   closeButton = false,
-  submit = submitFeedback,
+  submit,
   ...callbacks
 }: LikeDislikeProps) {
   return (
     <FeedbackWidget
       apiKey={apiKey}
       location={location}
+      endpoint={endpoint}
       widgetType="thumbs"
       disabled={disabled}
       size={size}

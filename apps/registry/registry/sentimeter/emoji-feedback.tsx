@@ -8,15 +8,28 @@ import {
   FeedbackRating,
   FeedbackTitle,
   FeedbackWidget,
-  submitFeedback,
   type WidgetCallbacks,
   type WidgetSubmit,
   type WidgetSize,
 } from "./feedback-system";
 
+const DEFAULT_ENDPOINT = "https://coordinated-perch-697.convex.site/feedback";
+
+const DEFAULTS = {
+  apiKey: "",
+  location: "/",
+  title: "Rate your experience",
+  showInput: false,
+  submitLabel: "Submit",
+  thankYouMessage: "Thanks!",
+  variant: "emoji" as const,
+  size: "default" as const,
+} as const;
+
 export type EmojiFeedbackProps = {
-  apiKey: string;
-  location: string;
+  apiKey?: string;
+  location?: string;
+  endpoint?: string;
   disabled?: boolean;
   className?: string;
   title?: React.ReactNode;
@@ -32,26 +45,28 @@ export type EmojiFeedbackProps = {
 } & WidgetCallbacks;
 
 export function EmojiFeedback({
-  apiKey,
-  location,
+  apiKey = DEFAULTS.apiKey,
+  location = DEFAULTS.location,
+  endpoint = DEFAULT_ENDPOINT,
   disabled,
   className,
-  title = "Rate your experience",
+  title = DEFAULTS.title,
   description,
-  showInput = false,
-  submitLabel = "Submit",
-  thankYouMessage = "Thanks!",
+  showInput = DEFAULTS.showInput,
+  submitLabel = DEFAULTS.submitLabel,
+  thankYouMessage = DEFAULTS.thankYouMessage,
   doneDurationMs = 2000,
-  variant = "emoji",
-  size = "default",
+  variant = DEFAULTS.variant,
+  size = DEFAULTS.size,
   closeButton = false,
-  submit = submitFeedback,
+  submit,
   ...callbacks
 }: EmojiFeedbackProps) {
   return (
     <FeedbackWidget
       apiKey={apiKey}
       location={location}
+      endpoint={endpoint}
       widgetType="emoji"
       disabled={disabled}
       size={size}

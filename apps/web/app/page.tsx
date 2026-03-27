@@ -64,8 +64,6 @@ function DemoWidget({
 
   const props = {
     key: instance,
-    apiKey: "pk_demo",
-    location: "/",
     submit: mockSubmit,
     doneDurationMs: 2000,
     onStateChange: (state: string) => {
@@ -105,7 +103,7 @@ const STEPS = [
     number: "03",
     title: "Analyze",
     description:
-      "Reactions stream to your Sentimeter dashboard in real time. No setup.",
+      "Reactions stream to your Sentimeter dashboard in real time when analytics are enabled.",
   },
 ];
 
@@ -162,19 +160,6 @@ export default function Home() {
       {/* ── Section 1: Hero ────────────────────────────────────── */}
       <section className="relative flex flex-col items-center px-6 pt-24 pb-20 text-center md:pt-32 md:pb-24">
         <div className="mx-auto flex max-w-3xl flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-1000">
-          <a
-            href="https://www.testsprite.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-medium text-primary transition-colors hover:bg-primary/20"
-          >
-            <span className="relative mr-2 flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-            </span>
-            Tested with TestSprite
-          </a>
-
           <h1 className="mt-5 text-4xl font-extrabold tracking-tight leading-[1.05] sm:text-5xl md:text-6xl lg:text-7xl">
             <span className="bg-linear-to-br from-foreground to-foreground/60 bg-clip-text text-transparent">
               Collect user feedback{" "}

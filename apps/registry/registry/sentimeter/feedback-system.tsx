@@ -62,6 +62,14 @@ export type FeedbackContextValue = {
   setText: React.Dispatch<React.SetStateAction<string>>;
 };
 
+// ─── Edit your defaults here ────────────────────────────────
+const SENTIMETER_CONFIG = {
+  apiKey: "",
+  location: "/",
+  endpoint: "https://coordinated-perch-697.convex.site/feedback",
+} as const;
+// ────────────────────────────────────────────────────────────
+
 type UseWidgetMachineArgs = {
   payloadBase: Omit<WidgetPayload, "value">;
   disabled?: boolean;
@@ -73,8 +81,6 @@ type UseWidgetMachineArgs = {
   onSubmitSuccess?: (payload: WidgetPayload) => void;
   onSubmitError?: (error: unknown, payload: WidgetPayload) => void;
 };
-
-const ENDPOINT = "https://coordinated-perch-697.convex.site/feedback";
 
 const Ctx = React.createContext<FeedbackContextValue | null>(null);
 
@@ -127,8 +133,13 @@ const FOOTER_BUTTON_SIZE_MAP: Record<WidgetSize, string> = {
   lg: "py-6",
 };
 
-export async function submitFeedback(payload: WidgetPayload) {
-  const res = await fetch(ENDPOINT, {
+export async function submitFeedback(
+  payload: WidgetPayload,
+  endpoint = SENTIMETER_CONFIG.endpoint,
+) {
+  if (!payload.apiKey) return;
+
+  const res = await fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -251,8 +262,9 @@ export function useFeedbackContext(): FeedbackContextValue {
 }
 
 export type FeedbackProviderProps = {
-  apiKey: string;
-  location: string;
+  apiKey?: string;
+  location?: string;
+  endpoint?: string;
   widgetType: WidgetType;
   disabled?: boolean;
   size?: WidgetSize;
@@ -262,8 +274,9 @@ export type FeedbackProviderProps = {
 } & WidgetCallbacks;
 
 function FeedbackProvider({
-  apiKey,
-  location,
+  apiKey = SENTIMETER_CONFIG.apiKey,
+  location = SENTIMETER_CONFIG.location,
+  endpoint = SENTIMETER_CONFIG.endpoint,
   widgetType,
   disabled = false,
   size = "default",
@@ -282,11 +295,16 @@ function FeedbackProvider({
     [apiKey, location, widgetType],
   );
 
+  const defaultSubmit = React.useCallback<WidgetSubmit>(
+    (payload) => submitFeedback(payload, endpoint),
+    [endpoint],
+  );
+
   const machine = useWidgetMachine({
     payloadBase,
     disabled,
     doneDurationMs,
-    submit: submit ?? (async () => {}),
+    submit: submit ?? defaultSubmit,
     onSelect,
     onStateChange,
     onSubmitStart,
@@ -321,8 +339,9 @@ function FeedbackProvider({
 }
 
 export type FeedbackWidgetProps = {
-  apiKey: string;
-  location: string;
+  apiKey?: string;
+  location?: string;
+  endpoint?: string;
   widgetType: WidgetType;
   disabled?: boolean;
   size?: WidgetSize;
@@ -375,6 +394,7 @@ function FeedbackWidgetInner({
 export function FeedbackWidget({
   apiKey,
   location,
+  endpoint,
   widgetType,
   disabled,
   size,
@@ -389,6 +409,7 @@ export function FeedbackWidget({
     <FeedbackProvider
       apiKey={apiKey}
       location={location}
+      endpoint={endpoint}
       widgetType={widgetType}
       disabled={disabled}
       size={size}

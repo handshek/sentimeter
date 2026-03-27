@@ -1,10 +1,14 @@
 import type { WidgetPayload } from "../types";
 
-// Endpoint is hardcoded at build time. Developers never touch this.
-const ENDPOINT = "https://coordinated-perch-697.convex.site/feedback";
+const DEFAULT_ENDPOINT = "https://coordinated-perch-697.convex.site/feedback";
 
-export async function submitFeedback(payload: WidgetPayload) {
-  const res = await fetch(ENDPOINT, {
+export async function submitFeedback(
+  payload: WidgetPayload,
+  endpoint = DEFAULT_ENDPOINT,
+) {
+  if (!payload.apiKey) return;
+
+  const res = await fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -22,4 +26,3 @@ export async function submitFeedback(payload: WidgetPayload) {
 
   throw new Error(error);
 }
-

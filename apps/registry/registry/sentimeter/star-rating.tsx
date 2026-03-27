@@ -8,15 +8,27 @@ import {
   FeedbackRating,
   FeedbackTitle,
   FeedbackWidget,
-  submitFeedback,
   type WidgetCallbacks,
   type WidgetSubmit,
   type WidgetSize,
 } from "./feedback-system";
 
+const DEFAULT_ENDPOINT = "https://coordinated-perch-697.convex.site/feedback";
+
+const DEFAULTS = {
+  apiKey: "",
+  location: "/",
+  title: "Rate your experience",
+  showInput: false,
+  submitLabel: "Submit",
+  thankYouMessage: "Thanks!",
+  size: "default" as const,
+} as const;
+
 export type StarRatingProps = {
-  apiKey: string;
-  location: string;
+  apiKey?: string;
+  location?: string;
+  endpoint?: string;
   disabled?: boolean;
   className?: string;
   title?: React.ReactNode;
@@ -31,25 +43,27 @@ export type StarRatingProps = {
 } & WidgetCallbacks;
 
 export function StarRating({
-  apiKey,
-  location,
+  apiKey = DEFAULTS.apiKey,
+  location = DEFAULTS.location,
+  endpoint = DEFAULT_ENDPOINT,
   disabled,
   className,
-  title = "Rate your experience",
+  title = DEFAULTS.title,
   description,
-  showInput = false,
-  submitLabel = "Submit",
-  thankYouMessage = "Thanks!",
+  showInput = DEFAULTS.showInput,
+  submitLabel = DEFAULTS.submitLabel,
+  thankYouMessage = DEFAULTS.thankYouMessage,
   doneDurationMs = 2000,
-  size = "default",
+  size = DEFAULTS.size,
   closeButton = false,
-  submit = submitFeedback,
+  submit,
   ...callbacks
 }: StarRatingProps) {
   return (
     <FeedbackWidget
       apiKey={apiKey}
       location={location}
+      endpoint={endpoint}
       widgetType="star"
       disabled={disabled}
       size={size}
