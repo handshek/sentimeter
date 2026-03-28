@@ -29,6 +29,11 @@ import { Textarea } from "@workspace/ui/components/textarea";
 import { Separator } from "@workspace/ui/components/separator";
 import { Badge } from "@workspace/ui/components/badge";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@workspace/ui/components/popover";
+import {
   EmojiFeedback,
   LikeDislike,
   StarRating,
@@ -49,6 +54,7 @@ import {
   IconCircleCheck,
   IconCircleX,
   IconCode,
+  IconMessageCircle2,
   IconRadar2,
   IconRefresh,
 } from "@tabler/icons-react";
@@ -61,6 +67,21 @@ type SubmitResult = {
   status: number;
   error?: string;
   at: number;
+};
+
+type WidgetCommon = {
+  apiKey: string;
+  location: string;
+  disabled: boolean;
+  thankYouMessage: string;
+  doneDurationMs: number;
+  submitLabel: string;
+  submit: WidgetSubmit;
+  submitMode: SubmitMode;
+  title: string;
+  description: string;
+  showInput: boolean;
+  size: WidgetSize;
 };
 
 function Field({
@@ -166,6 +187,93 @@ function PlaygroundCard({
   );
 }
 
+function PopoverWidgetDemo({ common }: { common: WidgetCommon }) {
+  const [open, setOpen] = React.useState(false);
+  const [state, setState] = React.useState<WidgetState>("idle");
+  const closeTimerRef = React.useRef<number | null>(null);
+
+  const clearCloseTimer = React.useCallback(() => {
+    if (closeTimerRef.current == null) return;
+    window.clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = null;
+  }, []);
+
+  React.useEffect(() => clearCloseTimer, [clearCloseTimer]);
+
+  React.useEffect(() => {
+    if (!open || state !== "done") {
+      clearCloseTimer();
+      return;
+    }
+
+    closeTimerRef.current = window.setTimeout(() => {
+      setOpen(false);
+    }, common.doneDurationMs);
+
+    return clearCloseTimer;
+  }, [clearCloseTimer, common.doneDurationMs, open, state]);
+
+  return (
+    <div className="rounded-2xl border border-dashed border-border/70 bg-muted/20 p-6">
+      <div className="flex flex-col gap-4">
+        <div className="max-w-2xl space-y-2">
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            This is the shadcn-native integration path. The host owns open
+            state, Popover handles focus and dismissal, and the Sentimeter
+            widget stays container-agnostic.
+          </p>
+          <p className="text-[12px] text-muted-foreground">
+            The same widget can later be placed inside a Dialog, Sheet, or
+            Drawer without changing its internals.
+          </p>
+        </div>
+
+        <Popover
+          open={open}
+          onOpenChange={(nextOpen) => {
+            setOpen(nextOpen);
+            clearCloseTimer();
+            if (!nextOpen) setState("idle");
+          }}
+        >
+          <PopoverTrigger asChild>
+            <Button type="button" variant="default" className="w-fit">
+              <IconMessageCircle2 className="mr-2 h-4 w-4" />
+              Open feedback popover
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            align="center"
+            sideOffset={12}
+            className="w-auto border-0 bg-transparent p-0 shadow-none"
+          >
+            <EmojiFeedback
+              apiKey={common.apiKey}
+              location={common.location}
+              disabled={common.disabled}
+              title={common.title}
+              description={common.description}
+              showInput={common.showInput}
+              submitLabel={common.submitLabel}
+              thankYouMessage={common.thankYouMessage}
+              size={common.size}
+              submit={common.submit}
+              doneDurationMs={common.doneDurationMs}
+              closeButton
+              onCancel={() => {
+                clearCloseTimer();
+                setOpen(false);
+                setState("idle");
+              }}
+              onStateChange={setState}
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+    </div>
+  );
+}
+
 function useMockSubmit(outcome: MockOutcome, delayMs: number) {
   return React.useCallback<WidgetSubmit>(async () => {
     await new Promise<void>((r) => window.setTimeout(r, delayMs));
@@ -191,20 +299,7 @@ function WidgetRig({
   title: string;
   description: string;
   kind: "emoji" | "thumbs" | "stars";
-  common: {
-    apiKey: string;
-    location: string;
-    disabled: boolean;
-    thankYouMessage: string;
-    doneDurationMs: number;
-    submitLabel: string;
-    submit: WidgetSubmit;
-    submitMode: SubmitMode;
-    title: string;
-    description: string;
-    showInput: boolean;
-    size: WidgetSize;
-  };
+  common: WidgetCommon;
   emojiVariant?: "emoji" | "tabler";
   setEmojiVariant?: (v: "emoji" | "tabler") => void;
 }) {
@@ -957,6 +1052,16 @@ function WidgetsPlaygroundContent() {
                 </div>
               </PlaygroundCard>
             </div>
+          </WidgetSection>
+
+          <Separator className="opacity-60" />
+
+          <WidgetSection
+            tag="W05"
+            title="Popover"
+            subtitle="Shadcn Popover owns accessibility, focus, and dismissal."
+          >
+            <PopoverWidgetDemo common={common} />
           </WidgetSection>
         </div>
       </main>
