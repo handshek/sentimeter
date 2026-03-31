@@ -1,11 +1,11 @@
 # Sentimeter
 
-Embed emoji, star, or thumbs feedback widgets anywhere. Get real-time analytics on a hosted dashboard.
+Sentimeter is a shadcn-first feedback system. Install the open-code widgets into your existing shadcn project, let them adapt to your app's UI, and get real-time analytics on a hosted dashboard.
 
 ![Sentimeter demo](apps/web/public/sentimeter_demo.png)
 
 ```bash
-npx shadcn@latest add "https://registry.handshek.worker.dev/r/emoji-feedback
+npx shadcn@latest add "https://registry.handshek.workers.dev/r/emoji-feedback.json"
 ```
 
 ---
@@ -20,9 +20,11 @@ npx shadcn@latest add "https://registry.handshek.worker.dev/r/emoji-feedback
 ```
   Developer installs widget        End user reacts        Developer sees it live
   ──────────────────────────       ───────────────        ──────────────────────
-  bunx shadcn add                  clicks 😍              dashboard updates
-  sentimeter/emoji-feedback    →   hits POST /feedback →  instantly, no refresh
+  shadcn add Sentimeter        →   clicks 😍              dashboard updates
+  into their own project           hits POST /feedback →  instantly, no refresh
 ```
+
+Sentimeter is designed to drop into the user's own shadcn/ui setup and inherit that project's component structure, styling, and install flow.
 
 Three moving parts:
 
@@ -113,7 +115,7 @@ bun run dev
 | ------------------------- | ------------------------- |
 | `CLERK_JWT_ISSUER_DOMAIN` | Clerk Frontend API domain |
 
-**`apps/registry`** has no env vars. The feedback endpoint is compiled into registry output at build time.
+**`apps/registry`** has no env vars. The feedback endpoint is compiled into registry output at build time, so the generated components stay aligned with the shadcn project they were installed into.
 
 ---
 
@@ -144,7 +146,7 @@ bun run deploy
 
 **Vercel monorepo deploy** — Setting the Vercel project root to `apps/web` caused `npm install` to run in isolation and break workspace deps. Fixed by deploying from repo root so Turborepo resolves the full workspace.
 
-**Registry install DX** — Using a scoped package name in `registryDependencies` forced consumers to edit `components.json`. Switched to full URLs so `bunx shadcn add <url>` works with zero config.
+**Registry install DX** — Using a scoped package name in `registryDependencies` forced consumers to edit `components.json`. Switched to full URLs so `bunx shadcn add <url>` works with zero config and the components adapt cleanly inside the user's shadcn project.
 
 **Widget feedback endpoint** — Baked the production Convex site URL directly into `packages/widgets/src/core/submit.ts` and into registry-built output so installed widgets always hit the correct backend.
 

@@ -27,7 +27,7 @@ Installing a widget should produce:
 Example:
 
 ```bash
-bunx shadcn add @sentimeter/emoji-feedback
+bunx shadcn add "https://registry.handshek.workers.dev/r/emoji-feedback.json"
 ```
 
 That first install pulls in the shared `feedback-system.tsx`. Installing another Sentimeter widget should add only one extra widget file.

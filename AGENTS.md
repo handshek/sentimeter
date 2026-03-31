@@ -2,19 +2,19 @@
 
 ## What is this project?
 
-Sentimeter is a developer-first feedback collection system. Developers install open-code React components (via shadcn registry) into their apps, their users submit emoji/star/thumbs reactions, and the developer sees real-time analytics on a hosted dashboard.
+Sentimeter is a shadcn-first feedback collection system. Developers install open-code React components from the shadcn registry into their own shadcn projects, the components adapt to the host app's existing UI structure, their users submit emoji/star/thumbs reactions, and the developer sees real-time analytics on a hosted dashboard.
 
 It consists of:
 
 - A Next.js 15 dashboard (apps/web)
-- A shadcn registry app (apps/registry) — Cloudflare Worker serving registry JSON so developers can `shadcn add @sentimeter/<widget>`
+- A shadcn registry app (apps/registry) — Cloudflare Worker serving registry JSON so developers can `shadcn add "https://registry.handshek.workers.dev/r/emoji-feedback.json"` and have the component fit naturally into their existing shadcn project
 - An embeddable widgets package (packages/widgets)
 - AI-generated test cases using TestSprite MCP (testsprite_tests)
 
 ## Tech stack
 
 - **Monorepo:** Turborepo, Bun
-- **Frontend:** Next.js 15 (App Router), TypeScript, TailwindCSS v4, shadcn/ui, tabler-react icons
+- **Frontend:** Next.js 16 (App Router), TypeScript, TailwindCSS v4, shadcn/ui, tabler-react icons
 - **Backend & DB:** Convex (realtime database, server functions, HTTP actions)
 - **Auth:** Clerk (syncs to Convex)
 - **Quality Assurance:** TestSprite MCP for AI-driven testing
