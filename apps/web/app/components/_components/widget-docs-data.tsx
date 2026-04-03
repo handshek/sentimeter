@@ -1,5 +1,3 @@
-import type { WidgetSubmit } from "@repo/widgets";
-
 export type WidgetDocRow = {
   prop: string;
   type: string;
@@ -17,6 +15,18 @@ export type WidgetDocConfig = {
   installSnippet: string;
   usageSnippet: string;
   props: WidgetDocRow[];
+};
+
+export type OverviewSection = {
+  id:
+    | "introduction"
+    | "how-it-works"
+    | "quick-install"
+    | "choose-a-widget"
+    | "open-code";
+  title: string;
+  eyebrow?: string;
+  description?: string;
 };
 
 const sharedProps: WidgetDocRow[] = [
@@ -207,3 +217,41 @@ export const widgetDocs: WidgetDocConfig[] = [
 export function getWidgetDoc(slug: string) {
   return widgetDocs.find((widget) => widget.slug === slug);
 }
+
+export const overviewSections: OverviewSection[] = [
+  {
+    id: "introduction",
+    title: "Introduction",
+    eyebrow: "Start Here",
+    description:
+      "Understand what Sentimeter components are, why they are open-code, and how they fit into a shadcn-native workflow.",
+  },
+  {
+    id: "how-it-works",
+    title: "How It Works",
+    eyebrow: "Flow",
+    description:
+      "See the path from installing a widget to collecting reactions and reading analytics in the dashboard.",
+  },
+  {
+    id: "quick-install",
+    title: "Quick Install",
+    eyebrow: "Setup",
+    description:
+      "Use a single registry command to pull the component code directly into your app and start customizing immediately.",
+  },
+  {
+    id: "choose-a-widget",
+    title: "Choose A Widget",
+    eyebrow: "Selection",
+    description:
+      "Compare the three core widgets and jump into the one that matches the kind of signal you want to collect.",
+  },
+  {
+    id: "open-code",
+    title: "Open Code",
+    eyebrow: "Principles",
+    description:
+      "Sentimeter is designed so the host app owns the final UI, composition, and integration details.",
+  },
+];

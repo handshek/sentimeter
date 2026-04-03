@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { WidgetDocsShell } from "../_components/widget-docs-shell";
+import { WidgetDocsContent } from "../_components/widget-docs-shell";
 import { getWidgetDoc, widgetDocs } from "../_components/widget-docs-data";
 
 export function generateStaticParams() {
@@ -16,5 +16,5 @@ export default async function WidgetDocsPage({
 
   if (!widget) notFound();
 
-  return <WidgetDocsShell widget={widget} />;
+  return <WidgetDocsContent widget={widget} />;
 }

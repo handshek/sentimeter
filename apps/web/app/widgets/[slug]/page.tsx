@@ -1,6 +1,5 @@
-import { notFound } from "next/navigation";
-import { WidgetDocsShell } from "../../components/_components/widget-docs-shell";
-import { getWidgetDoc, widgetDocs } from "../../components/_components/widget-docs-data";
+import { redirect } from "next/navigation";
+import { widgetDocs } from "../../components/_components/widget-docs-data";
 
 export function generateStaticParams() {
   return widgetDocs.map((widget) => ({ slug: widget.slug }));
@@ -12,9 +11,5 @@ export default async function WidgetDocsPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const widget = getWidgetDoc(slug);
-
-  if (!widget) notFound();
-
-  return <WidgetDocsShell widget={widget} />;
+  redirect(`/components/${slug}`);
 }

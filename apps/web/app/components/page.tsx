@@ -1,6 +1,5 @@
-import { ComponentsOverview } from "./_components/widget-docs-shell";
-import { widgetDocs } from "./_components/widget-docs-data";
+import { ComponentsOverviewContent } from "./_components/widget-docs-shell";
 
 export default function ComponentsPage() {
-  return <ComponentsOverview widgets={widgetDocs} />;
+  return <ComponentsOverviewContent />;
 }
