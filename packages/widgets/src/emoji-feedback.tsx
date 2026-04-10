@@ -37,7 +37,7 @@ export type EmojiFeedbackProps = {
   submitLabel?: string;
   thankYouMessage?: React.ReactNode;
   doneDurationMs?: number;
-  variant?: "emoji" | "tabler";
+  variant?: "emoji" | "icons";
   size?: WidgetSize;
   closeButton?: boolean;
   submit?: WidgetSubmit;

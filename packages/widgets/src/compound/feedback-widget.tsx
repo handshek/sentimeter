@@ -9,7 +9,7 @@ import {
   type WidgetSize,
 } from "./feedback-context";
 import { Button } from "@workspace/ui/components/button";
-import { IconX } from "@tabler/icons-react";
+import { X } from "lucide-react";
 
 export type FeedbackWidgetProps = {
   apiKey?: string;
@@ -63,7 +63,7 @@ function FeedbackWidgetInner({
           className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
           aria-label="Dismiss feedback widget"
         >
-          <IconX size={16} aria-hidden="true" />
+          <X className="size-4" aria-hidden="true" />
         </Button>
       ) : null}
       {children}

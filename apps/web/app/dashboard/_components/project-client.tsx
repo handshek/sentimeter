@@ -35,17 +35,17 @@ import {
   YAxis,
 } from "recharts";
 import {
-  IconActivity,
-  IconChartBar,
-  IconChevronRight,
-  IconLayoutGrid,
-  IconMoodHappy,
-  IconMoodNeutral,
-  IconMoodSad,
-  IconStarFilled,
-  IconThumbDownFilled,
-  IconThumbUpFilled,
-} from "@tabler/icons-react";
+  Activity,
+  BarChart3,
+  ChevronRight,
+  Frown,
+  LayoutGrid,
+  Meh,
+  Smile,
+  Star,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react";
 
 type RangeOption = "24h" | "7d" | "30d" | "all";
 type WidgetFilterOption = "all" | "emoji" | "thumbs" | "star";
@@ -402,7 +402,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             <Button asChild variant="outline">
               <Link href={`/widgets?projectId=${convexProjectId}`}>
                 Test in Widgets
-                <IconChevronRight className="ml-2 h-4 w-4" />
+                <ChevronRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           ) : null}
@@ -510,14 +510,14 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             value="overview"
             className="rounded-none px-5 py-3 text-sm font-semibold"
           >
-            <IconChartBar className="h-4 w-4" />
+            <BarChart3 className="h-4 w-4" />
             Overview
           </TabsTrigger>
           <TabsTrigger
             value="live"
             className="rounded-none px-5 py-3 text-sm font-semibold"
           >
-            <IconActivity className="h-4 w-4" />
+            <Activity className="h-4 w-4" />
             Live Feed
           </TabsTrigger>
         </TabsList>
@@ -639,7 +639,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                     Which widget drives the most responses
                   </div>
                 </div>
-                <IconLayoutGrid className="h-4 w-4 text-muted-foreground" />
+                <LayoutGrid className="h-4 w-4 text-muted-foreground" />
               </div>
 
               <div className="mt-4 space-y-4">
@@ -651,11 +651,11 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                       <div className="flex items-center justify-between gap-3 text-sm">
                         <div className="flex items-center gap-2">
                           {row.key === "emoji" ? (
-                            <IconMoodHappy className="h-4 w-4 text-muted-foreground" />
+                            <Smile className="h-4 w-4 text-muted-foreground" />
                           ) : row.key === "thumbs" ? (
-                            <IconThumbUpFilled className="h-4 w-4 text-muted-foreground" />
+                            <ThumbsUp className="h-4 w-4 text-muted-foreground" />
                           ) : (
-                            <IconStarFilled className="h-4 w-4 text-muted-foreground" />
+                            <Star className="h-4 w-4 text-muted-foreground" />
                           )}
                           <span className="font-medium">{row.label}</span>
                         </div>
@@ -693,20 +693,20 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                   const icon =
                     widgetFilter === "thumbs" ? (
                       row.key === "1" ? (
-                        <IconThumbUpFilled className="h-4 w-4 text-muted-foreground" />
+                        <ThumbsUp className="h-4 w-4 text-muted-foreground" />
                       ) : (
-                        <IconThumbDownFilled className="h-4 w-4 text-muted-foreground" />
+                        <ThumbsDown className="h-4 w-4 text-muted-foreground" />
                       )
                     ) : widgetFilter === "all" ? (
                       row.key === "5" || row.key === "4" ? (
-                        <IconMoodHappy className="h-4 w-4 text-muted-foreground" />
+                        <Smile className="h-4 w-4 text-muted-foreground" />
                       ) : row.key === "3" ? (
-                        <IconMoodNeutral className="h-4 w-4 text-muted-foreground" />
+                        <Meh className="h-4 w-4 text-muted-foreground" />
                       ) : (
-                        <IconMoodSad className="h-4 w-4 text-muted-foreground" />
+                        <Frown className="h-4 w-4 text-muted-foreground" />
                       )
                     ) : (
-                      <IconStarFilled className="h-4 w-4 text-muted-foreground" />
+                      <Star className="h-4 w-4 text-muted-foreground" />
                     );
                   return (
                     <div key={row.key} className="space-y-2">
@@ -817,14 +817,14 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                       >
                         {f.widgetType === "thumbs" ? (
                           f.value === 1 ? (
-                            <IconThumbUpFilled
+                            <ThumbsUp
                               className={cn(
                                 "text-primary",
                                 isFeatured ? "h-6 w-6" : "h-5 w-5",
                               )}
                             />
                           ) : (
-                            <IconThumbDownFilled
+                            <ThumbsDown
                               className={cn(
                                 "text-muted-foreground",
                                 isFeatured ? "h-6 w-6" : "h-5 w-5",
@@ -844,7 +844,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                             >
                               {f.value}
                             </span>
-                            <IconStarFilled
+                            <Star
                               className={cn(
                                 "shrink-0 text-amber-500",
                                 isFeatured ? "h-4 w-4" : "h-3.5 w-3.5",
@@ -860,13 +860,13 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                             aria-hidden
                           >
                             {f.value <= 1
-                              ? "😡"
+                              ? "😖"
                               : f.value === 2
-                                ? "🙁"
+                                ? "😕"
                                 : f.value === 3
                                   ? "😐"
                                   : f.value === 4
-                                    ? "🙂"
+                                    ? "😊"
                                     : "😍"}
                           </span>
                         )}
@@ -902,7 +902,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           ) : (
             <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border/60 bg-muted/5 py-16 px-6 text-center">
               <div className="rounded-full bg-muted/40 p-4">
-                <IconActivity className="h-8 w-8 text-muted-foreground" />
+                <Activity className="h-8 w-8 text-muted-foreground" />
               </div>
               <div className="space-y-1">
                 <p className="text-sm font-medium text-foreground">

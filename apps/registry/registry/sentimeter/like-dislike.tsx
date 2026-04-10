@@ -22,6 +22,7 @@ const DEFAULTS = {
   showInput: false,
   submitLabel: "Submit",
   thankYouMessage: "Thanks!",
+  variant: "icons" as const,
   size: "default" as const,
 } as const;
 
@@ -37,6 +38,7 @@ export type LikeDislikeProps = {
   submitLabel?: string;
   thankYouMessage?: React.ReactNode;
   doneDurationMs?: number;
+  variant?: "icons" | "emoji";
   size?: WidgetSize;
   closeButton?: boolean;
   submit?: WidgetSubmit;
@@ -54,6 +56,7 @@ export function LikeDislike({
   submitLabel = DEFAULTS.submitLabel,
   thankYouMessage = DEFAULTS.thankYouMessage,
   doneDurationMs = 2000,
+  variant = DEFAULTS.variant,
   size = DEFAULTS.size,
   closeButton = false,
   submit,
@@ -79,7 +82,7 @@ export function LikeDislike({
           <FeedbackDescription>{description}</FeedbackDescription>
         ) : null}
       </div>
-      <FeedbackRating variant="thumbs" />
+      <FeedbackRating variant="thumbs" ratingStyle={variant} />
       {showInput ? <FeedbackInput /> : null}
       <FeedbackFooter
         submitLabel={submitLabel}

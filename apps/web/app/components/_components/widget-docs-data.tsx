@@ -172,9 +172,10 @@ export const widgetDocs: WidgetDocConfig[] = [
       ...sharedProps,
       {
         prop: "variant",
-        type: '"emoji" | "tabler"',
+        type: '"emoji" | "icons"',
         defaultValue: '"emoji"',
-        description: "Switches between native emoji and Tabler face icons.",
+        description:
+          "Native mode uses five emojis (worst to best: 😖 😕 😐 😊 😍) or Lucide face icons.",
       },
     ],
   },
@@ -193,7 +194,16 @@ export const widgetDocs: WidgetDocConfig[] = [
   apiKey="pk_your-api-key"
   location="/docs/getting-started"
 />`,
-    props: sharedProps,
+    props: [
+      ...sharedProps,
+      {
+        prop: "variant",
+        type: '"icons" | "emoji"',
+        defaultValue: '"icons"',
+        description:
+          "Lucide thumbs up/down, or Unicode 👎 (0) / 👍 (1) for the same payload values.",
+      },
+    ],
   },
   {
     slug: "star-rating",
@@ -210,7 +220,16 @@ export const widgetDocs: WidgetDocConfig[] = [
   apiKey="pk_your-api-key"
   location="/checkout"
 />`,
-    props: sharedProps,
+    props: [
+      ...sharedProps,
+      {
+        prop: "variant",
+        type: '"icons" | "emoji"',
+        defaultValue: '"icons"',
+        description:
+          "Lucide stars with hover preview, or five ⭐ emoji (muted until included in the preview) for values 1–5.",
+      },
+    ],
   },
 ];
 

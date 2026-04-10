@@ -23,14 +23,14 @@ import {
 } from "@workspace/ui/components/table";
 import { cn } from "@workspace/ui/lib/utils";
 import {
-  IconArrowLeft,
-  IconCheck,
-  IconCopy,
-  IconMoodSmile,
-  IconStar,
-  IconTerminal2,
-  IconThumbUp,
-} from "@tabler/icons-react";
+  ArrowLeft,
+  Check,
+  Copy,
+  Smile,
+  Star,
+  Terminal,
+  ThumbsUp,
+} from "lucide-react";
 import {
   EmojiFeedback,
   LikeDislike,
@@ -63,11 +63,11 @@ export function WidgetIcon({
 }) {
   switch (kind) {
     case "emoji":
-      return <IconMoodSmile className={cn("h-6 w-6", className)} />;
+      return <Smile className={cn("h-6 w-6", className)} />;
     case "thumbs":
-      return <IconThumbUp className={cn("h-6 w-6", className)} />;
+      return <ThumbsUp className={cn("h-6 w-6", className)} />;
     case "star":
-      return <IconStar className={cn("h-6 w-6", className)} />;
+      return <Star className={cn("h-6 w-6", className)} />;
   }
 }
 
@@ -93,9 +93,9 @@ function CopyButton({ text, className }: { text: string; className?: string }) {
       aria-label="Copy to clipboard"
     >
       {copied ? (
-        <IconCheck className="h-3.5 w-3.5 text-emerald-500" />
+        <Check className="h-3.5 w-3.5 text-emerald-500" />
       ) : (
-        <IconCopy className="h-3.5 w-3.5" />
+        <Copy className="h-3.5 w-3.5" />
       )}
     </button>
   );
@@ -173,7 +173,7 @@ function InstallBlock({ registryName }: { registryName: string }) {
 
   return (
     <div className="flex items-center gap-3 overflow-hidden rounded-lg border border-border/70 bg-zinc-950 px-4 py-3 text-zinc-100">
-      <IconTerminal2 className="h-4 w-4 shrink-0 text-zinc-500" />
+      <Terminal className="h-4 w-4 shrink-0 text-zinc-500" />
       <code className="flex-1 overflow-x-auto whitespace-nowrap font-mono text-[13px] text-zinc-300 no-scrollbar">
         {cmd}
       </code>
@@ -239,7 +239,7 @@ export function ComponentsLayoutShell({
         <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-6">
           <Button asChild variant="ghost" size="sm">
             <Link href="/">
-              <IconArrowLeft className="mr-2 h-4 w-4" />
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Home
             </Link>
           </Button>

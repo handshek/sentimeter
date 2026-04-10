@@ -2,24 +2,16 @@
 
 import * as React from "react";
 import {
-  IconMoodAngry,
-  IconMoodAngryFilled,
-  IconMoodHappy,
-  IconMoodHappyFilled,
-  IconMoodNeutral,
-  IconMoodNeutralFilled,
-  IconMoodSad,
-  IconMoodSadFilled,
-  IconMoodSmile,
-  IconMoodSmileFilled,
-  IconStar,
-  IconStarFilled,
-  IconThumbDown,
-  IconThumbDownFilled,
-  IconThumbUp,
-  IconThumbUpFilled,
-  IconX,
-} from "@tabler/icons-react";
+  Angry,
+  Frown,
+  Laugh,
+  Meh,
+  Smile,
+  Star,
+  ThumbsDown,
+  ThumbsUp,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -84,18 +76,16 @@ type UseWidgetMachineArgs = {
 
 const Ctx = React.createContext<FeedbackContextValue | null>(null);
 
-const DEFAULT_EMOJIS = ["😡", "🙁", "😐", "🙂", "😍"] as const;
+const DEFAULT_EMOJIS = ["😖", "😕", "😐", "😊", "😍"] as const;
 
-const TABLER_SET = [
-  { Outline: IconMoodAngry, Filled: IconMoodAngryFilled, label: "Angry" },
-  { Outline: IconMoodSad, Filled: IconMoodSadFilled, label: "Sad" },
-  {
-    Outline: IconMoodNeutral,
-    Filled: IconMoodNeutralFilled,
-    label: "Neutral",
-  },
-  { Outline: IconMoodSmile, Filled: IconMoodSmileFilled, label: "Happy" },
-  { Outline: IconMoodHappy, Filled: IconMoodHappyFilled, label: "Delighted" },
+const THUMB_EMOJIS = ["👎", "👍"] as const;
+
+const LUCIDE_FACE_SET = [
+  { Icon: Angry, label: "Angry" },
+  { Icon: Frown, label: "Sad" },
+  { Icon: Meh, label: "Neutral" },
+  { Icon: Smile, label: "Happy" },
+  { Icon: Laugh, label: "Delighted" },
 ] as const;
 
 const CONTAINER_SIZE_MAP: Record<WidgetSize, string> = {
@@ -383,7 +373,7 @@ function FeedbackWidgetInner({
           className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
           aria-label="Dismiss feedback widget"
         >
-          <IconX size={16} aria-hidden="true" />
+          <X className="size-4" aria-hidden="true" />
         </Button>
       ) : null}
       {children}
@@ -426,13 +416,17 @@ export function FeedbackWidget({
 
 export type FeedbackRatingProps = {
   variant: "emoji" | "stars" | "thumbs";
-  emojiStyle?: "emoji" | "tabler";
+  /** Only for variant "emoji" (5-point mood) */
+  emojiStyle?: "emoji" | "icons";
+  /** For variant "thumbs" | "stars": Lucide vs Unicode */
+  ratingStyle?: "icons" | "emoji";
   className?: string;
 };
 
 export function FeedbackRating({
   variant,
   emojiStyle = "emoji",
+  ratingStyle = "icons",
   className,
 }: FeedbackRatingProps) {
   const { state, selectedValue, disabled, select, size } = useFeedbackContext();
@@ -444,26 +438,52 @@ export function FeedbackRating({
     "mt-4 flex w-full items-center justify-center gap-3 rounded-2xl border border-border/60 bg-muted/20 p-3";
 
   if (variant === "thumbs") {
+    if (ratingStyle === "emoji") {
+      const options = [
+        { value: 0, label: "Dislike", emoji: THUMB_EMOJIS[0] },
+        { value: 1, label: "Like", emoji: THUMB_EMOJIS[1] },
+      ] as const;
+
+      return (
+        <div className={cn(wrapperClass, className)}>
+          {options.map(({ value, label, emoji }) => {
+            const selected = selectedValue === value;
+            return (
+              <button
+                key={value}
+                type="button"
+                disabled={isLocked}
+                onClick={() => select(value)}
+                className={cn(
+                  "relative flex aspect-square shrink-0 items-center justify-center rounded-full transition-all duration-200",
+                  emojiClass,
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+                  selected
+                    ? "bg-primary/10 ring-2 ring-primary/20"
+                    : "hover:bg-muted/50",
+                  isLocked ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+                )}
+                aria-pressed={selected ? "true" : "false"}
+                aria-label={label}
+                title={label}
+              >
+                <span aria-hidden="true">{emoji}</span>
+              </button>
+            );
+          })}
+        </div>
+      );
+    }
+
     const options = [
-      {
-        value: 1,
-        label: "Like",
-        Outline: IconThumbUp,
-        Filled: IconThumbUpFilled,
-      },
-      {
-        value: 0,
-        label: "Dislike",
-        Outline: IconThumbDown,
-        Filled: IconThumbDownFilled,
-      },
+      { value: 1, label: "Like", Icon: ThumbsUp },
+      { value: 0, label: "Dislike", Icon: ThumbsDown },
     ] as const;
 
     return (
       <div className={cn(wrapperClass, className)}>
-        {options.map(({ value, label, Outline, Filled }) => {
+        {options.map(({ value, label, Icon }) => {
           const selected = selectedValue === value;
-          const Icon = selected ? Filled : Outline;
 
           return (
             <button
@@ -484,7 +504,12 @@ export function FeedbackRating({
               aria-label={label}
               title={label}
             >
-              <Icon size={iconSize} aria-hidden="true" />
+              <Icon
+                size={iconSize}
+                strokeWidth={selected ? 2.5 : 2}
+                className={cn(selected ? "text-primary" : undefined)}
+                aria-hidden="true"
+              />
             </button>
           );
         })}
@@ -495,6 +520,56 @@ export function FeedbackRating({
   if (variant === "stars") {
     const previewValue = hoverValue ?? selectedValue ?? 0;
 
+    if (ratingStyle === "emoji") {
+      return (
+        <div className={cn(wrapperClass, className)}>
+          {Array.from({ length: 5 }).map((_, idx) => {
+            const value = idx + 1;
+            const filled = value <= previewValue;
+            const selected = selectedValue === value;
+            const label = `Rate ${value} star${value === 1 ? "" : "s"}`;
+            return (
+              <button
+                key={value}
+                type="button"
+                disabled={isLocked}
+                onMouseEnter={() => setHoverValue(value)}
+                onMouseLeave={() => setHoverValue(null)}
+                onFocus={() => setHoverValue(value)}
+                onBlur={() => setHoverValue(null)}
+                onClick={() => select(value)}
+                className={cn(
+                  "relative flex aspect-square shrink-0 items-center justify-center rounded-full transition-all duration-200",
+                  emojiClass,
+                  "font-normal leading-none",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+                  selected
+                    ? "bg-primary/10 ring-2 ring-primary/20"
+                    : "hover:bg-muted/50",
+                  isLocked ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+                )}
+                aria-pressed={selected ? "true" : "false"}
+                aria-label={label}
+                title={label}
+              >
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "select-none",
+                    filled
+                      ? "text-primary"
+                      : "text-muted-foreground/65",
+                  )}
+                >
+                  ⭐
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      );
+    }
+
     return (
       <div className={cn(wrapperClass, className)}>
         {Array.from({ length: 5 }).map((_, idx) => {
@@ -502,7 +577,6 @@ export function FeedbackRating({
           const filled = value <= previewValue;
           const selected = selectedValue === value;
           const label = `Rate ${value} star${value === 1 ? "" : "s"}`;
-          const Icon = filled ? IconStarFilled : IconStar;
 
           return (
             <button
@@ -529,7 +603,11 @@ export function FeedbackRating({
               aria-label={label}
               title={label}
             >
-              <Icon size={iconSize} aria-hidden="true" />
+              <Star
+                size={iconSize}
+                fill={filled ? "currentColor" : "none"}
+                aria-hidden="true"
+              />
             </button>
           );
         })}
@@ -568,10 +646,9 @@ export function FeedbackRating({
               </button>
             );
           })
-        : TABLER_SET.map(({ Outline, Filled, label }, idx) => {
+        : LUCIDE_FACE_SET.map(({ Icon, label }, idx) => {
             const value = idx + 1;
             const selected = selectedValue === value;
-            const Icon = selected ? Filled : Outline;
             const aria = `${label} (${value} of 5)`;
 
             return (
@@ -593,7 +670,12 @@ export function FeedbackRating({
                 aria-label={aria}
                 title={aria}
               >
-                <Icon size={iconSize} aria-hidden="true" />
+                <Icon
+                  size={iconSize}
+                  strokeWidth={selected ? 2.5 : 2}
+                  className={cn(selected ? "text-primary" : undefined)}
+                  aria-hidden="true"
+                />
               </button>
             );
           })}

@@ -14,7 +14,7 @@ It consists of:
 ## Tech stack
 
 - **Monorepo:** Turborepo, Bun
-- **Frontend:** Next.js 16 (App Router), TypeScript, TailwindCSS v4, shadcn/ui, tabler-react icons
+- **Frontend:** Next.js 16 (App Router), TypeScript, TailwindCSS v4, shadcn/ui, lucide-react icons
 - **Backend & DB:** Convex (realtime database, server functions, HTTP actions)
 - **Auth:** Clerk (syncs to Convex)
 - **Quality Assurance:** TestSprite MCP for AI-driven testing

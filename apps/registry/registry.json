@@ -8,7 +8,7 @@
       "type": "registry:block",
       "title": "Feedback System",
       "description": "Core types, submit function, and compound components for Sentimeter widgets.",
-      "dependencies": ["@tabler/icons-react"],
+      "dependencies": ["lucide-react"],
       "registryDependencies": ["button", "textarea"],
       "files": [
         {

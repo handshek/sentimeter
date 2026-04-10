@@ -21,6 +21,7 @@ const DEFAULTS = {
   showInput: false,
   submitLabel: "Submit",
   thankYouMessage: "Thanks!",
+  variant: "icons" as const,
   size: "default" as const,
 } as const;
 
@@ -36,6 +37,8 @@ export type StarRatingProps = {
   submitLabel?: string;
   thankYouMessage?: React.ReactNode;
   doneDurationMs?: number;
+  /** Lucide stars vs ⭐ emoji row, muted until preview (same hover behavior) */
+  variant?: "icons" | "emoji";
   size?: WidgetSize;
   closeButton?: boolean;
   submit?: WidgetSubmit;
@@ -53,6 +56,7 @@ export function StarRating({
   submitLabel = DEFAULTS.submitLabel,
   thankYouMessage = DEFAULTS.thankYouMessage,
   doneDurationMs = 2000,
+  variant = DEFAULTS.variant,
   size = DEFAULTS.size,
   closeButton = false,
   submit,
@@ -78,7 +82,7 @@ export function StarRating({
           <FeedbackDescription>{description}</FeedbackDescription>
         ) : null}
       </div>
-      <FeedbackRating variant="stars" />
+      <FeedbackRating variant="stars" ratingStyle={variant} />
       {showInput ? <FeedbackInput /> : null}
       <FeedbackFooter
         submitLabel={submitLabel}

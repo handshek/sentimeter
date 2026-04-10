@@ -4,14 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@workspace/ui/components/button";
 import {
-  IconArrowRight,
-  IconCheck,
-  IconCopy,
-  IconLayoutDashboard,
-  IconLogin,
-  IconPackage,
-  IconTerminal2,
-} from "@tabler/icons-react";
+  ArrowRight,
+  Check,
+  Copy,
+  LayoutDashboard,
+  LogIn,
+  Package,
+  Terminal,
+} from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
 import {
   EmojiFeedback,
@@ -45,9 +45,9 @@ function CopyButton({ text }: { text: string }) {
       aria-label="Copy to clipboard"
     >
       {copied ? (
-        <IconCheck className="h-3.5 w-3.5 text-emerald-500" />
+        <Check className="h-3.5 w-3.5 text-emerald-500" />
       ) : (
-        <IconCopy className="h-3.5 w-3.5" />
+        <Copy className="h-3.5 w-3.5" />
       )}
     </button>
   );
@@ -131,7 +131,7 @@ export default function Home() {
               className="hidden sm:flex"
             >
               <Link href="/components">
-                <IconPackage className="mr-2 h-4 w-4" />
+                <Package className="mr-2 h-4 w-4" />
                 Components
               </Link>
             </Button>
@@ -139,7 +139,7 @@ export default function Home() {
             {!isSignedIn && (
               <Button asChild>
                 <Link href="/sign-in">
-                  <IconLogin className="mr-2 h-4 w-4" />
+                  <LogIn className="mr-2 h-4 w-4" />
                   Sign In
                 </Link>
               </Button>
@@ -148,7 +148,7 @@ export default function Home() {
             {isSignedIn && (
               <Button asChild variant="default">
                 <Link href="/dashboard">
-                  <IconLayoutDashboard className="mr-2 h-4 w-4" />
+                  <LayoutDashboard className="mr-2 h-4 w-4" />
                   Dashboard
                 </Link>
               </Button>
@@ -183,7 +183,7 @@ export default function Home() {
             <Button size="lg" asChild className="h-11 px-7 text-[15px]">
               <Link href={isSignedIn ? "/dashboard" : "/sign-in"}>
                 Go to Dashboard
-                <IconArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
             <Button
@@ -193,14 +193,14 @@ export default function Home() {
               className="h-11 px-7 text-[15px]"
             >
               <Link href="/components">
-                <IconPackage className="mr-2 h-4 w-4" />
+                <Package className="mr-2 h-4 w-4" />
                 Components
               </Link>
             </Button>
           </div>
 
           <div className="mt-12 flex w-full max-w-lg items-center gap-3 overflow-hidden rounded-lg border border-border/70 bg-zinc-950 px-4 py-2.5">
-            <IconTerminal2 className="h-4 w-4 shrink-0 text-zinc-500" />
+            <Terminal className="h-4 w-4 shrink-0 text-zinc-500" />
             <code className="no-scrollbar flex-1 overflow-x-auto whitespace-nowrap font-mono text-[13px] text-zinc-300">
               {INSTALL_CMD}
             </code>

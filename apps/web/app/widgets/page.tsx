@@ -49,15 +49,15 @@ import {
   type WidgetSize,
 } from "@repo/widgets";
 import {
-  IconArrowLeft,
-  IconBug,
-  IconCircleCheck,
-  IconCircleX,
-  IconCode,
-  IconMessageCircle2,
-  IconRadar2,
-  IconRefresh,
-} from "@tabler/icons-react";
+  ArrowLeft,
+  Bug,
+  CircleCheck,
+  CircleX,
+  Code,
+  MessageCircle,
+  Radar,
+  RefreshCw,
+} from "lucide-react";
 
 type SubmitMode = "mock" | "real";
 type MockOutcome = "success" | "error";
@@ -238,7 +238,7 @@ function PopoverWidgetDemo({ common }: { common: WidgetCommon }) {
         >
           <PopoverTrigger asChild>
             <Button type="button" variant="default" className="w-fit">
-              <IconMessageCircle2 className="mr-2 h-4 w-4" />
+              <MessageCircle className="mr-2 h-4 w-4" />
               Open feedback popover
             </Button>
           </PopoverTrigger>
@@ -295,13 +295,17 @@ function WidgetRig({
   common,
   emojiVariant,
   setEmojiVariant,
+  ratingVariant,
+  setRatingVariant,
 }: {
   title: string;
   description: string;
   kind: "emoji" | "thumbs" | "stars";
   common: WidgetCommon;
-  emojiVariant?: "emoji" | "tabler";
-  setEmojiVariant?: (v: "emoji" | "tabler") => void;
+  emojiVariant?: "emoji" | "icons";
+  setEmojiVariant?: (v: "emoji" | "icons") => void;
+  ratingVariant?: "icons" | "emoji";
+  setRatingVariant?: (v: "icons" | "emoji") => void;
 }) {
   const [state, setState] = React.useState<WidgetState>("idle");
   const [selectedValue, setSelectedValue] = React.useState<number | null>(null);
@@ -362,7 +366,7 @@ function WidgetRig({
       <div className="space-y-4">
         <PlaygroundCard
           title={title}
-          icon={<IconRadar2 size={16} />}
+          icon={<Radar size={16} />}
           description={description}
         >
           <div className="space-y-3">
@@ -370,7 +374,7 @@ function WidgetRig({
               <Field
                 id={`${kind}-emojiVariant`}
                 label="Emoji Variant"
-                description="Native emoji or Tabler faces"
+                description="Native emoji or Lucide face icons"
               >
                 <Select value={emojiVariant} onValueChange={setEmojiVariant}>
                   <SelectTrigger id={`${kind}-emojiVariant`} className="w-full">
@@ -378,7 +382,37 @@ function WidgetRig({
                   </SelectTrigger>
                   <SelectContent position="popper">
                     <SelectItem value="emoji">Native emoji</SelectItem>
-                    <SelectItem value="tabler">Tabler faces</SelectItem>
+                    <SelectItem value="icons">Lucide faces</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+            ) : null}
+
+            {(kind === "thumbs" || kind === "stars") &&
+            ratingVariant &&
+            setRatingVariant ? (
+              <Field
+                id={`${kind}-ratingVariant`}
+                label="Rating style"
+                description={
+                  kind === "thumbs"
+                    ? "Lucide thumbs or Unicode 👎 / 👍"
+                    : "Lucide stars or ⭐ emoji row (muted until preview)"
+                }
+              >
+                <Select
+                  value={ratingVariant}
+                  onValueChange={setRatingVariant}
+                >
+                  <SelectTrigger
+                    id={`${kind}-ratingVariant`}
+                    className="w-full"
+                  >
+                    <SelectValue placeholder="Select style" />
+                  </SelectTrigger>
+                  <SelectContent position="popper">
+                    <SelectItem value="icons">Lucide icons</SelectItem>
+                    <SelectItem value="emoji">Emoji</SelectItem>
                   </SelectContent>
                 </Select>
               </Field>
@@ -390,7 +424,7 @@ function WidgetRig({
                 variant="outline"
                 onClick={() => setInstance((v) => v + 1)}
               >
-                <IconRefresh className="mr-2 h-4 w-4" />
+                <RefreshCw className="mr-2 h-4 w-4" />
                 Reset widget
               </Button>
               <Button
@@ -409,7 +443,7 @@ function WidgetRig({
           </div>
         </PlaygroundCard>
 
-        <PlaygroundCard title="Runtime" icon={<IconCircleCheck size={16} />}>
+        <PlaygroundCard title="Runtime" icon={<CircleCheck size={16} />}>
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-3">
               <div className="text-sm font-medium">State</div>
@@ -441,7 +475,7 @@ function WidgetRig({
           </div>
         </PlaygroundCard>
 
-        <PlaygroundCard title="Payload" icon={<IconCode size={16} />}>
+        <PlaygroundCard title="Payload" icon={<Code size={16} />}>
           <Textarea
             readOnly
             value={JSON.stringify(payloadPreview ?? {}, null, 2)}
@@ -452,12 +486,12 @@ function WidgetRig({
             <span>Updates on select / submit start.</span>
             {payloadPreview ? (
               <span className="inline-flex items-center gap-1">
-                <IconCircleCheck size={14} className="text-emerald-500" />
+                <CircleCheck size={14} className="text-emerald-500" />
                 ready
               </span>
             ) : (
               <span className="inline-flex items-center gap-1">
-                <IconCircleX size={14} className="text-muted-foreground" />
+                <CircleX size={14} className="text-muted-foreground" />
                 select first
               </span>
             )}
@@ -474,7 +508,7 @@ function WidgetRig({
       </div>
 
       <div className="space-y-4">
-        <PlaygroundCard title="Preview" icon={<IconCircleCheck size={16} />}>
+        <PlaygroundCard title="Preview" icon={<CircleCheck size={16} />}>
           <div className="relative overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-6">
             <div className="pointer-events-none absolute inset-0 opacity-40 [background:repeating-linear-gradient(135deg,rgba(255,255,255,0.10)_0px,rgba(255,255,255,0.10)_1px,transparent_1px,transparent_10px)] dark:opacity-20" />
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_70%_0%,rgba(99,102,241,0.16),transparent_55%),radial-gradient(50%_50%_at_10%_10%,rgba(16,185,129,0.10),transparent_60%)]" />
@@ -486,9 +520,17 @@ function WidgetRig({
                   variant={emojiVariant ?? "emoji"}
                 />
               ) : kind === "thumbs" ? (
-                <LikeDislike key={instance} {...widgetCommon} />
+                <LikeDislike
+                  key={instance}
+                  {...widgetCommon}
+                  variant={ratingVariant ?? "icons"}
+                />
               ) : (
-                <StarRating key={instance} {...widgetCommon} />
+                <StarRating
+                  key={instance}
+                  {...widgetCommon}
+                  variant={ratingVariant ?? "icons"}
+                />
               )}
             </div>
           </div>
@@ -552,8 +594,14 @@ function WidgetsPlaygroundContent() {
   const [submitMode, setSubmitMode] = React.useState<SubmitMode>("mock");
   const [mockOutcome, setMockOutcome] = React.useState<MockOutcome>("success");
   const [mockDelayMs, setMockDelayMs] = React.useState(450);
-  const [emojiVariant, setEmojiVariant] = React.useState<"emoji" | "tabler">(
+  const [emojiVariant, setEmojiVariant] = React.useState<"emoji" | "icons">(
     "emoji",
+  );
+  const [thumbsVariant, setThumbsVariant] = React.useState<"icons" | "emoji">(
+    "icons",
+  );
+  const [starsVariant, setStarsVariant] = React.useState<"icons" | "emoji">(
+    "icons",
   );
   const [title, setTitle] = React.useState("Rate your experience");
   const [description, setDescription] = React.useState(
@@ -619,7 +667,7 @@ function WidgetsPlaygroundContent() {
           <div className="flex items-center gap-3">
             <Button asChild variant="ghost" size="sm">
               <Link href="/">
-                <IconArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className="mr-2 h-4 w-4" />
                 Home
               </Link>
             </Button>
@@ -660,7 +708,7 @@ function WidgetsPlaygroundContent() {
           </div>
           <PlaygroundCard
             title="Real Data"
-            icon={<IconBug size={16} />}
+            icon={<Bug size={16} />}
             description="Send feedback to Convex so the dashboard updates"
           >
             <div className="space-y-3">
@@ -749,7 +797,7 @@ function WidgetsPlaygroundContent() {
         <div className="grid gap-6 lg:grid-cols-[1fr_320px] lg:items-start">
           <PlaygroundCard
             title="Project Helper"
-            icon={<IconCircleCheck size={16} />}
+            icon={<CircleCheck size={16} />}
             description={
               isSignedIn
                 ? "Auto-fill publishable key from your project"
@@ -818,7 +866,7 @@ function WidgetsPlaygroundContent() {
 
           <PlaygroundCard
             title="Global Props"
-            icon={<IconRadar2 size={16} />}
+            icon={<Radar size={16} />}
             description="Shared across all widgets"
           >
             <div className="space-y-3">
@@ -942,7 +990,7 @@ function WidgetsPlaygroundContent() {
           <WidgetSection
             tag="W01"
             title="Emoji"
-            subtitle="Native emojis by default, optional Tabler faces."
+            subtitle="Native emojis by default, optional Lucide faces."
           >
             <WidgetRig
               title="Emoji"
@@ -959,13 +1007,15 @@ function WidgetsPlaygroundContent() {
           <WidgetSection
             tag="W02"
             title="Thumbs"
-            subtitle="Like/Dislike (1/0) with consistent submit flow."
+            subtitle="Like/Dislike (1/0). Lucide thumbs or 👎/👍 emoji."
           >
             <WidgetRig
               title="Thumbs"
               description="Binary feedback"
               kind="thumbs"
               common={common}
+              ratingVariant={thumbsVariant}
+              setRatingVariant={setThumbsVariant}
             />
           </WidgetSection>
 
@@ -974,13 +1024,15 @@ function WidgetsPlaygroundContent() {
           <WidgetSection
             tag="W03"
             title="Stars"
-            subtitle="Hover preview, click to lock, submit to send."
+            subtitle="Hover preview: Lucide stars or ⭐ emoji row. Submit to send."
           >
             <WidgetRig
               title="Stars"
               description="1–5 rating"
               kind="stars"
               common={common}
+              ratingVariant={starsVariant}
+              setRatingVariant={setStarsVariant}
             />
           </WidgetSection>
 
@@ -994,7 +1046,7 @@ function WidgetsPlaygroundContent() {
             <div className="grid gap-6 lg:grid-cols-2">
               <PlaygroundCard
                 title="With Input + Cancel"
-                icon={<IconRadar2 size={16} />}
+                icon={<Radar size={16} />}
                 description="Full-feature compound widget"
               >
                 <div className="relative overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-6">
@@ -1027,7 +1079,7 @@ function WidgetsPlaygroundContent() {
 
               <PlaygroundCard
                 title="Minimal — Stars Only"
-                icon={<IconRadar2 size={16} />}
+                icon={<Radar size={16} />}
                 description="Just a rating, no text input"
               >
                 <div className="relative overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-6">
