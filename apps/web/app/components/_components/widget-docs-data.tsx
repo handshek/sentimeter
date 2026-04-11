@@ -162,12 +162,29 @@ export const widgetDocs: WidgetDocConfig[] = [
     icon: "emoji",
     preview: "emoji",
     installSnippet: `bunx shadcn@latest add "https://registry.handshek.workers.dev/r/emoji-feedback.json"`,
-    usageSnippet: `import { EmojiFeedback } from "@/components/sentimeter/emoji-feedback";
+    usageSnippet: `import {
+  FeedbackDescription,
+  FeedbackFooter,
+  FeedbackRating,
+  FeedbackTitle,
+  FeedbackWidget,
+} from "@/components/sentimeter/feedback-system";
 
-<EmojiFeedback
-  apiKey="pk_your-api-key"
-  location="/pricing"
-/>`,
+export function EmojiFeedbackWidget() {
+  return (
+    <FeedbackWidget
+      apiKey="pk_your-api-key" // Optional: add your publishable key to enable analytics
+      widgetType="emoji"
+    >
+      <FeedbackTitle>How was your experience?</FeedbackTitle>
+      <FeedbackDescription>
+        Your feedback helps us improve this page.
+      </FeedbackDescription>
+      <FeedbackRating variant="emoji" emojiStyle="emoji" />
+      <FeedbackFooter thankYouMessage="Thanks for sharing!" />
+    </FeedbackWidget>
+  );
+}`,
     props: [
       ...sharedProps,
       {
@@ -188,12 +205,29 @@ export const widgetDocs: WidgetDocConfig[] = [
     icon: "thumbs",
     preview: "thumbs",
     installSnippet: `bunx shadcn@latest add "https://registry.handshek.workers.dev/r/like-dislike.json"`,
-    usageSnippet: `import { LikeDislike } from "@/components/sentimeter/like-dislike";
+    usageSnippet: `import {
+  FeedbackDescription,
+  FeedbackFooter,
+  FeedbackRating,
+  FeedbackTitle,
+  FeedbackWidget,
+} from "@/components/sentimeter/feedback-system";
 
-<LikeDislike
-  apiKey="pk_your-api-key"
-  location="/docs/getting-started"
-/>`,
+export function LikeDislikeWidget() {
+  return (
+    <FeedbackWidget
+      apiKey="pk_your-api-key" // Optional: add your publishable key to enable analytics
+      widgetType="thumbs"
+    >
+      <FeedbackTitle>Was this doc helpful?</FeedbackTitle>
+      <FeedbackDescription>
+        A quick signal helps us improve the guide.
+      </FeedbackDescription>
+      <FeedbackRating variant="thumbs" ratingStyle="icons" />
+      <FeedbackFooter thankYouMessage="Thanks for the feedback!" />
+    </FeedbackWidget>
+  );
+}`,
     props: [
       ...sharedProps,
       {
@@ -214,12 +248,29 @@ export const widgetDocs: WidgetDocConfig[] = [
     icon: "star",
     preview: "star",
     installSnippet: `bunx shadcn@latest add "https://registry.handshek.workers.dev/r/star-rating.json"`,
-    usageSnippet: `import { StarRating } from "@/components/sentimeter/star-rating";
+    usageSnippet: `import {
+  FeedbackDescription,
+  FeedbackFooter,
+  FeedbackRating,
+  FeedbackTitle,
+  FeedbackWidget,
+} from "@/components/sentimeter/feedback-system";
 
-<StarRating
-  apiKey="pk_your-api-key"
-  location="/checkout"
-/>`,
+export function StarRatingWidget() {
+  return (
+    <FeedbackWidget
+      apiKey="pk_your-api-key" // Optional: add your publishable key to enable analytics
+      widgetType="star"
+    >
+      <FeedbackTitle>Rate your checkout experience</FeedbackTitle>
+      <FeedbackDescription>
+        Tell us how smooth your purchase felt.
+      </FeedbackDescription>
+      <FeedbackRating variant="stars" ratingStyle="icons" />
+      <FeedbackFooter thankYouMessage="Thanks for your rating!" />
+    </FeedbackWidget>
+  );
+}`,
     props: [
       ...sharedProps,
       {

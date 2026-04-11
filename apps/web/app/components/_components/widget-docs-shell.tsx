@@ -145,7 +145,7 @@ function HighlightedCode({
 
   return (
     <div
-      className="overflow-x-auto p-4 text-[13px] leading-relaxed [&_pre]:bg-transparent! [&_code]:font-mono"
+      className="overflow-x-auto p-4 text-[13px] leading-relaxed [&_pre]:bg-transparent! [&_code]:font-mono [&_code]:[counter-reset:line] [&_.line]:relative [&_.line]:block [&_.line]:pl-12 [&_.line]:[counter-increment:line] [&_.line::before]:absolute [&_.line::before]:left-0 [&_.line::before]:w-8 [&_.line::before]:select-none [&_.line::before]:text-right [&_.line::before]:text-zinc-500/80 [&_.line::before]:content-[counter(line)]"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
