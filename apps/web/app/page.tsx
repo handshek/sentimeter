@@ -267,10 +267,16 @@ export default function Home() {
             <Link href="#" className="transition-colors hover:text-foreground">
               Documentation
             </Link>
-            <Link href="#" className="transition-colors hover:text-foreground">
+            <Link
+              href="/privacy"
+              className="transition-colors hover:text-foreground"
+            >
               Privacy
             </Link>
-            <Link href="#" className="transition-colors hover:text-foreground">
+            <Link
+              href="/terms"
+              className="transition-colors hover:text-foreground"
+            >
               Terms
             </Link>
           </div>
