@@ -136,16 +136,27 @@ function HighlightedCode({
   }, [code, lang]);
 
   if (!html) {
+    const lines = code.split("\n");
+
     return (
-      <pre className="overflow-x-auto p-4 text-[13px] leading-relaxed">
-        <code className="font-mono text-zinc-300">{code}</code>
+      <pre className="overflow-x-auto p-4 text-[13px] leading-7">
+        <code className="font-mono whitespace-normal text-zinc-300 [counter-reset:line]">
+          {lines.map((line, index) => (
+            <span
+              key={`line-${index + 1}`}
+              className="relative block min-h-7 whitespace-pre pl-12 [counter-increment:line] before:absolute before:left-0 before:w-8 before:select-none before:text-right before:text-zinc-500/80 before:content-[counter(line)]"
+            >
+              {line || " "}
+            </span>
+          ))}
+        </code>
       </pre>
     );
   }
 
   return (
     <div
-      className="overflow-x-auto p-4 text-[13px] leading-relaxed [&_pre]:bg-transparent! [&_code]:font-mono [&_code]:[counter-reset:line] [&_.line]:relative [&_.line]:block [&_.line]:pl-12 [&_.line]:[counter-increment:line] [&_.line::before]:absolute [&_.line::before]:left-0 [&_.line::before]:w-8 [&_.line::before]:select-none [&_.line::before]:text-right [&_.line::before]:text-zinc-500/80 [&_.line::before]:content-[counter(line)]"
+      className="overflow-x-auto p-4 text-[13px] leading-7 [&_pre]:bg-transparent! [&_pre]:whitespace-normal [&_code]:font-mono [&_code]:whitespace-normal [&_code]:[counter-reset:line] [&_.line]:relative [&_.line]:block [&_.line]:min-h-7 [&_.line]:whitespace-pre [&_.line]:pl-12 [&_.line]:[counter-increment:line] [&_.line:empty::after]:content-[' '] [&_.line::before]:absolute [&_.line::before]:left-0 [&_.line::before]:w-8 [&_.line::before]:select-none [&_.line::before]:text-right [&_.line::before]:text-zinc-500/80 [&_.line::before]:content-[counter(line)]"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
