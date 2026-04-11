@@ -12,7 +12,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { Separator } from "@workspace/ui/components/separator";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs";
 import {
   Table,
   TableBody,
@@ -169,24 +174,112 @@ function CodeBlock({
 }
 
 function InstallBlock({ registryName }: { registryName: string }) {
-  const cmd = `bunx shadcn@latest add "https://registry.handshek.workers.dev/r/${registryName}.json"`;
+  const registryUrl = `https://registry.handshek.workers.dev/r/${registryName}.json`;
+  const installCommands = {
+    pnpm: `pnpm dlx shadcn@latest add "${registryUrl}"`,
+    npm: `npx shadcn@latest add "${registryUrl}"`,
+    yarn: `yarn dlx shadcn@latest add "${registryUrl}"`,
+    bun: `bunx shadcn@latest add "${registryUrl}"`,
+  } as const;
 
   return (
-    <div className="flex items-center gap-3 overflow-hidden rounded-lg border border-border/70 bg-zinc-950 px-4 py-3 text-zinc-100">
-      <Terminal className="h-4 w-4 shrink-0 text-zinc-500" />
-      <code className="flex-1 overflow-x-auto whitespace-nowrap font-mono text-[13px] text-zinc-300 no-scrollbar">
-        {cmd}
-      </code>
-      <CopyButton text={cmd} className="text-zinc-400 hover:bg-white/6" />
+    <div className="overflow-hidden rounded-lg border border-border/70 bg-zinc-950 text-zinc-100">
+      <Tabs defaultValue="pnpm">
+        <div className="flex items-center border-b border-white/5 px-3 py-2">
+          <Terminal className="mr-2 h-4 w-4 shrink-0 text-zinc-500" />
+          <TabsList className="h-auto bg-transparent p-0">
+            {Object.keys(installCommands).map((manager) => (
+              <TabsTrigger
+                key={manager}
+                value={manager}
+                className="h-auto rounded-md px-3 py-1.5 font-mono text-[13px] text-zinc-400 hover:text-zinc-100 data-[state=active]:bg-zinc-900 data-[state=active]:text-zinc-100"
+              >
+                {manager}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <div className="ml-auto">
+            <TabsContent
+              value="pnpm"
+              forceMount
+              className="m-0 data-[state=inactive]:hidden"
+            >
+              <CopyButton
+                text={installCommands.pnpm}
+                className="text-zinc-400 hover:bg-white/6"
+              />
+            </TabsContent>
+            <TabsContent
+              value="npm"
+              forceMount
+              className="m-0 data-[state=inactive]:hidden"
+            >
+              <CopyButton
+                text={installCommands.npm}
+                className="text-zinc-400 hover:bg-white/6"
+              />
+            </TabsContent>
+            <TabsContent
+              value="yarn"
+              forceMount
+              className="m-0 data-[state=inactive]:hidden"
+            >
+              <CopyButton
+                text={installCommands.yarn}
+                className="text-zinc-400 hover:bg-white/6"
+              />
+            </TabsContent>
+            <TabsContent
+              value="bun"
+              forceMount
+              className="m-0 data-[state=inactive]:hidden"
+            >
+              <CopyButton
+                text={installCommands.bun}
+                className="text-zinc-400 hover:bg-white/6"
+              />
+            </TabsContent>
+          </div>
+        </div>
+        <TabsContent value="pnpm" className="m-0">
+          <code className="block overflow-x-auto whitespace-nowrap px-4 py-3 font-mono text-[13px] text-zinc-300 no-scrollbar">
+            {installCommands.pnpm}
+          </code>
+        </TabsContent>
+        <TabsContent value="npm" className="m-0">
+          <code className="block overflow-x-auto whitespace-nowrap px-4 py-3 font-mono text-[13px] text-zinc-300 no-scrollbar">
+            {installCommands.npm}
+          </code>
+        </TabsContent>
+        <TabsContent value="yarn" className="m-0">
+          <code className="block overflow-x-auto whitespace-nowrap px-4 py-3 font-mono text-[13px] text-zinc-300 no-scrollbar">
+            {installCommands.yarn}
+          </code>
+        </TabsContent>
+        <TabsContent value="bun" className="m-0">
+          <code className="block overflow-x-auto whitespace-nowrap px-4 py-3 font-mono text-[13px] text-zinc-300 no-scrollbar">
+            {installCommands.bun}
+          </code>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
 
-function PreviewContainer({ children }: { children: React.ReactNode }) {
+function PreviewContainer({
+  children,
+  controls,
+}: {
+  children: React.ReactNode;
+  controls?: React.ReactNode;
+}) {
   return (
     <div className="group/preview relative overflow-hidden rounded-xl border border-border/60 bg-muted/20 transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/4">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.035)_1px,transparent_1px)] bg-size-[16px_16px] transition-opacity duration-300 group-hover/preview:opacity-60 dark:bg-[radial-gradient(circle,rgba(255,255,255,0.05)_1px,transparent_1px)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(99,102,241,0.06),transparent)] dark:bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(99,102,241,0.12),transparent)]" />
+      {controls ? (
+        <div className="absolute right-4 top-4 z-10">{controls}</div>
+      ) : null}
       <div className="relative flex items-center justify-center px-6 py-14 sm:px-12 sm:py-20">
         {children}
       </div>
@@ -194,7 +287,13 @@ function PreviewContainer({ children }: { children: React.ReactNode }) {
   );
 }
 
-function WidgetPreview({ kind }: { kind: WidgetDocConfig["preview"] }) {
+function WidgetPreview({
+  kind,
+  style,
+}: {
+  kind: WidgetDocConfig["preview"];
+  style: "icons" | "emoji";
+}) {
   switch (kind) {
     case "emoji":
       return (
@@ -202,6 +301,7 @@ function WidgetPreview({ kind }: { kind: WidgetDocConfig["preview"] }) {
           apiKey="pk_demo"
           location="/components"
           submit={mockSubmit}
+          variant={style}
         />
       );
     case "thumbs":
@@ -210,6 +310,7 @@ function WidgetPreview({ kind }: { kind: WidgetDocConfig["preview"] }) {
           apiKey="pk_demo"
           location="/components"
           submit={mockSubmit}
+          variant={style}
         />
       );
     case "star":
@@ -218,9 +319,14 @@ function WidgetPreview({ kind }: { kind: WidgetDocConfig["preview"] }) {
           apiKey="pk_demo"
           location="/components"
           submit={mockSubmit}
+          variant={style}
         />
       );
   }
+}
+
+function defaultPreviewStyle(slug: WidgetDocConfig["slug"]): "icons" | "emoji" {
+  return slug === "emoji-feedback" ? "emoji" : "icons";
 }
 
 export function ComponentsLayoutShell({
@@ -630,6 +736,14 @@ export function ComponentsOverviewContent() {
 }
 
 export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
+  const [previewStyle, setPreviewStyle] = React.useState<"icons" | "emoji">(
+    defaultPreviewStyle(widget.slug),
+  );
+
+  React.useEffect(() => {
+    setPreviewStyle(defaultPreviewStyle(widget.slug));
+  }, [widget.slug]);
+
   return (
     <div className="max-w-3xl space-y-10">
       <div className="space-y-3">
@@ -646,8 +760,26 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
         </p>
       </div>
 
-      <PreviewContainer>
-        <WidgetPreview kind={widget.preview} />
+      <PreviewContainer
+        controls={
+          <Tabs
+            value={previewStyle}
+            onValueChange={(value) =>
+              setPreviewStyle(value as "icons" | "emoji")
+            }
+          >
+            <TabsList className="h-auto border border-border/60 bg-zinc-100 p-1">
+              <TabsTrigger value="icons" className="h-auto px-3 py-1 text-xs">
+                Icon
+              </TabsTrigger>
+              <TabsTrigger value="emoji" className="h-auto px-3 py-1 text-xs">
+                Emoji
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        }
+      >
+        <WidgetPreview kind={widget.preview} style={previewStyle} />
       </PreviewContainer>
 
       <div className="space-y-3">

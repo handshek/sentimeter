@@ -78,7 +78,7 @@ const Ctx = React.createContext<FeedbackContextValue | null>(null);
 
 const DEFAULT_EMOJIS = ["😖", "😕", "😐", "😊", "😍"] as const;
 
-const THUMB_EMOJIS = ["👎", "👍"] as const;
+const THUMB_EMOJIS = ["👍", "👎"] as const;
 
 const LUCIDE_FACE_SET = [
   { Icon: Angry, label: "Angry" },

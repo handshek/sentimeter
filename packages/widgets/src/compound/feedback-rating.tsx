@@ -19,8 +19,8 @@ import type { WidgetSize } from "./feedback-context";
 
 const DEFAULT_EMOJIS = ["😖", "😕", "😐", "😊", "😍"] as const;
 
-/** Thumbs widget emoji mode: value 0 / 1 */
-const THUMB_EMOJIS = ["👎", "👍"] as const;
+/** Thumbs widget emoji mode: value 1 / 0 */
+const THUMB_EMOJIS = ["👍", "👎"] as const;
 
 const LUCIDE_FACE_SET = [
   { Icon: Angry, label: "Angry" },
