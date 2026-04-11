@@ -397,7 +397,7 @@ function WidgetRig({
                 description={
                   kind === "thumbs"
                     ? "Lucide thumbs or Unicode 👎 / 👍"
-                    : "Lucide stars or ⭐ emoji row (muted until preview)"
+                    : "Lucide stars or ⭐ emoji row (grayscale until preview)"
                 }
               >
                 <Select

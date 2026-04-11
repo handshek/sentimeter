@@ -37,7 +37,7 @@ export type StarRatingProps = {
   submitLabel?: string;
   thankYouMessage?: React.ReactNode;
   doneDurationMs?: number;
-  /** Lucide stars vs ⭐ emoji row, muted until preview (same hover behavior) */
+  /** Lucide stars vs ⭐ emoji row, grayscale until included in preview (same hover behavior) */
   variant?: "icons" | "emoji";
   size?: WidgetSize;
   closeButton?: boolean;

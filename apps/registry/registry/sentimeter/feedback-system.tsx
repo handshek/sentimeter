@@ -555,10 +555,10 @@ export function FeedbackRating({
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "select-none",
+                    "select-none transition-[filter,color] duration-200",
                     filled
-                      ? "text-primary"
-                      : "text-muted-foreground/65",
+                      ? "text-primary grayscale-0"
+                      : "text-muted-foreground/65 grayscale",
                   )}
                 >
                   ⭐

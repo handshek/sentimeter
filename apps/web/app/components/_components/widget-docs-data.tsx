@@ -227,7 +227,7 @@ export const widgetDocs: WidgetDocConfig[] = [
         type: '"icons" | "emoji"',
         defaultValue: '"icons"',
         description:
-          "Lucide stars with hover preview, or five ⭐ emoji (muted until included in the preview) for values 1–5.",
+          "Lucide stars with hover preview, or five ⭐ emoji (grayscale until included in the preview) for values 1–5.",
       },
     ],
   },

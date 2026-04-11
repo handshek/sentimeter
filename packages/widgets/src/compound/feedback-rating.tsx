@@ -53,7 +53,7 @@ export type FeedbackRatingProps = {
   /** Only applies when variant is "emoji" (5-point mood scale) */
   emojiStyle?: "emoji" | "icons";
   /**
-   * Thumbs: Lucide vs Unicode 👎/👍. Stars: Lucide vs ⭐ row (muted until preview).
+   * Thumbs: Lucide vs Unicode 👎/👍. Stars: Lucide vs ⭐ row (grayscale until preview).
    * @default "icons"
    */
   ratingStyle?: "icons" | "emoji";
@@ -195,10 +195,10 @@ export function FeedbackRating({
                 <span
                   aria-hidden="true"
                   className={cx(
-                    "select-none",
+                    "select-none transition-[filter,color] duration-200",
                     filled
-                      ? "text-primary"
-                      : "text-muted-foreground/65",
+                      ? "text-primary grayscale-0"
+                      : "text-muted-foreground/65 grayscale",
                   )}
                 >
                   ⭐
