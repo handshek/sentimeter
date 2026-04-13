@@ -59,7 +59,7 @@ export async function assertProjectOwner(
   projectId: Id<"projects">,
   userId: Id<"users">,
 ): Promise<Doc<"projects">> {
-  const project = await ctx.db.get("projects", projectId);
+  const project = await ctx.db.get(projectId);
   if (!project) throw new ConvexError("project_not_found");
   if (project.userId !== userId) throw new ConvexError("forbidden");
   return project;

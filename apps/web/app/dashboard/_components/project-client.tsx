@@ -12,7 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs";
 import {
   ChartContainer,
   ChartTooltip,
@@ -22,18 +27,23 @@ import {
 import { Progress } from "@workspace/ui/components/progress";
 import { Badge } from "@workspace/ui/components/badge";
 import { Textarea } from "@workspace/ui/components/textarea";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@workspace/ui/components/alert-dialog";
 import { cn } from "@workspace/ui/lib/utils";
 import { Panel } from "./panel";
 import { SyncUserGate } from "./sync-user-gate";
 import { useEffect, useMemo, useState } from "react";
 import type { Id } from "../../../convex/_generated/dataModel";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   Activity,
   BarChart3,
@@ -55,11 +65,17 @@ function formatDate(ms: number) {
 }
 
 function formatShortDate(ms: number) {
-  return new Date(ms).toLocaleDateString([], { month: "short", day: "numeric" });
+  return new Date(ms).toLocaleDateString([], {
+    month: "short",
+    day: "numeric",
+  });
 }
 
 function formatShortTime(ms: number) {
-  return new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return new Date(ms).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function formatRelativeTime(ms: number) {
@@ -95,6 +111,7 @@ export function ProjectClient({ projectId }: { projectId: string }) {
 function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   const router = useRouter();
   const params = useParams<{ projectId?: string | string[] }>();
+  const [deleting, setDeleting] = useState(false);
 
   const effectiveProjectId = useMemo(() => {
     const routeProjectId =
@@ -107,10 +124,12 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   }, [params?.projectId, propProjectId]);
 
   const projectQueryArgs = useMemo(() => {
-    return typeof effectiveProjectId === "string" && effectiveProjectId.length > 0
+    return !deleting &&
+      typeof effectiveProjectId === "string" &&
+      effectiveProjectId.length > 0
       ? { projectId: effectiveProjectId as Id<"projects"> }
       : "skip";
-  }, [effectiveProjectId]);
+  }, [deleting, effectiveProjectId]);
 
   const data = useQuery(api.projects.getProject, projectQueryArgs);
 
@@ -125,7 +144,6 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   const [revealKey, setRevealKey] = useState(false);
   const [copied, setCopied] = useState(false);
   const [rotating, setRotating] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [originText, setOriginText] = useState("");
   const [savingOrigins, setSavingOrigins] = useState(false);
   const [savedOrigins, setSavedOrigins] = useState(false);
@@ -138,7 +156,11 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   const project = data?.project;
   const convexProjectId = project?._id;
   const activeKey = data?.activeApiKey?.key;
-  const keyDisplay = !activeKey ? "—" : revealKey ? activeKey : maskKey(activeKey);
+  const keyDisplay = !activeKey
+    ? "—"
+    : revealKey
+      ? activeKey
+      : maskKey(activeKey);
   const hasOriginRestrictions = (project?.allowedOrigins?.length ?? 0) > 0;
   const allowedOriginsValue = (project?.allowedOrigins ?? []).join("\n");
 
@@ -147,18 +169,20 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   }, [allowedOriginsValue]);
 
   const feedbackWidgetType =
-    widgetFilter === "all" ? undefined : (widgetFilter as "emoji" | "thumbs" | "star");
+    widgetFilter === "all"
+      ? undefined
+      : (widgetFilter as "emoji" | "thumbs" | "star");
 
   const analyticsArgs = useMemo(() => {
-    return convexProjectId && projectQueryArgs !== "skip"
+    return !deleting && convexProjectId && projectQueryArgs !== "skip"
       ? { projectId: convexProjectId, range, widgetType: feedbackWidgetType }
       : "skip";
-  }, [convexProjectId, feedbackWidgetType, projectQueryArgs, range]);
+  }, [convexProjectId, deleting, feedbackWidgetType, projectQueryArgs, range]);
 
   const analytics = useQuery(api.feedback.getAnalytics, analyticsArgs);
   const volume = useQuery(api.feedback.getVolumeSeries, analyticsArgs);
   const feedArgs = useMemo(() => {
-    return convexProjectId && projectQueryArgs !== "skip"
+    return !deleting && convexProjectId && projectQueryArgs !== "skip"
       ? {
           projectId: convexProjectId,
           limit: 50,
@@ -166,14 +190,17 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           widgetType: feedbackWidgetType,
         }
       : "skip";
-  }, [convexProjectId, feedbackWidgetType, projectQueryArgs, range]);
+  }, [convexProjectId, deleting, feedbackWidgetType, projectQueryArgs, range]);
   const feed = useQuery(api.feedback.getFeedback, feedArgs);
 
   const chartData = useMemo(() => {
     const points = volume?.points ?? [];
     return points.map((p) => ({
       ts: p.ts,
-      label: volume?.granularity === "hour" ? formatShortTime(p.ts) : formatShortDate(p.ts),
+      label:
+        volume?.granularity === "hour"
+          ? formatShortTime(p.ts)
+          : formatShortDate(p.ts),
       total: p.total,
       positive: p.positive,
       negative: p.negative,
@@ -195,7 +222,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
 
   const sentimentScore =
     totals.positive + totals.negative > 0
-      ? Math.round((totals.positive / (totals.positive + totals.negative)) * 100)
+      ? Math.round(
+          (totals.positive / (totals.positive + totals.negative)) * 100,
+        )
       : 0;
 
   const avgPerDay =
@@ -217,7 +246,11 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
     return entries.slice(0, 8);
   }, [analytics?.byLocation]);
 
-  const byWidgetType = analytics?.byWidgetType ?? { emoji: 0, thumbs: 0, star: 0 };
+  const byWidgetType = analytics?.byWidgetType ?? {
+    emoji: 0,
+    thumbs: 0,
+    star: 0,
+  };
   const byWidgetTypeRows = [
     { key: "emoji" as const, label: "Emoji", value: byWidgetType.emoji },
     { key: "thumbs" as const, label: "Thumbs", value: byWidgetType.thumbs },
@@ -255,7 +288,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   async function onRotate() {
     if (!convexProjectId) return;
     if (
-      !window.confirm("Rotate publishable key? Existing widgets will stop working.")
+      !window.confirm(
+        "Rotate publishable key? Existing widgets will stop working.",
+      )
     ) {
       return;
     }
@@ -271,16 +306,11 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
 
   async function onDelete() {
     if (!convexProjectId) return;
-    if (
-      !window.confirm("Delete this project? This also deletes feedback + keys.")
-    ) {
-      return;
-    }
     setDeleting(true);
     try {
       await deleteProject({ projectId: convexProjectId });
-      router.push("/dashboard");
-    } finally {
+      router.replace("/dashboard");
+    } catch {
       setDeleting(false);
     }
   }
@@ -296,7 +326,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
     setSavingOrigins(true);
     setSavedOrigins(false);
     try {
-      await updateAllowedOrigins({ projectId: convexProjectId, allowedOrigins });
+      await updateAllowedOrigins({
+        projectId: convexProjectId,
+        allowedOrigins,
+      });
       setSavedOrigins(true);
       window.setTimeout(() => setSavedOrigins(false), 1500);
     } finally {
@@ -465,8 +498,8 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             <div>
               <div className="text-sm font-semibold">Allowed origins</div>
               <div className="mt-1 text-xs text-muted-foreground">
-                Leave empty to allow all origins. Add one origin per line to lock
-                writes to specific deployed apps.
+                Leave empty to allow all origins. Add one origin per line to
+                lock writes to specific deployed apps.
               </div>
             </div>
             <Badge variant={hasOriginRestrictions ? "default" : "outline"}>
@@ -488,20 +521,21 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               onClick={onSaveOrigins}
               disabled={!data || savingOrigins}
             >
-              {savingOrigins ? "Saving…" : savedOrigins ? "Saved" : "Save origins"}
+              {savingOrigins
+                ? "Saving…"
+                : savedOrigins
+                  ? "Saved"
+                  : "Save origins"}
             </Button>
             <div className="text-xs text-muted-foreground">
-              Exact origins only, including localhost ports when you choose to use
-              them.
+              Exact origins only, including localhost ports when you choose to
+              use them.
             </div>
           </div>
         </div>
       </Panel>
 
-      <Tabs
-        value={tab}
-        onValueChange={(v) => setTab(v as "overview" | "live")}
-      >
+      <Tabs value={tab} onValueChange={(v) => setTab(v as "overview" | "live")}>
         <TabsList
           variant="line"
           className="mb-6 w-full justify-start gap-0 rounded-none border-b border-border/60 bg-transparent p-0"
@@ -660,7 +694,8 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                           <span className="font-medium">{row.label}</span>
                         </div>
                         <div className="font-mono text-xs tabular-nums text-muted-foreground">
-                          {row.value.toLocaleString()} &middot; {pct.toFixed(1)}%
+                          {row.value.toLocaleString()} &middot; {pct.toFixed(1)}
+                          %
                         </div>
                       </div>
                       <Progress value={pct} />
@@ -674,7 +709,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="text-sm font-semibold">
-                    {widgetFilter === "all" ? "Sentiment Breakdown" : "Value Breakdown"}
+                    {widgetFilter === "all"
+                      ? "Sentiment Breakdown"
+                      : "Value Breakdown"}
                   </div>
                   <div className="mt-1 text-xs text-muted-foreground">
                     Distribution of submitted values
@@ -716,7 +753,8 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                           <span className="font-medium">{label}</span>
                         </div>
                         <div className="font-mono text-xs tabular-nums text-muted-foreground">
-                          {row.count.toLocaleString()} &middot; {row.pct.toFixed(1)}%
+                          {row.count.toLocaleString()} &middot;{" "}
+                          {row.pct.toFixed(1)}%
                         </div>
                       </div>
                       <Progress value={row.pct} />
@@ -773,11 +811,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
         <TabsContent value="live" className="space-y-6">
           <header className="flex flex-col gap-1 border-b border-border/40 pb-4">
             <div className="flex items-center gap-2">
-              <h3 className="text-base font-semibold tracking-tight">Live Feed</h3>
-              <span
-                className="relative flex h-2 w-2 shrink-0"
-                aria-hidden
-              >
+              <h3 className="text-base font-semibold tracking-tight">
+                Live Feed
+              </h3>
+              <span className="relative flex h-2 w-2 shrink-0" aria-hidden>
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
               </span>
@@ -839,7 +876,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                             <span
                               className={cn(
                                 "text-foreground/90",
-                                isFeatured ? "text-sm font-semibold" : "text-xs font-medium",
+                                isFeatured
+                                  ? "text-sm font-semibold"
+                                  : "text-xs font-medium",
                               )}
                             >
                               {f.value}
@@ -885,9 +924,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                           <blockquote
                             className={cn(
                               "mt-2 border-l-2 border-muted-foreground/20 pl-3 italic leading-snug text-muted-foreground",
-                              isFeatured
-                                ? "text-sm"
-                                : "text-xs line-clamp-2",
+                              isFeatured ? "text-sm" : "text-xs line-clamp-2",
                             )}
                           >
                             &ldquo;{f.text!.trim()}&rdquo;
@@ -923,14 +960,36 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           <div className="text-sm text-muted-foreground">
             Deleting a project permanently removes its feedback and keys.
           </div>
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={onDelete}
-            disabled={!data || deleting}
-          >
-            {deleting ? "Deleting…" : "Delete project"}
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                type="button"
+                variant="destructive"
+                disabled={!data || deleting}
+              >
+                {deleting ? "Deleting…" : "Delete project"}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete project?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This permanently deletes the project, feedback, and API keys.
+                  This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  variant="destructive"
+                  onClick={onDelete}
+                  disabled={deleting}
+                >
+                  {deleting ? "Deleting…" : "Delete project"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </Panel>
     </div>

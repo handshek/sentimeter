@@ -175,7 +175,6 @@ export const getProject = query({
   handler: async (ctx, args) => {
     const identity = await requireIdentity(ctx);
     const user = await getUserByClerkIdOrThrow(ctx, identity.subject);
-
     const project = await assertProjectOwner(ctx, args.projectId, user._id);
 
     const keys = await ctx.db

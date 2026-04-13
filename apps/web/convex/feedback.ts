@@ -180,7 +180,6 @@ export const getAnalytics = query({
     const identity = await requireIdentity(ctx);
     const user = await getUserByClerkIdOrThrow(ctx, identity.subject);
     await assertProjectOwner(ctx, args.projectId, user._id);
-
     const { from } = getRangeBounds(args.range as RangePreset | undefined);
 
     const widgetType = args.widgetType;
@@ -261,7 +260,6 @@ export const getVolumeSeries = query({
     const identity = await requireIdentity(ctx);
     const user = await getUserByClerkIdOrThrow(ctx, identity.subject);
     await assertProjectOwner(ctx, args.projectId, user._id);
-
     const requestedRange = (args.range as RangePreset | undefined) ?? "7d";
     const effectiveRange: Exclude<RangePreset, "all"> =
       requestedRange === "all" ? "30d" : requestedRange;
