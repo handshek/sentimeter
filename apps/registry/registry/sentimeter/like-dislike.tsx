@@ -13,8 +13,6 @@ import {
   type WidgetSize,
 } from "./feedback-system";
 
-const DEFAULT_ENDPOINT = "https://coordinated-perch-697.convex.site/feedback";
-
 const DEFAULTS = {
   apiKey: "",
   location: "/",
@@ -47,7 +45,7 @@ export type LikeDislikeProps = {
 export function LikeDislike({
   apiKey = DEFAULTS.apiKey,
   location = DEFAULTS.location,
-  endpoint = DEFAULT_ENDPOINT,
+  endpoint,
   disabled,
   className,
   title = DEFAULTS.title,

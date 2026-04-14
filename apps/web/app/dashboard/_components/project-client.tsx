@@ -56,6 +56,7 @@ import {
   ThumbsDown,
   ThumbsUp,
 } from "lucide-react";
+import { toast } from "sonner";
 
 type RangeOption = "24h" | "7d" | "30d" | "all";
 type WidgetFilterOption = "all" | "emoji" | "thumbs" | "star";
@@ -332,6 +333,8 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
       });
       setSavedOrigins(true);
       window.setTimeout(() => setSavedOrigins(false), 1500);
+    } catch {
+      toast.error("Could not save origins.");
     } finally {
       setSavingOrigins(false);
     }
@@ -389,9 +392,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             <h1 className="text-2xl font-semibold tracking-tight">
               {project.name}
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <div className="text-sm text-muted-foreground">
               Created {formatDate(project.createdAt)}
-            </p>
+            </div>
           </div>
         ) : (
           <div className="space-y-2">
@@ -495,26 +498,47 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
       <Panel>
         <div className="space-y-4">
           <div className="flex items-start justify-between gap-3">
-            <div>
+            <div className="flex items-center gap-2.5">
+              <span
+                className={cn(
+                  "relative flex h-2 w-2 shrink-0",
+                  hasOriginRestrictions
+                    ? "text-emerald-500"
+                    : "text-amber-500",
+                )}
+              >
+                <span
+                  className={cn(
+                    "absolute inline-flex h-full w-full rounded-full opacity-40",
+                    hasOriginRestrictions
+                      ? "bg-emerald-500"
+                      : "animate-pulse bg-amber-500",
+                  )}
+                />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-current" />
+              </span>
               <div className="text-sm font-semibold">Allowed origins</div>
-              <div className="mt-1 text-xs text-muted-foreground">
-                Leave empty to allow all origins. Add one origin per line to
-                lock writes to specific deployed apps.
-              </div>
             </div>
-            <Badge variant={hasOriginRestrictions ? "default" : "outline"}>
-              {hasOriginRestrictions ? "restricted" : "open"}
+            <Badge
+              variant={hasOriginRestrictions ? "default" : "outline"}
+              className={cn(
+                "text-[10px] uppercase tracking-widest",
+                !hasOriginRestrictions &&
+                  "border-amber-500/40 text-amber-600 dark:text-amber-400",
+              )}
+            >
+              {hasOriginRestrictions ? "enforced" : "open"}
             </Badge>
           </div>
 
           <Textarea
             value={originText}
             onChange={(e) => setOriginText(e.target.value)}
-            placeholder={"https://app.example.com\nhttps://staging.example.com"}
+            placeholder={"https://app.example.com\nhttps://staging.example.com\nhttp://localhost:3000"}
             className="min-h-28 font-mono text-sm"
           />
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <Button
               type="button"
               variant="outline"
@@ -527,10 +551,15 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                   ? "Saved"
                   : "Save origins"}
             </Button>
-            <div className="text-xs text-muted-foreground">
-              Exact origins only, including localhost ports when you choose to
-              use them.
-            </div>
+            {!hasOriginRestrictions ? (
+              <span className="text-xs text-amber-600 dark:text-amber-400">
+                All origins accepted -- add domains to restrict
+              </span>
+            ) : (
+              <span className="text-xs text-muted-foreground">
+                {project?.allowedOrigins?.length} origin{(project?.allowedOrigins?.length ?? 0) !== 1 ? "s" : ""} enforced
+              </span>
+            )}
           </div>
         </div>
       </Panel>

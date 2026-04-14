@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import "@workspace/ui/globals.css";
 import ConvexClientProvider from "./components/convex-clerk-provider";
+import { ToasterProvider } from "./components/toaster-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -28,7 +29,10 @@ export default function RootLayout({
     <html lang="en" className={jakarta.variable}>
       <body className={`${jakarta.variable} ${geistMono.variable} font-sans`}>
         <ClerkProvider>
-          <ConvexClientProvider>{children}</ConvexClientProvider>
+          <ConvexClientProvider>
+            {children}
+            <ToasterProvider />
+          </ConvexClientProvider>
         </ClerkProvider>
       </body>
     </html>

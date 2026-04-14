@@ -61,6 +61,7 @@ export const createProject = mutation({
     const projectId = await ctx.db.insert("projects", {
       userId: user._id,
       name,
+      mode: "development",
       allowedOrigins: [],
       createdAt: now,
     });
@@ -150,6 +151,10 @@ export const updateAllowedOrigins = mutation({
     await assertProjectOwner(ctx, args.projectId, user._id);
 
     const allowedOrigins = normalizeOrigins(args.allowedOrigins);
+    const project = await ctx.db.get(args.projectId);
+    if (!project) {
+      throw new ConvexError("project_not_found");
+    }
     await ctx.db.patch(args.projectId, { allowedOrigins });
 
     return { ok: true, allowedOrigins };

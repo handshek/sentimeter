@@ -8,7 +8,10 @@ import type {
   WidgetSubmit,
   WidgetType,
 } from "../types";
-import { submitFeedback } from "../core/submit";
+import {
+  DEFAULT_FEEDBACK_ENDPOINT,
+  submitFeedback,
+} from "../core/submit";
 import { useWidgetMachine } from "../core/use-widget-machine";
 
 export type WidgetSize = "sm" | "default" | "md" | "lg";
@@ -57,7 +60,7 @@ export type FeedbackProviderProps = {
 export function FeedbackProvider({
   apiKey = "",
   location = "/",
-  endpoint = "https://coordinated-perch-697.convex.site/feedback",
+  endpoint = DEFAULT_FEEDBACK_ENDPOINT,
   widgetType,
   disabled = false,
   size = "default",
@@ -116,5 +119,5 @@ export function FeedbackProvider({
     [machine, disabled, size, cancel, text],
   );
 
-  return <Ctx value={value}>{children}</Ctx>;
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

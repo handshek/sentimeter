@@ -1,9 +1,10 @@
 import { ProjectClient } from "../../_components/project-client";
 
-export default function ProjectPage({
+export default async function ProjectPage({
   params,
 }: {
-  params: { projectId: string };
+  params: Promise<{ projectId: string }>;
 }) {
-  return <ProjectClient projectId={params.projectId} />;
+  const { projectId } = await params;
+  return <ProjectClient projectId={projectId} />;
 }

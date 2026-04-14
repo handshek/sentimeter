@@ -11,6 +11,9 @@ export default defineSchema({
   projects: defineTable({
     userId: v.id("users"),
     name: v.string(),
+    mode: v.optional(
+      v.union(v.literal("development"), v.literal("production")),
+    ),
     allowedOrigins: v.optional(v.array(v.string())),
     createdAt: v.number(),
   }).index("by_userId_createdAt", ["userId", "createdAt"]),

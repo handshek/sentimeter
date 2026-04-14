@@ -6,6 +6,11 @@ export type {
   WidgetType,
 } from "./types";
 
+export {
+  DEFAULT_FEEDBACK_ENDPOINT,
+  submitFeedback,
+} from "./core/submit";
+
 export { EmojiFeedback } from "./emoji-feedback";
 export { LikeDislike } from "./like-dislike";
 export { StarRating } from "./star-rating";

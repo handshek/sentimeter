@@ -1,14 +1,18 @@
 import type { WidgetPayload } from "../types";
 
-const DEFAULT_ENDPOINT = "https://coordinated-perch-697.convex.site/feedback";
+/** Sentimeter production HTTP action URL (override via `endpoint` prop for staging/self-host). */
+export const DEFAULT_FEEDBACK_ENDPOINT =
+  "https://coordinated-perch-697.convex.site/feedback";
 
 export async function submitFeedback(
   payload: WidgetPayload,
-  endpoint = DEFAULT_ENDPOINT,
+  endpoint: string = DEFAULT_FEEDBACK_ENDPOINT,
 ) {
   if (!payload.apiKey) return;
 
-  const res = await fetch(endpoint, {
+  const url = endpoint.trim() || DEFAULT_FEEDBACK_ENDPOINT;
+
+  const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

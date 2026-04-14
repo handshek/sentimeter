@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import type { WidgetCallbacks, WidgetSubmit } from "./types";
+import { DEFAULT_FEEDBACK_ENDPOINT } from "./core/submit";
 import {
   FeedbackWidget,
   FeedbackTitle,
@@ -11,8 +12,6 @@ import {
   FeedbackFooter,
   type WidgetSize,
 } from "./compound";
-
-const DEFAULT_ENDPOINT = "https://coordinated-perch-697.convex.site/feedback";
 
 const DEFAULTS = {
   apiKey: "",
@@ -46,7 +45,7 @@ export type EmojiFeedbackProps = {
 export function EmojiFeedback({
   apiKey = DEFAULTS.apiKey,
   location = DEFAULTS.location,
-  endpoint = DEFAULT_ENDPOINT,
+  endpoint = DEFAULT_FEEDBACK_ENDPOINT,
   disabled,
   className,
   title = DEFAULTS.title,

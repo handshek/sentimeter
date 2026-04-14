@@ -5,6 +5,7 @@ import {
   getUserByClerkIdOrThrow,
   requireIdentity,
 } from "./lib/auth";
+import { rateLimiter } from "./lib/rateLimits";
 
 const widgetTypeValidator = v.union(
   v.literal("emoji"),
@@ -60,6 +61,19 @@ function normalizeOrigin(origin: string) {
   }
 }
 
+function getCorsOrigin(
+  allowedOrigins: string[] | undefined,
+  requestOrigin: string | null,
+) {
+  if (!allowedOrigins || allowedOrigins.length === 0) {
+    return "*";
+  }
+  if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
+    return requestOrigin;
+  }
+  return null;
+}
+
 export const submitFeedbackInternal = internalMutation({
   args: {
     apiKey: v.string(),
@@ -93,13 +107,40 @@ export const submitFeedbackInternal = internalMutation({
     }
 
     const allowedOrigins = project.allowedOrigins ?? [];
-    if (allowedOrigins.length > 0) {
-      const requestOrigin =
-        typeof args.origin === "string" ? normalizeOrigin(args.origin) : null;
+    const requestOrigin =
+      typeof args.origin === "string" ? normalizeOrigin(args.origin) : null;
+    const corsOrigin = getCorsOrigin(allowedOrigins, requestOrigin);
 
+    if (allowedOrigins.length > 0) {
       if (!requestOrigin || !allowedOrigins.includes(requestOrigin)) {
-        return { ok: false as const, error: "origin_not_allowed" as const };
+        return {
+          ok: false as const,
+          error: "origin_not_allowed" as const,
+          corsOrigin,
+        };
       }
+    }
+
+    const globalLimit = await rateLimiter.limit(ctx, "feedbackGlobal");
+    if (!globalLimit.ok) {
+      return {
+        ok: false as const,
+        error: "rate_limited" as const,
+        retryAfter: globalLimit.retryAfter,
+        corsOrigin,
+      };
+    }
+
+    const keyLimit = await rateLimiter.limit(ctx, "feedbackPerKey", {
+      key: args.apiKey,
+    });
+    if (!keyLimit.ok) {
+      return {
+        ok: false as const,
+        error: "rate_limited" as const,
+        retryAfter: keyLimit.retryAfter,
+        corsOrigin,
+      };
     }
 
     await ctx.db.insert("feedback", {
@@ -111,7 +152,7 @@ export const submitFeedbackInternal = internalMutation({
       createdAt: Date.now(),
     });
 
-    return { ok: true as const };
+    return { ok: true as const, corsOrigin };
   },
 });
 

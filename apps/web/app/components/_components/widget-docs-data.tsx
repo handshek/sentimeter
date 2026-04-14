@@ -45,8 +45,9 @@ const sharedProps: WidgetDocRow[] = [
   {
     prop: "endpoint",
     type: "string",
-    defaultValue: '"https://coordinated-perch-697.convex.site/feedback"',
-    description: "Override the default feedback submission endpoint.",
+    defaultValue: "Sentimeter production URL",
+    description:
+      "Optional. Defaults to Sentimeter’s hosted ingest URL; override for staging or self-host.",
   },
   {
     prop: "disabled",
@@ -173,7 +174,7 @@ export const widgetDocs: WidgetDocConfig[] = [
 export function EmojiFeedbackWidget() {
   return (
     <FeedbackWidget
-      apiKey="pk_your-api-key" // Optional: add your publishable key to enable analytics
+      apiKey="pk_your-api-key"
       widgetType="emoji"
     >
       <FeedbackTitle>How was your experience?</FeedbackTitle>
@@ -216,7 +217,7 @@ export function EmojiFeedbackWidget() {
 export function LikeDislikeWidget() {
   return (
     <FeedbackWidget
-      apiKey="pk_your-api-key" // Optional: add your publishable key to enable analytics
+      apiKey="pk_your-api-key"
       widgetType="thumbs"
     >
       <FeedbackTitle>Was this doc helpful?</FeedbackTitle>
@@ -259,7 +260,7 @@ export function LikeDislikeWidget() {
 export function StarRatingWidget() {
   return (
     <FeedbackWidget
-      apiKey="pk_your-api-key" // Optional: add your publishable key to enable analytics
+      apiKey="pk_your-api-key"
       widgetType="star"
     >
       <FeedbackTitle>Rate your checkout experience</FeedbackTitle>

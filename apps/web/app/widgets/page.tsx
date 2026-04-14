@@ -34,6 +34,7 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
 import {
+  DEFAULT_FEEDBACK_ENDPOINT,
   EmojiFeedback,
   LikeDislike,
   StarRating,
@@ -58,7 +59,6 @@ import {
   Radar,
   RefreshCw,
 } from "lucide-react";
-
 type SubmitMode = "mock" | "real";
 type MockOutcome = "success" | "error";
 
@@ -400,10 +400,7 @@ function WidgetRig({
                     : "Lucide stars or ⭐ emoji row (grayscale until preview)"
                 }
               >
-                <Select
-                  value={ratingVariant}
-                  onValueChange={setRatingVariant}
-                >
+                <Select value={ratingVariant} onValueChange={setRatingVariant}>
                   <SelectTrigger
                     id={`${kind}-ratingVariant`}
                     className="w-full"
@@ -541,10 +538,12 @@ function WidgetRig({
 }
 
 async function submitToConvexSite(payload: WidgetPayload): Promise<void> {
-  const siteUrl = process.env.NEXT_PUBLIC_CONVEX_SITE_URL;
-  if (!siteUrl) throw new Error("NEXT_PUBLIC_CONVEX_SITE_URL is not set");
+  const siteUrl = process.env.NEXT_PUBLIC_CONVEX_SITE_URL?.trim();
+  const endpoint = siteUrl
+    ? `${siteUrl.replace(/\/+$/, "")}/feedback`
+    : DEFAULT_FEEDBACK_ENDPOINT;
 
-  const res = await fetch(`${siteUrl}/feedback`, {
+  const res = await fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -632,6 +631,7 @@ function WidgetsPlaygroundContent() {
   const common = React.useMemo(
     () => ({
       apiKey,
+      endpoint: DEFAULT_FEEDBACK_ENDPOINT,
       location,
       disabled,
       thankYouMessage,
@@ -698,10 +698,10 @@ function WidgetsPlaygroundContent() {
               mode injects a{" "}
               <code className="font-mono text-[12px]">submit</code> function;
               Real mode posts to{" "}
-              <code className="font-mono text-[12px]">
-                {process.env.NEXT_PUBLIC_CONVEX_SITE_URL ??
-                  "[set NEXT_PUBLIC_CONVEX_SITE_URL]"}
-                /feedback
+              <code className="font-mono text-[12px] break-all">
+                {process.env.NEXT_PUBLIC_CONVEX_SITE_URL
+                  ? `${process.env.NEXT_PUBLIC_CONVEX_SITE_URL.replace(/\/+$/, "")}/feedback`
+                  : DEFAULT_FEEDBACK_ENDPOINT}
               </code>
               .
             </p>
@@ -1054,6 +1054,7 @@ function WidgetsPlaygroundContent() {
                   <div className="relative flex items-center justify-center">
                     <FeedbackWidget
                       apiKey={common.apiKey}
+                      endpoint={common.endpoint}
                       location={common.location}
                       widgetType="emoji"
                       disabled={common.disabled}
@@ -1087,6 +1088,7 @@ function WidgetsPlaygroundContent() {
                   <div className="relative flex items-center justify-center">
                     <FeedbackWidget
                       apiKey={common.apiKey}
+                      endpoint={common.endpoint}
                       location={common.location}
                       widgetType="star"
                       disabled={common.disabled}

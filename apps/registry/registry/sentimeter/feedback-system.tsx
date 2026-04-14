@@ -125,11 +125,13 @@ const FOOTER_BUTTON_SIZE_MAP: Record<WidgetSize, string> = {
 
 export async function submitFeedback(
   payload: WidgetPayload,
-  endpoint = SENTIMETER_CONFIG.endpoint,
+  endpoint: string = SENTIMETER_CONFIG.endpoint,
 ) {
   if (!payload.apiKey) return;
 
-  const res = await fetch(endpoint, {
+  const url = endpoint.trim() || SENTIMETER_CONFIG.endpoint;
+
+  const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
