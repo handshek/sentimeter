@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "motion/react";
 import { Layers } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
+import dashboardDemo from "../../../public/dashboard-demo.png";
 
 export function HeroSection({
   dashboardHref,
@@ -68,12 +70,16 @@ export function HeroSection({
           </div>
         </div>
 
-        <div className="perspective-near mt-16 translate-x-8 md:absolute md:top-0 md:-right-16 md:bottom-0 md:left-1/2 md:mt-0 md:translate-x-0">
-          <div className="relative h-full before:absolute before:-inset-x-4 before:top-0 before:bottom-7 before:skew-x-6 before:rounded-[calc(var(--radius)+1rem)] before:border before:border-foreground/5 before:bg-foreground/5">
-            <div className="relative h-full -translate-y-6 skew-x-6 overflow-hidden rounded-lg border border-transparent bg-background shadow-md shadow-foreground/10 ring-1 ring-foreground/5">
-              <div className="flex h-full min-h-[460px] items-center justify-center bg-muted/40 text-sm text-muted-foreground">
-                Dashboard preview
-              </div>
+        <div className="perspective-near mt-16 translate-x-14 md:absolute md:top-0 md:-right-16 md:bottom-0 md:left-1/2 md:mt-0 md:translate-x-24">
+          <div className="relative h-full before:absolute before:-inset-x-4 before:top-0 before:bottom-7 before:left-2 before:skew-x-6 before:rounded-[calc(var(--radius)+1rem)] before:border before:border-foreground/5 before:bg-foreground/5">
+            <div className="relative w-full -translate-y-14 translate-x-8 skew-x-6 overflow-hidden rounded-2xl border border-transparent bg-muted/30 shadow-md shadow-foreground/10 ring-1 ring-foreground/5">
+              <Image
+                src={dashboardDemo}
+                alt="Sentimeter dashboard — analytics overview"
+                priority
+                sizes="(min-width: 1024px) 720px, (min-width: 768px) 55vw, 100vw"
+                className="block h-auto w-full"
+              />
             </div>
           </div>
         </div>
