@@ -2,11 +2,17 @@
 
 import { useConvexAuth, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Button } from "@workspace/ui/components/button";
 import { Panel } from "./panel";
 
-export function SyncUserGate({ children }: { children: ReactNode }) {
+export function SyncUserGate({
+  children,
+  fallback,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
+}) {
   const { isLoading, isAuthenticated } = useConvexAuth();
   const syncUser = useMutation(api.users.syncUser);
 
@@ -32,39 +38,38 @@ export function SyncUserGate({ children }: { children: ReactNode }) {
     };
   }, [error, isAuthenticated, synced, syncUser]);
 
-  const content = useMemo(() => {
-    if (isLoading || !isAuthenticated || !synced) {
-      return { kind: "panel" as const, node: <LoadingSkeleton /> };
-    }
-
-    if (error) {
-      return {
-        kind: "panel" as const,
-        node: (
-          <div className="space-y-3">
-            <div className="text-sm font-semibold">Unable to load</div>
-            <div className="text-sm text-muted-foreground">
-              Please refresh the page or try again.
-            </div>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setError(null);
-                setSynced(false);
-              }}
-            >
-              Retry
-            </Button>
+  if (error) {
+    return (
+      <Panel>
+        <div className="space-y-3">
+          <div className="text-sm font-semibold">Unable to load</div>
+          <div className="text-sm text-muted-foreground">
+            Please refresh the page or try again.
           </div>
-        ),
-      };
-    }
+          <Button
+            variant="outline"
+            onClick={() => {
+              setError(null);
+              setSynced(false);
+            }}
+          >
+            Retry
+          </Button>
+        </div>
+      </Panel>
+    );
+  }
 
-    return { kind: "children" as const, node: children };
-  }, [children, error, isAuthenticated, isLoading, synced]);
+  if (isLoading || !isAuthenticated || !synced) {
+    if (fallback !== undefined) return <>{fallback}</>;
+    return (
+      <Panel>
+        <LoadingSkeleton />
+      </Panel>
+    );
+  }
 
-  if (content.kind === "children") return <>{content.node}</>;
-  return <Panel>{content.node}</Panel>;
+  return <>{children}</>;
 }
 
 function LoadingSkeleton() {
