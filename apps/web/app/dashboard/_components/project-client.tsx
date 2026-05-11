@@ -301,30 +301,27 @@ function renderVolumeChart({
       <RechartsAreaChart data={chartData} margin={margin}>
         {sharedAxes}
         <Area
-          dataKey="positive"
+          dataKey="negative"
           type="monotone"
-          stackId="s"
-          stroke="var(--color-positive)"
-          fill="var(--color-positive)"
-          fillOpacity={0.28}
+          stroke="var(--color-negative)"
+          fill="var(--color-negative)"
+          fillOpacity={0.14}
           strokeWidth={2}
         />
         <Area
           dataKey="neutral"
           type="monotone"
-          stackId="s"
           stroke="var(--color-neutral)"
           fill="var(--color-neutral)"
-          fillOpacity={0.28}
+          fillOpacity={0.18}
           strokeWidth={2}
         />
         <Area
-          dataKey="negative"
+          dataKey="positive"
           type="monotone"
-          stackId="s"
-          stroke="var(--color-negative)"
-          fill="var(--color-negative)"
-          fillOpacity={0.28}
+          stroke="var(--color-positive)"
+          fill="var(--color-positive)"
+          fillOpacity={0.22}
           strokeWidth={2}
         />
       </RechartsAreaChart>
