@@ -21,7 +21,7 @@ It consists of:
 
 ## Running locally
 
-- `bun run dev` — Starts the dashboard and widgets in dev mode
+- `bun run dev` — Starts the dashboard, widgets, and Convex dev server together in the Turborepo terminal UI
 - `bun run build` — Builds all packages and apps
 - `bun run registry:build` — Builds the shadcn registry (outputs to apps/registry/public/r/\*\*); run from repo root or from apps/registry
 - `bun run lint` — Lints the entire monorepo

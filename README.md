@@ -67,13 +67,9 @@ git clone <repo> && cd sentimeter
 bun install
 ```
 
-**1. Convex** — Create a project at [convex.dev](https://convex.dev), then:
+**1. Convex** — Create a project at [convex.dev](https://convex.dev). On first setup, Convex may prompt you to log in or choose a project when the dev loop starts.
 
-```bash
-cd apps/web && npx convex dev
-```
-
-Note the `NEXT_PUBLIC_CONVEX_URL` and `NEXT_PUBLIC_CONVEX_SITE_URL` it prints.
+When Convex is configured, make note of the `NEXT_PUBLIC_CONVEX_URL` and `NEXT_PUBLIC_CONVEX_SITE_URL` values it prints.
 
 **2. Clerk** — Create an app at [clerk.com](https://clerk.com). Copy the publishable and secret keys. Set the JWT issuer domain in your Convex dashboard:
 
@@ -94,6 +90,7 @@ cp apps/web/.env.example apps/web/.env.local
 bun run dev
 # Dashboard → http://localhost:3000/dashboard
 # Widgets   → http://localhost:3000/widgets
+# Convex    → runs alongside Next.js in the Turborepo terminal UI
 ```
 
 ---
@@ -123,7 +120,7 @@ bun run dev
 
 | Command                  | What it does                                       |
 | ------------------------ | -------------------------------------------------- |
-| `bun run dev`            | Dashboard + widgets dev server                     |
+| `bun run dev`            | Dashboard, widgets, and Convex dev servers         |
 | `bun run build`          | Build everything                                   |
 | `bun run registry:build` | Generate registry JSON → `apps/registry/public/r/` |
 | `bun run lint`           | Lint the monorepo                                  |
