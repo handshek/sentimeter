@@ -14,6 +14,9 @@ npx shadcn@latest add "https://registry.handshek.workers.dev/r/emoji-feedback.js
 
 - **Live:** [https://try-sentimeter.vercel.app](https://try-sentimeter.vercel.app)
 - **YT Demo:** [https://youtu.be/EdtzrnbjEVI](https://youtu.be/EdtzrnbjEVI)
+- **Docs:** [docs/README.md](docs/README.md)
+- **Context:** [CONTEXT.md](CONTEXT.md)
+- **Design Philosophy:** [DESIGN_PHILOSOPHY.md](DESIGN_PHILOSOPHY.md)
 
 ## How it works
 
@@ -54,7 +57,6 @@ Three moving parts:
 | Auth      | Clerk → Convex (JWT)                                 |
 | Backend   | Convex (realtime DB, server functions, HTTP actions) |
 | Registry  | Hono + Cloudflare Workers                            |
-| Testing   | TestSprite MCP                                       |
 
 ---
 
@@ -125,6 +127,10 @@ bun run dev
 | `bun run registry:build` | Generate registry JSON → `apps/registry/public/r/` |
 | `bun run lint`           | Lint the monorepo                                  |
 | `bun run check-types`    | Type-check                                         |
+| `bun run test`           | Run local unit tests                               |
+| `bun run check-env`      | Validate dashboard environment variables           |
+| `bun run check-docs`     | Validate local Markdown links                      |
+| `bun run check-registry` | Validate shadcn registry source/generated output   |
 
 Registry deploy (from `apps/registry`):
 
@@ -137,9 +143,7 @@ bun run deploy
 
 ## Challenges
 
-**Clerk two-step sign-in** — Clerk's flow is email → Continue → password → Continue, not a single form. TestSprite tests follow this sequence explicitly.
-
-**TestSprite plan overwrite** — An empty MCP response overwrote the test plan JSON. Fixed by maintaining the plan manually and calling `generate_code_and_execute` directly.
+**Clerk two-step sign-in** — Clerk's flow is email → Continue → password → Continue, not a single form.
 
 **Vercel monorepo deploy** — Setting the Vercel project root to `apps/web` caused `npm install` to run in isolation and break workspace deps. Fixed by deploying from repo root so Turborepo resolves the full workspace.
 

@@ -4,12 +4,13 @@
 
 Sentimeter is a shadcn-first feedback collection system. Developers install open-code React components from the shadcn registry into their own shadcn projects, the components adapt to the host app's existing UI structure, their users submit emoji/star/thumbs reactions, and the developer sees real-time analytics on a hosted dashboard.
 
+Read `CONTEXT.md` before domain-level refactors, architecture work, or renaming product concepts. Read `DESIGN_PHILOSOPHY.md` before UI work.
+
 It consists of:
 
 - A Next.js 15 dashboard (apps/web)
 - A shadcn registry app (apps/registry) — Cloudflare Worker serving registry JSON so developers can `shadcn add "https://registry.handshek.workers.dev/r/emoji-feedback.json"` and have the component fit naturally into their existing shadcn project
 - An embeddable widgets package (packages/widgets)
-- AI-generated test cases using TestSprite MCP (testsprite_tests)
 
 ## Tech stack
 
@@ -17,7 +18,6 @@ It consists of:
 - **Frontend:** Next.js 16 (App Router), TypeScript, TailwindCSS v4, shadcn/ui, lucide-react icons
 - **Backend & DB:** Convex (realtime database, server functions, HTTP actions)
 - **Auth:** Clerk (syncs to Convex)
-- **Quality Assurance:** TestSprite MCP for AI-driven testing
 
 ## Running locally
 
@@ -27,6 +27,8 @@ It consists of:
 - `bun run lint` — Lints the entire monorepo
 - `bun run format` — Formats the codebase with Prettier
 - `bun run check-types` — Runs type checking across the repo
+- `bun run test` — Runs local unit tests
+- `bun run check-env` — Checks local dashboard environment variables
 
 **Do NOT run:** `bun run dev` (assume already running)
 
@@ -184,24 +186,6 @@ Only use `bun` or `bunx` for installing dependencies
 │       ├── package.json *
 │       ├── tsconfig.json *
 │       └── eslint.config.mjs
-├── testsprite_tests
-│   ├── README.md *
-│   ├── PRD.md
-│   ├── TC001_Access_dashboard_after_signing_in_and_see_main_dashboard_UI_elements.py +
-│   ├── TC001_Landing_page_loads_and_shows_primary_Sign_In_call_to_action.py +
-│   ├── TC002_Create_a_new_project_successfully_from_the_dashboard_modal.py +
-│   ├── TC002_Landing_page_Sign_In_CTA_navigates_to_Clerk_sign_in_page.py +
-│   ├── TC003_Landing_page_loads_and_shows_primary_Sign_Up_call_to_action.py +
-│   ├── TC003_Project_creation_validation_missing_project_name_shows_error_and_does_not_create_project.py +
-│   ├── TC004_Dashboard_shows_Create_Project_entry_point_for_signed_in_users.py +
-│   ├── TC004_Landing_page_Sign_Up_CTA_navigates_to_Clerk_sign_up_page.py +
-│   ├── TC005_Direct_navigation_to_sign_in_renders_Clerk_sign_in_widget_for_signed_out_user.py +
-│   ├── TC005_Projects_list_area_is_visible_on_the_dashboard_after_sign_in.py +
-│   ├── TC006_Direct_navigation_to_sign_up_renders_Clerk_sign_up_widget_for_signed_out_user.py +
-│   ├── open_dashboard.mjs
-│   ├── run_mcp.mjs
-│   ├── standard_prd.json
-│   └── testsprite_frontend_test_plan.json
 ├── .gitignore *
 ├── .npmrc *
 ├── README.md *
@@ -216,7 +200,6 @@ Only use `bun` or `bunx` for installing dependencies
 
 ## Rules
 
-1. Ensure TestSprite MCP is used to generate test cases wherever _important_.
-2. Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without having to explicitly ask.
-3. Do not ever create custom UI components or SVG icons unless explicitly asked to. Always install new/missing components from shadcn-ui.
-4. If a task requires an interactive CLI prompt, login flow, or manual browser authorization, stop before starting it, ask the user to run that step themselves, and continue once they confirm it is done.
+1. Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without having to explicitly ask.
+2. Do not ever create custom UI components or SVG icons unless explicitly asked to. Always install new/missing components from shadcn-ui.
+3. If a task requires an interactive CLI prompt, login flow, or manual browser authorization, stop before starting it, ask the user to run that step themselves, and continue once they confirm it is done.

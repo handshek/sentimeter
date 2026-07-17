@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Button } from "@workspace/ui/components/button";
 
 export default function DashboardError({
-  error,
   reset,
 }: {
   error: Error & { digest?: string };

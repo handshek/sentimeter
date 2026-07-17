@@ -7,27 +7,11 @@ import {
   getUserByClerkIdOrThrow,
   requireIdentity,
 } from "./lib/auth";
+import { normalizeAllowedOrigins } from "./lib/feedback-domain";
 import { nanoid } from "./lib/nanoid";
 
 function generatePublicKey() {
   return `pk_${nanoid(24)}`;
-}
-
-function normalizeOrigins(origins: string[]) {
-  return Array.from(
-    new Set(
-      origins
-        .map((origin) => origin.trim())
-        .filter(Boolean)
-        .map((origin) => {
-          try {
-            return new URL(origin).origin;
-          } catch {
-            throw new ConvexError("invalid_origin");
-          }
-        }),
-    ),
-  );
 }
 
 async function revokeAllActiveKeysForProject(
@@ -150,7 +134,12 @@ export const updateAllowedOrigins = mutation({
     const user = await getUserByClerkIdOrThrow(ctx, identity.subject);
     await assertProjectOwner(ctx, args.projectId, user._id);
 
-    const allowedOrigins = normalizeOrigins(args.allowedOrigins);
+    let allowedOrigins: string[];
+    try {
+      allowedOrigins = normalizeAllowedOrigins(args.allowedOrigins);
+    } catch {
+      throw new ConvexError("invalid_origin");
+    }
     const project = await ctx.db.get(args.projectId);
     if (!project) {
       throw new ConvexError("project_not_found");
@@ -184,7 +173,9 @@ export const getProject = query({
 
     const keys = await ctx.db
       .query("apiKeys")
-      .withIndex("by_projectId_revokedAt", (q) => q.eq("projectId", project._id))
+      .withIndex("by_projectId_revokedAt", (q) =>
+        q.eq("projectId", project._id),
+      )
       .collect();
 
     const activeApiKey =

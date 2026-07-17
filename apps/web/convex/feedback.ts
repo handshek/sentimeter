@@ -5,6 +5,17 @@ import {
   getUserByClerkIdOrThrow,
   requireIdentity,
 } from "./lib/auth";
+import {
+  MAX_CREATED_AT,
+  clampFeedbackLimit,
+  classifyFeedbackSentiment,
+  getCorsOrigin,
+  getFeedbackRangeBounds,
+  isFeedbackValueAllowed,
+  normalizeOrigin,
+  type RangePreset,
+  type WidgetType,
+} from "./lib/feedback-domain";
 import { rateLimiter } from "./lib/rateLimits";
 
 const widgetTypeValidator = v.union(
@@ -12,67 +23,6 @@ const widgetTypeValidator = v.union(
   v.literal("thumbs"),
   v.literal("star"),
 );
-
-type WidgetType = "emoji" | "thumbs" | "star";
-type RangePreset = "24h" | "7d" | "30d" | "all";
-
-const MAX_CREATED_AT = Number.MAX_SAFE_INTEGER;
-
-function clampLimit(limit: number, max = 200) {
-  if (!Number.isFinite(limit)) return 50;
-  return Math.max(1, Math.min(Math.floor(limit), max));
-}
-
-function getRangeBounds(
-  range: RangePreset | undefined,
-): { from?: number; to: number } {
-  const now = Date.now();
-  const preset = range ?? "7d";
-  if (preset === "all") return { to: now };
-  const ms =
-    preset === "24h"
-      ? 24 * 60 * 60 * 1000
-      : preset === "7d"
-        ? 7 * 24 * 60 * 60 * 1000
-        : 30 * 24 * 60 * 60 * 1000;
-  return { from: now - ms, to: now };
-}
-
-function assertValue(widgetType: WidgetType, value: number) {
-  if (!Number.isFinite(value)) return false;
-  if (widgetType === "thumbs") return value === 0 || value === 1;
-  return Number.isInteger(value) && value >= 1 && value <= 5;
-}
-
-function classifySentiment(widgetType: WidgetType, value: number) {
-  if (widgetType === "thumbs") {
-    return value === 1 ? ("positive" as const) : ("negative" as const);
-  }
-  if (value >= 4) return "positive" as const;
-  if (value <= 2) return "negative" as const;
-  return "neutral" as const;
-}
-
-function normalizeOrigin(origin: string) {
-  try {
-    return new URL(origin).origin;
-  } catch {
-    return null;
-  }
-}
-
-function getCorsOrigin(
-  allowedOrigins: string[] | undefined,
-  requestOrigin: string | null,
-) {
-  if (!allowedOrigins || allowedOrigins.length === 0) {
-    return "*";
-  }
-  if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
-    return requestOrigin;
-  }
-  return null;
-}
 
 export const submitFeedbackInternal = internalMutation({
   args: {
@@ -84,7 +34,7 @@ export const submitFeedbackInternal = internalMutation({
     origin: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    if (!assertValue(args.widgetType, args.value)) {
+    if (!isFeedbackValueAllowed(args.widgetType, args.value)) {
       return { ok: false as const, error: "invalid_value" as const };
     }
     const location = args.location.trim();
@@ -162,7 +112,12 @@ export const getFeedback = query({
     limit: v.optional(v.number()),
     widgetType: v.optional(widgetTypeValidator),
     range: v.optional(
-      v.union(v.literal("24h"), v.literal("7d"), v.literal("30d"), v.literal("all")),
+      v.union(
+        v.literal("24h"),
+        v.literal("7d"),
+        v.literal("30d"),
+        v.literal("all"),
+      ),
     ),
   },
   handler: async (ctx, args) => {
@@ -170,8 +125,10 @@ export const getFeedback = query({
     const user = await getUserByClerkIdOrThrow(ctx, identity.subject);
     await assertProjectOwner(ctx, args.projectId, user._id);
 
-    const limit = clampLimit(args.limit ?? 50);
-    const { from } = getRangeBounds(args.range as RangePreset | undefined);
+    const limit = clampFeedbackLimit(args.limit ?? 50);
+    const { from } = getFeedbackRangeBounds(
+      args.range as RangePreset | undefined,
+    );
 
     if (args.widgetType) {
       const widgetType = args.widgetType;
@@ -185,9 +142,7 @@ export const getFeedback = query({
               .gte("createdAt", from)
               .lt("createdAt", MAX_CREATED_AT);
           }
-          return q
-            .eq("projectId", args.projectId)
-            .eq("widgetType", widgetType);
+          return q.eq("projectId", args.projectId).eq("widgetType", widgetType);
         })
         .order("desc")
         .take(limit);
@@ -214,14 +169,21 @@ export const getAnalytics = query({
     projectId: v.id("projects"),
     widgetType: v.optional(widgetTypeValidator),
     range: v.optional(
-      v.union(v.literal("24h"), v.literal("7d"), v.literal("30d"), v.literal("all")),
+      v.union(
+        v.literal("24h"),
+        v.literal("7d"),
+        v.literal("30d"),
+        v.literal("all"),
+      ),
     ),
   },
   handler: async (ctx, args) => {
     const identity = await requireIdentity(ctx);
     const user = await getUserByClerkIdOrThrow(ctx, identity.subject);
     await assertProjectOwner(ctx, args.projectId, user._id);
-    const { from } = getRangeBounds(args.range as RangePreset | undefined);
+    const { from } = getFeedbackRangeBounds(
+      args.range as RangePreset | undefined,
+    );
 
     const widgetType = args.widgetType;
 
@@ -255,8 +217,15 @@ export const getAnalytics = query({
           .collect();
 
     const byValue: Record<string, number> = {};
-    const byLocation: Record<string, { total: number; byValue: Record<string, number> }> = {};
-    const byWidgetType: Record<WidgetType, number> = { emoji: 0, thumbs: 0, star: 0 };
+    const byLocation: Record<
+      string,
+      { total: number; byValue: Record<string, number> }
+    > = {};
+    const byWidgetType: Record<WidgetType, number> = {
+      emoji: 0,
+      thumbs: 0,
+      star: 0,
+    };
     const byWidgetTypeByValue: Record<WidgetType, Record<string, number>> = {
       emoji: {},
       thumbs: {},
@@ -294,7 +263,12 @@ export const getVolumeSeries = query({
     projectId: v.id("projects"),
     widgetType: v.optional(widgetTypeValidator),
     range: v.optional(
-      v.union(v.literal("24h"), v.literal("7d"), v.literal("30d"), v.literal("all")),
+      v.union(
+        v.literal("24h"),
+        v.literal("7d"),
+        v.literal("30d"),
+        v.literal("all"),
+      ),
     ),
   },
   handler: async (ctx, args) => {
@@ -305,7 +279,7 @@ export const getVolumeSeries = query({
     const effectiveRange: Exclude<RangePreset, "all"> =
       requestedRange === "all" ? "30d" : requestedRange;
 
-    const bounds = getRangeBounds(effectiveRange);
+    const bounds = getFeedbackRangeBounds(effectiveRange);
     const now = bounds.to;
     const from = bounds.from ?? now - 7 * 24 * 60 * 60 * 1000;
     const to = bounds.to;
@@ -333,20 +307,25 @@ export const getVolumeSeries = query({
           )
           .collect();
 
-    const granularity = effectiveRange === "24h" ? ("hour" as const) : ("day" as const);
+    const granularity =
+      effectiveRange === "24h" ? ("hour" as const) : ("day" as const);
     const bucketSizeMs =
       granularity === "hour" ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
 
     const start = from - (from % bucketSizeMs);
     const bucketCount = Math.max(1, Math.ceil((to - start) / bucketSizeMs));
 
-    const buckets: Array<{ ts: number; total: number; positive: number; negative: number }> =
-      Array.from({ length: bucketCount }).map((_, idx) => ({
-        ts: start + idx * bucketSizeMs,
-        total: 0,
-        positive: 0,
-        negative: 0,
-      }));
+    const buckets: Array<{
+      ts: number;
+      total: number;
+      positive: number;
+      negative: number;
+    }> = Array.from({ length: bucketCount }).map((_, idx) => ({
+      ts: start + idx * bucketSizeMs,
+      total: 0,
+      positive: 0,
+      negative: 0,
+    }));
 
     for (const doc of docs) {
       const idx = Math.floor((doc.createdAt - start) / bucketSizeMs);
@@ -354,7 +333,7 @@ export const getVolumeSeries = query({
       const bucket = buckets[idx];
       if (!bucket) continue;
       bucket.total += 1;
-      const sentiment = classifySentiment(doc.widgetType, doc.value);
+      const sentiment = classifyFeedbackSentiment(doc.widgetType, doc.value);
       if (sentiment === "positive") bucket.positive += 1;
       if (sentiment === "negative") bucket.negative += 1;
     }
