@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Textarea } from "@workspace/ui/components/textarea";
-import { cx } from "../core/ui";
+import { cn } from "@workspace/ui/lib/utils";
 import { useFeedbackContext } from "./feedback-context";
 import type { WidgetSize } from "./feedback-context";
 
@@ -28,9 +28,9 @@ export function FeedbackInput({
   if (selectedValue === null) return null;
 
   return (
-    <div className={cx("mt-4", className)}>
+    <div className={cn("mt-4", className)}>
       <Textarea
-        className={cx(
+        className={cn(
           "w-full resize-none rounded-2xl border border-border/60 bg-muted/15 leading-relaxed",
           TEXTAREA_SIZE_MAP[size],
         )}

@@ -3,7 +3,13 @@
   "type": "module",
   "scripts": {
     "dev:registry": "wrangler dev",
-    "registry:build": "shadcn build",
+    "registry:emit": "bun run scripts/registry-cli.ts emit",
+    "registry:check": "bun run scripts/registry-cli.ts check",
+    "registry:build": "bun run scripts/registry-cli.ts build",
+    "build": "bun run registry:build",
+    "test": "bun test scripts",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
     "deploy": "wrangler deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"
   },
@@ -11,7 +17,12 @@
     "hono": "^4.12.8"
   },
   "devDependencies": {
-    "shadcn": "^3.5.1-canary.0",
+    "@repo/eslint-config": "*",
+    "@types/node": "^22.15.3",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
+    "shadcn": "3.5.1-canary.0",
+    "typescript": "5.9.2",
     "wrangler": "^4.4.0"
   }
 }

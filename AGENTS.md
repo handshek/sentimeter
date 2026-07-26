@@ -8,7 +8,7 @@ Read `CONTEXT.md` before domain-level refactors, architecture work, or renaming 
 
 It consists of:
 
-- A Next.js 15 dashboard (apps/web)
+- A Next.js 16 dashboard (apps/web)
 - A shadcn registry app (apps/registry) — Cloudflare Worker serving registry JSON so developers can `shadcn add "https://registry.handshek.workers.dev/r/emoji-feedback.json"` and have the component fit naturally into their existing shadcn project
 - An embeddable widgets package (packages/widgets)
 
@@ -23,6 +23,8 @@ It consists of:
 
 - `bun run dev` — Starts the dashboard, widgets, and Convex dev server together in the Turborepo terminal UI
 - `bun run build` — Builds all packages and apps
+- `bun run registry:emit` — Emits ignored Registry Item staging from canonical Widget source
+- `bun run check-registry` — Builds and validates Registry Items in temporary output
 - `bun run registry:build` — Builds the shadcn registry (outputs to apps/registry/public/r/\*\*); run from repo root or from apps/registry
 - `bun run lint` — Lints the entire monorepo
 - `bun run format` — Formats the codebase with Prettier
@@ -46,12 +48,22 @@ Only use `bun` or `bunx` for installing dependencies
 │   │   │   ├── like-dislike.json
 │   │   │   ├── registry.json
 │   │   │   └── star-rating.json
-│   │   ├── registry
+│   │   ├── .generated
 │   │   │   └── sentimeter
-│   │   │       ├── emoji-feedback.tsx +
-│   │   │       ├── feedback-system.tsx +
-│   │   │       ├── like-dislike.tsx +
-│   │   │       └── star-rating.tsx +
+│   │   │       ├── feedback-system
+│   │   │       │   ├── compound
+│   │   │       │   ├── core
+│   │   │       │   ├── index.ts
+│   │   │       │   └── types.ts
+│   │   │       ├── emoji-feedback.tsx
+│   │   │       ├── like-dislike.tsx
+│   │   │       └── star-rating.tsx
+│   │   ├── scripts
+│   │   │   ├── registry-adapter.ts +
+│   │   │   ├── registry-cli.ts +
+│   │   │   ├── registry-plan.ts +
+│   │   │   ├── registry-adapter.test.ts +
+│   │   │   └── registry-plan.test.ts +
 │   │   ├── src
 │   │   │   └── index.ts +
 │   │   ├── .gitignore *
@@ -176,8 +188,9 @@ Only use `bun` or `bunx` for installing dependencies
 │       │   │   └── index.ts +
 │       │   ├── core
 │       │   │   ├── submit.ts +
-│       │   │   ├── ui.ts +
 │       │   │   └── use-widget-machine.ts +
+│       │   ├── feedback-system.ts +
+│       │   ├── feedback-system.test.tsx +
 │       │   ├── index.ts * +
 │       │   ├── emoji-feedback.tsx +
 │       │   ├── like-dislike.tsx +

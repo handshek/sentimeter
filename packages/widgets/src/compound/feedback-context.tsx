@@ -8,10 +8,7 @@ import type {
   WidgetSubmit,
   WidgetType,
 } from "../types";
-import {
-  DEFAULT_FEEDBACK_ENDPOINT,
-  submitFeedback,
-} from "../core/submit";
+import { DEFAULT_FEEDBACK_ENDPOINT, submitFeedback } from "../core/submit";
 import { useWidgetMachine } from "../core/use-widget-machine";
 
 export type WidgetSize = "sm" | "default" | "md" | "lg";
@@ -25,7 +22,7 @@ export type FeedbackContextValue = {
   disabled: boolean;
   size: WidgetSize;
   select: (value: number) => void;
-  submitSelected: (text?: string) => void;
+  submitSelected: (text?: string) => Promise<void>;
   cancel: () => void;
   text: string;
   setText: React.Dispatch<React.SetStateAction<string>>;

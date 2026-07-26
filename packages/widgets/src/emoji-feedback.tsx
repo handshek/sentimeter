@@ -1,17 +1,18 @@
 "use client";
 
 import * as React from "react";
-import type { WidgetCallbacks, WidgetSubmit } from "./types";
-import { DEFAULT_FEEDBACK_ENDPOINT } from "./core/submit";
 import {
+  DEFAULT_FEEDBACK_ENDPOINT,
   FeedbackWidget,
   FeedbackTitle,
   FeedbackDescription,
   FeedbackRating,
   FeedbackInput,
   FeedbackFooter,
+  type WidgetCallbacks,
+  type WidgetSubmit,
   type WidgetSize,
-} from "./compound";
+} from "./feedback-system";
 
 const DEFAULTS = {
   apiKey: "",

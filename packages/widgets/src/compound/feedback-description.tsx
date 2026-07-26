@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cx } from "../core/ui";
+import { cn } from "@workspace/ui/lib/utils";
 
 export type FeedbackDescriptionProps = {
   className?: string;
@@ -13,6 +13,6 @@ export function FeedbackDescription({
   children,
 }: FeedbackDescriptionProps) {
   return (
-    <p className={cx("text-sm text-muted-foreground", className)}>{children}</p>
+    <p className={cn("text-sm text-muted-foreground", className)}>{children}</p>
   );
 }

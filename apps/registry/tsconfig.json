@@ -4,6 +4,8 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "strict": true,
+    "noEmit": true,
+    "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
@@ -12,5 +14,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["src", "registry"]
+  "include": ["src", "scripts", "worker-configuration.d.ts"],
+  "exclude": [".generated", ".tmp", "public"]
 }

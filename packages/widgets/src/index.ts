@@ -4,19 +4,17 @@ export type {
   WidgetState,
   WidgetSubmit,
   WidgetType,
-} from "./types";
+  FeedbackWidgetProps,
+  FeedbackTitleProps,
+  FeedbackDescriptionProps,
+  FeedbackRatingProps,
+  FeedbackInputProps,
+  FeedbackFooterProps,
+} from "./feedback-system";
 
 export {
   DEFAULT_FEEDBACK_ENDPOINT,
   submitFeedback,
-} from "./core/submit";
-
-export { EmojiFeedback } from "./emoji-feedback";
-export { LikeDislike } from "./like-dislike";
-export { StarRating } from "./star-rating";
-
-// Compound components
-export {
   FeedbackWidget,
   FeedbackTitle,
   FeedbackDescription,
@@ -25,13 +23,8 @@ export {
   FeedbackFooter,
   useFeedbackContext,
   type WidgetSize,
-} from "./compound";
+} from "./feedback-system";
 
-export type {
-  FeedbackWidgetProps,
-  FeedbackTitleProps,
-  FeedbackDescriptionProps,
-  FeedbackRatingProps,
-  FeedbackInputProps,
-  FeedbackFooterProps,
-} from "./compound";
+export { EmojiFeedback } from "./emoji-feedback";
+export { LikeDislike } from "./like-dislike";
+export { StarRating } from "./star-rating";

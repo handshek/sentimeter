@@ -11,7 +11,7 @@ import {
   ThumbsDown,
   ThumbsUp,
 } from "lucide-react";
-import { cx } from "../core/ui";
+import { cn } from "@workspace/ui/lib/utils";
 import { useFeedbackContext } from "./feedback-context";
 import type { WidgetSize } from "./feedback-context";
 
@@ -19,8 +19,10 @@ import type { WidgetSize } from "./feedback-context";
 
 const DEFAULT_EMOJIS = ["😖", "😕", "😐", "😊", "😍"] as const;
 
-/** Thumbs widget emoji mode: value 1 / 0 */
-const THUMB_EMOJIS = ["👍", "👎"] as const;
+const THUMB_OPTIONS = [
+  { value: 0, label: "Dislike", emoji: "👎", Icon: ThumbsDown },
+  { value: 1, label: "Like", emoji: "👍", Icon: ThumbsUp },
+] as const;
 
 const LUCIDE_FACE_SET = [
   { Icon: Angry, label: "Angry" },
@@ -79,14 +81,9 @@ export function FeedbackRating({
   /* ── Thumbs ─────────────────────────────────────────────── */
   if (variant === "thumbs") {
     if (ratingStyle === "emoji") {
-      const options = [
-        { value: 0, label: "Dislike", emoji: THUMB_EMOJIS[0] },
-        { value: 1, label: "Like", emoji: THUMB_EMOJIS[1] },
-      ] as const;
-
       return (
-        <div className={cx(wrapperClass, className)}>
-          {options.map(({ value, label, emoji }) => {
+        <div className={cn(wrapperClass, className)}>
+          {THUMB_OPTIONS.map(({ value, label, emoji }) => {
             const selected = selectedValue === value;
             return (
               <button
@@ -94,7 +91,7 @@ export function FeedbackRating({
                 type="button"
                 disabled={isLocked}
                 onClick={() => select(value)}
-                className={cx(
+                className={cn(
                   "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200",
                   emojiClass,
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
@@ -115,14 +112,9 @@ export function FeedbackRating({
       );
     }
 
-    const options = [
-      { value: 1, label: "Like", Icon: ThumbsUp },
-      { value: 0, label: "Dislike", Icon: ThumbsDown },
-    ] as const;
-
     return (
-      <div className={cx(wrapperClass, className)}>
-        {options.map(({ value, label, Icon }) => {
+      <div className={cn(wrapperClass, className)}>
+        {[...THUMB_OPTIONS].reverse().map(({ value, label, Icon }) => {
           const selected = selectedValue === value;
           return (
             <button
@@ -130,7 +122,7 @@ export function FeedbackRating({
               type="button"
               disabled={isLocked}
               onClick={() => select(value)}
-              className={cx(
+              className={cn(
                 "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200",
                 btnClass,
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
@@ -146,7 +138,7 @@ export function FeedbackRating({
               <Icon
                 size={iconSize}
                 strokeWidth={selected ? 2.5 : 2}
-                className={cx(selected ? "text-primary" : undefined)}
+                className={cn(selected ? "text-primary" : undefined)}
                 aria-hidden="true"
               />
             </button>
@@ -162,7 +154,7 @@ export function FeedbackRating({
 
     if (ratingStyle === "emoji") {
       return (
-        <div className={cx(wrapperClass, className)}>
+        <div className={cn(wrapperClass, className)}>
           {Array.from({ length: 5 }).map((_, idx) => {
             const value = idx + 1;
             const filled = value <= previewValue;
@@ -178,7 +170,7 @@ export function FeedbackRating({
                 onFocus={() => setHoverValue(value)}
                 onBlur={() => setHoverValue(null)}
                 onClick={() => select(value)}
-                className={cx(
+                className={cn(
                   "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200",
                   emojiClass,
                   "font-normal leading-none",
@@ -194,7 +186,7 @@ export function FeedbackRating({
               >
                 <span
                   aria-hidden="true"
-                  className={cx(
+                  className={cn(
                     "select-none transition-[filter,color] duration-200",
                     filled
                       ? "text-primary grayscale-0"
@@ -211,7 +203,7 @@ export function FeedbackRating({
     }
 
     return (
-      <div className={cx(wrapperClass, className)}>
+      <div className={cn(wrapperClass, className)}>
         {Array.from({ length: 5 }).map((_, idx) => {
           const value = idx + 1;
           const filled = value <= previewValue;
@@ -227,7 +219,7 @@ export function FeedbackRating({
               onFocus={() => setHoverValue(value)}
               onBlur={() => setHoverValue(null)}
               onClick={() => select(value)}
-              className={cx(
+              className={cn(
                 "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200",
                 btnClass,
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
@@ -256,7 +248,7 @@ export function FeedbackRating({
 
   /* ── Emoji (default) — 5-point mood ───────────────────────── */
   return (
-    <div className={cx(wrapperClass, className)}>
+    <div className={cn(wrapperClass, className)}>
       {emojiStyle === "emoji"
         ? DEFAULT_EMOJIS.map((emoji, idx) => {
             const value = idx + 1;
@@ -268,7 +260,7 @@ export function FeedbackRating({
                 type="button"
                 disabled={isLocked}
                 onClick={() => select(value)}
-                className={cx(
+                className={cn(
                   "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200",
                   emojiClass,
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
@@ -295,7 +287,7 @@ export function FeedbackRating({
                 type="button"
                 disabled={isLocked}
                 onClick={() => select(value)}
-                className={cx(
+                className={cn(
                   "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200",
                   btnClass,
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
@@ -310,7 +302,7 @@ export function FeedbackRating({
               >
                 <Icon
                   size={iconSize}
-                  className={cx(selected ? "text-primary" : undefined)}
+                  className={cn(selected ? "text-primary" : undefined)}
                   aria-hidden="true"
                 />
               </button>

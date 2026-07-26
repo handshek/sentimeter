@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import type { WidgetCallbacks, WidgetSubmit, WidgetType } from "../types";
-import { cx } from "../core/ui";
+import { cn } from "@workspace/ui/lib/utils";
 import {
   FeedbackProvider,
   useFeedbackContext,
@@ -47,7 +47,7 @@ function FeedbackWidgetInner({
 
   return (
     <div
-      className={cx(
+      className={cn(
         "relative w-full rounded-3xl border border-border/60 bg-background shadow-xl",
         CONTAINER_SIZE_MAP[size],
         className,

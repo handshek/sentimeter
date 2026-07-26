@@ -13,16 +13,19 @@ realtime feedback analytics.
 
 ### Registry (`apps/registry`)
 
-The registry app serves shadcn registry JSON from Cloudflare Workers. Source
-components live in `apps/registry/registry/sentimeter/`, and generated JSON lives
-under `apps/registry/public/r/`.
+The registry app adapts canonical Widget source into shadcn Registry Items and
+serves the built JSON from Cloudflare Workers. Private generated source lives
+under `apps/registry/.generated/sentimeter/`; public generated JSON lives under
+`apps/registry/public/r/`. Both locations are ignored build output, not authored
+Widget behavior.
 
 ### Widgets (`packages/widgets`)
 
-The widgets package contains the React implementations used by the dashboard and
-as the source of installable feedback surfaces. Widgets submit feedback through a
-small HTTP client that defaults to the production Convex site endpoint and can be
-overridden for staging or self-hosted use.
+The widgets package is the sole canonical source for Widget behavior. The
+dashboard imports its workspace form through `@repo/widgets`, while the registry
+emitter produces host-local open code from the same source. Widgets submit
+feedback through a small HTTP client that defaults to the production Convex site
+endpoint and can be overridden for staging or self-hosted use.
 
 ### Convex (`apps/web/convex`)
 
@@ -56,11 +59,38 @@ Feedback row is stored
 Dashboard realtime queries update analytics
 ```
 
+## Registry Item Generation
+
+Registry generation is one-way:
+
+```text
+packages/widgets/src
+    |
+    | bun run registry:emit
+    v
+apps/registry/.generated/sentimeter
+    |
+    | bun run registry:build
+    v
+apps/registry/public/r
+```
+
+The emitted shared tree begins at `feedback-system/index.ts` and retains
+modular `core`, `compound`, and type files. Preset files sit beside that
+directory. Their imports use host-local shadcn paths, and imports such as
+`./feedback-system` remain directory-resolved through the emitted `index.ts`.
+
+The private staging tree must never be edited directly. `registry:check`
+refreshes ignored staging, builds JSON in a temporary directory, validates
+manifest/content parity, and type-checks a temporary host. It does not replace
+the public output.
+
 ## Source Of Truth
 
 - Product vocabulary: `CONTEXT.md`
 - UI constraints: `DESIGN_PHILOSOPHY.md`
 - Data model: `apps/web/convex/schema.ts`
 - Feedback rules: `apps/web/convex/lib/feedback-domain.ts`
-- Installable components: `apps/registry/registry/sentimeter/`
+- Canonical Widget behavior: `packages/widgets/src/`
+- Private Registry Item staging: `apps/registry/.generated/sentimeter/`
 - Generated registry output: `apps/registry/public/r/`

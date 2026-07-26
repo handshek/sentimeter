@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Button } from "@workspace/ui/components/button";
-import { cx } from "../core/ui";
+import { cn } from "@workspace/ui/lib/utils";
 import { useFeedbackContext } from "./feedback-context";
 import type { WidgetSize } from "./feedback-context";
 
@@ -34,7 +34,7 @@ export function FeedbackFooter({
   if (state === "done") {
     return (
       <div
-        className={cx(
+        className={cn(
           "mt-3 rounded-2xl border border-border/60 bg-muted/20 px-3 py-2 text-sm text-foreground",
           className,
         )}
@@ -47,14 +47,14 @@ export function FeedbackFooter({
   if (state !== "selected" && state !== "submitting") return null;
 
   return (
-    <div className={cx("mt-5 flex gap-3", className)}>
+    <div className={cn("mt-5 flex gap-3", className)}>
       {showCancel ? (
         <Button
           type="button"
           variant="outline"
           disabled={disabled || state === "submitting"}
           onClick={cancel}
-          className={cx(
+          className={cn(
             "flex-1 rounded-2xl text-sm font-semibold",
             FOOTER_BUTTON_SIZE_MAP[size],
           )}
@@ -65,8 +65,8 @@ export function FeedbackFooter({
       <Button
         type="button"
         disabled={disabled || state === "submitting"}
-        onClick={() => submitSelected(text)}
-        className={cx(
+        onClick={() => void submitSelected(text)}
+        className={cn(
           "flex-1 rounded-2xl text-sm font-semibold shadow-sm",
           FOOTER_BUTTON_SIZE_MAP[size],
         )}

@@ -29,6 +29,26 @@ npx shadcn@latest add "https://registry.handshek.workers.dev/r/emoji-feedback.js
 
 Sentimeter is designed to drop into the user's own shadcn/ui setup and inherit that project's component structure, styling, and install flow.
 
+Widget behavior is authored once in `packages/widgets/src`. The dashboard uses
+that source through `@repo/widgets`, while the registry emits an ignored,
+host-local staging tree and builds installable Registry Item JSON from it.
+
+A Registry Item installs a modular open-code tree rather than a second authored
+implementation:
+
+```text
+components/sentimeter/
+├── feedback-system/
+│   ├── index.ts
+│   ├── types.ts
+│   ├── core/
+│   └── compound/
+└── <widget>.tsx
+```
+
+Preset imports such as `./feedback-system` remain directory-resolved through
+`feedback-system/index.ts` in the host project.
+
 Three moving parts:
 
 ```
@@ -114,29 +134,34 @@ bun run dev
 | ------------------------- | ------------------------- |
 | `CLERK_JWT_ISSUER_DOMAIN` | Clerk Frontend API domain |
 
-**`apps/registry`** has no env vars. The feedback endpoint is compiled into registry output at build time, so the generated components stay aligned with the shadcn project they were installed into.
+**`apps/registry`** has no env vars. The feedback endpoint is compiled into
+Registry Item output at build time, so installed Widgets remain aligned with
+the hosted Feedback Intake endpoint.
 
 ---
 
 ## Commands
 
-| Command                  | What it does                                       |
-| ------------------------ | -------------------------------------------------- |
-| `bun run dev`            | Dashboard, widgets, and Convex dev servers         |
-| `bun run build`          | Build everything                                   |
-| `bun run registry:build` | Generate registry JSON → `apps/registry/public/r/` |
-| `bun run lint`           | Lint the monorepo                                  |
-| `bun run check-types`    | Type-check                                         |
-| `bun run test`           | Run local unit tests                               |
-| `bun run check-env`      | Validate dashboard environment variables           |
-| `bun run check-docs`     | Validate local Markdown links                      |
-| `bun run check-registry` | Validate shadcn registry source/generated output   |
+| Command                  | What it does                                                   |
+| ------------------------ | -------------------------------------------------------------- |
+| `bun run dev`            | Dashboard, Widgets, and Convex development                     |
+| `bun run build`          | Build every runtime surface through Turbo                      |
+| `bun run registry:emit`  | Emit private Registry Item source from canonical Widget source |
+| `bun run registry:build` | Build Registry Item JSON into `apps/registry/public/r/`        |
+| `bun run check-registry` | Emit staging and validate a temporary Registry Item build      |
+| `bun run lint`           | Lint every workspace through Turbo                             |
+| `bun run check-types`    | Type-check every workspace through Turbo                       |
+| `bun run test`           | Test every workspace through Turbo                             |
+| `bun run check-env`      | Validate dashboard environment variables                       |
+| `bun run check-docs`     | Validate local Markdown links                                  |
 
-Registry deploy (from `apps/registry`):
+Registry deploy:
 
 ```bash
+bun run registry:emit
+bun run check-registry
 bun run registry:build
-bun run deploy
+bun run --cwd apps/registry deploy
 ```
 
 ---
@@ -149,7 +174,9 @@ bun run deploy
 
 **Registry install DX** — Using a scoped package name in `registryDependencies` forced consumers to edit `components.json`. Switched to full URLs so `bunx shadcn add <url>` works with zero config and the components adapt cleanly inside the user's shadcn project.
 
-**Widget feedback endpoint** — Baked the production Convex site URL directly into `packages/widgets/src/core/submit.ts` and into registry-built output so installed widgets always hit the correct backend.
+**Widget feedback endpoint** — Baked the production Convex site URL directly
+into `packages/widgets/src/core/submit.ts` and generated Registry Item output so
+installed Widgets always reach the intended Feedback Intake endpoint.
 
 ---
 

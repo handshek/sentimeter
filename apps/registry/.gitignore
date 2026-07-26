@@ -1,6 +1,9 @@
 # prod
 dist/
 public/r/
+public/.r.*
+.generated/
+.tmp/
 
 # dev
 .yarn/

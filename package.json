@@ -5,11 +5,13 @@
     "build": "turbo run build",
     "check-docs": "bun run scripts/check-docs.ts",
     "check-env": "bun run scripts/check-env.ts",
-    "check-registry": "bun run scripts/check-registry.ts",
+    "check-registry": "bun run --cwd apps/registry registry:check",
     "dev": "turbo run dev --filter=web",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
+    "registry:emit": "bun run --cwd apps/registry registry:emit",
+    "registry:build": "bun run --cwd apps/registry registry:build",
     "test": "turbo run test"
   },
   "devDependencies": {

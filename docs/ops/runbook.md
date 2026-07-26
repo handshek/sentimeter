@@ -17,10 +17,13 @@ Do not run `bun run dev` from agent sessions unless the user explicitly asks.
 
 ## Registry JSON Looks Stale
 
-1. Check source files under `apps/registry/registry/sentimeter/`.
-2. Run `bun run registry:build`.
-3. Inspect generated files under `apps/registry/public/r/`.
-4. Confirm registry dependencies use full URLs when host projects need zero
+1. Check canonical source under `packages/widgets/src/` and the explicit file
+   map in `apps/registry/registry.json`.
+2. Run `bun run check-registry` to validate ignored staging, a temporary shadcn
+   build, and the reconstructed host tree.
+3. Run `bun run registry:build` to atomically refresh public JSON.
+4. Inspect generated files under `apps/registry/public/r/`.
+5. Confirm registry dependencies use full URLs when host projects need zero
    extra `components.json` configuration.
 
 ## Widgets Are Not Recording Feedback

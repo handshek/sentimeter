@@ -12,9 +12,64 @@
       "registryDependencies": ["button", "textarea"],
       "files": [
         {
-          "path": "registry/sentimeter/feedback-system.tsx",
+          "path": ".generated/sentimeter/feedback-system/index.ts",
           "type": "registry:component",
-          "target": "components/sentimeter/feedback-system.tsx"
+          "target": "components/sentimeter/feedback-system/index.ts"
+        },
+        {
+          "path": ".generated/sentimeter/feedback-system/types.ts",
+          "type": "registry:component",
+          "target": "components/sentimeter/feedback-system/types.ts"
+        },
+        {
+          "path": ".generated/sentimeter/feedback-system/core/submit.ts",
+          "type": "registry:component",
+          "target": "components/sentimeter/feedback-system/core/submit.ts"
+        },
+        {
+          "path": ".generated/sentimeter/feedback-system/core/use-widget-machine.ts",
+          "type": "registry:component",
+          "target": "components/sentimeter/feedback-system/core/use-widget-machine.ts"
+        },
+        {
+          "path": ".generated/sentimeter/feedback-system/compound/feedback-context.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/feedback-system/compound/feedback-context.tsx"
+        },
+        {
+          "path": ".generated/sentimeter/feedback-system/compound/feedback-description.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/feedback-system/compound/feedback-description.tsx"
+        },
+        {
+          "path": ".generated/sentimeter/feedback-system/compound/feedback-footer.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/feedback-system/compound/feedback-footer.tsx"
+        },
+        {
+          "path": ".generated/sentimeter/feedback-system/compound/feedback-input.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/feedback-system/compound/feedback-input.tsx"
+        },
+        {
+          "path": ".generated/sentimeter/feedback-system/compound/feedback-rating.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/feedback-system/compound/feedback-rating.tsx"
+        },
+        {
+          "path": ".generated/sentimeter/feedback-system/compound/feedback-title.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/feedback-system/compound/feedback-title.tsx"
+        },
+        {
+          "path": ".generated/sentimeter/feedback-system/compound/feedback-widget.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/feedback-system/compound/feedback-widget.tsx"
+        },
+        {
+          "path": ".generated/sentimeter/feedback-system/compound/index.ts",
+          "type": "registry:component",
+          "target": "components/sentimeter/feedback-system/compound/index.ts"
         }
       ]
     },
@@ -23,10 +78,12 @@
       "type": "registry:block",
       "title": "Emoji Feedback",
       "description": "Emoji-based feedback widget with a 5-point scale.",
-      "registryDependencies": ["https://registry.handshek.workers.dev/r/feedback-system.json"],
+      "registryDependencies": [
+        "https://registry.handshek.workers.dev/r/feedback-system.json"
+      ],
       "files": [
         {
-          "path": "registry/sentimeter/emoji-feedback.tsx",
+          "path": ".generated/sentimeter/emoji-feedback.tsx",
           "type": "registry:component",
           "target": "components/sentimeter/emoji-feedback.tsx"
         }
@@ -37,10 +94,12 @@
       "type": "registry:block",
       "title": "Like Dislike",
       "description": "Thumbs up or thumbs down feedback widget.",
-      "registryDependencies": ["https://registry.handshek.workers.dev/r/feedback-system.json"],
+      "registryDependencies": [
+        "https://registry.handshek.workers.dev/r/feedback-system.json"
+      ],
       "files": [
         {
-          "path": "registry/sentimeter/like-dislike.tsx",
+          "path": ".generated/sentimeter/like-dislike.tsx",
           "type": "registry:component",
           "target": "components/sentimeter/like-dislike.tsx"
         }
@@ -51,10 +110,12 @@
       "type": "registry:block",
       "title": "Star Rating",
       "description": "Five-star rating feedback widget.",
-      "registryDependencies": ["https://registry.handshek.workers.dev/r/feedback-system.json"],
+      "registryDependencies": [
+        "https://registry.handshek.workers.dev/r/feedback-system.json"
+      ],
       "files": [
         {
-          "path": "registry/sentimeter/star-rating.tsx",
+          "path": ".generated/sentimeter/star-rating.tsx",
           "type": "registry:component",
           "target": "components/sentimeter/star-rating.tsx"
         }

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cx } from "../core/ui";
+import { cn } from "@workspace/ui/lib/utils";
 
 export type FeedbackTitleProps = {
   className?: string;
@@ -10,7 +10,7 @@ export type FeedbackTitleProps = {
 
 export function FeedbackTitle({ className, children }: FeedbackTitleProps) {
   return (
-    <h3 className={cx("text-base font-semibold text-foreground", className)}>
+    <h3 className={cn("text-base font-semibold text-foreground", className)}>
       {children}
     </h3>
   );

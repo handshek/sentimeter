@@ -24,7 +24,9 @@ Sentimeter uses three runtime surfaces:
 - `apps/web` serves the Next.js dashboard, public pages, docs pages, Clerk auth,
   and Convex client subscriptions.
 - `apps/registry` serves shadcn registry JSON from a Cloudflare Worker so
-  developers can install widgets with `shadcn add <url>`.
+  developers can install widgets with `shadcn add <url>`. Registry Item source
+  is emitted from `packages/widgets` into a private, ignored staging tree before
+  the public JSON is built.
 - Convex stores projects, API keys, and feedback. Convex HTTP actions receive
   feedback from installed widgets and enforce API-key, origin, value, and rate
   rules.
@@ -35,13 +37,17 @@ Sentimeter uses three runtime surfaces:
 
 An installable React feedback surface. Current widget types are `emoji`,
 `thumbs`, and `star`. Widgets must work as open code inside the developer's
-shadcn project, not as opaque iframes or remote embeds.
+shadcn project, not as opaque iframes or remote embeds. `packages/widgets` is
+the sole canonical source for Widget behavior; workspace imports and Registry
+Items are two forms of that behavior.
 
 ### Registry Item
 
-The shadcn registry JSON and source file that install a widget into a host app.
-Registry items should depend on public URLs and local shadcn conventions so the
-developer does not need custom package configuration after install.
+The shadcn registry JSON and generated source tree that install a Widget into a
+host app. Registry Items are emitted from canonical Widget source, use
+host-local imports, and install as readable modular open code. They should
+depend on public URLs and local shadcn conventions so the developer does not
+need custom package configuration after install.
 
 ### Feedback Intake
 
