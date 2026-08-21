@@ -8,7 +8,7 @@ import {
   isFeedbackValueAllowed,
   normalizeAllowedOrigins,
   normalizeOrigin,
-} from "./feedback-domain";
+} from "./feedbackDomain";
 
 describe("feedback domain rules", () => {
   test("validates widget values by widget type", () => {

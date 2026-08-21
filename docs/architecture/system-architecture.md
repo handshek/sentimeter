@@ -90,7 +90,7 @@ the public output.
 - Product vocabulary: `CONTEXT.md`
 - UI constraints: `DESIGN_PHILOSOPHY.md`
 - Data model: `apps/web/convex/schema.ts`
-- Feedback rules: `apps/web/convex/lib/feedback-domain.ts`
+- Feedback rules: `apps/web/convex/lib/feedbackDomain.ts`
 - Canonical Widget behavior: `packages/widgets/src/`
 - Private Registry Item staging: `apps/registry/.generated/sentimeter/`
 - Generated registry output: `apps/registry/public/r/`

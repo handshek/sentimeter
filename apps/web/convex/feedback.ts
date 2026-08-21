@@ -15,7 +15,7 @@ import {
   normalizeOrigin,
   type RangePreset,
   type WidgetType,
-} from "./lib/feedback-domain";
+} from "./lib/feedbackDomain";
 import { rateLimiter } from "./lib/rateLimits";
 
 const widgetTypeValidator = v.union(

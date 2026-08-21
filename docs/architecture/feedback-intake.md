@@ -8,7 +8,7 @@ stored Convex feedback row.
 - Client submitter: `packages/widgets/src/core/submit.ts`
 - HTTP action routing: `apps/web/convex/http.ts`
 - HTTP action implementation: `apps/web/convex/httpActions.ts`
-- Domain rules: `apps/web/convex/lib/feedback-domain.ts`
+- Domain rules: `apps/web/convex/lib/feedbackDomain.ts`
 - Storage mutation: `apps/web/convex/feedback.ts`
 
 ## Validation Order
@@ -39,5 +39,5 @@ stored Convex feedback row.
 
 ## Testing
 
-Pure rules live in `apps/web/convex/lib/feedback-domain.ts` so they can be
+Pure rules live in `apps/web/convex/lib/feedbackDomain.ts` so they can be
 covered by `bun test` without booting Convex.

@@ -12,6 +12,7 @@ import type * as feedback from "../feedback.js";
 import type * as http from "../http.js";
 import type * as httpActions from "../httpActions.js";
 import type * as lib_auth from "../lib/auth.js";
+import type * as lib_feedbackDomain from "../lib/feedbackDomain.js";
 import type * as lib_nanoid from "../lib/nanoid.js";
 import type * as lib_rateLimits from "../lib/rateLimits.js";
 import type * as projects from "../projects.js";
@@ -28,6 +29,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   httpActions: typeof httpActions;
   "lib/auth": typeof lib_auth;
+  "lib/feedbackDomain": typeof lib_feedbackDomain;
   "lib/nanoid": typeof lib_nanoid;
   "lib/rateLimits": typeof lib_rateLimits;
   projects: typeof projects;

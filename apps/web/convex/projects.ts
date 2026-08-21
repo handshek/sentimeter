@@ -7,7 +7,7 @@ import {
   getUserByClerkIdOrThrow,
   requireIdentity,
 } from "./lib/auth";
-import { normalizeAllowedOrigins } from "./lib/feedback-domain";
+import { normalizeAllowedOrigins } from "./lib/feedbackDomain";
 import { nanoid } from "./lib/nanoid";
 
 function generatePublicKey() {
