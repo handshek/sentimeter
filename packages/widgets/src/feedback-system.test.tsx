@@ -58,6 +58,7 @@ describe("canonical widget feedback system", () => {
       "FeedbackWidget",
       "LikeDislike",
       "StarRating",
+      "WidgetSubmitError",
       "submitFeedback",
       "useFeedbackContext",
     ]);

@@ -11,8 +11,10 @@
     "test": "bun test src"
   },
   "devDependencies": {
+    "@happy-dom/global-registrator": "^20.11.6",
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^22.15.3",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",

@@ -3,8 +3,11 @@ export type {
   WidgetPayload,
   WidgetState,
   WidgetSubmit,
+  WidgetSubmitErrorCode,
   WidgetType,
 } from "./types";
+
+export { WidgetSubmitError } from "./types";
 
 export { DEFAULT_FEEDBACK_ENDPOINT, submitFeedback } from "./core/submit";
 

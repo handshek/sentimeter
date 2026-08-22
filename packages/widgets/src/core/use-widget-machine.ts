@@ -1,12 +1,17 @@
 "use client";
 
 import * as React from "react";
-import type { WidgetPayload, WidgetState, WidgetSubmit } from "../types";
+import type {
+  WidgetPayload,
+  WidgetState,
+  WidgetSubmit,
+  WidgetSubmitError,
+} from "../types";
+import { normalizeSubmitError } from "./submit";
 
 type UseWidgetMachineArgs = {
   payloadBase: Omit<WidgetPayload, "value">;
   disabled?: boolean;
-  doneDurationMs: number;
   submit: WidgetSubmit;
   onStateChange?: (state: WidgetState) => void;
   onSelect?: (value: number) => void;
@@ -18,7 +23,6 @@ type UseWidgetMachineArgs = {
 export function useWidgetMachine({
   payloadBase,
   disabled,
-  doneDurationMs,
   submit,
   onStateChange,
   onSelect,
@@ -29,6 +33,8 @@ export function useWidgetMachine({
   const [state, setState] = React.useState<WidgetState>("idle");
   const [selectedValue, setSelectedValue] = React.useState<number | null>(null);
   const [hidden, setHidden] = React.useState(false);
+  const [submitError, setSubmitError] =
+    React.useState<WidgetSubmitError | null>(null);
 
   const setStateSafe = React.useCallback(
     (next: WidgetState) => {
@@ -38,16 +44,11 @@ export function useWidgetMachine({
     [onStateChange],
   );
 
-  React.useEffect(() => {
-    if (state !== "done") return;
-    const t = window.setTimeout(() => setHidden(true), doneDurationMs);
-    return () => window.clearTimeout(t);
-  }, [doneDurationMs, state]);
-
   const select = React.useCallback(
     (value: number) => {
       if (disabled) return;
       if (state === "submitting" || state === "done") return;
+      setSubmitError(null);
       setSelectedValue(value);
       onSelect?.(value);
       setStateSafe("selected");
@@ -66,15 +67,18 @@ export function useWidgetMachine({
         value: selectedValue,
         ...(text ? { text } : {}),
       };
+      setSubmitError(null);
       setStateSafe("submitting");
       onSubmitStart?.(payload);
 
       try {
         await submit(payload);
+        setSubmitError(null);
         onSubmitSuccess?.(payload);
         setStateSafe("done");
       } catch (error) {
         onSubmitError?.(error, payload);
+        setSubmitError(normalizeSubmitError(error));
         setStateSafe("selected");
       }
     },
@@ -97,6 +101,7 @@ export function useWidgetMachine({
     hidden,
     state,
     selectedValue,
+    submitError,
     select,
     submitSelected,
     hide,

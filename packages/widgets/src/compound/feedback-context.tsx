@@ -6,6 +6,7 @@ import type {
   WidgetPayload,
   WidgetState,
   WidgetSubmit,
+  WidgetSubmitError,
   WidgetType,
 } from "../types";
 import { DEFAULT_FEEDBACK_ENDPOINT, submitFeedback } from "../core/submit";
@@ -18,6 +19,7 @@ export type WidgetSize = "sm" | "default" | "md" | "lg";
 export type FeedbackContextValue = {
   state: WidgetState;
   selectedValue: number | null;
+  submitError: WidgetSubmitError | null;
   hidden: boolean;
   disabled: boolean;
   size: WidgetSize;
@@ -26,6 +28,8 @@ export type FeedbackContextValue = {
   cancel: () => void;
   text: string;
   setText: React.Dispatch<React.SetStateAction<string>>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  focusAnchorRef: React.RefObject<HTMLSpanElement | null>;
 };
 
 const Ctx = React.createContext<FeedbackContextValue | null>(null);
@@ -50,6 +54,7 @@ export type FeedbackProviderProps = {
   disabled?: boolean;
   size?: WidgetSize;
   doneDurationMs?: number;
+  autoHide?: boolean;
   submit?: WidgetSubmit;
   children: React.ReactNode;
 } & WidgetCallbacks;
@@ -62,6 +67,7 @@ export function FeedbackProvider({
   disabled = false,
   size = "default",
   doneDurationMs = 2000,
+  autoHide = true,
   submit,
   children,
   onSelect,
@@ -71,9 +77,10 @@ export function FeedbackProvider({
   onSubmitError,
   onCancel,
 }: FeedbackProviderProps) {
+  const normalizedApiKey = apiKey.trim();
   const payloadBase = React.useMemo<Omit<WidgetPayload, "value">>(
-    () => ({ apiKey, location, widgetType }),
-    [apiKey, location, widgetType],
+    () => ({ apiKey: normalizedApiKey, location, widgetType }),
+    [location, normalizedApiKey, widgetType],
   );
 
   const defaultSubmit = React.useCallback<WidgetSubmit>(
@@ -81,29 +88,57 @@ export function FeedbackProvider({
     [endpoint],
   );
 
+  const localSubmit = React.useCallback<WidgetSubmit>(async () => {}, []);
+
+  const resolvedSubmit =
+    submit ?? (normalizedApiKey ? defaultSubmit : localSubmit);
+
   const machine = useWidgetMachine({
     payloadBase,
     disabled,
-    doneDurationMs,
-    submit: submit ?? defaultSubmit,
+    submit: resolvedSubmit,
     onSelect,
     onStateChange,
     onSubmitStart,
     onSubmitSuccess,
     onSubmitError,
   });
+  const hideMachine = machine.hide;
 
   const [text, setText] = React.useState("");
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const focusAnchorRef = React.useRef<HTMLSpanElement>(null);
+  const shouldRestoreFocusRef = React.useRef(false);
+
+  const hide = React.useCallback(() => {
+    shouldRestoreFocusRef.current =
+      typeof document !== "undefined" &&
+      !!containerRef.current?.contains(document.activeElement);
+    hideMachine();
+  }, [hideMachine]);
+
+  React.useEffect(() => {
+    if (machine.state !== "done" || !autoHide) return;
+    const timer = window.setTimeout(hide, doneDurationMs);
+    return () => window.clearTimeout(timer);
+  }, [autoHide, doneDurationMs, hide, machine.state]);
+
+  React.useEffect(() => {
+    if (machine.hidden && shouldRestoreFocusRef.current) {
+      focusAnchorRef.current?.focus();
+    }
+  }, [machine.hidden]);
 
   const cancel = React.useCallback(() => {
-    machine.hide();
+    hide();
     onCancel?.();
-  }, [machine, onCancel]);
+  }, [hide, onCancel]);
 
   const value = React.useMemo<FeedbackContextValue>(
     () => ({
       state: machine.state,
       selectedValue: machine.selectedValue,
+      submitError: machine.submitError,
       hidden: machine.hidden,
       disabled: !!disabled,
       size,
@@ -112,6 +147,8 @@ export function FeedbackProvider({
       cancel,
       text,
       setText,
+      containerRef,
+      focusAnchorRef,
     }),
     [machine, disabled, size, cancel, text],
   );

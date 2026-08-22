@@ -3,6 +3,7 @@ export type {
   WidgetPayload,
   WidgetState,
   WidgetSubmit,
+  WidgetSubmitErrorCode,
   WidgetType,
   FeedbackWidgetProps,
   FeedbackTitleProps,
@@ -14,6 +15,7 @@ export type {
 
 export {
   DEFAULT_FEEDBACK_ENDPOINT,
+  WidgetSubmitError,
   submitFeedback,
   FeedbackWidget,
   FeedbackTitle,

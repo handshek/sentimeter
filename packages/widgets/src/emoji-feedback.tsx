@@ -37,6 +37,7 @@ export type EmojiFeedbackProps = {
   submitLabel?: string;
   thankYouMessage?: React.ReactNode;
   doneDurationMs?: number;
+  autoHide?: boolean;
   variant?: "emoji" | "icons";
   size?: WidgetSize;
   closeButton?: boolean;
@@ -55,6 +56,7 @@ export function EmojiFeedback({
   submitLabel = DEFAULTS.submitLabel,
   thankYouMessage = DEFAULTS.thankYouMessage,
   doneDurationMs = 2000,
+  autoHide = true,
   variant = DEFAULTS.variant,
   size = DEFAULTS.size,
   closeButton = false,
@@ -72,6 +74,7 @@ export function EmojiFeedback({
       closeButton={closeButton}
       className={className}
       doneDurationMs={doneDurationMs}
+      autoHide={autoHide}
       submit={submit}
       {...callbacks}
     >

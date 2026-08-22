@@ -34,7 +34,8 @@ const sharedProps: WidgetDocRow[] = [
     prop: "apiKey",
     type: "string",
     defaultValue: '""',
-    description: "Publishable Sentimeter project key.",
+    description:
+      "Publishable Sentimeter project key. When set without a custom submit handler, feedback is sent to hosted analytics.",
   },
   {
     prop: "location",
@@ -95,7 +96,14 @@ const sharedProps: WidgetDocRow[] = [
     prop: "doneDurationMs",
     type: "number",
     defaultValue: "2000",
-    description: "How long the success state stays visible.",
+    description: "How long the success state stays visible before auto-hide.",
+  },
+  {
+    prop: "autoHide",
+    type: "boolean",
+    defaultValue: "true",
+    description:
+      "Automatically hides the widget after success. Set false to keep the done state mounted.",
   },
   {
     prop: "size",
@@ -113,7 +121,8 @@ const sharedProps: WidgetDocRow[] = [
     prop: "submit",
     type: "WidgetSubmit",
     defaultValue: "-",
-    description: "Custom async submit handler for feedback payloads.",
+    description:
+      "Custom async submit handler. Takes precedence over hosted and local-only submission.",
   },
   {
     prop: "onSelect",
@@ -143,7 +152,8 @@ const sharedProps: WidgetDocRow[] = [
     prop: "onSubmitError",
     type: "(error: unknown, payload: WidgetPayload) => void",
     defaultValue: "-",
-    description: "Fires when submission fails.",
+    description:
+      "Fires with the original thrown error and payload when submission fails.",
   },
   {
     prop: "onCancel",

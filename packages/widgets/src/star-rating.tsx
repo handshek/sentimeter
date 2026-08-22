@@ -37,6 +37,7 @@ export type StarRatingProps = {
   submitLabel?: string;
   thankYouMessage?: React.ReactNode;
   doneDurationMs?: number;
+  autoHide?: boolean;
   /** Lucide stars vs ⭐ emoji row, grayscale until included in preview (same hover behavior) */
   variant?: "icons" | "emoji";
   size?: WidgetSize;
@@ -56,6 +57,7 @@ export function StarRating({
   submitLabel = DEFAULTS.submitLabel,
   thankYouMessage = DEFAULTS.thankYouMessage,
   doneDurationMs = 2000,
+  autoHide = true,
   variant = DEFAULTS.variant,
   size = DEFAULTS.size,
   closeButton = false,
@@ -73,6 +75,7 @@ export function StarRating({
       closeButton={closeButton}
       className={className}
       doneDurationMs={doneDurationMs}
+      autoHide={autoHide}
       submit={submit}
       {...callbacks}
     >

@@ -621,8 +621,8 @@ export function ComponentsOverviewContent() {
               <CardDescription className="text-sm leading-6">
                 Install one widget, confirm the UI fits your host app, then add
                 a publishable key and endpoint when you are ready to collect
-                live data. If you just want to prototype interaction first, pass
-                a local `submit` handler.
+                live data. With neither a key nor `submit`, the widget runs the
+                complete interaction locally without a network request.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -725,7 +725,7 @@ export function ComponentsOverviewContent() {
             },
             {
               title: "Analytics when you need it",
-              body: "Use local submit handlers for prototyping, then switch to Sentimeter-backed analytics once the UI flow is ready.",
+              body: "Omit both apiKey and submit for a local-only prototype, provide submit for custom persistence, or add apiKey for Sentimeter-backed analytics.",
             },
           ].map((item) => (
             <div
@@ -802,6 +802,36 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
         <h2 className="text-base font-semibold">Usage</h2>
         <CodeBlock code={widget.usageSnippet} label="page.tsx" />
       </div>
+
+      <Card className="border-border/70 bg-background/60 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-base">Submission behavior</CardTitle>
+          <CardDescription className="space-y-2 text-sm leading-6">
+            <span className="block">
+              A custom <code className="font-mono">submit</code> handler always
+              wins. Otherwise, a non-empty{" "}
+              <code className="font-mono">apiKey</code> sends feedback to
+              Sentimeter. With neither configured, the widget completes its
+              callbacks and success state locally; nothing is sent or persisted.
+            </span>
+            <span className="block">
+              Hosted failures use{" "}
+              <code className="font-mono">WidgetSubmitError</code> with stable
+              codes: <code className="font-mono">missing_api_key</code>,{" "}
+              <code className="font-mono">invalid_key</code>,{" "}
+              <code className="font-mono">origin_not_allowed</code>,{" "}
+              <code className="font-mono">rate_limited</code>,{" "}
+              <code className="font-mono">invalid_value</code>,{" "}
+              <code className="font-mono">invalid_body</code>,{" "}
+              <code className="font-mono">network_error</code>, and{" "}
+              <code className="font-mono">unknown</code>. The UI shows safe
+              copy;
+              <code className="font-mono"> onSubmitError</code> receives the
+              original thrown value.
+            </span>
+          </CardDescription>
+        </CardHeader>
+      </Card>
 
       <div className="space-y-3">
         <h2 className="text-2xl font-bold tracking-tight">Props</h2>

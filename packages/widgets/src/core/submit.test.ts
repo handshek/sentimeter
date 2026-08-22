@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { afterEach, describe, test } from "node:test";
-import { DEFAULT_FEEDBACK_ENDPOINT, submitFeedback } from "./submit";
-import type { WidgetPayload } from "../types";
+import {
+  DEFAULT_FEEDBACK_ENDPOINT,
+  submitFeedback,
+  WidgetSubmitError,
+  type WidgetPayload,
+} from "../index";
 
 const payload: WidgetPayload = {
   apiKey: "pk_test",
@@ -17,14 +21,20 @@ afterEach(() => {
 });
 
 describe("submitFeedback", () => {
-  test("skips network calls without an api key", async () => {
+  test("rejects hosted submissions without an api key", async () => {
     let called = false;
     globalThis.fetch = async () => {
       called = true;
       return new Response(null, { status: 200 });
     };
 
-    await submitFeedback({ ...payload, apiKey: "" });
+    await assert.rejects(
+      submitFeedback({ ...payload, apiKey: "   " }),
+      (error: unknown) =>
+        error instanceof WidgetSubmitError &&
+        error.code === "missing_api_key" &&
+        error.message === "Add an API key before sending feedback.",
+    );
 
     assert.equal(called, false);
   });
@@ -61,13 +71,54 @@ describe("submitFeedback", () => {
     assert.deepEqual(JSON.parse(body), payload);
   });
 
-  test("throws server error codes when available", async () => {
+  test("normalizes known server failures for display", async () => {
     globalThis.fetch = async () =>
-      new Response(JSON.stringify({ error: "origin_not_allowed" }), {
-        status: 403,
+      new Response(
+        JSON.stringify({ error: "rate_limited", retryAfter: 4500 }),
+        {
+          status: 429,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+
+    await assert.rejects(submitFeedback(payload), (error: unknown) => {
+      assert.ok(error instanceof WidgetSubmitError);
+      assert.equal(error.code, "rate_limited");
+      assert.equal(error.status, 429);
+      assert.equal(error.retryAfterMs, 4500);
+      assert.equal(error.message, "Too many responses. Please try again soon.");
+      return true;
+    });
+  });
+
+  test("maps unrecognized server failures to a safe unknown error", async () => {
+    globalThis.fetch = async () =>
+      new Response(JSON.stringify({ error: "database_details" }), {
+        status: 500,
         headers: { "Content-Type": "application/json" },
       });
 
-    await assert.rejects(submitFeedback(payload), /origin_not_allowed/);
+    await assert.rejects(submitFeedback(payload), (error: unknown) => {
+      assert.ok(error instanceof WidgetSubmitError);
+      assert.equal(error.code, "unknown");
+      assert.equal(error.status, 500);
+      assert.equal(error.message, "We couldn't send your feedback. Try again.");
+      return true;
+    });
+  });
+
+  test("normalizes network failures while preserving the original cause", async () => {
+    const cause = new TypeError("internal fetch details");
+    globalThis.fetch = async () => {
+      throw cause;
+    };
+
+    await assert.rejects(submitFeedback(payload), (error: unknown) => {
+      assert.ok(error instanceof WidgetSubmitError);
+      assert.equal(error.code, "network_error");
+      assert.equal(error.message, "Check your connection and try again.");
+      assert.equal(error.cause, cause);
+      return true;
+    });
   });
 });

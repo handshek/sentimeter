@@ -37,6 +37,7 @@ export type LikeDislikeProps = {
   submitLabel?: string;
   thankYouMessage?: React.ReactNode;
   doneDurationMs?: number;
+  autoHide?: boolean;
   /** Lucide thumbs vs Unicode 👎 / 👍 */
   variant?: "icons" | "emoji";
   size?: WidgetSize;
@@ -56,6 +57,7 @@ export function LikeDislike({
   submitLabel = DEFAULTS.submitLabel,
   thankYouMessage = DEFAULTS.thankYouMessage,
   doneDurationMs = 2000,
+  autoHide = true,
   variant = DEFAULTS.variant,
   size = DEFAULTS.size,
   closeButton = false,
@@ -73,6 +75,7 @@ export function LikeDislike({
       closeButton={closeButton}
       className={className}
       doneDurationMs={doneDurationMs}
+      autoHide={autoHide}
       submit={submit}
       {...callbacks}
     >

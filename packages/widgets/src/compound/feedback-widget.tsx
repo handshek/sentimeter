@@ -21,6 +21,7 @@ export type FeedbackWidgetProps = {
   closeButton?: boolean;
   className?: string;
   doneDurationMs?: number;
+  autoHide?: boolean;
   submit?: WidgetSubmit;
   children: React.ReactNode;
 } & WidgetCallbacks;
@@ -41,18 +42,34 @@ function FeedbackWidgetInner({
   className?: string;
   children: React.ReactNode;
 }) {
-  const { hidden, disabled, size, cancel } = useFeedbackContext();
+  const {
+    hidden,
+    disabled,
+    size,
+    cancel,
+    state,
+    containerRef,
+    focusAnchorRef,
+  } = useFeedbackContext();
 
-  if (hidden) return null;
+  if (hidden) {
+    return (
+      <span ref={focusAnchorRef} tabIndex={-1} className="sr-only">
+        Feedback widget closed
+      </span>
+    );
+  }
 
   return (
     <div
+      ref={containerRef}
       className={cn(
         "relative w-full rounded-3xl border border-border/60 bg-background shadow-xl",
         CONTAINER_SIZE_MAP[size],
         className,
       )}
       aria-disabled={disabled ? "true" : "false"}
+      aria-busy={state === "submitting" ? "true" : undefined}
     >
       {closeButton ? (
         <Button
@@ -81,6 +98,7 @@ export function FeedbackWidget({
   closeButton,
   className,
   doneDurationMs,
+  autoHide,
   submit,
   children,
   ...callbacks
@@ -94,6 +112,7 @@ export function FeedbackWidget({
       disabled={disabled}
       size={size}
       doneDurationMs={doneDurationMs}
+      autoHide={autoHide}
       submit={submit}
       {...callbacks}
     >
