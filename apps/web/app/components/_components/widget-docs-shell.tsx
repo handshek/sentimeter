@@ -12,12 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@workspace/ui/components/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
 import {
   Table,
   TableBody,
@@ -27,15 +22,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import { cn } from "@workspace/ui/lib/utils";
-import {
-  ArrowLeft,
-  Check,
-  Copy,
-  Smile,
-  Star,
-  Terminal,
-  ThumbsUp,
-} from "lucide-react";
+import { ArrowLeft, Check, Copy, Smile, Star, ThumbsUp } from "lucide-react";
 import {
   EmojiFeedback,
   LikeDislike,
@@ -47,6 +34,7 @@ import {
   widgetDocs,
   type WidgetDocConfig,
 } from "./widget-docs-data";
+import { WidgetInstallCommand } from "./widget-install-command";
 
 const mockSubmit: WidgetSubmit = () =>
   new Promise<void>((resolve) => setTimeout(resolve, 500));
@@ -180,99 +168,6 @@ function CodeBlock({
         </div>
       ) : null}
       <HighlightedCode code={code} lang={lang ?? "tsx"} />
-    </div>
-  );
-}
-
-function InstallBlock({ registryName }: { registryName: string }) {
-  const registryUrl = `https://registry.handshek.workers.dev/r/${registryName}.json`;
-  const installCommands = {
-    pnpm: `pnpm dlx shadcn@latest add "${registryUrl}"`,
-    npm: `npx shadcn@latest add "${registryUrl}"`,
-    yarn: `yarn dlx shadcn@latest add "${registryUrl}"`,
-    bun: `bunx shadcn@latest add "${registryUrl}"`,
-  } as const;
-
-  return (
-    <div className="overflow-hidden rounded-lg border border-border/70 bg-zinc-950 text-zinc-100">
-      <Tabs defaultValue="pnpm">
-        <div className="flex items-center border-b border-white/5 px-3 py-2">
-          <Terminal className="mr-2 h-4 w-4 shrink-0 text-zinc-500" />
-          <TabsList className="h-auto bg-transparent p-0">
-            {Object.keys(installCommands).map((manager) => (
-              <TabsTrigger
-                key={manager}
-                value={manager}
-                className="h-auto rounded-md px-3 py-1.5 font-mono text-[13px] text-zinc-400 hover:text-zinc-100 data-[state=active]:bg-zinc-900 data-[state=active]:text-zinc-100"
-              >
-                {manager}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          <div className="ml-auto">
-            <TabsContent
-              value="pnpm"
-              forceMount
-              className="m-0 data-[state=inactive]:hidden"
-            >
-              <CopyButton
-                text={installCommands.pnpm}
-                className="text-zinc-400 hover:bg-white/6"
-              />
-            </TabsContent>
-            <TabsContent
-              value="npm"
-              forceMount
-              className="m-0 data-[state=inactive]:hidden"
-            >
-              <CopyButton
-                text={installCommands.npm}
-                className="text-zinc-400 hover:bg-white/6"
-              />
-            </TabsContent>
-            <TabsContent
-              value="yarn"
-              forceMount
-              className="m-0 data-[state=inactive]:hidden"
-            >
-              <CopyButton
-                text={installCommands.yarn}
-                className="text-zinc-400 hover:bg-white/6"
-              />
-            </TabsContent>
-            <TabsContent
-              value="bun"
-              forceMount
-              className="m-0 data-[state=inactive]:hidden"
-            >
-              <CopyButton
-                text={installCommands.bun}
-                className="text-zinc-400 hover:bg-white/6"
-              />
-            </TabsContent>
-          </div>
-        </div>
-        <TabsContent value="pnpm" className="m-0">
-          <code className="block overflow-x-auto whitespace-nowrap px-4 py-3 font-mono text-[13px] text-zinc-300 no-scrollbar">
-            {installCommands.pnpm}
-          </code>
-        </TabsContent>
-        <TabsContent value="npm" className="m-0">
-          <code className="block overflow-x-auto whitespace-nowrap px-4 py-3 font-mono text-[13px] text-zinc-300 no-scrollbar">
-            {installCommands.npm}
-          </code>
-        </TabsContent>
-        <TabsContent value="yarn" className="m-0">
-          <code className="block overflow-x-auto whitespace-nowrap px-4 py-3 font-mono text-[13px] text-zinc-300 no-scrollbar">
-            {installCommands.yarn}
-          </code>
-        </TabsContent>
-        <TabsContent value="bun" className="m-0">
-          <code className="block overflow-x-auto whitespace-nowrap px-4 py-3 font-mono text-[13px] text-zinc-300 no-scrollbar">
-            {installCommands.bun}
-          </code>
-        </TabsContent>
-      </Tabs>
     </div>
   );
 }
@@ -610,7 +505,7 @@ export function ComponentsOverviewContent() {
           </p>
         </div>
 
-        <InstallBlock registryName="emoji-feedback" />
+        <WidgetInstallCommand registryName="emoji-feedback" />
 
         <div className="grid gap-4 md:grid-cols-[1.25fr_0.75fr]">
           <Card className="border-border/70 bg-background/60 shadow-sm">
@@ -795,7 +690,7 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
 
       <div className="space-y-3">
         <h2 className="text-base font-semibold">Installation</h2>
-        <InstallBlock registryName={widget.registryName} />
+        <WidgetInstallCommand registryName={widget.registryName} />
       </div>
 
       <div className="space-y-3">

@@ -981,7 +981,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               className="border border-dashed border-border text-muted-foreground hover:text-foreground"
               title="Dev-only · will be removed before production"
             >
-              <Link href={`/widgets?projectId=${convexProjectId}`}>
+              <Link
+                href={`/widgets?projectId=${convexProjectId}&advanced=1#advanced`}
+              >
                 <FlaskConical className="h-4 w-4" />
                 Test widgets
               </Link>
