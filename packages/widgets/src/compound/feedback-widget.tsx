@@ -27,10 +27,10 @@ export type FeedbackWidgetProps = {
 } & WidgetCallbacks;
 
 const CONTAINER_SIZE_MAP: Record<WidgetSize, string> = {
-  sm: "max-w-[360px] p-5",
-  default: "max-w-[400px] p-6",
-  md: "max-w-[440px] p-7",
-  lg: "max-w-[480px] p-8",
+  sm: "max-w-[360px] p-4",
+  default: "max-w-[400px] p-4",
+  md: "max-w-[440px] p-4",
+  lg: "max-w-[480px] p-4",
 };
 
 function FeedbackWidgetInner({
@@ -64,7 +64,7 @@ function FeedbackWidgetInner({
     <div
       ref={containerRef}
       className={cn(
-        "relative w-full rounded-3xl border border-border/60 bg-background shadow-xl",
+        "@container relative w-full rounded-3xl border border-border/60 bg-background shadow-xl",
         CONTAINER_SIZE_MAP[size],
         className,
       )}

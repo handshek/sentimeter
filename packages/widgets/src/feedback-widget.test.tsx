@@ -7,7 +7,12 @@ import {
   render,
   screen,
 } from "@testing-library/react";
-import { LikeDislike, type WidgetPayload } from "./index";
+import {
+  EmojiFeedback,
+  LikeDislike,
+  StarRating,
+  type WidgetPayload,
+} from "./index";
 
 const originalFetch = globalThis.fetch;
 
@@ -17,6 +22,91 @@ afterEach(() => {
 });
 
 describe("rendered feedback widget", () => {
+  const ratingCases = [
+    {
+      name: "emoji symbols",
+      render: (size: "sm" | "lg", disabled = false) => (
+        <EmojiFeedback size={size} variant="emoji" disabled={disabled} />
+      ),
+      firstControlName: "Rating 1 of 5",
+      controlCount: 5,
+    },
+    {
+      name: "emoji icons",
+      render: (size: "sm" | "lg", disabled = false) => (
+        <EmojiFeedback size={size} variant="icons" disabled={disabled} />
+      ),
+      firstControlName: "Angry (1 of 5)",
+      controlCount: 5,
+    },
+    {
+      name: "thumb icons",
+      render: (size: "sm" | "lg", disabled = false) => (
+        <LikeDislike size={size} variant="icons" disabled={disabled} />
+      ),
+      firstControlName: "Like",
+      controlCount: 2,
+    },
+    {
+      name: "thumb emoji",
+      render: (size: "sm" | "lg", disabled = false) => (
+        <LikeDislike size={size} variant="emoji" disabled={disabled} />
+      ),
+      firstControlName: "Dislike",
+      controlCount: 2,
+    },
+    {
+      name: "star icons",
+      render: (size: "sm" | "lg", disabled = false) => (
+        <StarRating size={size} variant="icons" disabled={disabled} />
+      ),
+      firstControlName: "Rate 1 star",
+      controlCount: 5,
+    },
+    {
+      name: "star emoji",
+      render: (size: "sm" | "lg", disabled = false) => (
+        <StarRating size={size} variant="emoji" disabled={disabled} />
+      ),
+      firstControlName: "Rate 1 star",
+      controlCount: 5,
+    },
+  ] as const;
+
+  for (const ratingCase of ratingCases) {
+    for (const size of ["sm", "lg"] as const) {
+      test(`${ratingCase.name} at ${size} keeps accessible, selectable controls`, () => {
+        const { container } = render(ratingCase.render(size));
+        const controls = container.querySelectorAll<HTMLButtonElement>(
+          "button[aria-pressed]",
+        );
+        const firstControl = screen.getByRole("button", {
+          name: ratingCase.firstControlName,
+        });
+
+        assert.equal(controls.length, ratingCase.controlCount);
+
+        act(() => firstControl.focus());
+        fireEvent.click(firstControl);
+
+        assert.equal(document.activeElement, firstControl);
+        assert.equal(firstControl.getAttribute("aria-pressed"), "true");
+      });
+
+      test(`${ratingCase.name} at ${size} exposes its disabled state`, () => {
+        const { container } = render(ratingCase.render(size, true));
+        const controls = container.querySelectorAll<HTMLButtonElement>(
+          "button[aria-pressed]",
+        );
+
+        assert.equal(controls.length, ratingCase.controlCount);
+        for (const control of controls) {
+          assert.equal(control.disabled, true);
+        }
+      });
+    }
+  }
+
   test("completes the full lifecycle locally when no submit method is configured", async () => {
     const events: string[] = [];
     let submittedPayload: WidgetPayload | undefined;

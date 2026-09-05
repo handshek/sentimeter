@@ -526,7 +526,7 @@ function WidgetRig({
 
       <div className="space-y-4">
         <PlaygroundCard title="Preview" icon={<CircleCheck size={16} />}>
-          <div className="relative overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-6">
+          <div className="relative -mx-4 overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-0 min-[360px]:mx-0 min-[360px]:p-3 sm:p-6">
             <div className="pointer-events-none absolute inset-0 opacity-40 [background:repeating-linear-gradient(135deg,rgba(255,255,255,0.10)_0px,rgba(255,255,255,0.10)_1px,transparent_1px,transparent_10px)] dark:opacity-20" />
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_70%_0%,rgba(99,102,241,0.16),transparent_55%),radial-gradient(50%_50%_at_10%_10%,rgba(16,185,129,0.10),transparent_60%)]" />
             <div className="relative flex items-center justify-center">
@@ -575,10 +575,8 @@ function ShowcaseWidget({
 }) {
   const commonProps = {
     autoHide: false,
-    className: "p-1 min-[360px]:p-4 sm:p-5",
     location: "/widgets",
     onStateChange,
-    size: "sm",
   } as const;
   const key = `${slug}-${revision}`;
 
@@ -840,7 +838,7 @@ export function WidgetsPlaygroundClient({
               >
                 {widget.slug === selectedWidgetSlug ? (
                   <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.9fr)] lg:items-start">
-                    <div className="rounded-xl border border-border bg-card p-3 text-card-foreground shadow-sm sm:p-4">
+                    <div className="-mx-3 rounded-xl border border-border bg-card p-0 text-card-foreground shadow-sm min-[360px]:mx-0 min-[360px]:p-3 sm:p-4">
                       <h2 className="sr-only">
                         {activeInstallMetadata.name} Preview
                       </h2>
@@ -938,9 +936,9 @@ export function WidgetsPlaygroundClient({
           >
             <AccordionItem
               value="advanced"
-              className="rounded-xl border border-border bg-card px-4 shadow-sm sm:px-5"
+              className="-mx-3 rounded-xl border border-border bg-card px-0 shadow-sm min-[360px]:mx-0 min-[360px]:px-4 sm:px-5"
             >
-              <AccordionTrigger className="py-4 hover:no-underline">
+              <AccordionTrigger className="px-4 py-4 hover:no-underline min-[360px]:px-0">
                 <span className="pr-4 text-left">
                   <span id="advanced-title" className="block font-semibold">
                     Advanced Developer Lab
@@ -1315,7 +1313,7 @@ export function WidgetsPlaygroundClient({
                         icon={<Radar size={16} />}
                         description="Full-feature compound widget"
                       >
-                        <div className="relative overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-6">
+                        <div className="relative -mx-4 overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-0 min-[360px]:mx-0 min-[360px]:p-3 sm:p-6">
                           <div className="pointer-events-none absolute inset-0 opacity-40 [background:repeating-linear-gradient(135deg,rgba(255,255,255,0.10)_0px,rgba(255,255,255,0.10)_1px,transparent_1px,transparent_10px)] dark:opacity-20" />
                           <div className="relative flex items-center justify-center">
                             <FeedbackWidget
@@ -1351,7 +1349,7 @@ export function WidgetsPlaygroundClient({
                         icon={<Radar size={16} />}
                         description="Just a rating, no text input"
                       >
-                        <div className="relative overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-6">
+                        <div className="relative -mx-4 overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-0 min-[360px]:mx-0 min-[360px]:p-3 sm:p-6">
                           <div className="pointer-events-none absolute inset-0 opacity-40 [background:repeating-linear-gradient(135deg,rgba(255,255,255,0.10)_0px,rgba(255,255,255,0.10)_1px,transparent_1px,transparent_10px)] dark:opacity-20" />
                           <div className="relative flex items-center justify-center">
                             <FeedbackWidget

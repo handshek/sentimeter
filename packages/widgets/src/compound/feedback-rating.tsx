@@ -36,16 +36,28 @@ const LUCIDE_FACE_SET = [
 
 const SIZE_MAP: Record<
   WidgetSize,
-  { iconSize: number; btnClass: string; emojiClass: string }
+  { iconClass: string; btnClass: string; emojiClass: string }
 > = {
-  sm: { iconSize: 18, btnClass: "h-8 w-8", emojiClass: "h-8 w-8 text-lg" },
-  default: {
-    iconSize: 24,
-    btnClass: "h-10 w-10",
-    emojiClass: "h-10 w-10 text-2xl",
+  sm: {
+    iconClass: "size-[18px]",
+    btnClass: "size-[44px]",
+    emojiClass: "size-[44px] text-lg",
   },
-  md: { iconSize: 28, btnClass: "h-12 w-12", emojiClass: "h-12 w-12 text-3xl" },
-  lg: { iconSize: 32, btnClass: "h-14 w-14", emojiClass: "h-14 w-14 text-4xl" },
+  default: {
+    iconClass: "size-6",
+    btnClass: "size-[44px]",
+    emojiClass: "size-[44px] text-2xl",
+  },
+  md: {
+    iconClass: "size-6 @[320px]:size-7",
+    btnClass: "size-[44px] @[320px]:size-12",
+    emojiClass: "size-[44px] text-2xl @[320px]:size-12 @[320px]:text-3xl",
+  },
+  lg: {
+    iconClass: "size-6 @[360px]:size-8",
+    btnClass: "size-[44px] @[360px]:size-14",
+    emojiClass: "size-[44px] text-2xl @[360px]:size-14 @[360px]:text-4xl",
+  },
 };
 
 /* ── Props ──────────────────────────────────────────────────── */
@@ -74,9 +86,13 @@ export function FeedbackRating({
   const [hoverValue, setHoverValue] = React.useState<number | null>(null);
 
   const isLocked = disabled || state === "submitting";
-  const { iconSize, btnClass, emojiClass } = SIZE_MAP[size];
-  const wrapperClass =
-    "mt-4 w-full flex items-center justify-center gap-3 rounded-2xl border border-border/60 bg-muted/20 p-3";
+  const { iconClass, btnClass, emojiClass } = SIZE_MAP[size];
+  const wrapperClass = cn(
+    "mt-4 w-full items-center justify-center rounded-2xl border border-border/60 bg-muted/20",
+    variant === "thumbs"
+      ? "flex gap-2 p-2 @[320px]:gap-3 @[320px]:p-3"
+      : "grid grid-cols-5 place-items-center gap-px p-1 @[320px]:gap-2 @[320px]:p-2 @[360px]:gap-3 @[360px]:p-3",
+  );
 
   /* ── Thumbs ─────────────────────────────────────────────── */
   if (variant === "thumbs") {
@@ -136,9 +152,8 @@ export function FeedbackRating({
               title={label}
             >
               <Icon
-                size={iconSize}
                 strokeWidth={selected ? 2.5 : 2}
-                className={cn(selected ? "text-primary" : undefined)}
+                className={cn(iconClass, selected ? "text-primary" : undefined)}
                 aria-hidden="true"
               />
             </button>
@@ -235,7 +250,7 @@ export function FeedbackRating({
               title={label}
             >
               <Star
-                size={iconSize}
+                className={iconClass}
                 fill={filled ? "currentColor" : "none"}
                 aria-hidden="true"
               />
@@ -301,8 +316,10 @@ export function FeedbackRating({
                 title={aria}
               >
                 <Icon
-                  size={iconSize}
-                  className={cn(selected ? "text-primary" : undefined)}
+                  className={cn(
+                    iconClass,
+                    selected ? "text-primary" : undefined,
+                  )}
                   aria-hidden="true"
                 />
               </button>
