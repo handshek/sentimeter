@@ -68,11 +68,9 @@ import {
 import {
   Activity,
   AreaChart as AreaChartIcon,
-  ArrowUpRight,
   BarChart3,
   ChevronRight,
   Columns3,
-  Download,
   FlaskConical,
   Frown,
   Globe,
@@ -81,7 +79,6 @@ import {
   LineChart as LineChartIcon,
   Meh,
   MessageSquare,
-  MoreHorizontal,
   Search,
   Settings,
   Smile,
@@ -92,12 +89,15 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { toast } from "sonner";
+import { formatFeedbackFeedSummary } from "./feedback-feed-summary";
 
 type RangeOption = "24h" | "7d" | "30d" | "all";
 type WidgetFilterOption = "all" | "emoji" | "thumbs" | "star";
 type SentimentFilter = "all" | "positive" | "neutral" | "negative";
 type ChartType = "stacked" | "grouped" | "area" | "line";
 type Tone = "up" | "down" | "flat";
+
+const SHOW_DEVELOPMENT_WIDGET_TOOLS = process.env.NODE_ENV === "development";
 
 const CHART_TYPES: Array<{
   value: ChartType;
@@ -418,7 +418,9 @@ function ProjectPageSkeleton() {
         <div className="flex items-center gap-2">
           <Sk className="h-8 w-28 rounded-md" />
           <Sk className="h-8 w-28 rounded-md" />
-          <Sk className="h-8 w-24 rounded-md" />
+          {SHOW_DEVELOPMENT_WIDGET_TOOLS ? (
+            <Sk className="h-8 w-24 rounded-md" />
+          ) : null}
           <Sk className="h-8 w-24 rounded-md" />
         </div>
       </div>
@@ -453,12 +455,11 @@ function ProjectPageSkeleton() {
         </Card>
 
         <Card size="sm" className="flex flex-col">
-          <CardHeader className="flex flex-row items-start justify-between gap-2">
+          <CardHeader className="flex flex-row items-start gap-2">
             <div className="space-y-2">
               <Sk className="h-5 w-24" />
               <Sk className="h-3 w-40" />
             </div>
-            <Sk className="h-4 w-4 rounded-full" />
           </CardHeader>
           <CardContent className="flex flex-1 flex-col gap-5">
             <SentimentCardSkeleton />
@@ -504,7 +505,6 @@ function ProjectPageSkeleton() {
           <div className="flex items-center gap-2">
             <Sk className="h-8 w-32 rounded-md" />
             <Sk className="h-8 w-56 rounded-md" />
-            <Sk className="h-8 w-20 rounded-md" />
           </div>
         </CardHeader>
         <Separator className="mb-0" />
@@ -766,6 +766,15 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
     });
   }, [feed, search, sentimentFilter]);
 
+  const hasLocalFeedFilters =
+    search.trim().length > 0 || sentimentFilter !== "all";
+  const feedbackFeedSummary = formatFeedbackFeedSummary({
+    loadedCount: feed?.length,
+    totalCount: analytics?.total,
+    visibleCount: filteredFeed.length,
+    hasLocalFilters: hasLocalFeedFilters,
+  });
+
   async function onCopy() {
     if (!activeKey) return;
     try {
@@ -973,7 +982,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
 
           <span className="mx-1 hidden h-5 w-px bg-border sm:inline-block" />
 
-          {convexProjectId ? (
+          {SHOW_DEVELOPMENT_WIDGET_TOOLS && convexProjectId ? (
             <Button
               asChild
               variant="ghost"
@@ -1258,7 +1267,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               const Icon = kpi.icon;
               return (
                 <Card key={kpi.key} size="sm" className="gap-3">
-                  <CardHeader className="flex flex-row items-start justify-between gap-2">
+                  <CardHeader className="flex flex-row items-start gap-2">
                     <div className="flex items-center gap-2.5">
                       <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-muted/40 text-muted-foreground">
                         <Icon className="h-4 w-4" />
@@ -1268,13 +1277,6 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                         <Info className="h-3.5 w-3.5 text-muted-foreground/60" />
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      className="text-muted-foreground/60 transition-colors hover:text-foreground"
-                      aria-label="More"
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
-                    </button>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div className="flex items-end justify-between gap-2">
@@ -1362,7 +1364,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
         </Card>
 
         <Card size="sm" className="flex flex-col">
-          <CardHeader className="flex flex-row items-start justify-between gap-2">
+          <CardHeader className="flex flex-row items-start gap-2">
             <div>
               <div className="text-base font-semibold tracking-tight">
                 Sentiment
@@ -1371,13 +1373,6 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                 Distribution across all widgets
               </p>
             </div>
-            <button
-              type="button"
-              className="text-muted-foreground/60 transition-colors hover:text-foreground"
-              aria-label="More"
-            >
-              <MoreHorizontal className="h-4 w-4" />
-            </button>
           </CardHeader>
           <CardContent className="flex flex-1 flex-col gap-5">
             {volume === undefined ? (
@@ -1443,13 +1438,6 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                     pct={segNegativePct}
                     tint={SENTIMENT_TINT.negative}
                   />
-                </div>
-
-                <div className="mt-auto border-t border-border/60 pt-4">
-                  <Button variant="outline" size="sm" className="w-full">
-                    View full breakdown
-                    <ArrowUpRight className="h-3.5 w-3.5" />
-                  </Button>
                 </div>
               </>
             )}
@@ -1612,10 +1600,6 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                 className="h-8 w-56 pl-8 text-sm"
               />
             </div>
-            <Button variant="outline" size="sm" disabled>
-              <Download className="h-4 w-4" />
-              Export
-            </Button>
           </div>
         </CardHeader>
         <Separator className="mb-0" />
@@ -1675,7 +1659,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                   >
                     {search.trim() || sentimentFilter !== "all"
                       ? "No feedback matches your filters."
-                      : "No feedback yet. Submit a reaction from the widgets playground to see it here."}
+                      : "No feedback yet. Install a widget and submit a reaction to see it here."}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -1760,18 +1744,8 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           </Table>
         </CardContent>
         <Separator className="mb-0" />
-        <div className="flex items-center justify-between px-5 py-3 text-xs text-muted-foreground">
-          <span>
-            Showing {filteredFeed.length} of {(feed ?? []).length}
-          </span>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" disabled>
-              Previous
-            </Button>
-            <Button variant="outline" size="sm" disabled>
-              Next
-            </Button>
-          </div>
+        <div className="px-5 py-3 text-xs text-muted-foreground">
+          {feedbackFeedSummary}
         </div>
       </Card>
     </div>
@@ -1802,12 +1776,11 @@ function Sk({ className }: { className?: string }) {
 function KpiCardSkeleton() {
   return (
     <Card size="sm" className="gap-3">
-      <CardHeader className="flex flex-row items-start justify-between gap-2">
+      <CardHeader className="flex flex-row items-start gap-2">
         <div className="flex items-center gap-2.5">
           <span className="inline-flex h-9 w-9 shrink-0 animate-pulse items-center justify-center rounded-lg border border-border bg-muted/60" />
           <Sk className="h-4 w-24" />
         </div>
-        <Sk className="h-4 w-4 rounded-full" />
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-end justify-between gap-2">
@@ -1886,9 +1859,6 @@ function SentimentCardSkeleton() {
             </div>
           </div>
         ))}
-      </div>
-      <div className="mt-auto border-t border-border/60 pt-4">
-        <Sk className="h-8 w-full rounded-md" />
       </div>
     </>
   );
