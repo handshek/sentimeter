@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "eslint --max-warnings 0",
     "check-types": "next typegen && tsc --noEmit",
-    "test": "bun test convex/lib app/dashboard/_components/feedback-feed-summary.test.ts"
+    "test": "bun test convex/lib app/dashboard/_components/feedback-feed-summary.test.ts app/_components/landing/demo-widget.test.tsx"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.0.4",
