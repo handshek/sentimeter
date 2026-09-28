@@ -431,7 +431,7 @@ function renderVolumeChart({
 
 export function ProjectClient({ projectId }: { projectId: string }) {
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       <SyncUserGate fallback={<ProjectPageSkeleton />}>
         <ProjectInner projectId={projectId} />
       </SyncUserGate>
@@ -441,16 +441,20 @@ export function ProjectClient({ projectId }: { projectId: string }) {
 
 function ProjectPageSkeleton() {
   return (
-    <div className="space-y-6" role="status" aria-live="polite">
+    <div
+      className="min-w-0 space-y-6 overflow-x-hidden"
+      role="status"
+      aria-live="polite"
+    >
       <span className="sr-only">Loading project dashboard…</span>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
+      <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
           <Sk className="h-4 w-16" />
           <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/40" />
           <Sk className="h-4 w-32" />
           <Sk className="ml-2 h-5 w-24 rounded-full" />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap">
           <Sk className="h-8 w-28 rounded-md" />
           <Sk className="h-8 w-28 rounded-md" />
           {SHOW_DEVELOPMENT_WIDGET_TOOLS ? (
@@ -461,9 +465,9 @@ function ProjectPageSkeleton() {
       </div>
 
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="space-y-2">
+        <div className="min-w-0 max-w-full space-y-2">
           <Sk className="h-8 w-56" />
-          <Sk className="h-4 w-72" />
+          <Sk className="h-4 w-full max-w-72" />
         </div>
         <Sk className="h-4 w-36" />
       </div>
@@ -477,9 +481,9 @@ function ProjectPageSkeleton() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card size="sm" className="lg:col-span-2">
           <CardHeader className="flex flex-row items-start justify-between gap-3">
-            <div className="space-y-2">
+            <div className="min-w-0 flex-1 space-y-2">
               <Sk className="h-5 w-40" />
-              <Sk className="h-3 w-56" />
+              <Sk className="h-3 w-full max-w-56" />
             </div>
             <Sk className="h-8 w-28 rounded-md" />
           </CardHeader>
@@ -532,14 +536,14 @@ function ProjectPageSkeleton() {
 
       <Card size="sm">
         <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
             <Sk className="h-5 w-36" />
             <Sk className="h-5 w-20 rounded-full" />
             <Sk className="h-5 w-14 rounded-full" />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
             <Sk className="h-8 w-32 rounded-md" />
-            <Sk className="h-8 w-56 rounded-md" />
+            <Sk className="h-8 w-full max-w-56 rounded-md sm:w-56" />
           </div>
         </CardHeader>
         <Separator className="mb-0" />
@@ -548,7 +552,7 @@ function ProjectPageSkeleton() {
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={`row-skel-${i}`}
-                className="flex items-center gap-4 border-b border-border/40 py-3 last:border-0"
+                className="grid min-w-0 grid-cols-2 items-center gap-4 border-b border-border/40 py-3 last:border-0 sm:grid-cols-[6rem_2.5rem_7rem_minmax(0,1fr)_4rem_3rem]"
               >
                 <Sk className="h-5 w-24" />
                 <Sk className="h-5 w-10" />
@@ -1084,7 +1088,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   const rangeLabel = RANGE_LABEL[range];
 
   return (
-    <div className="space-y-6" aria-busy={dashboardLoading}>
+    <div className="min-w-0 space-y-6" aria-busy={dashboardLoading}>
       <p className="sr-only" role="status" aria-live="polite">
         {dashboardLoading
           ? "Loading project dashboard data."
@@ -1093,7 +1097,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <nav
           aria-label="breadcrumb"
-          className="flex items-center gap-1.5 text-sm"
+          className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 text-sm"
         >
           <Link
             href="/dashboard"
@@ -1106,7 +1110,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             aria-hidden="true"
           />
           {project ? (
-            <span className="font-medium text-foreground">{project.name}</span>
+            <span className="min-w-0 break-words font-medium text-foreground [overflow-wrap:anywhere]">
+              {project.name}
+            </span>
           ) : (
             <span className="inline-block h-4 w-28 animate-pulse rounded bg-muted/70 motion-reduce:animate-none" />
           )}
@@ -1194,7 +1200,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             </SheetTrigger>
             <SheetContent
               side="right"
-              className="w-full overflow-y-auto sm:max-w-md"
+              className="h-dvh max-h-dvh w-full min-w-0 overscroll-contain overflow-y-auto scroll-pb-24 pb-[env(safe-area-inset-bottom)] sm:max-w-md"
             >
               <SheetHeader>
                 <SheetTitle>Project settings</SheetTitle>
@@ -1301,7 +1307,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                 <Separator />
 
                 <section className="space-y-3">
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="flex items-center gap-2.5">
                       <span
                         aria-hidden="true"
@@ -1515,9 +1521,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
       </div>
 
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="space-y-1">
+        <div className="min-w-0 space-y-1">
           {project ? (
-            <h1 className="text-3xl font-bold tracking-tight">
+            <h1 className="break-words text-3xl font-bold tracking-tight [overflow-wrap:anywhere]">
               {project.name}
             </h1>
           ) : (
@@ -1907,7 +1913,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                         className="h-4 w-4 shrink-0 text-muted-foreground/60"
                         aria-hidden="true"
                       />
-                      <div className="min-w-0 flex-1 truncate font-mono text-[12.5px]">
+                      <div
+                        className="min-w-0 flex-1 truncate font-mono text-[12.5px]"
+                        title={row.location || "/"}
+                      >
                         {row.location || "/"}
                       </div>
                       <div
@@ -1937,7 +1946,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
 
       <Card size="sm">
         <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
             <span className="text-base font-semibold tracking-tight">
               Recent feedback
             </span>
@@ -1955,7 +1964,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               Live
             </Badge>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto">
             <Select
               value={sentimentFilter}
               onValueChange={(value) =>
@@ -1976,7 +1985,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                 <SelectItem value="negative">Negative</SelectItem>
               </SelectContent>
             </Select>
-            <div className="relative">
+            <div className="relative w-full min-w-0 sm:w-auto">
               <label htmlFor="feedback-search" className="sr-only">
                 Search feedback by message or location
               </label>
@@ -1992,7 +2001,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                 value={searchInput}
                 onChange={(event) => setSearchInput(event.target.value)}
                 placeholder="Search message or location"
-                className="h-8 w-56 pl-8 text-sm"
+                className="h-8 w-full min-w-0 pl-8 text-sm sm:w-56"
               />
             </div>
           </div>
@@ -2195,7 +2204,7 @@ function Sk({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "animate-pulse rounded bg-muted/70 motion-reduce:animate-none",
+        "max-w-full animate-pulse rounded bg-muted/70 motion-reduce:animate-none",
         className,
       )}
       aria-hidden

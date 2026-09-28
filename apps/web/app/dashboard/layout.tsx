@@ -17,7 +17,7 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-screen bg-muted/40 text-foreground">
       <header className="sticky top-0 z-50 border-b border-border bg-background">
-        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
+        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
           <Link href="/" className="group inline-flex items-center gap-2">
             <span className="inline-flex h-6 w-[2px] rounded-full bg-primary/80" />
             <span className="text-sm font-semibold tracking-wide">
@@ -36,7 +36,7 @@ export default async function DashboardLayout({
         </div>
       </header>
 
-      <main id="main" className="mx-auto max-w-5xl px-6 py-10">
+      <main id="main" className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-10">
         {children}
       </main>
     </div>

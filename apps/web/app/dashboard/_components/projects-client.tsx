@@ -15,7 +15,7 @@ function formatDate(ms: number) {
 
 export function ProjectsClient() {
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       <div className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">Projects</h1>
         <p className="text-sm text-muted-foreground">
@@ -76,7 +76,7 @@ function ProjectsInner() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <Panel>
         <form onSubmit={onSubmit} className="space-y-3">
           <div className="text-sm font-semibold">New project</div>
@@ -93,7 +93,7 @@ function ProjectsInner() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Project name"
-              className="h-10 w-full rounded-md border border-border/70 bg-background px-3 text-sm outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="h-10 w-full min-w-0 rounded-md border border-border/70 bg-background px-3 text-sm outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             />
             <Button type="submit" disabled={!canSubmit} className="h-10">
               {submitting ? "Creating…" : "Create"}
@@ -122,7 +122,7 @@ function ProjectsInner() {
         <div className="space-y-3" role="status" aria-live="polite">
           <span className="sr-only">Loading projects…</span>
           <div aria-hidden="true" className="space-y-3">
-            <div className="h-5 w-36 animate-pulse rounded bg-muted motion-reduce:animate-none" />
+            <div className="h-5 w-1/2 max-w-36 animate-pulse rounded bg-muted motion-reduce:animate-none" />
             <div className="h-28 w-full animate-pulse rounded bg-muted/70 motion-reduce:animate-none" />
           </div>
         </div>
@@ -138,15 +138,17 @@ function ProjectsInner() {
           {projectList.length > 0 ? (
             <div className="grid grid-cols-1 gap-3">
               {projectList.map((p) => (
-                <Panel key={p._id} className="p-0">
-                  <div className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <div className="text-sm font-semibold">{p.name}</div>
+                <Panel key={p._id}>
+                  <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="min-w-0">
+                      <div className="break-words text-sm font-semibold [overflow-wrap:anywhere]">
+                        {p.name}
+                      </div>
                       <div className="mt-1 text-xs text-muted-foreground">
                         Created {formatDate(p.createdAt)}
                       </div>
                     </div>
-                    <Button asChild variant="outline">
+                    <Button asChild variant="outline" className="shrink-0">
                       <Link href={`/dashboard/projects/${p._id}`}>Open</Link>
                     </Button>
                   </div>

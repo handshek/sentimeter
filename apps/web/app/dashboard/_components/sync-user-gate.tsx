@@ -74,9 +74,9 @@ export function SyncUserGate({
 
 function LoadingSkeleton() {
   return (
-    <div className="space-y-3">
-      <div className="h-5 w-44 animate-pulse rounded bg-muted motion-reduce:animate-none" />
-      <div className="h-4 w-80 animate-pulse rounded bg-muted motion-reduce:animate-none" />
+    <div className="min-w-0 space-y-3">
+      <div className="h-5 w-2/3 max-w-44 animate-pulse rounded bg-muted motion-reduce:animate-none" />
+      <div className="h-4 w-full max-w-80 animate-pulse rounded bg-muted motion-reduce:animate-none" />
       <div className="h-24 w-full animate-pulse rounded bg-muted/70 motion-reduce:animate-none" />
     </div>
   );
