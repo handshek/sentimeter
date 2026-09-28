@@ -37,6 +37,7 @@ function ProjectsInner() {
 
   const [name, setName] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const canSubmit = name.trim().length > 0 && !submitting;
 
   const isLoading = projects === undefined;
@@ -62,10 +63,13 @@ function ProjectsInner() {
     if (!canSubmit) return;
 
     setSubmitting(true);
+    setSubmitError("");
     try {
       const result = await createProject({ name: name.trim() });
       setName("");
       router.push(`/dashboard/projects/${result.project._id}`);
+    } catch {
+      setSubmitError("Could not create the project. Try again.");
     } finally {
       setSubmitting(false);
     }
@@ -82,6 +86,10 @@ function ProjectsInner() {
             </label>
             <input
               id="project-name"
+              name="project-name"
+              autoComplete="off"
+              aria-invalid={submitError ? "true" : undefined}
+              aria-describedby={submitError ? "project-name-error" : undefined}
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Project name"
@@ -92,15 +100,31 @@ function ProjectsInner() {
             </Button>
           </div>
           <div className="text-xs text-muted-foreground">
-            Creating a project automatically generates the first publishable key.
+            Creating a project automatically generates the first publishable
+            key.
           </div>
+          <p className="sr-only" role="status" aria-live="polite">
+            {submitting ? "Creating project…" : ""}
+          </p>
+          {submitError ? (
+            <p
+              id="project-name-error"
+              className="text-xs text-destructive"
+              role="alert"
+            >
+              {submitError}
+            </p>
+          ) : null}
         </form>
       </Panel>
 
       {isLoading ? (
-        <div className="space-y-3">
-          <div className="h-5 w-36 animate-pulse rounded bg-muted" />
-          <div className="h-28 w-full animate-pulse rounded bg-muted/70" />
+        <div className="space-y-3" role="status" aria-live="polite">
+          <span className="sr-only">Loading projects…</span>
+          <div aria-hidden="true" className="space-y-3">
+            <div className="h-5 w-36 animate-pulse rounded bg-muted" />
+            <div className="h-28 w-full animate-pulse rounded bg-muted/70" />
+          </div>
         </div>
       ) : (
         <div className="space-y-3">

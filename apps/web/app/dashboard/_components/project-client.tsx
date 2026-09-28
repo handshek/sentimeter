@@ -94,7 +94,9 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { toast } from "sonner";
+import { copyText, type CopyTextResult } from "../../_lib/clipboard";
 import { formatFeedbackFeedSummary } from "./feedback-feed-summary";
+import { formatResponseVolumeSummary } from "./project-accessibility";
 import {
   parseProjectViewQuery,
   updateProjectViewQuery,
@@ -126,6 +128,13 @@ const RANGE_LABEL: Record<RangeOption, string> = {
   "7d": "LAST 7 DAYS",
   "30d": "LAST 30 DAYS",
   all: "ALL TIME",
+};
+
+const RANGE_SUMMARY_LABEL: Record<RangeOption, string> = {
+  "24h": "the last 24 hours",
+  "7d": "the last 7 days",
+  "30d": "the last 30 days",
+  all: "all time",
 };
 
 const SENTIMENT_TINT = {
@@ -229,9 +238,9 @@ function DeltaBadge({
   return (
     <Badge variant="outline" className={cn("font-medium", tint)}>
       {tone === "up" ? (
-        <TrendingUp className="h-3 w-3" />
+        <TrendingUp className="h-3 w-3" aria-hidden="true" />
       ) : tone === "down" ? (
-        <TrendingDown className="h-3 w-3" />
+        <TrendingDown className="h-3 w-3" aria-hidden="true" />
       ) : null}
       {formatted}
     </Badge>
@@ -418,7 +427,8 @@ export function ProjectClient({ projectId }: { projectId: string }) {
 
 function ProjectPageSkeleton() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" role="status" aria-live="polite">
+      <span className="sr-only">Loading project dashboard…</span>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Sk className="h-4 w-16" />
@@ -621,11 +631,15 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   }, [clearSearchTimeout, pushProjectView, search, searchInput]);
 
   const [revealKey, setRevealKey] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copyState, setCopyState] = useState<"idle" | CopyTextResult>("idle");
+  const [keyActionStatus, setKeyActionStatus] = useState("");
+  const [keyActionError, setKeyActionError] = useState("");
   const [rotating, setRotating] = useState(false);
   const [originText, setOriginText] = useState("");
   const [savingOrigins, setSavingOrigins] = useState(false);
   const [savedOrigins, setSavedOrigins] = useState(false);
+  const [originSaveError, setOriginSaveError] = useState("");
+  const [deleteError, setDeleteError] = useState("");
 
   const [, setNowTick] = useState(0);
   useEffect(() => {
@@ -828,25 +842,50 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
     visibleCount: filteredFeed.length,
     hasLocalFilters: hasLocalFeedFilters,
   });
+  const responseVolumeSummary = formatResponseVolumeSummary({
+    rangeLabel: RANGE_SUMMARY_LABEL[range],
+    points: chartData,
+  });
+  const dashboardLoading =
+    data === undefined ||
+    analytics === undefined ||
+    volume === undefined ||
+    feed === undefined;
 
   async function onCopy() {
     if (!activeKey) return;
-    try {
-      await navigator.clipboard.writeText(activeKey);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1200);
-    } catch {
-      window.prompt("Copy publishable key:", activeKey);
+    setKeyActionError("");
+    const result = await copyText(activeKey, navigator.clipboard);
+    setCopyState(result);
+
+    if (result === "copied") {
+      setKeyActionStatus("Publishable key copied to clipboard.");
+      window.setTimeout(() => {
+        setCopyState("idle");
+        setKeyActionStatus("");
+      }, 1200);
+    } else {
+      setRevealKey(true);
+      setKeyActionError(
+        "Clipboard access is unavailable. Copy the key manually below.",
+      );
     }
   }
 
   async function onRotate() {
     if (!convexProjectId) return;
     setRotating(true);
+    setKeyActionError("");
+    setKeyActionStatus("Rotating publishable key…");
     try {
       await rotateKey({ projectId: convexProjectId });
       setRevealKey(true);
-      setCopied(false);
+      setCopyState("idle");
+      setKeyActionStatus("Publishable key rotated.");
+    } catch {
+      setKeyActionStatus("");
+      setKeyActionError("Could not rotate the publishable key. Try again.");
+      toast.error("Could not rotate the publishable key.");
     } finally {
       setRotating(false);
     }
@@ -855,11 +894,14 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   async function onDelete() {
     if (!convexProjectId) return;
     setDeleting(true);
+    setDeleteError("");
     try {
       await deleteProject({ projectId: convexProjectId });
       router.replace("/dashboard");
     } catch {
       setDeleting(false);
+      setDeleteError("Could not delete the project. Try again.");
+      toast.error("Could not delete the project.");
     }
   }
 
@@ -872,6 +914,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
 
     setSavingOrigins(true);
     setSavedOrigins(false);
+    setOriginSaveError("");
     try {
       await updateAllowedOrigins({
         projectId: convexProjectId,
@@ -880,6 +923,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
       setSavedOrigins(true);
       window.setTimeout(() => setSavedOrigins(false), 1500);
     } catch {
+      setOriginSaveError("Could not save allowed origins. Try again.");
       toast.error("Could not save origins.");
     } finally {
       setSavingOrigins(false);
@@ -966,7 +1010,12 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   const rangeLabel = RANGE_LABEL[range];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" aria-busy={dashboardLoading}>
+      <p className="sr-only" role="status" aria-live="polite">
+        {dashboardLoading
+          ? "Loading project dashboard data."
+          : "Project dashboard data loaded. Live updates are connected."}
+      </p>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <nav
           aria-label="breadcrumb"
@@ -974,11 +1023,14 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
         >
           <Link
             href="/dashboard"
-            className="text-muted-foreground transition-colors hover:text-foreground"
+            className="rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             Projects
           </Link>
-          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60" />
+          <ChevronRight
+            className="h-3.5 w-3.5 text-muted-foreground/60"
+            aria-hidden="true"
+          />
           {project ? (
             <span className="font-medium text-foreground">{project.name}</span>
           ) : (
@@ -1007,6 +1059,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             <SelectTrigger
               size="sm"
               className="h-8 gap-1.5 bg-background dark:bg-background"
+              aria-label="Feedback date range"
             >
               <SelectValue />
             </SelectTrigger>
@@ -1027,6 +1080,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             <SelectTrigger
               size="sm"
               className="h-8 gap-1.5 bg-background dark:bg-background"
+              aria-label="Widget type"
             >
               <SelectValue />
             </SelectTrigger>
@@ -1051,7 +1105,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               <Link
                 href={`/widgets?projectId=${convexProjectId}&advanced=1#advanced`}
               >
-                <FlaskConical className="h-4 w-4" />
+                <FlaskConical className="h-4 w-4" aria-hidden="true" />
                 Test widgets
               </Link>
             </Button>
@@ -1060,7 +1114,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="sm" disabled={!data}>
-                <Settings className="h-4 w-4" />
+                <Settings className="h-4 w-4" aria-hidden="true" />
                 Settings
               </Button>
             </SheetTrigger>
@@ -1110,7 +1164,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                       onClick={onCopy}
                       disabled={!activeKey}
                     >
-                      {copied ? "Copied" : "Copy"}
+                      {copyState === "copied" ? "Copied" : "Copy"}
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -1147,6 +1201,27 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                       </AlertDialogContent>
                     </AlertDialog>
                   </div>
+                  <p className="sr-only" role="status" aria-live="polite">
+                    {rotating ? "Rotating publishable key…" : keyActionStatus}
+                  </p>
+                  {keyActionError ? (
+                    <p
+                      className="text-xs text-destructive"
+                      role="alert"
+                      aria-live="assertive"
+                    >
+                      {keyActionError}
+                    </p>
+                  ) : null}
+                  {copyState === "manual" && activeKey ? (
+                    <Input
+                      readOnly
+                      value={activeKey}
+                      aria-label="Publishable key to copy manually"
+                      className="font-mono text-xs"
+                      onFocus={(event) => event.currentTarget.select()}
+                    />
+                  ) : null}
                 </section>
 
                 <Separator />
@@ -1155,6 +1230,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2.5">
                       <span
+                        aria-hidden="true"
                         className={cn(
                           "relative flex h-2 w-2 shrink-0",
                           hasOriginRestrictions
@@ -1172,7 +1248,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                         />
                         <span className="relative inline-flex h-2 w-2 rounded-full bg-current" />
                       </span>
-                      <div className="text-sm font-semibold">
+                      <div
+                        id="allowed-origins-label"
+                        className="text-sm font-semibold"
+                      >
                         Allowed origins
                       </div>
                     </div>
@@ -1189,11 +1268,20 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                     </Badge>
                   </div>
 
-                  <p className="text-xs text-muted-foreground">
+                  <p
+                    id="allowed-origins-description"
+                    className="text-xs text-muted-foreground"
+                  >
                     One origin per line. Leave blank to accept any origin.
                   </p>
 
                   <Textarea
+                    id="allowed-origins"
+                    name="allowed-origins"
+                    autoComplete="off"
+                    aria-labelledby="allowed-origins-label"
+                    aria-describedby="allowed-origins-description"
+                    aria-invalid={originSaveError ? "true" : undefined}
                     value={originText}
                     onChange={(e) => setOriginText(e.target.value)}
                     placeholder={
@@ -1230,6 +1318,22 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                       </span>
                     )}
                   </div>
+                  <p className="sr-only" role="status" aria-live="polite">
+                    {savingOrigins
+                      ? "Saving allowed origins…"
+                      : savedOrigins
+                        ? "Allowed origins saved."
+                        : ""}
+                  </p>
+                  {originSaveError ? (
+                    <p
+                      className="text-xs text-destructive"
+                      role="alert"
+                      aria-live="assertive"
+                    >
+                      {originSaveError}
+                    </p>
+                  ) : null}
                 </section>
 
                 <Separator />
@@ -1277,6 +1381,14 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
+                  <p className="sr-only" role="status" aria-live="polite">
+                    {deleting ? "Deleting project…" : ""}
+                  </p>
+                  {deleteError ? (
+                    <p className="text-xs text-destructive" role="alert">
+                      {deleteError}
+                    </p>
+                  ) : null}
                 </section>
               </div>
             </SheetContent>
@@ -1303,7 +1415,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             ) : null}
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <div
+          className="flex items-center gap-2 text-xs text-muted-foreground"
+          aria-hidden="true"
+        >
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
@@ -1314,6 +1429,13 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               ? `Updated ${formatRelativeTime(feed[0].createdAt)}`
               : "Awaiting first feedback"}
         </div>
+        <span className="sr-only" role="status" aria-live="polite">
+          {feed === undefined
+            ? "Connecting to live feedback updates."
+            : feed[0]
+              ? `Latest feedback received ${formatLongDate(feed[0].createdAt)}.`
+              : "Live updates connected. Awaiting first feedback."}
+        </span>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -1328,11 +1450,14 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                   <CardHeader className="flex flex-row items-start gap-2">
                     <div className="flex items-center gap-2.5">
                       <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-muted/40 text-muted-foreground">
-                        <Icon className="h-4 w-4" />
+                        <Icon className="h-4 w-4" aria-hidden="true" />
                       </span>
                       <div className="flex items-center gap-1">
                         <span className="text-sm font-medium">{kpi.label}</span>
-                        <Info className="h-3.5 w-3.5 text-muted-foreground/60" />
+                        <Info
+                          className="h-3.5 w-3.5 text-muted-foreground/60"
+                          aria-hidden="true"
+                        />
                       </div>
                     </div>
                   </CardHeader>
@@ -1364,7 +1489,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           <CardHeader className="flex flex-row items-start justify-between gap-3">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-base font-semibold tracking-tight">
+                <span
+                  id="response-volume-title"
+                  className="text-base font-semibold tracking-tight"
+                >
                   Response volume
                 </span>
                 <Badge
@@ -1402,7 +1530,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                     const Icon = t.icon;
                     return (
                       <SelectItem key={t.value} value={t.value}>
-                        <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                        <Icon
+                          className="h-3.5 w-3.5 text-muted-foreground"
+                          aria-hidden="true"
+                        />
                         {t.label}
                       </SelectItem>
                     );
@@ -1413,13 +1544,52 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           </CardHeader>
           <Separator className="mb-0" />
           <CardContent className="pt-4">
-            {volume === undefined ? (
-              <ChartSkeleton />
-            ) : (
-              <ChartContainer config={chartConfig} className="h-[240px] w-full">
-                {renderVolumeChart({ chartType, chartData })}
-              </ChartContainer>
-            )}
+            <figure
+              aria-labelledby="response-volume-title"
+              aria-describedby="response-volume-summary"
+            >
+              <figcaption id="response-volume-summary" className="sr-only">
+                {volume === undefined
+                  ? "Loading response volume."
+                  : responseVolumeSummary}
+              </figcaption>
+              {volume === undefined ? (
+                <ChartSkeleton />
+              ) : (
+                <>
+                  <ChartContainer
+                    config={chartConfig}
+                    className="h-[240px] w-full"
+                    aria-hidden="true"
+                  >
+                    {renderVolumeChart({ chartType, chartData })}
+                  </ChartContainer>
+                  <table className="sr-only">
+                    <caption>Response volume by time period</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Time period</th>
+                        <th scope="col">Positive</th>
+                        <th scope="col">Neutral</th>
+                        <th scope="col">Negative</th>
+                        <th scope="col">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {chartData.map((point) => (
+                        <tr key={point.ts}>
+                          <th scope="row">{point.label}</th>
+                          <td>{point.positive}</td>
+                          <td>{point.neutral}</td>
+                          <td>{point.negative}</td>
+                          <td>{point.total}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </>
+              )}
+            </figure>
           </CardContent>
         </Card>
 
@@ -1446,7 +1616,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                   <div className="text-xs text-muted-foreground">responses</div>
                 </div>
 
-                <div className="flex h-2.5 gap-[2px] overflow-hidden rounded-sm">
+                <div
+                  className="flex h-2.5 gap-[2px] overflow-hidden rounded-sm"
+                  aria-hidden="true"
+                >
                   <span
                     className="h-full"
                     style={{
@@ -1476,7 +1649,12 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                 <div className="space-y-3">
                   <SentimentRow
                     color="oklch(0.72 0.17 153)"
-                    icon={<Smile className="h-4 w-4 text-muted-foreground" />}
+                    icon={
+                      <Smile
+                        className="h-4 w-4 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                    }
                     label="Positive"
                     count={totals.positive}
                     pct={segPositivePct}
@@ -1484,7 +1662,12 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                   />
                   <SentimentRow
                     color="oklch(0.84 0.01 250)"
-                    icon={<Meh className="h-4 w-4 text-muted-foreground" />}
+                    icon={
+                      <Meh
+                        className="h-4 w-4 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                    }
                     label="Neutral"
                     count={totals.neutral}
                     pct={segNeutralPct}
@@ -1492,7 +1675,12 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                   />
                   <SentimentRow
                     color="oklch(0.64 0.22 25)"
-                    icon={<Frown className="h-4 w-4 text-muted-foreground" />}
+                    icon={
+                      <Frown
+                        className="h-4 w-4 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                    }
                     label="Negative"
                     count={totals.negative}
                     pct={segNegativePct}
@@ -1516,7 +1704,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                 Which widget drives the most responses
               </p>
             </div>
-            <LayoutGrid className="h-4 w-4 text-muted-foreground" />
+            <LayoutGrid
+              className="h-4 w-4 text-muted-foreground"
+              aria-hidden="true"
+            />
           </CardHeader>
           <CardContent className="space-y-4">
             {analytics === undefined ? (
@@ -1542,6 +1733,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                               ? "text-amber-500"
                               : "text-muted-foreground",
                           )}
+                          aria-hidden="true"
                         />
                         <span className="font-medium">{row.label}</span>
                       </div>
@@ -1549,7 +1741,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                         {row.value.toLocaleString()} · {pct.toFixed(1)}%
                       </div>
                     </div>
-                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted"
+                      aria-hidden="true"
+                    >
                       <div
                         className="h-full rounded-full bg-primary transition-all"
                         style={{ width: `${pct}%` }}
@@ -1572,7 +1767,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                 {topLocations.length}
               </Badge>
             </div>
-            <Globe className="h-4 w-4 text-muted-foreground" />
+            <Globe
+              className="h-4 w-4 text-muted-foreground"
+              aria-hidden="true"
+            />
           </CardHeader>
           <CardContent>
             {analytics === undefined ? (
@@ -1587,11 +1785,17 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                       key={row.location}
                       className="flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-muted/40"
                     >
-                      <Globe className="h-4 w-4 shrink-0 text-muted-foreground/60" />
+                      <Globe
+                        className="h-4 w-4 shrink-0 text-muted-foreground/60"
+                        aria-hidden="true"
+                      />
                       <div className="min-w-0 flex-1 truncate font-mono text-[12.5px]">
                         {row.location || "/"}
                       </div>
-                      <div className="h-1.5 w-20 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-1.5 w-20 overflow-hidden rounded-full bg-muted"
+                        aria-hidden="true"
+                      >
                         <div
                           className="h-full rounded-full bg-primary"
                           style={{ width: `${pct}%` }}
@@ -1626,7 +1830,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               variant="outline"
               className={cn("gap-1.5", SENTIMENT_TINT.positive)}
             >
-              <span className="relative flex h-1.5 w-1.5">
+              <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
               </span>
@@ -1643,6 +1847,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               <SelectTrigger
                 size="sm"
                 className="h-8 gap-1.5 bg-background dark:bg-background"
+                aria-label="Feedback sentiment"
               >
                 <SelectValue placeholder="Sentiment" />
               </SelectTrigger>
@@ -1654,8 +1859,18 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               </SelectContent>
             </Select>
             <div className="relative">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <label htmlFor="feedback-search" className="sr-only">
+                Search feedback by message or location
+              </label>
+              <Search
+                className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden="true"
+              />
               <Input
+                id="feedback-search"
+                name="feedback-search"
+                type="search"
+                autoComplete="off"
                 value={searchInput}
                 onChange={(event) => setSearchInput(event.target.value)}
                 placeholder="Search message or location"
@@ -1742,7 +1957,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                       <TableCell className="pl-4">
                         <div className="inline-flex items-center gap-2">
                           <span className="inline-flex h-6 w-6 items-center justify-center rounded-md border border-border bg-muted/40 text-muted-foreground">
-                            <WidgetIcon className="h-3.5 w-3.5" />
+                            <WidgetIcon
+                              className="h-3.5 w-3.5"
+                              aria-hidden="true"
+                            />
                           </span>
                           <span className="text-sm font-medium capitalize">
                             {f.widgetType}
@@ -1752,26 +1970,51 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                       <TableCell>
                         {f.widgetType === "thumbs" ? (
                           f.value === 1 ? (
-                            <ThumbsUp className="h-4 w-4 text-emerald-600" />
+                            <>
+                              <ThumbsUp
+                                className="h-4 w-4 text-emerald-600"
+                                aria-hidden="true"
+                              />
+                              <span className="sr-only">Like</span>
+                            </>
                           ) : (
-                            <ThumbsDown className="h-4 w-4 text-rose-500" />
+                            <>
+                              <ThumbsDown
+                                className="h-4 w-4 text-rose-500"
+                                aria-hidden="true"
+                              />
+                              <span className="sr-only">Dislike</span>
+                            </>
                           )
                         ) : f.widgetType === "star" ? (
-                          <span className="inline-flex items-center gap-1 font-mono tabular-nums">
-                            <span className="text-sm">{f.value}</span>
-                            <Star className="h-3.5 w-3.5 text-amber-500" />
+                          <span
+                            className="inline-flex items-center gap-1 font-mono tabular-nums"
+                            aria-label={`${f.value} ${f.value === 1 ? "star" : "stars"}`}
+                          >
+                            <span className="text-sm" aria-hidden="true">
+                              {f.value}
+                            </span>
+                            <Star
+                              className="h-3.5 w-3.5 text-amber-500"
+                              aria-hidden="true"
+                            />
                           </span>
                         ) : (
                           <span className="text-lg leading-none">
-                            {f.value <= 1
-                              ? "😖"
-                              : f.value === 2
-                                ? "😕"
-                                : f.value === 3
-                                  ? "😐"
-                                  : f.value === 4
-                                    ? "😊"
-                                    : "😍"}
+                            <span className="sr-only">
+                              Rating {f.value} of 5
+                            </span>
+                            <span aria-hidden="true">
+                              {f.value <= 1
+                                ? "😖"
+                                : f.value === 2
+                                  ? "😕"
+                                  : f.value === 3
+                                    ? "😐"
+                                    : f.value === 4
+                                      ? "😊"
+                                      : "😍"}
+                            </span>
                           </span>
                         )}
                       </TableCell>
@@ -1820,6 +2063,7 @@ function Legend({ color, label }: { color: string; label: string }) {
       <span
         className="inline-block h-2 w-2 rounded-full"
         style={{ background: color }}
+        aria-hidden="true"
       />
       {label}
     </span>
@@ -1858,7 +2102,7 @@ function KpiCardSkeleton() {
 function ChartSkeleton() {
   const heights = [60, 40, 75, 55, 85, 45, 70];
   return (
-    <div className="flex h-[240px] w-full flex-col gap-2">
+    <div className="flex h-[240px] w-full flex-col gap-2" aria-hidden="true">
       <div className="relative flex flex-1 items-end gap-6 pr-2 pl-6">
         {[0, 1, 2, 3].map((i) => (
           <div
@@ -1987,6 +2231,7 @@ function SentimentRow({
         <span
           className="inline-block h-2 w-2 rounded-full"
           style={{ background: color }}
+          aria-hidden="true"
         />
         {icon}
         <span className="text-sm font-medium">{label}</span>
