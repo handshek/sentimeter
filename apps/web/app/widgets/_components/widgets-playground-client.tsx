@@ -75,19 +75,18 @@ import {
   WidgetInstallCommand,
   type WidgetInstallMetadata,
 } from "../../components/_components/widget-install-command";
+import { copyText, type CopyTextResult } from "../../_lib/clipboard";
+import {
+  createWidgetRigState,
+  getProjectDashboardHref,
+  widgetRigReducer,
+} from "./widgets-playground-behavior";
 
 type SubmitMode = "mock" | "real";
 type MockOutcome = "success" | "error";
 type WidgetSlug = WidgetInstallMetadata["slug"];
 
 const DEFAULT_WIDGET_SLUG: WidgetSlug = "emoji-feedback";
-
-type SubmitResult = {
-  ok: boolean;
-  status: number;
-  error?: string;
-  at: number;
-};
 
 type WidgetCommon = {
   apiKey: string;
@@ -327,13 +326,11 @@ function WidgetRig({
   ratingVariant?: "icons" | "emoji";
   setRatingVariant?: (v: "icons" | "emoji") => void;
 }) {
-  const [state, setState] = React.useState<WidgetState>("idle");
-  const [selectedValue, setSelectedValue] = React.useState<number | null>(null);
-  const [lastPayload, setLastPayload] = React.useState<WidgetPayload | null>(
-    null,
+  const [rigState, dispatch] = React.useReducer(
+    widgetRigReducer,
+    createWidgetRigState(),
   );
-  const [lastResult, setLastResult] = React.useState<SubmitResult | null>(null);
-  const [instance, setInstance] = React.useState(0);
+  const { state, selectedValue, lastPayload, lastResult, instance } = rigState;
 
   const widgetType: WidgetPayload["widgetType"] =
     kind === "emoji" ? "emoji" : kind === "thumbs" ? "thumbs" : "star";
@@ -342,15 +339,28 @@ function WidgetRig({
     async (payload) => {
       try {
         await common.submit(payload);
-        setLastResult({ ok: true, status: 200, at: Date.now() });
+        dispatch({
+          type: "submit-result",
+          instance,
+          result: { ok: true, status: 200, at: Date.now() },
+        });
       } catch (error) {
         const message =
           error instanceof Error ? error.message : "submit_failed";
-        setLastResult({ ok: false, status: 0, error: message, at: Date.now() });
+        dispatch({
+          type: "submit-result",
+          instance,
+          result: {
+            ok: false,
+            status: 0,
+            error: message,
+            at: Date.now(),
+          },
+        });
         throw error;
       }
     },
-    [common],
+    [common, instance],
   );
 
   const widgetCommon = {
@@ -365,9 +375,12 @@ function WidgetRig({
     showInput: common.showInput,
     size: common.size,
     submit: wrappedSubmit,
-    onSelect: (v: number) => setSelectedValue(v),
-    onStateChange: (s: WidgetState) => setState(s),
-    onSubmitStart: (p: WidgetPayload) => setLastPayload(p),
+    onSelect: (value: number) =>
+      dispatch({ type: "selected", instance, value }),
+    onStateChange: (nextState: WidgetState) =>
+      dispatch({ type: "state-changed", instance, state: nextState }),
+    onSubmitStart: (payload: WidgetPayload) =>
+      dispatch({ type: "submit-start", instance, payload }),
   } as const;
 
   const payloadPreview: WidgetPayload | null =
@@ -439,7 +452,7 @@ function WidgetRig({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setInstance((v) => v + 1)}
+                onClick={() => dispatch({ type: "reset-widget" })}
               >
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Reset widget
@@ -447,12 +460,7 @@ function WidgetRig({
               <Button
                 type="button"
                 variant="ghost"
-                onClick={() => {
-                  setSelectedValue(null);
-                  setLastPayload(null);
-                  setLastResult(null);
-                  setState("idle");
-                }}
+                onClick={() => dispatch({ type: "clear-debug" })}
               >
                 Clear debug
               </Button>
@@ -696,6 +704,43 @@ export function WidgetsPlaygroundClient({
     selectedProjectQueryArgs,
   );
   const activeApiKey = selectedProject?.activeApiKey?.key ?? "";
+  const selectedProjectDashboardHref =
+    getProjectDashboardHref(selectedProjectId);
+  const [projectKeyCopyState, setProjectKeyCopyState] = React.useState<
+    "idle" | CopyTextResult
+  >("idle");
+  const projectKeyCopyResetTimerRef = React.useRef<number | null>(null);
+
+  const clearProjectKeyCopyResetTimer = React.useCallback(() => {
+    if (projectKeyCopyResetTimerRef.current === null) return;
+    window.clearTimeout(projectKeyCopyResetTimerRef.current);
+    projectKeyCopyResetTimerRef.current = null;
+  }, []);
+
+  React.useEffect(
+    () => clearProjectKeyCopyResetTimer,
+    [clearProjectKeyCopyResetTimer],
+  );
+
+  React.useEffect(() => {
+    clearProjectKeyCopyResetTimer();
+    setProjectKeyCopyState("idle");
+  }, [activeApiKey, clearProjectKeyCopyResetTimer]);
+
+  async function copyProjectKey() {
+    if (!activeApiKey) return;
+
+    const result = await copyText(activeApiKey, navigator.clipboard);
+    setProjectKeyCopyState(result);
+
+    if (result === "copied") {
+      clearProjectKeyCopyResetTimer();
+      projectKeyCopyResetTimerRef.current = window.setTimeout(
+        () => setProjectKeyCopyState("idle"),
+        1400,
+      );
+    }
+  }
 
   const [apiKey, setApiKey] = React.useState("demo-api-key");
   const [location, setLocation] = React.useState("/widgets");
@@ -1090,35 +1135,51 @@ export function WidgetsPlaygroundClient({
                             type="button"
                             variant="outline"
                             disabled={!activeApiKey}
-                            onClick={async () => {
-                              if (!activeApiKey) return;
-                              try {
-                                await navigator.clipboard.writeText(
-                                  activeApiKey,
-                                );
-                              } catch {
-                                window.prompt(
-                                  "Copy publishable key:",
-                                  activeApiKey,
-                                );
-                              }
-                            }}
+                            onClick={() => void copyProjectKey()}
                           >
-                            Copy key
+                            {projectKeyCopyState === "copied"
+                              ? "Copied"
+                              : "Copy key"}
                           </Button>
-                          <Button
-                            type="button"
-                            asChild
-                            variant="outline"
-                            disabled={!selectedProjectId}
-                          >
-                            <Link
-                              href={`/dashboard/projects/${selectedProjectId}`}
-                            >
+                          {selectedProjectDashboardHref ? (
+                            <Button type="button" asChild variant="outline">
+                              <Link href={selectedProjectDashboardHref}>
+                                Open dashboard
+                              </Link>
+                            </Button>
+                          ) : (
+                            <Button type="button" variant="outline" disabled>
                               Open dashboard
-                            </Link>
-                          </Button>
+                            </Button>
+                          )}
                         </div>
+                        <span
+                          className="sr-only"
+                          role="status"
+                          aria-live="polite"
+                        >
+                          {projectKeyCopyState === "copied"
+                            ? "Publishable key copied to clipboard"
+                            : ""}
+                        </span>
+                        {projectKeyCopyState === "manual" ? (
+                          <div
+                            className="space-y-2 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3"
+                            role="alert"
+                          >
+                            <p className="text-xs text-muted-foreground">
+                              Clipboard access is unavailable. Copy the key
+                              manually:
+                            </p>
+                            <Input
+                              readOnly
+                              value={activeApiKey}
+                              aria-label="Publishable key to copy manually"
+                              className="font-mono text-xs"
+                              onFocus={(event) => event.currentTarget.select()}
+                            />
+                          </div>
+                        ) : null}
                       </div>
                     ) : (
                       <div className="text-sm text-muted-foreground">

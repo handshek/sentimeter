@@ -8,6 +8,7 @@ import {
   AccordionTrigger,
 } from "@workspace/ui/components/accordion";
 import { Button } from "@workspace/ui/components/button";
+import { Input } from "@workspace/ui/components/input";
 import {
   Tabs,
   TabsContent,
@@ -15,6 +16,7 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 import { Check, Copy, Terminal } from "lucide-react";
+import { copyText, type CopyTextResult } from "../../_lib/clipboard";
 
 const REGISTRY_BASE_URL = "https://registry.handshek.workers.dev/r";
 const COPY_CONFIRMATION_DURATION_MS = 1400;
@@ -64,7 +66,9 @@ export function WidgetInstallCommand({
   metadata,
 }: WidgetInstallCommandProps) {
   const [manager, setManager] = React.useState<PackageManager>(defaultManager);
-  const [copied, setCopied] = React.useState(false);
+  const [copyState, setCopyState] = React.useState<"idle" | CopyTextResult>(
+    "idle",
+  );
   const resetTimerRef = React.useRef<number | null>(null);
   const commands = React.useMemo(
     () => getInstallCommands(registryName),
@@ -82,22 +86,23 @@ export function WidgetInstallCommand({
 
   React.useEffect(() => {
     clearResetTimer();
-    setCopied(false);
+    setCopyState("idle");
   }, [clearResetTimer, manager, registryName]);
 
   async function copyCommand() {
-    try {
-      await navigator.clipboard.writeText(activeCommand);
-      setCopied(true);
+    const result = await copyText(activeCommand, navigator.clipboard);
+    setCopyState(result);
+
+    if (result === "copied") {
       clearResetTimer();
       resetTimerRef.current = window.setTimeout(
-        () => setCopied(false),
+        () => setCopyState("idle"),
         COPY_CONFIRMATION_DURATION_MS,
       );
-    } catch {
-      window.prompt("Copy install command:", activeCommand);
     }
   }
+
+  const copied = copyState === "copied";
 
   return (
     <div className="space-y-3">
@@ -158,6 +163,24 @@ export function WidgetInstallCommand({
           ))}
         </Tabs>
       </div>
+
+      {copyState === "manual" ? (
+        <div
+          className="space-y-2 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3"
+          role="alert"
+        >
+          <p className="text-xs text-muted-foreground">
+            Clipboard access is unavailable. Copy the command manually:
+          </p>
+          <Input
+            readOnly
+            value={activeCommand}
+            aria-label="Install command to copy manually"
+            className="font-mono text-xs"
+            onFocus={(event) => event.currentTarget.select()}
+          />
+        </div>
+      ) : null}
 
       {metadata ? (
         <div className="rounded-xl border border-border bg-card px-4 py-3 text-card-foreground">
