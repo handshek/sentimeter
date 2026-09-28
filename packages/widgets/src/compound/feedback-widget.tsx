@@ -64,7 +64,7 @@ function FeedbackWidgetInner({
     <div
       ref={containerRef}
       className={cn(
-        "@container relative w-full rounded-3xl border border-border/60 bg-background shadow-xl",
+        "@container relative w-full rounded-xl border border-border bg-background shadow-sm",
         CONTAINER_SIZE_MAP[size],
         className,
       )}

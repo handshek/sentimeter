@@ -183,7 +183,7 @@ function PlaygroundCard({
   children: React.ReactNode;
 }) {
   return (
-    <Card className="border-border/70 bg-background/60 shadow-sm backdrop-blur">
+    <Card size="sm">
       <CardHeader className="border-b border-border/60">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -233,7 +233,7 @@ function PopoverWidgetDemo({ common }: { common: WidgetCommon }) {
   }, [clearCloseTimer, common.doneDurationMs, open, state]);
 
   return (
-    <div className="rounded-2xl border border-dashed border-border/70 bg-muted/20 p-6">
+    <div className="rounded-xl border border-border bg-muted/30 p-6">
       <div className="flex flex-col gap-4">
         <div className="max-w-2xl space-y-2">
           <p className="text-sm leading-relaxed text-muted-foreground">
@@ -534,10 +534,8 @@ function WidgetRig({
 
       <div className="space-y-4">
         <PlaygroundCard title="Preview" icon={<CircleCheck size={16} />}>
-          <div className="relative -mx-4 overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-0 min-[360px]:mx-0 min-[360px]:p-3 sm:p-6">
-            <div className="pointer-events-none absolute inset-0 opacity-40 [background:repeating-linear-gradient(135deg,rgba(255,255,255,0.10)_0px,rgba(255,255,255,0.10)_1px,transparent_1px,transparent_10px)] dark:opacity-20" />
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_70%_0%,rgba(99,102,241,0.16),transparent_55%),radial-gradient(50%_50%_at_10%_10%,rgba(16,185,129,0.10),transparent_60%)]" />
-            <div className="relative flex items-center justify-center">
+          <div className="-mx-4 overflow-hidden rounded-xl border border-border bg-muted/30 p-0 min-[360px]:mx-0 min-[360px]:p-3 sm:p-6">
+            <div className="flex items-center justify-center">
               {kind === "emoji" ? (
                 <EmojiFeedback
                   key={instance}
@@ -824,7 +822,7 @@ export function WidgetsPlaygroundClient({
       >
         Skip to Main Content
       </a>
-      <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur supports-backdrop-filter:bg-background/80">
+      <header className="sticky top-0 z-50 border-b border-border bg-background">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-3">
             <Button asChild variant="ghost" size="sm">
@@ -883,7 +881,10 @@ export function WidgetsPlaygroundClient({
               >
                 {widget.slug === selectedWidgetSlug ? (
                   <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.9fr)] lg:items-start">
-                    <div className="-mx-3 rounded-xl border border-border bg-card p-0 text-card-foreground shadow-sm min-[360px]:mx-0 min-[360px]:p-3 sm:p-4">
+                    <Card
+                      size="sm"
+                      className="-mx-3 gap-2 p-0 min-[360px]:mx-0 min-[360px]:p-3 sm:p-4"
+                    >
                       <h2 className="sr-only">
                         {activeInstallMetadata.name} Preview
                       </h2>
@@ -920,7 +921,7 @@ export function WidgetsPlaygroundClient({
                           </Button>
                         ) : null}
                       </div>
-                    </div>
+                    </Card>
 
                     <section
                       aria-labelledby="install-title"
@@ -981,7 +982,7 @@ export function WidgetsPlaygroundClient({
           >
             <AccordionItem
               value="advanced"
-              className="-mx-3 rounded-xl border border-border bg-card px-0 shadow-sm min-[360px]:mx-0 min-[360px]:px-4 sm:px-5"
+              className="-mx-3 rounded-xl bg-card px-0 shadow-xs ring-1 ring-foreground/10 min-[360px]:mx-0 min-[360px]:px-4 sm:px-5"
             >
               <AccordionTrigger className="px-4 py-4 hover:no-underline min-[360px]:px-0">
                 <span className="pr-4 text-left">
@@ -1374,9 +1375,8 @@ export function WidgetsPlaygroundClient({
                         icon={<Radar size={16} />}
                         description="Full-feature compound widget"
                       >
-                        <div className="relative -mx-4 overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-0 min-[360px]:mx-0 min-[360px]:p-3 sm:p-6">
-                          <div className="pointer-events-none absolute inset-0 opacity-40 [background:repeating-linear-gradient(135deg,rgba(255,255,255,0.10)_0px,rgba(255,255,255,0.10)_1px,transparent_1px,transparent_10px)] dark:opacity-20" />
-                          <div className="relative flex items-center justify-center">
+                        <div className="-mx-4 overflow-hidden rounded-xl border border-border bg-muted/30 p-0 min-[360px]:mx-0 min-[360px]:p-3 sm:p-6">
+                          <div className="flex items-center justify-center">
                             <FeedbackWidget
                               apiKey={common.apiKey}
                               endpoint={common.endpoint}
@@ -1410,9 +1410,8 @@ export function WidgetsPlaygroundClient({
                         icon={<Radar size={16} />}
                         description="Just a rating, no text input"
                       >
-                        <div className="relative -mx-4 overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-0 min-[360px]:mx-0 min-[360px]:p-3 sm:p-6">
-                          <div className="pointer-events-none absolute inset-0 opacity-40 [background:repeating-linear-gradient(135deg,rgba(255,255,255,0.10)_0px,rgba(255,255,255,0.10)_1px,transparent_1px,transparent_10px)] dark:opacity-20" />
-                          <div className="relative flex items-center justify-center">
+                        <div className="-mx-4 overflow-hidden rounded-xl border border-border bg-muted/30 p-0 min-[360px]:mx-0 min-[360px]:p-3 sm:p-6">
+                          <div className="flex items-center justify-center">
                             <FeedbackWidget
                               apiKey={common.apiKey}
                               endpoint={common.endpoint}

@@ -122,8 +122,8 @@ function ProjectsInner() {
         <div className="space-y-3" role="status" aria-live="polite">
           <span className="sr-only">Loading projects…</span>
           <div aria-hidden="true" className="space-y-3">
-            <div className="h-5 w-36 animate-pulse rounded bg-muted" />
-            <div className="h-28 w-full animate-pulse rounded bg-muted/70" />
+            <div className="h-5 w-36 animate-pulse rounded bg-muted motion-reduce:animate-none" />
+            <div className="h-28 w-full animate-pulse rounded bg-muted/70 motion-reduce:animate-none" />
           </div>
         </div>
       ) : (

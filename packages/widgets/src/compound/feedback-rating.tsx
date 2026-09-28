@@ -108,7 +108,7 @@ export function FeedbackRating({
                 disabled={isLocked}
                 onClick={() => select(value)}
                 className={cn(
-                  "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200",
+                  "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200 motion-reduce:transition-none",
                   emojiClass,
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
                   selected
@@ -139,7 +139,7 @@ export function FeedbackRating({
               disabled={isLocked}
               onClick={() => select(value)}
               className={cn(
-                "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200",
+                "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200 motion-reduce:transition-none",
                 btnClass,
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
                 selected
@@ -186,7 +186,7 @@ export function FeedbackRating({
                 onBlur={() => setHoverValue(null)}
                 onClick={() => select(value)}
                 className={cn(
-                  "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200",
+                  "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200 motion-reduce:transition-none",
                   emojiClass,
                   "font-normal leading-none",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
@@ -235,7 +235,7 @@ export function FeedbackRating({
               onBlur={() => setHoverValue(null)}
               onClick={() => select(value)}
               className={cn(
-                "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200",
+                "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200 motion-reduce:transition-none",
                 btnClass,
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
                 selected
@@ -276,7 +276,7 @@ export function FeedbackRating({
                 disabled={isLocked}
                 onClick={() => select(value)}
                 className={cn(
-                  "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200",
+                  "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200 motion-reduce:transition-none",
                   emojiClass,
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
                   selected
@@ -303,7 +303,7 @@ export function FeedbackRating({
                 disabled={isLocked}
                 onClick={() => select(value)}
                 className={cn(
-                  "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200",
+                  "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200 motion-reduce:transition-none",
                   btnClass,
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
                   selected

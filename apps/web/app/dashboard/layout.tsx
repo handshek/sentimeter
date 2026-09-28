@@ -16,7 +16,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-muted/40 text-foreground">
-      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
+      <header className="sticky top-0 z-50 border-b border-border bg-background">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
           <Link href="/" className="group inline-flex items-center gap-2">
             <span className="inline-flex h-6 w-[2px] rounded-full bg-primary/80" />
@@ -42,4 +42,3 @@ export default async function DashboardLayout({
     </div>
   );
 }
-

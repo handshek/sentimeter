@@ -1097,7 +1097,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
         >
           <Link
             href="/dashboard"
-            className="rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 motion-reduce:transition-none"
           >
             Projects
           </Link>
@@ -1108,7 +1108,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           {project ? (
             <span className="font-medium text-foreground">{project.name}</span>
           ) : (
-            <span className="inline-block h-4 w-28 animate-pulse rounded bg-muted/70" />
+            <span className="inline-block h-4 w-28 animate-pulse rounded bg-muted/70 motion-reduce:animate-none" />
           )}
           {activeKey ? (
             <Badge
@@ -1216,7 +1216,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                     {data ? (
                       keyDisplay
                     ) : (
-                      <span className="inline-block h-4 w-56 animate-pulse rounded bg-muted/70 align-middle" />
+                      <span className="inline-block h-4 w-56 animate-pulse rounded bg-muted/70 align-middle motion-reduce:animate-none" />
                     )}
                   </div>
 
@@ -1317,7 +1317,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                             "absolute inline-flex h-full w-full rounded-full opacity-40",
                             hasOriginRestrictions
                               ? "bg-emerald-500"
-                              : "animate-pulse bg-amber-500",
+                              : "animate-pulse bg-amber-500 motion-reduce:animate-none",
                           )}
                         />
                         <span className="relative inline-flex h-2 w-2 rounded-full bg-current" />
@@ -1521,7 +1521,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               {project.name}
             </h1>
           ) : (
-            <div className="h-8 w-56 animate-pulse rounded bg-muted/70" />
+            <div className="h-8 w-56 animate-pulse rounded bg-muted/70 motion-reduce:animate-none" />
           )}
           <p className="text-sm text-muted-foreground">
             Feedback overview
@@ -1538,7 +1538,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           aria-hidden="true"
         >
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70 motion-reduce:animate-none" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
           </span>
           {feed === undefined
@@ -1864,7 +1864,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                       aria-hidden="true"
                     >
                       <div
-                        className="h-full rounded-full bg-primary transition-all"
+                        className="h-full rounded-full bg-primary transition-all motion-reduce:transition-none"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -1901,7 +1901,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                   return (
                     <div
                       key={row.location}
-                      className="flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-muted/40"
+                      className="flex items-center gap-3 rounded-lg px-2 py-1.5"
                     >
                       <Globe
                         className="h-4 w-4 shrink-0 text-muted-foreground/60"
@@ -1949,7 +1949,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               className={cn("gap-1.5", SENTIMENT_TINT.positive)}
             >
               <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70 motion-reduce:animate-none" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
               </span>
               Live
@@ -2001,7 +2001,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
         <CardContent className="px-0">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="hover:bg-transparent">
                 <TableHead className="pl-4 text-[11px] uppercase tracking-widest text-muted-foreground">
                   Widget
                 </TableHead>
@@ -2025,29 +2025,32 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             <TableBody>
               {feed === undefined ? (
                 Array.from({ length: 4 }).map((_, i) => (
-                  <TableRow key={`skeleton-${i}`}>
+                  <TableRow
+                    key={`skeleton-${i}`}
+                    className="hover:bg-transparent"
+                  >
                     <TableCell className="pl-4">
-                      <div className="h-5 w-24 animate-pulse rounded bg-muted/70" />
+                      <div className="h-5 w-24 animate-pulse rounded bg-muted/70 motion-reduce:animate-none" />
                     </TableCell>
                     <TableCell>
-                      <div className="h-5 w-10 animate-pulse rounded bg-muted/70" />
+                      <div className="h-5 w-10 animate-pulse rounded bg-muted/70 motion-reduce:animate-none" />
                     </TableCell>
                     <TableCell>
-                      <div className="h-4 w-28 animate-pulse rounded bg-muted/70" />
+                      <div className="h-4 w-28 animate-pulse rounded bg-muted/70 motion-reduce:animate-none" />
                     </TableCell>
                     <TableCell>
-                      <div className="h-4 w-48 animate-pulse rounded bg-muted/70" />
+                      <div className="h-4 w-48 animate-pulse rounded bg-muted/70 motion-reduce:animate-none" />
                     </TableCell>
                     <TableCell>
-                      <div className="h-5 w-16 animate-pulse rounded-full bg-muted/70" />
+                      <div className="h-5 w-16 animate-pulse rounded-full bg-muted/70 motion-reduce:animate-none" />
                     </TableCell>
                     <TableCell className="pr-4 text-right">
-                      <div className="ml-auto h-4 w-12 animate-pulse rounded bg-muted/70" />
+                      <div className="ml-auto h-4 w-12 animate-pulse rounded bg-muted/70 motion-reduce:animate-none" />
                     </TableCell>
                   </TableRow>
                 ))
               ) : filteredFeed.length === 0 ? (
-                <TableRow>
+                <TableRow className="hover:bg-transparent">
                   <TableCell
                     colSpan={6}
                     className="py-10 text-center text-sm text-muted-foreground"
@@ -2071,7 +2074,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                         ? ThumbsUp
                         : Star;
                   return (
-                    <TableRow key={f._id}>
+                    <TableRow key={f._id} className="hover:bg-transparent">
                       <TableCell className="pl-4">
                         <div className="inline-flex items-center gap-2">
                           <span className="inline-flex h-6 w-6 items-center justify-center rounded-md border border-border bg-muted/40 text-muted-foreground">
@@ -2191,7 +2194,10 @@ function Legend({ color, label }: { color: string; label: string }) {
 function Sk({ className }: { className?: string }) {
   return (
     <div
-      className={cn("animate-pulse rounded bg-muted/70", className)}
+      className={cn(
+        "animate-pulse rounded bg-muted/70 motion-reduce:animate-none",
+        className,
+      )}
       aria-hidden
     />
   );
@@ -2202,7 +2208,7 @@ function KpiCardSkeleton() {
     <Card size="sm" className="gap-3">
       <CardHeader className="flex flex-row items-start gap-2">
         <div className="flex items-center gap-2.5">
-          <span className="inline-flex h-9 w-9 shrink-0 animate-pulse items-center justify-center rounded-lg border border-border bg-muted/60" />
+          <span className="inline-flex h-9 w-9 shrink-0 animate-pulse items-center justify-center rounded-lg border border-border bg-muted/60 motion-reduce:animate-none" />
           <Sk className="h-4 w-24" />
         </div>
       </CardHeader>
@@ -2235,15 +2241,15 @@ function ChartSkeleton() {
             className="flex flex-1 items-end justify-center gap-[3px]"
           >
             <div
-              className="w-[14%] min-w-[6px] animate-pulse rounded-t bg-muted/80"
+              className="w-[14%] min-w-[6px] animate-pulse rounded-t bg-muted/80 motion-reduce:animate-none"
               style={{ height: `${h}%` }}
             />
             <div
-              className="w-[14%] min-w-[6px] animate-pulse rounded-t bg-muted/60"
+              className="w-[14%] min-w-[6px] animate-pulse rounded-t bg-muted/60 motion-reduce:animate-none"
               style={{ height: `${Math.max(20, h - 15)}%` }}
             />
             <div
-              className="w-[14%] min-w-[6px] animate-pulse rounded-t bg-muted/50"
+              className="w-[14%] min-w-[6px] animate-pulse rounded-t bg-muted/50 motion-reduce:animate-none"
               style={{ height: `${Math.max(15, h - 30)}%` }}
             />
           </div>
