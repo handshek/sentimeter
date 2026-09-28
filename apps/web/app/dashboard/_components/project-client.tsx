@@ -1,6 +1,11 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import Link from "next/link";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
@@ -52,7 +57,7 @@ import {
 } from "@workspace/ui/components/alert-dialog";
 import { cn } from "@workspace/ui/lib/utils";
 import { SyncUserGate } from "./sync-user-gate";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Id } from "../../../convex/_generated/dataModel";
 import {
   Area,
@@ -90,14 +95,20 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatFeedbackFeedSummary } from "./feedback-feed-summary";
+import {
+  parseProjectViewQuery,
+  updateProjectViewQuery,
+  type ChartType,
+  type ProjectViewQuery,
+  type RangeOption,
+  type SentimentFilter,
+  type WidgetFilterOption,
+} from "./project-view-query";
 
-type RangeOption = "24h" | "7d" | "30d" | "all";
-type WidgetFilterOption = "all" | "emoji" | "thumbs" | "star";
-type SentimentFilter = "all" | "positive" | "neutral" | "negative";
-type ChartType = "stacked" | "grouped" | "area" | "line";
 type Tone = "up" | "down" | "flat";
 
 const SHOW_DEVELOPMENT_WIDGET_TOOLS = process.env.NODE_ENV === "development";
+const SEARCH_QUERY_DEBOUNCE_MS = 300;
 
 const CHART_TYPES: Array<{
   value: ChartType;
@@ -532,7 +543,9 @@ function ProjectPageSkeleton() {
 
 function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   const router = useRouter();
+  const pathname = usePathname();
   const params = useParams<{ projectId?: string | string[] }>();
+  const searchParams = useSearchParams();
   const [deleting, setDeleting] = useState(false);
 
   const effectiveProjectId = useMemo(() => {
@@ -559,12 +572,53 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   const updateAllowedOrigins = useMutation(api.projects.updateAllowedOrigins);
   const deleteProject = useMutation(api.projects.deleteProject);
 
-  const [range, setRange] = useState<RangeOption>("7d");
-  const [widgetFilter, setWidgetFilter] = useState<WidgetFilterOption>("all");
-  const [sentimentFilter, setSentimentFilter] =
-    useState<SentimentFilter>("all");
-  const [search, setSearch] = useState("");
-  const [chartType, setChartType] = useState<ChartType>("stacked");
+  const projectView = parseProjectViewQuery(searchParams);
+  const {
+    range,
+    widget: widgetFilter,
+    sentiment: sentimentFilter,
+    search,
+    chart: chartType,
+  } = projectView;
+  const [searchInput, setSearchInput] = useState(search);
+  const searchTimeoutRef = useRef<number | null>(null);
+
+  const clearSearchTimeout = useCallback(() => {
+    if (searchTimeoutRef.current === null) return;
+    window.clearTimeout(searchTimeoutRef.current);
+    searchTimeoutRef.current = null;
+  }, []);
+
+  const pushProjectView = useCallback(
+    (updates: Partial<ProjectViewQuery>) => {
+      const query = updateProjectViewQuery(searchParams, updates);
+      router.push(`${pathname}${query ? `?${query}` : ""}`, {
+        scroll: false,
+      });
+    },
+    [pathname, router, searchParams],
+  );
+
+  function updateProjectView(updates: Partial<ProjectViewQuery>) {
+    clearSearchTimeout();
+    pushProjectView({ search: searchInput, ...updates });
+  }
+
+  useEffect(() => {
+    setSearchInput(search);
+  }, [search]);
+
+  useEffect(() => {
+    clearSearchTimeout();
+    if (searchInput === search) return clearSearchTimeout;
+
+    searchTimeoutRef.current = window.setTimeout(() => {
+      searchTimeoutRef.current = null;
+      pushProjectView({ search: searchInput });
+    }, SEARCH_QUERY_DEBOUNCE_MS);
+
+    return clearSearchTimeout;
+  }, [clearSearchTimeout, pushProjectView, search, searchInput]);
 
   const [revealKey, setRevealKey] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -751,7 +805,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
 
   const filteredFeed = useMemo(() => {
     const items = feed ?? [];
-    const q = search.trim().toLowerCase();
+    const q = searchInput.trim().toLowerCase();
     return items.filter((f) => {
       if (sentimentFilter !== "all") {
         const sent = classifyValueSentiment(f.widgetType, f.value);
@@ -764,10 +818,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
       }
       return true;
     });
-  }, [feed, search, sentimentFilter]);
+  }, [feed, searchInput, sentimentFilter]);
 
   const hasLocalFeedFilters =
-    search.trim().length > 0 || sentimentFilter !== "all";
+    searchInput.trim().length > 0 || sentimentFilter !== "all";
   const feedbackFeedSummary = formatFeedbackFeedSummary({
     loadedCount: feed?.length,
     totalCount: analytics?.total,
@@ -946,7 +1000,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
         <div className="flex flex-wrap items-center gap-2">
           <Select
             value={range}
-            onValueChange={(v) => setRange(v as RangeOption)}
+            onValueChange={(value) =>
+              updateProjectView({ range: value as RangeOption })
+            }
           >
             <SelectTrigger
               size="sm"
@@ -964,7 +1020,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
 
           <Select
             value={widgetFilter}
-            onValueChange={(v) => setWidgetFilter(v as WidgetFilterOption)}
+            onValueChange={(value) =>
+              updateProjectView({ widget: value as WidgetFilterOption })
+            }
           >
             <SelectTrigger
               size="sm"
@@ -1328,7 +1386,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               </div>
               <Select
                 value={chartType}
-                onValueChange={(v) => setChartType(v as ChartType)}
+                onValueChange={(value) =>
+                  updateProjectView({ chart: value as ChartType })
+                }
               >
                 <SelectTrigger
                   size="sm"
@@ -1576,7 +1636,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           <div className="flex flex-wrap items-center gap-2">
             <Select
               value={sentimentFilter}
-              onValueChange={(v) => setSentimentFilter(v as SentimentFilter)}
+              onValueChange={(value) =>
+                updateProjectView({ sentiment: value as SentimentFilter })
+              }
             >
               <SelectTrigger
                 size="sm"
@@ -1594,8 +1656,8 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             <div className="relative">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                value={searchInput}
+                onChange={(event) => setSearchInput(event.target.value)}
                 placeholder="Search message or location"
                 className="h-8 w-56 pl-8 text-sm"
               />
@@ -1657,7 +1719,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                     colSpan={6}
                     className="py-10 text-center text-sm text-muted-foreground"
                   >
-                    {search.trim() || sentimentFilter !== "all"
+                    {searchInput.trim() || sentimentFilter !== "all"
                       ? "No feedback matches your filters."
                       : "No feedback yet. Install a widget and submit a reaction to see it here."}
                   </TableCell>
