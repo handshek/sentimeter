@@ -57,7 +57,14 @@ import {
 } from "@workspace/ui/components/alert-dialog";
 import { cn } from "@workspace/ui/lib/utils";
 import { SyncUserGate } from "./sync-user-gate";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import type { Id } from "../../../convex/_generated/dataModel";
 import {
   Area,
@@ -98,6 +105,11 @@ import { copyText, type CopyTextResult } from "../../_lib/clipboard";
 import { formatFeedbackFeedSummary } from "./feedback-feed-summary";
 import { formatResponseVolumeSummary } from "./project-accessibility";
 import {
+  allowedOriginsDraftReducer,
+  createAllowedOriginsDraft,
+  hasUnsavedAllowedOrigins,
+} from "./project-settings-state";
+import {
   parseProjectViewQuery,
   updateProjectViewQuery,
   type ChartType,
@@ -111,6 +123,8 @@ type Tone = "up" | "down" | "flat";
 
 const SHOW_DEVELOPMENT_WIDGET_TOOLS = process.env.NODE_ENV === "development";
 const SEARCH_QUERY_DEBOUNCE_MS = 300;
+const UNSAVED_ORIGINS_WARNING =
+  "You have unsaved allowed-origin changes. Leave without saving them?";
 
 const CHART_TYPES: Array<{
   value: ChartType;
@@ -635,11 +649,15 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   const [keyActionStatus, setKeyActionStatus] = useState("");
   const [keyActionError, setKeyActionError] = useState("");
   const [rotating, setRotating] = useState(false);
-  const [originText, setOriginText] = useState("");
-  const [savingOrigins, setSavingOrigins] = useState(false);
-  const [savedOrigins, setSavedOrigins] = useState(false);
-  const [originSaveError, setOriginSaveError] = useState("");
+  const [originDraft, dispatchOriginDraft] = useReducer(
+    allowedOriginsDraftReducer,
+    undefined,
+    createAllowedOriginsDraft,
+  );
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [discardOriginsOpen, setDiscardOriginsOpen] = useState(false);
   const [deleteError, setDeleteError] = useState("");
+  const allowNextHistoryChangeRef = useRef(false);
 
   const [, setNowTick] = useState(0);
   useEffect(() => {
@@ -662,10 +680,56 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
       : maskKey(activeKey);
   const hasOriginRestrictions = (project?.allowedOrigins?.length ?? 0) > 0;
   const allowedOriginsValue = (project?.allowedOrigins ?? []).join("\n");
+  const originText = originDraft.value;
+  const savingOrigins = originDraft.status === "saving";
+  const savedOrigins = originDraft.status === "saved";
+  const originSaveError = originDraft.error;
+  const originsDirty = hasUnsavedAllowedOrigins(originDraft);
 
   useEffect(() => {
-    setOriginText(allowedOriginsValue);
+    dispatchOriginDraft({ type: "hydrate", value: allowedOriginsValue });
   }, [allowedOriginsValue]);
+
+  useEffect(() => {
+    if (!originsDirty) return;
+
+    function warnBeforeUnload(event: BeforeUnloadEvent) {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+
+    function warnBeforeHistoryNavigation() {
+      if (allowNextHistoryChangeRef.current) {
+        allowNextHistoryChangeRef.current = false;
+        return;
+      }
+
+      if (window.confirm(UNSAVED_ORIGINS_WARNING)) return;
+      allowNextHistoryChangeRef.current = true;
+      window.history.forward();
+    }
+
+    window.addEventListener("beforeunload", warnBeforeUnload);
+    window.addEventListener("popstate", warnBeforeHistoryNavigation);
+    return () => {
+      window.removeEventListener("beforeunload", warnBeforeUnload);
+      window.removeEventListener("popstate", warnBeforeHistoryNavigation);
+    };
+  }, [originsDirty]);
+
+  function onSettingsOpenChange(open: boolean) {
+    if (!open && originsDirty) {
+      setDiscardOriginsOpen(true);
+      return;
+    }
+    setSettingsOpen(open);
+  }
+
+  function discardOriginsAndCloseSettings() {
+    dispatchOriginDraft({ type: "discard" });
+    setDiscardOriginsOpen(false);
+    setSettingsOpen(false);
+  }
 
   const feedbackWidgetType =
     widgetFilter === "all"
@@ -884,7 +948,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
       setKeyActionStatus("Publishable key rotated.");
     } catch {
       setKeyActionStatus("");
-      setKeyActionError("Could not rotate the publishable key. Try again.");
+      setKeyActionError(
+        "Could not rotate the publishable key. The current key is still active; try again.",
+      );
       toast.error("Could not rotate the publishable key.");
     } finally {
       setRotating(false);
@@ -900,7 +966,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
       router.replace("/dashboard");
     } catch {
       setDeleting(false);
-      setDeleteError("Could not delete the project. Try again.");
+      setDeleteError(
+        "Could not delete the project. No data was deleted; try again.",
+      );
       toast.error("Could not delete the project.");
     }
   }
@@ -912,21 +980,27 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
       .map((value) => value.trim())
       .filter(Boolean);
 
-    setSavingOrigins(true);
-    setSavedOrigins(false);
-    setOriginSaveError("");
+    dispatchOriginDraft({ type: "save-start" });
     try {
-      await updateAllowedOrigins({
+      const result = await updateAllowedOrigins({
         projectId: convexProjectId,
         allowedOrigins,
       });
-      setSavedOrigins(true);
-      window.setTimeout(() => setSavedOrigins(false), 1500);
+      dispatchOriginDraft({
+        type: "save-success",
+        value: result.allowedOrigins.join("\n"),
+      });
+      window.setTimeout(
+        () => dispatchOriginDraft({ type: "clear-status" }),
+        1500,
+      );
     } catch {
-      setOriginSaveError("Could not save allowed origins. Try again.");
+      dispatchOriginDraft({
+        type: "save-error",
+        message:
+          "Could not save allowed origins. Your edits are still here; check each URL and try again.",
+      });
       toast.error("Could not save origins.");
-    } finally {
-      setSavingOrigins(false);
     }
   }
 
@@ -1111,7 +1185,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             </Button>
           ) : null}
 
-          <Sheet>
+          <Sheet open={settingsOpen} onOpenChange={onSettingsOpenChange}>
             <SheetTrigger asChild>
               <Button variant="outline" size="sm" disabled={!data}>
                 <Settings className="h-4 w-4" aria-hidden="true" />
@@ -1266,6 +1340,17 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                     >
                       {hasOriginRestrictions ? "enforced" : "open"}
                     </Badge>
+                    {originsDirty ? (
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "text-[10px] uppercase tracking-widest",
+                          SENTIMENT_TINT.amber,
+                        )}
+                      >
+                        Unsaved
+                      </Badge>
+                    ) : null}
                   </div>
 
                   <p
@@ -1280,10 +1365,15 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                     name="allowed-origins"
                     autoComplete="off"
                     aria-labelledby="allowed-origins-label"
-                    aria-describedby="allowed-origins-description"
+                    aria-describedby="allowed-origins-description allowed-origins-status"
                     aria-invalid={originSaveError ? "true" : undefined}
                     value={originText}
-                    onChange={(e) => setOriginText(e.target.value)}
+                    onChange={(event) =>
+                      dispatchOriginDraft({
+                        type: "edit",
+                        value: event.target.value,
+                      })
+                    }
                     placeholder={
                       "https://app.example.com\nhttps://staging.example.com\nhttp://localhost:3000"
                     }
@@ -1296,7 +1386,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                       variant="outline"
                       size="sm"
                       onClick={onSaveOrigins}
-                      disabled={!data || savingOrigins}
+                      disabled={!data || savingOrigins || !originsDirty}
                     >
                       {savingOrigins
                         ? "Saving…"
@@ -1318,22 +1408,30 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                       </span>
                     )}
                   </div>
-                  <p className="sr-only" role="status" aria-live="polite">
-                    {savingOrigins
-                      ? "Saving allowed origins…"
-                      : savedOrigins
-                        ? "Allowed origins saved."
-                        : ""}
-                  </p>
                   {originSaveError ? (
                     <p
+                      id="allowed-origins-status"
                       className="text-xs text-destructive"
                       role="alert"
-                      aria-live="assertive"
                     >
                       {originSaveError}
                     </p>
-                  ) : null}
+                  ) : (
+                    <p
+                      id="allowed-origins-status"
+                      className="text-xs text-muted-foreground"
+                      role="status"
+                      aria-live="polite"
+                    >
+                      {savingOrigins
+                        ? "Saving allowed origins…"
+                        : savedOrigins
+                          ? "Allowed origins saved."
+                          : originsDirty
+                            ? "Unsaved changes"
+                            : "All changes saved"}
+                    </p>
+                  )}
                 </section>
 
                 <Separator />
@@ -1393,6 +1491,26 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               </div>
             </SheetContent>
           </Sheet>
+          <AlertDialog
+            open={discardOriginsOpen}
+            onOpenChange={setDiscardOriginsOpen}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Discard unsaved origins?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Your allowed-origin edits have not been saved. Keep editing or
+                  discard them and close settings.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Keep editing</AlertDialogCancel>
+                <AlertDialogAction onClick={discardOriginsAndCloseSettings}>
+                  Discard changes
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
 

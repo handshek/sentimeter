@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "eslint --max-warnings 0",
     "check-types": "next typegen && tsc --noEmit",
-    "test": "bun test convex/lib app/dashboard/_components/feedback-feed-summary.test.ts app/dashboard/_components/project-accessibility.test.ts app/dashboard/_components/project-view-query.test.ts app/widgets/_components/widgets-playground-behavior.test.ts app/_components/landing/demo-widget.test.tsx"
+    "test": "bun test convex/lib app/dashboard/_components/feedback-feed-summary.test.ts app/dashboard/_components/project-accessibility.test.ts app/dashboard/_components/project-settings-state.test.ts app/dashboard/_components/project-view-query.test.ts app/widgets/_components/widgets-playground-behavior.test.ts app/_components/landing/demo-widget.test.tsx"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.0.4",
