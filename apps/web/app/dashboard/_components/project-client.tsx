@@ -670,9 +670,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   }, []);
 
   useEffect(() => {
-    if (projectQueryArgs !== "skip") return;
+    if (projectQueryArgs !== "skip" || deleting) return;
     router.replace("/dashboard");
-  }, [projectQueryArgs, router]);
+  }, [deleting, projectQueryArgs, router]);
 
   const project = data?.project;
   const convexProjectId = project?._id;
@@ -1012,7 +1012,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
     return (
       <Card size="sm">
         <CardContent>
-          <div className="text-sm text-muted-foreground">Redirecting…</div>
+          <div className="text-sm text-muted-foreground" role="status">
+            {deleting ? "Deleting project…" : "Redirecting…"}
+          </div>
         </CardContent>
       </Card>
     );
