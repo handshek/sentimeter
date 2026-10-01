@@ -1192,7 +1192,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             >
               <SheetHeader>
                 <SheetTitle>Project settings</SheetTitle>
-                <SheetDescription>
+                <SheetDescription className="break-words [overflow-wrap:anywhere]">
                   {project?.name ?? "Loading…"}
                 </SheetDescription>
               </SheetHeader>

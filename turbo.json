@@ -27,7 +27,8 @@
       "dependsOn": ["^check-types"]
     },
     "test": {
-      "dependsOn": ["^test"]
+      "dependsOn": ["^test"],
+      "passThroughEnv": ["SENTIMETER_POLISH_FIXTURES_DIR"]
     },
     "dev": {
       "cache": false,
