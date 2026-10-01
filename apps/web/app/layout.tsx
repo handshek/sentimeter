@@ -5,6 +5,7 @@ import "@workspace/ui/globals.css";
 import ConvexClientProvider from "./components/convex-clerk-provider";
 import { ToasterProvider } from "./components/toaster-provider";
 import { ClerkProvider } from "@clerk/nextjs";
+import { NavigationGuardProvider } from "nextjs-nav-guard";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -28,12 +29,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={jakarta.variable}>
       <body className={`${jakarta.variable} ${geistMono.variable} font-sans`}>
-        <ClerkProvider>
-          <ConvexClientProvider>
-            {children}
-            <ToasterProvider />
-          </ConvexClientProvider>
-        </ClerkProvider>
+        {/* Mount before auth/data gates so history is guarded before Next handles it. */}
+        <NavigationGuardProvider>
+          <ClerkProvider>
+            <ConvexClientProvider>
+              {children}
+              <ToasterProvider />
+            </ConvexClientProvider>
+          </ClerkProvider>
+        </NavigationGuardProvider>
       </body>
     </html>
   );

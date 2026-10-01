@@ -7,6 +7,7 @@ import {
   useSearchParams,
 } from "next/navigation";
 import Link from "next/link";
+import { useNavigationGuard } from "nextjs-nav-guard";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "@workspace/ui/components/button";
@@ -661,7 +662,6 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [discardOriginsOpen, setDiscardOriginsOpen] = useState(false);
   const [deleteError, setDeleteError] = useState("");
-  const allowNextHistoryChangeRef = useRef(false);
 
   const [, setNowTick] = useState(0);
   useEffect(() => {
@@ -694,32 +694,18 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
     dispatchOriginDraft({ type: "hydrate", value: allowedOriginsValue });
   }, [allowedOriginsValue]);
 
-  useEffect(() => {
-    if (!originsDirty) return;
-
-    function warnBeforeUnload(event: BeforeUnloadEvent) {
-      event.preventDefault();
-      event.returnValue = "";
-    }
-
-    function warnBeforeHistoryNavigation() {
-      if (allowNextHistoryChangeRef.current) {
-        allowNextHistoryChangeRef.current = false;
-        return;
-      }
-
-      if (window.confirm(UNSAVED_ORIGINS_WARNING)) return;
-      allowNextHistoryChangeRef.current = true;
-      window.history.forward();
-    }
-
-    window.addEventListener("beforeunload", warnBeforeUnload);
-    window.addEventListener("popstate", warnBeforeHistoryNavigation);
-    return () => {
-      window.removeEventListener("beforeunload", warnBeforeUnload);
-      window.removeEventListener("popstate", warnBeforeHistoryNavigation);
-    };
-  }, [originsDirty]);
+  useNavigationGuard({
+    enabled: ({ to, type }) => {
+      if (!originsDirty || deleting) return false;
+      if (type === "beforeunload") return true;
+      const destination = new URL(to, window.location.href);
+      return (
+        destination.origin !== window.location.origin ||
+        destination.pathname !== pathname
+      );
+    },
+    confirm: () => window.confirm(UNSAVED_ORIGINS_WARNING),
+  });
 
   function onSettingsOpenChange(open: boolean) {
     if (!open && originsDirty) {
