@@ -888,7 +888,7 @@ export function WidgetsPlaygroundClient({
                       <h2 className="sr-only">
                         {activeInstallMetadata.name} Preview
                       </h2>
-                      <div className="flex min-h-[230px] items-center justify-center rounded-lg border border-border bg-muted/30 p-0 min-[360px]:p-3 sm:min-h-[250px] sm:p-5">
+                      <div className="flex min-h-52 items-center justify-center rounded-lg border border-border bg-muted/30 p-0 min-[360px]:p-3 sm:min-h-[250px] sm:p-5">
                         <ShowcaseWidget
                           slug={selectedWidgetSlug}
                           revision={activeDemoSession.revision}
