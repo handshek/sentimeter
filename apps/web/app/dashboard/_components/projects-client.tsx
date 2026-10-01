@@ -93,7 +93,7 @@ function ProjectsInner() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Project name"
-              className="h-10 w-full min-w-0 rounded-md border border-border/70 bg-background px-3 text-sm outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="h-10 w-full min-w-0 rounded-md border border-border/70 bg-background px-3 text-sm outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 motion-reduce:transition-none"
             />
             <Button type="submit" disabled={!canSubmit} className="h-10">
               {submitting ? "Creating…" : "Create"}

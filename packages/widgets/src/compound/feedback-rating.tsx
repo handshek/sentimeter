@@ -202,7 +202,7 @@ export function FeedbackRating({
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "select-none transition-[filter,color] duration-200",
+                    "select-none transition-[filter,color] duration-200 motion-reduce:transition-none",
                     filled
                       ? "text-primary grayscale-0"
                       : "text-muted-foreground/65 grayscale",
