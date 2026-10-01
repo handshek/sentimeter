@@ -1085,7 +1085,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <nav
           aria-label="breadcrumb"
-          className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 text-sm"
+          className="flex w-full min-w-0 flex-wrap items-center gap-1.5 text-sm sm:w-auto sm:flex-1"
         >
           <Link
             href="/dashboard"
@@ -1117,7 +1117,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           ) : null}
         </nav>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto">
           <Select
             value={range}
             onValueChange={(value) =>
@@ -1188,7 +1188,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             </SheetTrigger>
             <SheetContent
               side="right"
-              className="h-dvh max-h-dvh w-full min-w-0 overscroll-contain overflow-y-auto scroll-pb-24 pb-[env(safe-area-inset-bottom)] sm:max-w-md"
+              className="max-h-dvh min-w-0 overscroll-contain overflow-y-auto scroll-pb-24 pb-[env(safe-area-inset-bottom)] data-[side=right]:h-dvh data-[side=right]:w-full data-[side=right]:sm:max-w-md"
             >
               <SheetHeader>
                 <SheetTitle>Project settings</SheetTitle>
