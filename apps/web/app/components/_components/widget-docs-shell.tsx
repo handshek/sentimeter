@@ -22,7 +22,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import { cn } from "@workspace/ui/lib/utils";
-import { ArrowLeft, Check, Copy, Smile, Star, ThumbsUp } from "lucide-react";
+import { ArrowLeft, Smile, Star, ThumbsUp } from "lucide-react";
 import {
   EmojiFeedback,
   LikeDislike,
@@ -35,6 +35,7 @@ import {
   type WidgetDocConfig,
 } from "../../_lib/widget-catalog";
 import { WidgetInstallCommand } from "./widget-install-command";
+import { CopyButton } from "./copy-button";
 
 const mockSubmit: WidgetSubmit = () =>
   new Promise<void>((resolve) => setTimeout(resolve, 500));
@@ -62,36 +63,6 @@ export function WidgetIcon({
     case "star":
       return <Star className={cn("h-6 w-6", className)} />;
   }
-}
-
-function CopyButton({ text, className }: { text: string; className?: string }) {
-  const [copied, setCopied] = React.useState(false);
-
-  return (
-    <button
-      type="button"
-      onClick={async () => {
-        try {
-          await navigator.clipboard.writeText(text);
-        } catch {
-          // noop
-        }
-        setCopied(true);
-        window.setTimeout(() => setCopied(false), 1400);
-      }}
-      className={cn(
-        "inline-flex items-center justify-center rounded-md p-1.5 transition-colors hover:bg-muted",
-        className,
-      )}
-      aria-label="Copy to clipboard"
-    >
-      {copied ? (
-        <Check className="h-3.5 w-3.5 text-emerald-500" />
-      ) : (
-        <Copy className="h-3.5 w-3.5" />
-      )}
-    </button>
-  );
 }
 
 function HighlightedCode({
@@ -164,7 +135,11 @@ function CodeBlock({
       {label ? (
         <div className="flex items-center justify-between border-b border-white/5 px-4 py-2.5">
           <span className="text-xs font-medium text-zinc-500">{label}</span>
-          <CopyButton text={code} className="text-zinc-400 hover:bg-white/6" />
+          <CopyButton
+            key={code}
+            text={code}
+            className="text-zinc-300 hover:bg-white/6"
+          />
         </div>
       ) : null}
       <HighlightedCode code={code} lang={lang ?? "tsx"} />

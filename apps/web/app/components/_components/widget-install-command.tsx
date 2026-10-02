@@ -7,24 +7,20 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@workspace/ui/components/accordion";
-import { Button } from "@workspace/ui/components/button";
-import { Input } from "@workspace/ui/components/input";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import { Check, Copy, Terminal } from "lucide-react";
-import { copyText, type CopyTextResult } from "../../_lib/clipboard";
+import { Terminal } from "lucide-react";
+import { CopyButton } from "./copy-button";
 import {
   getInstallCommands,
   packageManagers,
   type PackageManager,
   type WidgetInstallMetadata,
 } from "../../_lib/widget-catalog";
-
-const COPY_CONFIRMATION_DURATION_MS = 1400;
 
 export type {
   PackageManager,
@@ -45,47 +41,15 @@ function formatDependency(name: string) {
 
 export function WidgetInstallCommand({
   registryName,
-  defaultManager = "pnpm",
+  defaultManager = "bun",
   metadata,
 }: WidgetInstallCommandProps) {
   const [manager, setManager] = React.useState<PackageManager>(defaultManager);
-  const [copyState, setCopyState] = React.useState<"idle" | CopyTextResult>(
-    "idle",
-  );
-  const resetTimerRef = React.useRef<number | null>(null);
   const commands = React.useMemo(
     () => getInstallCommands(registryName),
     [registryName],
   );
   const activeCommand = commands[manager];
-
-  const clearResetTimer = React.useCallback(() => {
-    if (resetTimerRef.current === null) return;
-    window.clearTimeout(resetTimerRef.current);
-    resetTimerRef.current = null;
-  }, []);
-
-  React.useEffect(() => clearResetTimer, [clearResetTimer]);
-
-  React.useEffect(() => {
-    clearResetTimer();
-    setCopyState("idle");
-  }, [clearResetTimer, manager, registryName]);
-
-  async function copyCommand() {
-    const result = await copyText(activeCommand, navigator.clipboard);
-    setCopyState(result);
-
-    if (result === "copied") {
-      clearResetTimer();
-      resetTimerRef.current = window.setTimeout(
-        () => setCopyState("idle"),
-        COPY_CONFIRMATION_DURATION_MS,
-      );
-    }
-  }
-
-  const copied = copyState === "copied";
 
   return (
     <div className="space-y-3">
@@ -111,23 +75,14 @@ export function WidgetInstallCommand({
                 </TabsTrigger>
               ))}
             </TabsList>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => void copyCommand()}
-              className="ml-auto h-8 shrink-0 text-zinc-300 hover:bg-white/10 hover:text-white"
-            >
-              {copied ? (
-                <Check className="size-3.5" aria-hidden="true" />
-              ) : (
-                <Copy className="size-3.5" aria-hidden="true" />
-              )}
-              {copied ? "Copied" : "Copy Command"}
-            </Button>
-            <span className="sr-only" role="status" aria-live="polite">
-              {copied ? "Install command copied to clipboard" : ""}
-            </span>
+            <div className="ml-auto min-w-0">
+              <CopyButton
+                key={activeCommand}
+                text={activeCommand}
+                label="Copy Command"
+                className="h-11 text-zinc-300 hover:bg-white/10 hover:text-white"
+              />
+            </div>
           </div>
 
           {packageManagers.map((packageManager) => (
@@ -146,24 +101,6 @@ export function WidgetInstallCommand({
           ))}
         </Tabs>
       </div>
-
-      {copyState === "manual" ? (
-        <div
-          className="space-y-2 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3"
-          role="alert"
-        >
-          <p className="text-xs text-muted-foreground">
-            Clipboard access is unavailable. Copy the command manually:
-          </p>
-          <Input
-            readOnly
-            value={activeCommand}
-            aria-label="Install command to copy manually"
-            className="font-mono text-xs"
-            onFocus={(event) => event.currentTarget.select()}
-          />
-        </div>
-      ) : null}
 
       {metadata ? (
         <div className="rounded-xl border border-border bg-card px-4 py-3 text-card-foreground">
