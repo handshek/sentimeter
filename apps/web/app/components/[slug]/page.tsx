@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { WidgetDocsContent } from "../_components/widget-docs-shell";
-import { getWidgetDoc, widgetDocs } from "../_components/widget-docs-data";
+import { getWidgetDoc, widgetDocs } from "../../_lib/widget-catalog";
 
 export function generateStaticParams() {
   return widgetDocs.map((widget) => ({ slug: widget.slug }));

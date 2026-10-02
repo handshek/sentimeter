@@ -1,60 +1,8 @@
 import * as React from "react";
 import { redirect } from "next/navigation";
 import { hasHostedConfiguration } from "../_lib/hosted-config";
-import registry from "../../../registry/registry.json";
-import type { WidgetInstallMetadata } from "../components/_components/widget-install-command";
+import { widgetDocs } from "../_lib/widget-catalog";
 import { WidgetsPlaygroundClient } from "./_components/widgets-playground-client";
-
-type RegistryItem = (typeof registry.items)[number];
-
-const showcaseWidgets = [
-  { slug: "emoji-feedback", tabLabel: "Emoji" },
-  { slug: "like-dislike", tabLabel: "Thumbs" },
-  { slug: "star-rating", tabLabel: "Stars" },
-] as const;
-
-function getRegistryItem(name: string): RegistryItem {
-  const item = registry.items.find((candidate) => candidate.name === name);
-
-  if (!item) {
-    throw new Error(`Missing registry item: ${name}`);
-  }
-
-  return item;
-}
-
-function unique(values: string[]) {
-  return [...new Set(values)];
-}
-
-function getInstallMetadata(): WidgetInstallMetadata[] {
-  const sharedItem = getRegistryItem("feedback-system");
-  const sharedFiles = sharedItem.files.map((file) => file.target);
-  const packageDependencies = unique(sharedItem.dependencies ?? []);
-  const shadcnDependencies = unique(
-    sharedItem.registryDependencies ?? [],
-  ).filter((dependency) => !dependency.startsWith("http"));
-
-  return showcaseWidgets.map(({ slug, tabLabel }) => {
-    const widgetItem = getRegistryItem(slug);
-    const widgetFiles = widgetItem.files.map((file) => file.target);
-
-    return {
-      slug,
-      name: widgetItem.title,
-      tabLabel,
-      registryName: widgetItem.name,
-      targetFiles: unique([...widgetFiles, ...sharedFiles]),
-      widgetFileCount: widgetFiles.length,
-      sharedFileCount: sharedFiles.length,
-      packageDependencies: unique([
-        ...packageDependencies,
-        ...(widgetItem.dependencies ?? []),
-      ]),
-      shadcnDependencies,
-    };
-  });
-}
 
 export default function WidgetsPlaygroundPage() {
   if (!hasHostedConfiguration()) redirect("/components");
@@ -69,7 +17,9 @@ export default function WidgetsPlaygroundPage() {
         </div>
       }
     >
-      <WidgetsPlaygroundClient installMetadata={getInstallMetadata()} />
+      <WidgetsPlaygroundClient
+        installMetadata={widgetDocs.map((widget) => widget.installMetadata)}
+      />
     </React.Suspense>
   );
 }

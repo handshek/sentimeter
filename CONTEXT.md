@@ -9,13 +9,12 @@ For operating rules, read `AGENTS.md`. For visual design rules, read
 
 ## Product Shape
 
-Sentimeter is a shadcn-first feedback collection system. Developers install
-open-code React widgets into their own shadcn projects, users submit lightweight
-reactions in the host product, and the developer watches feedback analytics in a
-hosted dashboard.
+Sentimeter is an open-source, shadcn-first feedback widget registry. Developers
+browse and try widgets, install their source into a React app, and connect them
+to their own backend. Hosted Sentimeter analytics is an optional integration.
 
-Sentimeter's core promise is that the widget feels native inside the developer's
-own UI while feedback still lands in one realtime analytics workspace.
+Sentimeter's core promise is accessible feedback UI that feels native inside the
+developer's app. Evaluation and installation require no account or hosted setup.
 
 ## Runtime Shape
 
@@ -48,6 +47,12 @@ host app. Registry Items are emitted from canonical Widget source, use
 host-local imports, and install as readable modular open code. They should
 depend on public URLs and local shadcn conventions so the developer does not
 need custom package configuration after install.
+
+### Widget Catalog
+
+The public description of installable Widgets: identity, defaults, examples,
+props, and documentation links. The catalog serves both human and agent docs;
+Registry Items remain authoritative for installed files and dependencies.
 
 ### Feedback Intake
 

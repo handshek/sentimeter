@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { widgetDocs } from "../../components/_components/widget-docs-data";
+import { widgetDocs } from "../../_lib/widget-catalog";
 
 export function generateStaticParams() {
   return widgetDocs.map((widget) => ({ slug: widget.slug }));

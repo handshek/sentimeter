@@ -33,7 +33,7 @@ import {
   overviewSections,
   widgetDocs,
   type WidgetDocConfig,
-} from "./widget-docs-data";
+} from "../../_lib/widget-catalog";
 import { WidgetInstallCommand } from "./widget-install-command";
 
 const mockSubmit: WidgetSubmit = () =>
@@ -690,7 +690,10 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
 
       <div className="space-y-3">
         <h2 className="text-base font-semibold">Installation</h2>
-        <WidgetInstallCommand registryName={widget.registryName} />
+        <WidgetInstallCommand
+          registryName={widget.registryName}
+          metadata={widget.installMetadata}
+        />
       </div>
 
       <div className="space-y-3">

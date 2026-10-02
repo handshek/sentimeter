@@ -159,7 +159,7 @@ export function createExpectedRegistry(
   return {
     $schema: "https://ui.shadcn.com/schema/registry.json",
     name: "sentimeter",
-    homepage: "https://sentimeter.dev",
+    homepage: "https://try-sentimeter.vercel.app",
     items: [
       {
         name: "feedback-system",

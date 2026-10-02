@@ -1,3 +1,69 @@
+import registry from "../../../registry/registry.json";
+
+export const SITE_URL = registry.homepage;
+export const REPOSITORY_URL = "https://github.com/handshek/sentimeter";
+export const REGISTRY_BASE_URL = "https://registry.handshek.workers.dev/r";
+export const packageManagers = ["bun", "pnpm", "npm", "yarn"] as const;
+export type PackageManager = (typeof packageManagers)[number];
+
+export type WidgetInstallMetadata = {
+  slug: "emoji-feedback" | "like-dislike" | "star-rating";
+  name: string;
+  tabLabel: string;
+  registryName: string;
+  targetFiles: string[];
+  widgetFileCount: number;
+  sharedFileCount: number;
+  packageDependencies: string[];
+  shadcnDependencies: string[];
+};
+
+export function getInstallCommands(registryName: string) {
+  const url = `${REGISTRY_BASE_URL}/${registryName}.json`;
+  return {
+    bun: `bunx shadcn@latest add "${url}"`,
+    pnpm: `pnpm dlx shadcn@latest add "${url}"`,
+    npm: `npx shadcn@latest add "${url}"`,
+    yarn: `yarn dlx shadcn@latest add "${url}"`,
+  } satisfies Record<PackageManager, string>;
+}
+
+function getRegistryItem(name: string) {
+  const item = registry.items.find((candidate) => candidate.name === name);
+  if (!item) throw new Error(`Missing registry item: ${name}`);
+  return item;
+}
+
+function getInstallMetadata(
+  widget: Pick<WidgetDocConfig, "slug" | "name" | "registryName" | "tabLabel">,
+): WidgetInstallMetadata {
+  const item = getRegistryItem(widget.registryName);
+  const shared = getRegistryItem("feedback-system");
+  const widgetFiles = item.files.map((file) => file.target);
+  const sharedFiles = shared.files.map((file) => file.target);
+  return {
+    slug: widget.slug,
+    name: widget.name,
+    tabLabel: widget.tabLabel,
+    registryName: item.name,
+    targetFiles: [...new Set([...widgetFiles, ...sharedFiles])],
+    widgetFileCount: widgetFiles.length,
+    sharedFileCount: sharedFiles.length,
+    packageDependencies: [
+      ...new Set([
+        ...(shared.dependencies ?? []),
+        ...(item.dependencies ?? []),
+      ]),
+    ],
+    shadcnDependencies: [
+      ...new Set([
+        ...shared.registryDependencies,
+        ...item.registryDependencies,
+      ]),
+    ].filter((dependency) => !dependency.startsWith("http")),
+  };
+}
+
 export type WidgetDocRow = {
   prop: string;
   type: string;
@@ -10,11 +76,13 @@ export type WidgetDocConfig = {
   name: string;
   description: string;
   registryName: string;
+  tabLabel: string;
   icon: "emoji" | "thumbs" | "star";
   preview: "emoji" | "thumbs" | "star";
   installSnippet: string;
   usageSnippet: string;
   props: WidgetDocRow[];
+  installMetadata: WidgetInstallMetadata;
 };
 
 export type OverviewSection = {
@@ -163,16 +231,19 @@ const sharedProps: WidgetDocRow[] = [
   },
 ];
 
-export const widgetDocs: WidgetDocConfig[] = [
+const widgetDefinitions: Omit<
+  WidgetDocConfig,
+  "installMetadata" | "installSnippet"
+>[] = [
   {
     slug: "emoji-feedback",
     name: "Emoji Feedback",
     description:
       "Emoji-based feedback widget with a 5-point scale. Users tap a face that matches their mood.",
     registryName: "emoji-feedback",
+    tabLabel: "Emoji",
     icon: "emoji",
     preview: "emoji",
-    installSnippet: `bunx shadcn@latest add "https://registry.handshek.workers.dev/r/emoji-feedback.json"`,
     usageSnippet: `import {
   FeedbackDescription,
   FeedbackFooter,
@@ -213,9 +284,9 @@ export function EmojiFeedbackWidget() {
     description:
       "Thumbs up or thumbs down feedback widget. Simple binary sentiment.",
     registryName: "like-dislike",
+    tabLabel: "Thumbs",
     icon: "thumbs",
     preview: "thumbs",
-    installSnippet: `bunx shadcn@latest add "https://registry.handshek.workers.dev/r/like-dislike.json"`,
     usageSnippet: `import {
   FeedbackDescription,
   FeedbackFooter,
@@ -256,9 +327,9 @@ export function LikeDislikeWidget() {
     description:
       "Five-star rating feedback widget. Hover to preview, click to lock.",
     registryName: "star-rating",
+    tabLabel: "Stars",
     icon: "star",
     preview: "star",
-    installSnippet: `bunx shadcn@latest add "https://registry.handshek.workers.dev/r/star-rating.json"`,
     usageSnippet: `import {
   FeedbackDescription,
   FeedbackFooter,
@@ -294,6 +365,14 @@ export function StarRatingWidget() {
     ],
   },
 ];
+
+export const widgetDocs: WidgetDocConfig[] = widgetDefinitions.map(
+  (widget) => ({
+    ...widget,
+    installSnippet: getInstallCommands(widget.registryName).bun,
+    installMetadata: getInstallMetadata(widget),
+  }),
+);
 
 export function getWidgetDoc(slug: string) {
   return widgetDocs.find((widget) => widget.slug === slug);

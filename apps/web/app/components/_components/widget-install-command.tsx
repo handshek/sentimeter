@@ -17,42 +17,25 @@ import {
 } from "@workspace/ui/components/tabs";
 import { Check, Copy, Terminal } from "lucide-react";
 import { copyText, type CopyTextResult } from "../../_lib/clipboard";
+import {
+  getInstallCommands,
+  packageManagers,
+  type PackageManager,
+  type WidgetInstallMetadata,
+} from "../../_lib/widget-catalog";
 
-const REGISTRY_BASE_URL = "https://registry.handshek.workers.dev/r";
 const COPY_CONFIRMATION_DURATION_MS = 1400;
 
-const packageManagers = ["bun", "pnpm", "npm", "yarn"] as const;
-
-export type PackageManager = (typeof packageManagers)[number];
-
-export type WidgetInstallMetadata = {
-  slug: "emoji-feedback" | "like-dislike" | "star-rating";
-  name: string;
-  tabLabel: string;
-  registryName: string;
-  targetFiles: string[];
-  widgetFileCount: number;
-  sharedFileCount: number;
-  packageDependencies: string[];
-  shadcnDependencies: string[];
-};
+export type {
+  PackageManager,
+  WidgetInstallMetadata,
+} from "../../_lib/widget-catalog";
 
 type WidgetInstallCommandProps = {
   registryName: string;
   defaultManager?: PackageManager;
   metadata?: WidgetInstallMetadata;
 };
-
-function getInstallCommands(registryName: string) {
-  const registryUrl = `${REGISTRY_BASE_URL}/${registryName}.json`;
-
-  return {
-    bun: `bunx shadcn@latest add "${registryUrl}"`,
-    pnpm: `pnpm dlx shadcn@latest add "${registryUrl}"`,
-    npm: `npx shadcn@latest add "${registryUrl}"`,
-    yarn: `yarn dlx shadcn@latest add "${registryUrl}"`,
-  } satisfies Record<PackageManager, string>;
-}
 
 function formatDependency(name: string) {
   if (name === "button") return "Button";
