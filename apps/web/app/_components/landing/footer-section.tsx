@@ -1,23 +1,35 @@
-"use client";
-
 import Link from "next/link";
+import { REPOSITORY_URL } from "../../_lib/widget-catalog";
 
-export function FooterSection() {
+export function FooterSection({
+  analyticsEnabled,
+}: {
+  analyticsEnabled: boolean;
+}) {
+  const links = [
+    { href: "/components", label: "Documentation" },
+    { href: REPOSITORY_URL, label: "GitHub" },
+    ...(analyticsEnabled
+      ? [{ href: "/dashboard", label: "Optional Analytics" }]
+      : []),
+    { href: "/privacy", label: "Privacy" },
+    { href: "/terms", label: "Terms" },
+  ];
   return (
-    <footer className="border-t border-border/40 px-6 py-12 text-center text-sm text-muted-foreground">
-      <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 sm:flex-row">
-        <p>&copy; 2026 Sentimeter. Built for developers.</p>
-        <div className="flex items-center gap-6">
-          <Link href="#" className="transition-colors hover:text-foreground">
-            Documentation
-          </Link>
-          <Link href="/privacy" className="transition-colors hover:text-foreground">
-            Privacy
-          </Link>
-          <Link href="/terms" className="transition-colors hover:text-foreground">
-            Terms
-          </Link>
-        </div>
+    <footer className="border-t border-border px-4 py-6 text-sm text-muted-foreground sm:px-6">
+      <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p>Sentimeter · Open source · MIT</p>
+        <nav aria-label="Footer" className="flex flex-wrap gap-x-4">
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="inline-flex min-h-11 items-center rounded-sm hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
       </div>
     </footer>
   );
