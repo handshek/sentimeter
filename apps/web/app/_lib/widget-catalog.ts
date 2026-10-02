@@ -1,4 +1,5 @@
 import registry from "../../../registry/registry.json";
+import type { WidgetSize } from "@repo/widgets";
 
 export const SITE_URL = registry.homepage;
 export const REPOSITORY_URL = "https://github.com/handshek/sentimeter";
@@ -79,11 +80,84 @@ export type WidgetDocConfig = {
   tabLabel: string;
   icon: "emoji" | "thumbs" | "star";
   preview: "emoji" | "thumbs" | "star";
+  componentName: "EmojiFeedback" | "LikeDislike" | "StarRating";
+  defaultVariant: "emoji" | "icons";
   installSnippet: string;
   usageSnippet: string;
   props: WidgetDocRow[];
   installMetadata: WidgetInstallMetadata;
 };
+
+export type WidgetDemoOptions = {
+  variant: "emoji" | "icons";
+  size: WidgetSize;
+  showInput: boolean;
+};
+
+export function getUsageSnippet(
+  widget: Pick<WidgetDocConfig, "slug" | "componentName" | "defaultVariant">,
+  options?: Partial<WidgetDemoOptions>,
+  submission: "local" | "custom" | "hosted" = "local",
+) {
+  const variant = options?.variant ?? widget.defaultVariant;
+  const size = options?.size ?? "default";
+  const props = [
+    "autoHide={false}",
+    ...(variant !== widget.defaultVariant ? [`variant="${variant}"`] : []),
+    ...(size !== "default" ? [`size="${size}"`] : []),
+    ...(options?.showInput ? ["showInput"] : []),
+    ...(submission === "custom" ? ["submit={saveFeedback}"] : []),
+    ...(submission === "hosted" ? ['apiKey="pk_your-project-key"'] : []),
+  ].join("\n      ");
+  const customSubmit =
+    submission === "custom"
+      ? `\nimport type { WidgetSubmit } from "@/components/sentimeter/feedback-system";
+
+// Implement /api/feedback in your app: validate and persist the payload there.
+const saveFeedback: WidgetSubmit = async (payload) => {
+  const response = await fetch("/api/feedback", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) throw new Error("Your feedback could not be saved.");
+};\n`
+      : "";
+
+  return `"use client";
+
+import { ${widget.componentName} } from "@/components/sentimeter/${widget.slug}";${customSubmit}
+
+export function FeedbackExample() {
+  return (
+    <${widget.componentName}
+      ${props}
+    />
+  );
+}`;
+}
+
+export function getCompoundSnippet(widget: WidgetDocConfig) {
+  const ratingVariant = widget.preview === "star" ? "stars" : widget.preview;
+  const styleProp = widget.preview === "emoji" ? "emojiStyle" : "ratingStyle";
+  return `"use client";
+
+import {
+  FeedbackDescription, FeedbackFooter, FeedbackRating,
+  FeedbackTitle, FeedbackWidget,
+} from "@/components/sentimeter/feedback-system";
+
+export function FeedbackExample() {
+  return (
+    <FeedbackWidget widgetType="${widget.preview}" autoHide={false}>
+      <FeedbackTitle>How was your experience?</FeedbackTitle>
+      <FeedbackDescription>Your feedback helps us improve.</FeedbackDescription>
+      <FeedbackRating variant="${ratingVariant}" ${styleProp}="${widget.defaultVariant}" />
+      <FeedbackFooter />
+    </FeedbackWidget>
+  );
+}`;
+}
 
 export type OverviewSection = {
   id:
@@ -233,7 +307,7 @@ const sharedProps: WidgetDocRow[] = [
 
 const widgetDefinitions: Omit<
   WidgetDocConfig,
-  "installMetadata" | "installSnippet"
+  "installMetadata" | "installSnippet" | "usageSnippet"
 >[] = [
   {
     slug: "emoji-feedback",
@@ -244,29 +318,8 @@ const widgetDefinitions: Omit<
     tabLabel: "Emoji",
     icon: "emoji",
     preview: "emoji",
-    usageSnippet: `import {
-  FeedbackDescription,
-  FeedbackFooter,
-  FeedbackRating,
-  FeedbackTitle,
-  FeedbackWidget,
-} from "@/components/sentimeter/feedback-system";
-
-export function EmojiFeedbackWidget() {
-  return (
-    <FeedbackWidget
-      apiKey="pk_your-api-key"
-      widgetType="emoji"
-    >
-      <FeedbackTitle>How was your experience?</FeedbackTitle>
-      <FeedbackDescription>
-        Your feedback helps us improve this page.
-      </FeedbackDescription>
-      <FeedbackRating variant="emoji" emojiStyle="emoji" />
-      <FeedbackFooter thankYouMessage="Thanks for sharing!" />
-    </FeedbackWidget>
-  );
-}`,
+    componentName: "EmojiFeedback",
+    defaultVariant: "emoji",
     props: [
       ...sharedProps,
       {
@@ -287,29 +340,8 @@ export function EmojiFeedbackWidget() {
     tabLabel: "Thumbs",
     icon: "thumbs",
     preview: "thumbs",
-    usageSnippet: `import {
-  FeedbackDescription,
-  FeedbackFooter,
-  FeedbackRating,
-  FeedbackTitle,
-  FeedbackWidget,
-} from "@/components/sentimeter/feedback-system";
-
-export function LikeDislikeWidget() {
-  return (
-    <FeedbackWidget
-      apiKey="pk_your-api-key"
-      widgetType="thumbs"
-    >
-      <FeedbackTitle>Was this doc helpful?</FeedbackTitle>
-      <FeedbackDescription>
-        A quick signal helps us improve the guide.
-      </FeedbackDescription>
-      <FeedbackRating variant="thumbs" ratingStyle="icons" />
-      <FeedbackFooter thankYouMessage="Thanks for the feedback!" />
-    </FeedbackWidget>
-  );
-}`,
+    componentName: "LikeDislike",
+    defaultVariant: "icons",
     props: [
       ...sharedProps,
       {
@@ -330,29 +362,8 @@ export function LikeDislikeWidget() {
     tabLabel: "Stars",
     icon: "star",
     preview: "star",
-    usageSnippet: `import {
-  FeedbackDescription,
-  FeedbackFooter,
-  FeedbackRating,
-  FeedbackTitle,
-  FeedbackWidget,
-} from "@/components/sentimeter/feedback-system";
-
-export function StarRatingWidget() {
-  return (
-    <FeedbackWidget
-      apiKey="pk_your-api-key"
-      widgetType="star"
-    >
-      <FeedbackTitle>Rate your checkout experience</FeedbackTitle>
-      <FeedbackDescription>
-        Tell us how smooth your purchase felt.
-      </FeedbackDescription>
-      <FeedbackRating variant="stars" ratingStyle="icons" />
-      <FeedbackFooter thankYouMessage="Thanks for your rating!" />
-    </FeedbackWidget>
-  );
-}`,
+    componentName: "StarRating",
+    defaultVariant: "icons",
     props: [
       ...sharedProps,
       {
@@ -370,6 +381,7 @@ export const widgetDocs: WidgetDocConfig[] = widgetDefinitions.map(
   (widget) => ({
     ...widget,
     installSnippet: getInstallCommands(widget.registryName).bun,
+    usageSnippet: getUsageSnippet(widget),
     installMetadata: getInstallMetadata(widget),
   }),
 );
