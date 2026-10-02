@@ -1,6 +1,5 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
 import { useReducedMotion } from "motion/react";
 import { CtaSection } from "./cta-section";
 import { FaqSection } from "./faq-section";
@@ -13,9 +12,8 @@ import { PricingSection } from "./pricing-section";
 import { ShowcaseSection } from "./showcase-section";
 
 export function LandingPage() {
-  const { isSignedIn } = useAuth();
   const prefersReducedMotion = useReducedMotion();
-  const dashboardHref = isSignedIn ? "/dashboard" : "/sign-in";
+  const dashboardHref = "/dashboard";
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground font-sans">

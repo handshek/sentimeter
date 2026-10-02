@@ -1,4 +1,6 @@
 import * as React from "react";
+import { redirect } from "next/navigation";
+import { hasHostedConfiguration } from "../_lib/hosted-config";
 import registry from "../../../registry/registry.json";
 import type { WidgetInstallMetadata } from "../components/_components/widget-install-command";
 import { WidgetsPlaygroundClient } from "./_components/widgets-playground-client";
@@ -55,6 +57,8 @@ function getInstallMetadata(): WidgetInstallMetadata[] {
 }
 
 export default function WidgetsPlaygroundPage() {
+  if (!hasHostedConfiguration()) redirect("/components");
+
   return (
     <React.Suspense
       fallback={
