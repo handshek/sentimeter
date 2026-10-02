@@ -16,5 +16,5 @@ export default async function WidgetDocsPage({
 
   if (!widget) notFound();
 
-  return <WidgetDocsContent widget={widget} />;
+  return <WidgetDocsContent key={widget.slug} widget={widget} />;
 }

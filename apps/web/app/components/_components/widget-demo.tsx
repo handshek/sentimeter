@@ -61,7 +61,7 @@ function WidgetDemoInstance({ widget, options }: WidgetDemoProps) {
     >
       <div
         ref={container}
-        className="flex min-h-52 w-full items-center justify-center"
+        className="flex min-h-36 w-full items-center justify-center"
       >
         <Preset
           key={instance}

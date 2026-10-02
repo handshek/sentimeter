@@ -63,12 +63,12 @@ export function WidgetInstallCommand({
               className="hidden size-4 shrink-0 text-zinc-500 sm:block"
               aria-hidden="true"
             />
-            <TabsList className="h-auto max-w-full bg-transparent p-0">
+            <TabsList className="h-auto max-w-full bg-transparent p-0 group-data-horizontal/tabs:h-auto">
               {packageManagers.map((packageManager) => (
                 <TabsTrigger
                   key={packageManager}
                   value={packageManager}
-                  className="h-auto px-2 py-1 font-mono text-xs text-zinc-400 hover:text-zinc-100 data-active:bg-zinc-900 data-active:text-zinc-100 sm:px-3"
+                  className="h-11 min-w-11 px-2 py-1 font-mono text-xs text-zinc-400 hover:text-zinc-100 data-active:bg-zinc-900 data-active:text-zinc-100 sm:px-3"
                   translate="no"
                 >
                   {packageManager}
@@ -92,7 +92,7 @@ export function WidgetInstallCommand({
               className="m-0"
             >
               <code
-                className="block overflow-x-auto whitespace-nowrap px-4 py-3 font-mono text-[13px] text-zinc-300"
+                className="block whitespace-pre-wrap break-all px-4 py-3 font-mono text-[13px] text-zinc-300"
                 translate="no"
               >
                 {commands[packageManager]}
@@ -116,7 +116,7 @@ export function WidgetInstallCommand({
 
           <Accordion type="single" collapsible className="mt-1">
             <AccordionItem value="installed-files" className="border-0">
-              <AccordionTrigger className="py-2 text-xs">
+              <AccordionTrigger className="min-h-11 py-2 text-xs">
                 View Exact File Paths
               </AccordionTrigger>
               <AccordionContent className="pb-2">
