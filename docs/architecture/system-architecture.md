@@ -5,11 +5,17 @@ surfaces.
 
 ## Surfaces
 
-### Dashboard (`apps/web`)
+### Public Registry and Optional Dashboard (`apps/web`)
 
-The dashboard is a Next.js 16 App Router app. It owns public marketing/docs
-pages, Clerk authentication, the project dashboard, and Convex subscriptions for
-realtime feedback analytics.
+The Next.js 16 App Router app owns the widget-led homepage, `/components`
+catalog, Getting Started guide, and component documentation. These routes run
+without Clerk or Convex providers or hosted environment variables. Component
+Markdown endpoints and `/llms.txt` are statically generated from the same catalog.
+
+Clerk is scoped to sign-in/sign-up and hosted routes; Convex clients are created
+only inside the dashboard or configured `/widgets` tester. Unconfigured hosted
+routes return 503. The tester is parked, not advertised, and redirects to the
+catalog when hosted setup is absent. Legacy `/widgets/[slug]` redirects remain.
 
 ### Registry (`apps/registry`)
 
@@ -23,16 +29,30 @@ Widget behavior.
 
 The widgets package is the sole canonical source for Widget behavior. The
 dashboard imports its workspace form through `@repo/widgets`, while the registry
-emitter produces host-local open code from the same source. Widgets submit
-feedback through a small HTTP client that defaults to the production Convex site
-endpoint and can be overridden for staging or self-hosted use.
+emitter produces host-local open code from the same source. Submission chooses
+a custom `submit` handler first, then hosted HTTP intake for a non-empty `apiKey`,
+then local-only completion. Local demos supply neither and do not persist or
+send feedback. `endpoint` overrides hosted intake only.
 
 ### Convex (`apps/web/convex`)
 
 Convex stores users, projects, API keys, and feedback. Convex queries power the
 dashboard. Convex HTTP actions receive public widget submissions.
 
-## Request Flow
+## Install and Submission Flow
+
+```text
+Browse /components -> try a local demo -> shadcn add -> own the installed source
+    |
+    v
+User reacts -> custom submit? -> developer's backend
+    |
+    +-> otherwise, apiKey? -> optional hosted intake (below)
+    |
+    +-> neither -> local completion; nothing sent or stored
+```
+
+## Optional Hosted Request Flow
 
 ```text
 Developer creates project
@@ -92,5 +112,8 @@ the public output.
 - Data model: `apps/web/convex/schema.ts`
 - Feedback rules: `apps/web/convex/lib/feedbackDomain.ts`
 - Canonical Widget behavior: `packages/widgets/src/`
+- Public Widget Catalog and examples: `apps/web/app/_lib/widget-catalog.ts`
+- Installed files and dependencies: `apps/registry/registry.json`
+- Agent documentation renderer: `apps/web/app/_lib/widget-markdown.ts`
 - Private Registry Item staging: `apps/registry/.generated/sentimeter/`
 - Generated registry output: `apps/registry/public/r/`

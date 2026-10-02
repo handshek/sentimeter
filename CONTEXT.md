@@ -20,15 +20,15 @@ developer's app. Evaluation and installation require no account or hosted setup.
 
 Sentimeter uses three runtime surfaces:
 
-- `apps/web` serves the Next.js dashboard, public pages, docs pages, Clerk auth,
-  and Convex client subscriptions.
+- `apps/web` serves the public registry and docs without hosted providers. Clerk
+  auth and Convex subscriptions are scoped to the optional dashboard and tester.
 - `apps/registry` serves shadcn registry JSON from a Cloudflare Worker so
   developers can install widgets with `shadcn add <url>`. Registry Item source
   is emitted from `packages/widgets` into a private, ignored staging tree before
   the public JSON is built.
-- Convex stores projects, API keys, and feedback. Convex HTTP actions receive
-  feedback from installed widgets and enforce API-key, origin, value, and rate
-  rules.
+- Convex powers optional hosted analytics. Its HTTP actions receive keyed
+  submissions and enforce API-key, origin, value, and rate rules. Widgets can
+  instead use a custom submit handler or complete locally without persistence.
 
 ## Core Concepts
 

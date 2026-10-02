@@ -1,194 +1,117 @@
 # Sentimeter
 
-Sentimeter is a shadcn-first feedback system. Install the open-code widgets into your existing shadcn project, let them adapt to your app's UI, and get real-time analytics on a hosted dashboard.
+Open-source feedback widgets for shadcn apps. Install accessible React source,
+match your app's theme, and connect your own backend. No account required.
 
-![Sentimeter demo](apps/web/public/sentimeter_demo.png)
+[Browse widgets](https://try-sentimeter.vercel.app/components) ·
+[Getting started](https://try-sentimeter.vercel.app/components/getting-started) ·
+[Agent docs](https://try-sentimeter.vercel.app/llms.txt) ·
+[Contributing](CONTRIBUTING.md)
 
-```bash
-npx shadcn@latest add "https://registry.handshek.workers.dev/r/emoji-feedback.json"
+## Install a Widget
+
+Start with a React + TypeScript + Tailwind app configured for
+[shadcn](https://ui.shadcn.com/docs/installation).
+
+```sh
+bunx shadcn@latest add "https://registry.handshek.workers.dev/r/emoji-feedback.json"
 ```
 
----
+Also available: [Like / Dislike](https://try-sentimeter.vercel.app/components/like-dislike)
+and [Star Rating](https://try-sentimeter.vercel.app/components/star-rating).
+Docs include Bun, pnpm, npm, and Yarn commands, live previews, and exact files.
 
-## Links
+```tsx
+"use client";
 
-- **Live:** [https://try-sentimeter.vercel.app](https://try-sentimeter.vercel.app)
-- **YT Demo:** [https://youtu.be/EdtzrnbjEVI](https://youtu.be/EdtzrnbjEVI)
-- **Docs:** [docs/README.md](docs/README.md)
-- **Context:** [CONTEXT.md](CONTEXT.md)
-- **Design Philosophy:** [DESIGN_PHILOSOPHY.md](DESIGN_PHILOSOPHY.md)
+import { EmojiFeedback } from "@/components/sentimeter/emoji-feedback";
 
-## How it works
-
-```
-  Developer installs widget        End user reacts        Developer sees it live
-  ──────────────────────────       ───────────────        ──────────────────────
-  shadcn add Sentimeter        →   clicks 😍              dashboard updates
-  into their own project           hits POST /feedback →  instantly, no refresh
+export function FeedbackExample() {
+  return <EmojiFeedback autoHide={false} />;
+}
 ```
 
-Sentimeter is designed to drop into the user's own shadcn/ui setup and inherit that project's component structure, styling, and install flow.
+This completes locally: **nothing is sent or stored**. Pass an async `submit`
+handler to save feedback using your own backend; resolve only after saving
+succeeds and throw on failure. A custom handler takes precedence over a hosted
+`apiKey`. With neither configured, submission stays local.
 
-Widget behavior is authored once in `packages/widgets/src`. The dashboard uses
-that source through `@repo/widgets`, while the registry emits an ignored,
-host-local staging tree and builds installable Registry Item JSON from it.
+Installation adds 1 widget wrapper + 12 shared feedback-system files, using your
+local shadcn Button, Textarea, utilities, and theme tokens plus `lucide-react`.
+You own the installed source; no runtime Sentimeter package or iframe is needed.
 
-A Registry Item installs a modular open-code tree rather than a second authored
-implementation:
+## Agents
 
-```text
-components/sentimeter/
-├── feedback-system/
-│   ├── index.ts
-│   ├── types.ts
-│   ├── core/
-│   └── compound/
-└── <widget>.tsx
+Start at [llms.txt](https://try-sentimeter.vercel.app/llms.txt). Each component has
+a Markdown endpoint and a Copy as Markdown action. Merge this entry into your
+existing `components.json` to enable namespaced installation:
+
+```json
+{
+  "registries": {
+    "@sentimeter": "https://registry.handshek.workers.dev/r/{name}.json"
+  }
+}
 ```
 
-Preset imports such as `./feedback-system` remain directory-resolved through
-`feedback-system/index.ts` in the host project.
+Then use `bunx shadcn@latest add @sentimeter/emoji-feedback` (or
+`@sentimeter/like-dislike` / `@sentimeter/star-rating`). Full-URL installation
+works without namespace configuration. Use
+[shadcn's existing MCP integration](https://ui.shadcn.com/docs/mcp); no custom
+Sentimeter MCP server is required.
 
-Three moving parts:
+## Work on the Public Site
 
-```
-  ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐
-  │  apps/registry   │   │    apps/web      │   │   Convex Cloud   │
-  │  Hono + CF       │   │   Next.js 16     │   │   DB + HTTP      │
-  │  Workers         │   │   Vercel         │   │   actions        │
-  │                  │   │                  │   │                  │
-  │  Serves widget   │   │  Dashboard +     │   │  Stores feedback │
-  │  registry JSON   │   │  analytics       │   │  Validates keys  │
-  │  via shadcn      │   │  Clerk auth      │   │  Reactive subs   │
-  └──────────────────┘   └─────────┬────────┘   └─────────┬────────┘
-                                   │                      │
-                                   └──── useQuery ────────┘
-                                         (realtime)
-```
+Use the Bun version declared in `package.json` and Node.js 20.9 or later.
 
----
-
-## Stack
-
-| Component | Tech / Service                                       |
-| --------- | ---------------------------------------------------- |
-| Monorepo  | Turborepo + Bun                                      |
-| Dashboard | Next.js 16, Tailwind CSS v4, shadcn/ui               |
-| Auth      | Clerk → Convex (JWT)                                 |
-| Backend   | Convex (realtime DB, server functions, HTTP actions) |
-| Registry  | Hono + Cloudflare Workers                            |
-
----
-
-## Getting started
-
-**Prerequisites:** [Bun](https://bun.sh), Node ≥ 18
-
-```bash
-git clone <repo> && cd sentimeter
+```sh
+git clone https://github.com/handshek/sentimeter.git
+cd sentimeter
 bun install
+bun run --cwd apps/web dev
 ```
 
-**1. Convex** — Create a project at [convex.dev](https://convex.dev). On first setup, Convex may prompt you to log in or choose a project when the dev loop starts.
+Open [localhost:3000](http://localhost:3000). The homepage, catalog, previews,
+human docs, and agent docs work without hosted environment variables. See
+[CONTRIBUTING.md](CONTRIBUTING.md) and [onboarding](docs/onboarding.md) for checks.
 
-When Convex is configured, make note of the `NEXT_PUBLIC_CONVEX_URL` and `NEXT_PUBLIC_CONVEX_SITE_URL` values it prints.
+## Optional Hosted Analytics
 
-**2. Clerk** — Create an app at [clerk.com](https://clerk.com). Copy the publishable and secret keys. Set the JWT issuer domain in your Convex dashboard:
+Hosted Sentimeter analytics remains available through `/dashboard`. Installers
+do not need it. To run hosted routes, configure Clerk and Convex using
+`apps/web/.env.example` and the [onboarding guide](docs/onboarding.md).
+Unconfigured hosted routes return an honest 503; the parked `/widgets` tester
+redirects to the catalog. Existing widget documentation URLs still redirect to
+their component pages.
 
-```
-CLERK_JWT_ISSUER_DOMAIN = https://<instance>.clerk.accounts.dev
-```
+## Architecture
 
-**3. Env file**
+- `packages/widgets/src`: canonical widget behavior for workspace previews and installed source.
+- `apps/registry`: adapter and Cloudflare Worker serving the shadcn registry.
+- `apps/web`: public registry/docs plus optional Clerk/Convex-backed analytics.
+- `apps/web/app/_lib/widget-catalog.ts`: public descriptions and examples;
+  registry manifest owns installed paths and dependencies.
 
-```bash
-cp apps/web/.env.example apps/web/.env.local
-# fill in Convex + Clerk values
-```
+Generated `.generated` and `public/r` trees are ignored build output. Do not edit
+them. See [system architecture](docs/architecture/system-architecture.md) and
+[project documentation](docs/README.md) for details.
 
-**4. Run**
+## Checks and Registry Builds
 
-```bash
-bun run dev
-# Dashboard → http://localhost:3000/dashboard
-# Widgets   → http://localhost:3000/widgets
-# Convex    → runs alongside Next.js in the Turborepo terminal UI
-```
-
----
-
-## Environment variables
-
-**`apps/web/.env.local`**
-
-| Variable                            | Purpose                        |
-| ----------------------------------- | ------------------------------ |
-| `NEXT_PUBLIC_CONVEX_URL`            | Convex deployment URL          |
-| `NEXT_PUBLIC_CONVEX_SITE_URL`       | Convex site URL (HTTP actions) |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key          |
-| `CLERK_SECRET_KEY`                  | Clerk secret key               |
-
-**Convex dashboard**
-
-| Variable                  | Purpose                   |
-| ------------------------- | ------------------------- |
-| `CLERK_JWT_ISSUER_DOMAIN` | Clerk Frontend API domain |
-
-**`apps/registry`** has no env vars. The feedback endpoint is compiled into
-Registry Item output at build time, so installed Widgets remain aligned with
-the hosted Feedback Intake endpoint.
-
----
-
-## Commands
-
-| Command                  | What it does                                                   |
-| ------------------------ | -------------------------------------------------------------- |
-| `bun run dev`            | Dashboard, Widgets, and Convex development                     |
-| `bun run build`          | Build every runtime surface through Turbo                      |
-| `bun run registry:emit`  | Emit private Registry Item source from canonical Widget source |
-| `bun run registry:build` | Build Registry Item JSON into `apps/registry/public/r/`        |
-| `bun run check-registry` | Emit staging and validate a temporary Registry Item build      |
-| `bun run lint`           | Lint every workspace through Turbo                             |
-| `bun run check-types`    | Type-check every workspace through Turbo                       |
-| `bun run test`           | Test every workspace through Turbo                             |
-| `bun run check-env`      | Validate dashboard environment variables                       |
-| `bun run check-docs`     | Validate local Markdown links                                  |
-
-Registry deploy:
-
-```bash
-bun run registry:emit
+```sh
+bun run test
+bun run check-types
+bun run lint
+bun run build
 bun run check-registry
-bun run registry:build
-bun run --cwd apps/registry deploy
+bun run check-docs
 ```
 
----
-
-## Challenges
-
-**Clerk two-step sign-in** — Clerk's flow is email → Continue → password → Continue, not a single form.
-
-**Vercel monorepo deploy** — Setting the Vercel project root to `apps/web` caused `npm install` to run in isolation and break workspace deps. Fixed by deploying from repo root so Turborepo resolves the full workspace.
-
-**Registry install DX** — Using a scoped package name in `registryDependencies` forced consumers to edit `components.json`. Switched to full URLs so `bunx shadcn add <url>` works with zero config and the components adapt cleanly inside the user's shadcn project.
-
-**Widget feedback endpoint** — Baked the production Convex site URL directly
-into `packages/widgets/src/core/submit.ts` and generated Registry Item output so
-installed Widgets always reach the intended Feedback Intake endpoint.
-
----
-
-## Roadmap
-
-- Production Clerk instance + custom domain (Clerk blocks production on `*.vercel.app`)
-- Additional widget variants and theme options
-- Rate limiting and origin allowlist on the public feedback endpoint
-- Public embed guide and HTTP API docs
-
----
+`check-registry` builds and type-checks installed source in a temporary host.
+`registry:emit` emits staging; `registry:build` refreshes ignored public JSON.
+Deployment remains a separate maintainer action. `check-env` validates hosted
+configuration only; it is not required for public-site development.
 
 ## License
 
-Licensed under the MIT License.
+[MIT](LICENSE).
