@@ -1,7 +1,7 @@
 import { ProjectsClient } from "./_components/projects-client";
 
 export const metadata = {
-  title: "Dashboard — Sentimeter",
+  title: "Dashboard",
   description: "Your Sentimeter analytics dashboard",
 };
 
