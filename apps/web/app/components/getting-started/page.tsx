@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@workspace/ui/components/button";
-import { getUsageSnippet, widgetDocs } from "../../_lib/widget-catalog";
+import {
+  getUsageSnippet,
+  namespaceConfig,
+  SITE_URL,
+  widgetDocs,
+} from "../../_lib/widget-catalog";
 import { CodeBlock } from "../_components/code-block";
 import { WidgetInstallCommand } from "../_components/widget-install-command";
 
 export const metadata: Metadata = {
-  title: "Getting Started | Sentimeter",
+  title: "Getting Started",
   description:
     "Install accessible feedback widgets into your React app and connect your own backend. No Sentimeter account required.",
   alternates: { canonical: "/components/getting-started" },
@@ -125,6 +130,44 @@ export default function GettingStartedPage() {
         <Button asChild variant="outline" className="h-11">
           <Link href="/components">Browse Widgets</Link>
         </Button>
+      </section>
+      <section aria-labelledby="agents" className="space-y-3">
+        <h2 id="agents" className="scroll-mt-20 text-xl font-semibold">
+          Using an Agent?
+        </h2>
+        <p className="text-sm leading-6 text-muted-foreground">
+          Start with{" "}
+          <a
+            href={`${SITE_URL}/llms.txt`}
+            className="underline underline-offset-4"
+          >
+            llms.txt
+          </a>
+          . Each widget has a Markdown document and a Copy as Markdown action.
+          For namespaced installation, merge this registries entry into your
+          existing <code>components.json</code>; keep the rest of your
+          configuration. Full-URL install commands need no namespace setup.
+        </p>
+        <CodeBlock
+          code={namespaceConfig}
+          label="components.json Registry Entry"
+          lang="json"
+        />
+        <CodeBlock
+          code="bunx shadcn@latest add @sentimeter/emoji-feedback"
+          label="Namespaced Installation"
+          lang="sh"
+        />
+        <p className="text-sm leading-6 text-muted-foreground">
+          Use{" "}
+          <a
+            href="https://ui.shadcn.com/docs/mcp"
+            className="underline underline-offset-4"
+          >
+            shadcn’s existing MCP integration
+          </a>{" "}
+          with this namespace. No custom Sentimeter MCP server is required.
+        </p>
       </section>
     </article>
   );

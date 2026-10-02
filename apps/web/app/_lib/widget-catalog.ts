@@ -4,6 +4,13 @@ import type { WidgetSize } from "@repo/widgets";
 export const SITE_URL = registry.homepage;
 export const REPOSITORY_URL = "https://github.com/handshek/sentimeter";
 export const REGISTRY_BASE_URL = "https://registry.handshek.workers.dev/r";
+export const namespaceConfig = JSON.stringify(
+  {
+    registries: { "@sentimeter": `${REGISTRY_BASE_URL}/{name}.json` },
+  },
+  null,
+  2,
+);
 export const packageManagers = ["bun", "pnpm", "npm", "yarn"] as const;
 export type PackageManager = (typeof packageManagers)[number];
 

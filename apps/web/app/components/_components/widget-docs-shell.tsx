@@ -52,6 +52,7 @@ import {
 import { WidgetInstallCommand } from "./widget-install-command";
 import { WidgetDemo } from "./widget-demo";
 import { CodeBlock } from "./code-block";
+import { CopyButton } from "./copy-button";
 
 export function WidgetIcon({
   kind,
@@ -180,7 +181,13 @@ export function ComponentsOverviewContent() {
   );
 }
 
-export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
+export function WidgetDocsContent({
+  widget,
+  markdown,
+}: {
+  widget: WidgetDocConfig;
+  markdown: string;
+}) {
   const defaults: WidgetDemoOptions = {
     variant: widget.defaultVariant,
     size: "default",
@@ -192,7 +199,7 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
   }
 
   return (
-    <article className="space-y-6">
+    <article className="space-y-4">
       <header className="space-y-2">
         <h1 className="text-balance text-3xl font-semibold tracking-tight">
           {widget.name}
@@ -300,9 +307,16 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
         </section>
       </div>
       <section aria-labelledby="usage" className="min-w-0 space-y-3">
-        <h2 id="usage" className="scroll-mt-20 text-xl font-semibold">
-          Usage
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 id="usage" className="scroll-mt-20 text-xl font-semibold">
+            Usage
+          </h2>
+          <CopyButton
+            key={widget.slug}
+            text={markdown}
+            label="Copy as Markdown"
+          />
+        </div>
         <p className="text-sm text-muted-foreground">
           The local example does not store feedback. Choose Your Backend to save
           submissions. Examples follow your preview settings and keep success

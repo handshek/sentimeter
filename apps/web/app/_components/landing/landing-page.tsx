@@ -83,7 +83,14 @@ export function LandingPage({
                   <CardDescription>{widget.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3 px-0 min-[360px]:px-2 sm:px-4">
-                  <WidgetDemo widget={widget} />
+                  <WidgetDemo
+                    widget={{
+                      slug: widget.slug,
+                      preview: widget.preview,
+                      defaultVariant: widget.defaultVariant,
+                      name: widget.name,
+                    }}
+                  />
                   <Button asChild variant="outline" className="h-11 w-full">
                     <Link href={`/components/${widget.slug}`}>
                       Install {widget.name}

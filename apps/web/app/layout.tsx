@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "@workspace/ui/globals.css";
 import { ToasterProvider } from "./components/toaster-provider";
 import { NavigationGuardProvider } from "nextjs-nav-guard";
+import { SITE_URL } from "./_lib/widget-catalog";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -15,8 +16,13 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Sentimeter",
-  description: "Developer-first feedback collection system",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Sentimeter — Open-Source Feedback Widgets",
+    template: "%s | Sentimeter",
+  },
+  description:
+    "Accessible, open-code React feedback widgets for shadcn apps. Install the source and connect your own backend. No account required.",
 };
 
 export default function RootLayout({
