@@ -1,0 +1,9 @@
+.docs-code .shiki,
+.docs-code .shiki span {
+  color: var(--shiki-light);
+}
+
+.dark .docs-code .shiki,
+.dark .docs-code .shiki span {
+  color: var(--shiki-dark);
+}

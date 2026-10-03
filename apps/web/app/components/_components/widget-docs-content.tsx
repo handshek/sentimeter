@@ -1,16 +1,8 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Button } from "@workspace/ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card";
 import {
   Accordion,
   AccordionContent,
@@ -40,154 +32,17 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import { cn } from "@workspace/ui/lib/utils";
-import { ArrowLeft, Smile, Star, ThumbsUp } from "lucide-react";
 import {
   getCompoundSnippet,
   getUsageSnippet,
-  widgetDocs,
   type WidgetDemoOptions,
   type WidgetDocConfig,
 } from "../../_lib/widget-catalog";
 import { WidgetInstallCommand } from "./widget-install-command";
 import { WidgetDemo } from "./widget-demo";
 import { CodeBlock } from "./code-block";
-import { CopyButton } from "./copy-button";
 
-export function WidgetIcon({
-  kind,
-  className,
-}: {
-  kind: WidgetDocConfig["icon"];
-  className?: string;
-}) {
-  const Icon = { emoji: Smile, thumbs: ThumbsUp, star: Star }[kind];
-  return <Icon aria-hidden="true" className={cn("size-5", className)} />;
-}
-
-const navigation = [
-  { href: "/components", name: "Widgets" },
-  { href: "/components/getting-started", name: "Getting Started" },
-  ...widgetDocs.map((widget) => ({
-    href: `/components/${widget.slug}`,
-    name: widget.name,
-  })),
-];
-
-export function ComponentsLayoutShell({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
-  function navLink(item: (typeof navigation)[number]) {
-    return (
-      <Link
-        key={item.href}
-        href={item.href}
-        aria-current={pathname === item.href ? "page" : undefined}
-        className={cn(
-          "inline-flex min-h-11 shrink-0 items-center rounded-md px-3 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-ring",
-          pathname === item.href
-            ? "bg-muted font-medium text-foreground"
-            : "text-muted-foreground hover:bg-muted hover:text-foreground",
-        )}
-      >
-        {item.name}
-      </Link>
-    );
-  }
-  return (
-    <div className="min-h-screen bg-background text-foreground">
-      <a
-        href="#main"
-        className="sr-only fixed left-4 top-4 z-60 rounded-md bg-background p-3 focus:not-sr-only focus-visible:outline-2 focus-visible:outline-ring"
-      >
-        Skip to Content
-      </a>
-      <header className="sticky top-0 z-50 border-b border-border bg-background">
-        <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:px-6">
-          <Button asChild variant="ghost" className="h-11">
-            <Link href="/">
-              <ArrowLeft className="size-4" aria-hidden="true" /> Sentimeter
-            </Link>
-          </Button>
-          <span className="ml-auto text-sm text-muted-foreground">
-            Feedback Registry
-          </span>
-        </div>
-      </header>
-      <div className="mx-auto max-w-7xl">
-        <nav
-          aria-label="Documentation"
-          className="flex max-w-full gap-1 overflow-x-auto border-b border-border px-4 py-1 lg:hidden"
-        >
-          {navigation.map(navLink)}
-        </nav>
-        <div className="flex">
-          <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-52 shrink-0 border-r border-border p-4 lg:block">
-            <nav aria-label="Documentation" className="flex flex-col gap-1">
-              {navigation.map(navLink)}
-            </nav>
-          </aside>
-          <main
-            id="main"
-            className="min-w-0 flex-1 px-1.5 py-5 min-[360px]:px-3 sm:px-6 lg:px-8 lg:py-8"
-          >
-            {children}
-          </main>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function ComponentsOverviewContent() {
-  return (
-    <div className="space-y-8">
-      <div className="space-y-3">
-        <h1 className="text-balance text-3xl font-semibold tracking-tight">
-          Feedback Widgets
-        </h1>
-        <p className="max-w-2xl text-muted-foreground">
-          Try a widget, install its source, and connect your own backend. No
-          account required.
-        </p>
-        <Button asChild variant="outline" className="h-11">
-          <Link href="/components/getting-started">Getting Started</Link>
-        </Button>
-      </div>
-      <div className="grid gap-6 xl:grid-cols-2">
-        {widgetDocs.map((widget) => (
-          <Card key={widget.slug} className="min-w-0">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <WidgetIcon kind={widget.icon} />
-                {widget.name}
-              </CardTitle>
-              <CardDescription>{widget.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3 px-0 min-[360px]:px-3 sm:px-6">
-              <WidgetDemo widget={widget} />
-              <p className="text-xs text-muted-foreground">
-                Local preview. Nothing is sent or stored.
-              </p>
-              <Button asChild variant="outline" className="h-11 w-full">
-                <Link href={`/components/${widget.slug}`}>
-                  Install {widget.name}
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export function WidgetDocsContent({
-  widget,
-  markdown,
-}: {
-  widget: WidgetDocConfig;
-  markdown: string;
-}) {
+export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
   const defaults: WidgetDemoOptions = {
     variant: widget.defaultVariant,
     size: "default",
@@ -199,31 +54,43 @@ export function WidgetDocsContent({
   }
 
   return (
-    <article className="space-y-4">
-      <header className="space-y-2">
-        <h1 className="text-balance text-3xl font-semibold tracking-tight">
-          {widget.name}
-        </h1>
-        <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-          {widget.description}
-        </p>
-      </header>
-      <div className="grid items-start gap-4 xl:grid-cols-2">
-        <section
-          aria-label="Live Preview"
-          className="min-w-0 rounded-xl border border-border bg-muted/20 px-0 py-3 min-[360px]:px-2 sm:px-4"
-        >
-          <WidgetDemo widget={widget} options={options} />
-          <p className="mt-2 text-xs leading-5 text-muted-foreground">
+    <div className="space-y-6 text-[15px] leading-7 sm:space-y-8">
+      <section id="preview" aria-label="Live Preview" className="min-w-0">
+        <Tabs defaultValue="preview">
+          <TabsList
+            aria-label="Widget Example"
+            className="mb-3 h-auto group-data-horizontal/tabs:h-auto"
+          >
+            <TabsTrigger value="preview" className="h-11">
+              Preview
+            </TabsTrigger>
+            <TabsTrigger value="code" className="h-11">
+              Code
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="preview" className="m-0">
+            <div className="rounded-xl border border-border bg-muted/20 px-0 py-4 min-[360px]:px-3 sm:px-6">
+              <WidgetDemo widget={widget} options={options} />
+            </div>
+          </TabsContent>
+          <TabsContent value="code" className="m-0">
+            <CodeBlock
+              code={getUsageSnippet(widget, options)}
+              label="Preview Code"
+            />
+          </TabsContent>
+        </Tabs>
+        <div className="px-1 pt-2">
+          <p className="text-xs leading-5 text-muted-foreground">
             Runs locally—no account, project, or network request required.
           </p>
-          <Accordion type="single" collapsible className="mt-2">
+          <Accordion type="single" collapsible>
             <AccordionItem value="customize" className="border-0">
-              <AccordionTrigger className="min-h-11 py-2">
+              <AccordionTrigger className="min-h-11 py-2 text-sm">
                 Customize Preview
               </AccordionTrigger>
               <AccordionContent className="space-y-4 pt-2">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid max-w-md grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="preview-variant">Variant</Label>
                     <Select
@@ -295,32 +162,29 @@ export function WidgetDocsContent({
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-        </section>
-        <section aria-labelledby="installation" className="min-w-0 space-y-3">
-          <h2 id="installation" className="scroll-mt-20 text-lg font-semibold">
-            Installation
-          </h2>
-          <WidgetInstallCommand
-            registryName={widget.registryName}
-            metadata={widget.installMetadata}
-          />
-        </section>
-      </div>
-      <section aria-labelledby="usage" className="min-w-0 space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 id="usage" className="scroll-mt-20 text-xl font-semibold">
-            Usage
-          </h2>
-          <CopyButton
-            key={widget.slug}
-            text={markdown}
-            label="Copy as Markdown"
-          />
         </div>
-        <p className="text-sm text-muted-foreground">
+      </section>
+      <section aria-labelledby="installation" className="min-w-0 space-y-4">
+        <h2 id="installation" className="text-xl font-semibold tracking-tight">
+          Installation
+        </h2>
+        <WidgetInstallCommand
+          registryName={widget.registryName}
+          metadata={widget.installMetadata}
+        />
+      </section>
+      <section aria-labelledby="usage" className="min-w-0 space-y-4">
+        <h2 id="usage" className="text-xl font-semibold tracking-tight">
+          Usage
+        </h2>
+        <p className="text-muted-foreground">
           The local example does not store feedback. Choose Your Backend to save
           submissions. Examples follow your preview settings and keep success
-          visible with <code>{"autoHide={false}"}</code>.
+          visible with{" "}
+          <code className="rounded bg-muted px-1 py-0.5 text-sm">
+            {"autoHide={false}"}
+          </code>
+          .
         </p>
         <Tabs defaultValue="local">
           <TabsList
@@ -340,8 +204,8 @@ export function WidgetDocsContent({
               label="Local Example"
             />
           </TabsContent>
-          <TabsContent value="custom" className="space-y-3">
-            <p className="text-sm text-muted-foreground">
+          <TabsContent value="custom" className="space-y-4">
+            <p className="text-muted-foreground">
               Implement <code>/api/feedback</code> in your app. Validate the
               payload and persist it before returning success. No Sentimeter key
               is needed; the existing payload includes an empty{" "}
@@ -354,11 +218,11 @@ export function WidgetDocsContent({
           </TabsContent>
         </Tabs>
       </section>
-      <section aria-labelledby="submission" className="space-y-3">
-        <h2 id="submission" className="scroll-mt-20 text-xl font-semibold">
+      <section aria-labelledby="submission" className="space-y-4">
+        <h2 id="submission" className="text-xl font-semibold tracking-tight">
           Submission Behavior
         </h2>
-        <p className="text-sm leading-6 text-muted-foreground">
+        <p className="text-muted-foreground">
           A custom <code>submit</code> handler takes precedence. Without it, a
           non-empty <code>apiKey</code> enables hosted analytics. With neither
           configured, the widget completes locally without sending or persisting
@@ -381,8 +245,8 @@ export function WidgetDocsContent({
             <AccordionTrigger className="min-h-11">
               Optional Hosted Analytics
             </AccordionTrigger>
-            <AccordionContent className="space-y-3">
-              <p className="text-sm leading-6 text-muted-foreground">
+            <AccordionContent className="space-y-4">
+              <p className="leading-7 text-muted-foreground">
                 Create a project in the{" "}
                 <Link
                   href="/dashboard"
@@ -410,8 +274,8 @@ export function WidgetDocsContent({
           </AccordionItem>
         </Accordion>
       </section>
-      <section aria-labelledby="props" className="min-w-0 space-y-3">
-        <h2 id="props" className="scroll-mt-20 text-xl font-semibold">
+      <section aria-labelledby="props" className="min-w-0 space-y-4">
+        <h2 id="props" className="text-xl font-semibold tracking-tight">
           Props
         </h2>
         <div
@@ -441,7 +305,7 @@ export function WidgetDocsContent({
                   <TableCell className="font-mono text-xs text-muted-foreground">
                     {row.defaultValue}
                   </TableCell>
-                  <TableCell className="min-w-60 whitespace-normal text-sm">
+                  <TableCell className="min-w-60 whitespace-normal text-sm leading-6">
                     {row.description}
                   </TableCell>
                 </TableRow>
@@ -450,6 +314,6 @@ export function WidgetDocsContent({
           </Table>
         </div>
       </section>
-    </article>
+    </div>
   );
 }

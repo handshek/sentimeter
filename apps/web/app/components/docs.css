@@ -1,0 +1,46 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+@source "../../node_modules/fumadocs-ui/dist/**/*.js";
+
+.docs-shell {
+  --fd-layout-width: 1440px;
+  --color-fd-background: var(--background);
+  --color-fd-foreground: var(--foreground);
+  --color-fd-muted-foreground: var(--muted-foreground);
+  --color-fd-border: var(--border);
+}
+
+.docs-shell #nd-page {
+  min-width: 0;
+}
+
+.docs-shell #nd-page > * {
+  min-width: 0;
+}
+
+.docs-shell :is(h2, h3, section[id]) {
+  scroll-margin-top: 7rem;
+}
+
+.docs-shell :is(#nd-subnav, #nd-sidebar) :is(button, a),
+.docs-shell [data-toc-popover-trigger] {
+  min-height: 44px;
+}
+
+.docs-shell :is(#nd-subnav, #nd-sidebar) button {
+  min-width: 44px;
+}
+
+.docs-shell :is(a, button):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+/* Preserve the widget's 288px host even with a mobile scrollbar. */
+@media (max-width: 359px) {
+  .docs-shell #nd-page {
+    padding-inline: 8px;
+  }
+}
