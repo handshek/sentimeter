@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Github } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { REPOSITORY_URL } from "../../_lib/widget-catalog";
+import { ThemeToggle } from "../theme-toggle";
 
 export function HeaderSection({
   analyticsEnabled,
@@ -26,7 +27,7 @@ export function HeaderSection({
             variant="ghost"
             className="hidden h-11 sm:inline-flex"
           >
-            <Link href="/components/getting-started">Getting Started</Link>
+            <Link href="/#how-it-works">How It Works</Link>
           </Button>
           {analyticsEnabled && (
             <Button
@@ -37,6 +38,7 @@ export function HeaderSection({
               <Link href="/dashboard">Analytics</Link>
             </Button>
           )}
+          <ThemeToggle />
           <Button asChild variant="ghost" size="icon" className="size-11">
             <a href={REPOSITORY_URL} aria-label="Sentimeter on GitHub">
               <Github aria-hidden="true" className="size-5" />

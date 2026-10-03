@@ -8,6 +8,8 @@ export function FooterSection({
 }) {
   const links = [
     { href: "/components", label: "Documentation" },
+    { href: "/components/getting-started", label: "Getting Started" },
+    { href: "/llms.txt", label: "llms.txt" },
     { href: REPOSITORY_URL, label: "GitHub" },
     ...(analyticsEnabled
       ? [{ href: "/dashboard", label: "Optional Analytics" }]
