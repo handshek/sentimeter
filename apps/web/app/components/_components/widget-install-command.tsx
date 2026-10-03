@@ -58,7 +58,7 @@ export function WidgetInstallCommand({
           value={manager}
           onValueChange={(value) => setManager(value as PackageManager)}
         >
-          <div className="flex min-w-0 flex-wrap items-center gap-2 border-b border-border px-3 py-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-2 border-b border-border px-2 py-2 sm:px-3">
             <Terminal
               className="hidden size-4 shrink-0 text-muted-foreground sm:block"
               aria-hidden="true"
@@ -92,7 +92,7 @@ export function WidgetInstallCommand({
               className="m-0"
             >
               <code
-                className="block whitespace-pre-wrap break-all px-4 py-4 font-mono text-[13px] leading-6"
+                className="block whitespace-pre-wrap break-all px-4 py-3 font-mono text-[13px] leading-6"
                 translate="no"
               >
                 {commands[packageManager]}

@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 export default function GettingStartedPage() {
   const widget = widgetDocs[0]!;
   return (
-    <DocsPage toc={gettingStartedSections}>
+    <DocsPage role="main" tabIndex={-1} toc={gettingStartedSections}>
       <DocsTitle>Getting Started</DocsTitle>
       <DocsDescription>
         Install a widget, try it locally, then save feedback using your own
@@ -38,7 +38,7 @@ export default function GettingStartedPage() {
           <h2 id="prerequisites" className="scroll-mt-20 text-xl font-semibold">
             1. Start With a shadcn App
           </h2>
-          <p className="text-sm leading-6 text-muted-foreground">
+          <p className="leading-7 text-muted-foreground">
             You need React, TypeScript, Tailwind CSS, and a configured shadcn
             project. Sentimeter uses your local Button, Textarea, theme tokens,
             and utilities. Follow{" "}
@@ -55,7 +55,7 @@ export default function GettingStartedPage() {
           <h2 id="install" className="scroll-mt-20 text-xl font-semibold">
             2. Install a Widget
           </h2>
-          <p className="text-sm leading-6 text-muted-foreground">
+          <p className="leading-7 text-muted-foreground">
             This installs Emoji Feedback. Choose{" "}
             <Link href="/components" className="underline underline-offset-4">
               another widget
@@ -72,7 +72,7 @@ export default function GettingStartedPage() {
           <div className="not-prose">
             <CodeBlock code={widget.usageSnippet} label="Local Example" />
           </div>
-          <p className="text-sm leading-6 text-muted-foreground">
+          <p className="leading-7 text-muted-foreground">
             With neither <code>submit</code> nor <code>apiKey</code>, submission
             completes locally. Nothing is sent or stored. These examples use{" "}
             <code>{"autoHide={false}"}</code> so success stays readable; the
@@ -83,7 +83,7 @@ export default function GettingStartedPage() {
           <h2 id="submission" className="scroll-mt-20 text-xl font-semibold">
             3. Connect Your Backend
           </h2>
-          <p className="text-sm leading-6 text-muted-foreground">
+          <p className="leading-7 text-muted-foreground">
             Pass an asynchronous <code>submit</code> handler. It receives{" "}
             <code>location</code>, <code>widgetType</code>, <code>value</code>,
             optional <code>text</code>, and an empty <code>apiKey</code> when no
@@ -96,14 +96,14 @@ export default function GettingStartedPage() {
               label="Your Backend"
             />
           </div>
-          <p className="text-sm leading-6 text-muted-foreground">
+          <p className="leading-7 text-muted-foreground">
             Implement <code>/api/feedback</code> in your own app; Sentimeter
             does not provide that route. Validate untrusted input, apply your
             app’s authentication and abuse protection, and persist it before
             returning a successful response. Emoji and stars use values 1–5;
             thumbs use 0 or 1.
           </p>
-          <p className="text-sm leading-6 text-muted-foreground">
+          <p className="leading-7 text-muted-foreground">
             Custom <code>submit</code> always takes precedence over hosted
             submission. Without a custom handler, a non-empty publishable{" "}
             <code>apiKey</code> enables optional{" "}
@@ -114,7 +114,7 @@ export default function GettingStartedPage() {
             use <code>endpoint</code> only to override hosted intake, not to
             replace a custom handler.
           </p>
-          <p className="text-sm leading-6 text-muted-foreground">
+          <p className="leading-7 text-muted-foreground">
             Hosted failures are <code>WidgetSubmitError</code> instances with{" "}
             <code>code</code>, optional HTTP <code>status</code>, and optional{" "}
             <code>retryAfterMs</code>. Codes are <code>missing_api_key</code>,{" "}
@@ -130,7 +130,7 @@ export default function GettingStartedPage() {
           <h2 id="accessibility" className="scroll-mt-20 text-xl font-semibold">
             Keep the Widget Accessible
           </h2>
-          <p className="text-sm leading-6 text-muted-foreground">
+          <p className="leading-7 text-muted-foreground">
             Keep the accessible reaction names, pressed states, keyboard focus,
             disabled states, and success/error announcements when editing
             installed code. Give the widget at least 288px of container width.
@@ -145,7 +145,7 @@ export default function GettingStartedPage() {
           <h2 id="agents" className="scroll-mt-20 text-xl font-semibold">
             Using an Agent?
           </h2>
-          <p className="text-sm leading-6 text-muted-foreground">
+          <p className="leading-7 text-muted-foreground">
             Start with{" "}
             <a
               href={`${SITE_URL}/llms.txt`}
@@ -172,7 +172,7 @@ export default function GettingStartedPage() {
               lang="sh"
             />
           </div>
-          <p className="text-sm leading-6 text-muted-foreground">
+          <p className="leading-7 text-muted-foreground">
             Use{" "}
             <a
               href="https://ui.shadcn.com/docs/mcp"

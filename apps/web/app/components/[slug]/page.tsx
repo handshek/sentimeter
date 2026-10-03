@@ -44,6 +44,8 @@ export default async function WidgetDocsPage({
 
   return (
     <DocsPage
+      role="main"
+      tabIndex={-1}
       className="xl:pt-8!"
       toc={widgetToc}
       breadcrumb={{ enabled: false }}

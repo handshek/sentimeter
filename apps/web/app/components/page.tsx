@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function ComponentsPage() {
   return (
-    <DocsPage full breadcrumb={{ enabled: false }}>
+    <DocsPage role="main" tabIndex={-1} full breadcrumb={{ enabled: false }}>
       <DocsTitle>Feedback Widgets</DocsTitle>
       <DocsDescription className="mb-2! max-w-2xl!">
         Small, accessible feedback components. Copy the source into your app,

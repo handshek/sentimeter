@@ -69,7 +69,7 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="preview" className="m-0">
-            <div className="rounded-xl border border-border bg-muted/20 px-0 py-4 min-[360px]:px-3 sm:px-6">
+            <div className="rounded-xl border border-border bg-muted/20 px-0 py-3 min-[360px]:px-3 sm:px-6 sm:py-4">
               <WidgetDemo widget={widget} options={options} />
             </div>
           </TabsContent>
