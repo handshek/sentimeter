@@ -24,6 +24,11 @@ updated or deleted when behavior changes.
 - [Runbook](ops/runbook.md) - checks and first-response steps for common
   failures.
 
+## Research
+
+- [UI consistency skills assessment](research/ui-consistency-skills-assessment.md) -
+  assessment of arla6ka/skills against Sentimeter's existing UI, dated 2026-10-03.
+
 ## Maintenance Rules
 
 - Keep root Markdown limited to repo instructions, product context, design
