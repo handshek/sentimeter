@@ -1,0 +1,32 @@
+{
+  "baseline": "63beba8e3a74fccfdcc3fddca711945c31cf2069",
+  "mutation": "Only the sentiment distribution guard temporarily restored to volume === undefined",
+  "tests": [
+    {
+      "test": "sentiment distribution waits for analytics even after volume resolves",
+      "command": [
+        "bun",
+        "test",
+        "app/dashboard/_components/project-client.test.tsx",
+        "-t",
+        "sentiment distribution waits for analytics even after volume resolves"
+      ],
+      "log": "loading-analytics-pending-before.log",
+      "exitCode": 1
+    },
+    {
+      "test": "sentiment distribution renders analytics while volume is still loading",
+      "command": [
+        "bun",
+        "test",
+        "app/dashboard/_components/project-client.test.tsx",
+        "-t",
+        "sentiment distribution renders analytics while volume is still loading"
+      ],
+      "log": "loading-volume-pending-before.log",
+      "exitCode": 1
+    }
+  ],
+  "applicationRestoredByteIdentically": true,
+  "applicationSha256": "7717f1d1901342373c551a155561955297eaaba565ce7636d021fe127961b880"
+}
