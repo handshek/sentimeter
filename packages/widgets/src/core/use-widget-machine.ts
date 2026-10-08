@@ -20,6 +20,19 @@ type UseWidgetMachineArgs = {
   onSubmitError?: (error: unknown, payload: WidgetPayload) => void;
 };
 
+// Host callbacks are observers: a throwing callback must not change what the
+// widget shows or whether feedback is sent again.
+function notify<Args extends unknown[]>(
+  callback: ((...args: Args) => void) | undefined,
+  ...args: Args
+) {
+  try {
+    callback?.(...args);
+  } catch (error) {
+    console.error("Sentimeter widget callback threw:", error);
+  }
+}
+
 export function useWidgetMachine({
   payloadBase,
   disabled,
@@ -36,10 +49,15 @@ export function useWidgetMachine({
   const [submitError, setSubmitError] =
     React.useState<WidgetSubmitError | null>(null);
 
+  // Mirrors `state` synchronously so repeated calls in one tick, before React
+  // re-renders, cannot submit the same response twice.
+  const stateRef = React.useRef<WidgetState>("idle");
+
   const setStateSafe = React.useCallback(
     (next: WidgetState) => {
+      stateRef.current = next;
       setState(next);
-      onStateChange?.(next);
+      notify(onStateChange, next);
     },
     [onStateChange],
   );
@@ -47,19 +65,21 @@ export function useWidgetMachine({
   const select = React.useCallback(
     (value: number) => {
       if (disabled) return;
-      if (state === "submitting" || state === "done") return;
+      if (stateRef.current === "submitting" || stateRef.current === "done") {
+        return;
+      }
       setSubmitError(null);
       setSelectedValue(value);
-      onSelect?.(value);
+      notify(onSelect, value);
       setStateSafe("selected");
     },
-    [disabled, onSelect, setStateSafe, state],
+    [disabled, onSelect, setStateSafe],
   );
 
   const submitSelected = React.useCallback(
     async (text?: string) => {
       if (disabled) return;
-      if (state !== "selected") return;
+      if (stateRef.current !== "selected") return;
       if (selectedValue == null) return;
 
       const payload: WidgetPayload = {
@@ -69,18 +89,20 @@ export function useWidgetMachine({
       };
       setSubmitError(null);
       setStateSafe("submitting");
-      onSubmitStart?.(payload);
+      notify(onSubmitStart, payload);
 
       try {
         await submit(payload);
-        setSubmitError(null);
-        onSubmitSuccess?.(payload);
-        setStateSafe("done");
       } catch (error) {
-        onSubmitError?.(error, payload);
+        notify(onSubmitError, error, payload);
         setSubmitError(normalizeSubmitError(error));
         setStateSafe("selected");
+        return;
       }
+
+      setSubmitError(null);
+      notify(onSubmitSuccess, payload);
+      setStateSafe("done");
     },
     [
       disabled,
@@ -90,7 +112,6 @@ export function useWidgetMachine({
       payloadBase,
       selectedValue,
       setStateSafe,
-      state,
       submit,
     ],
   );
