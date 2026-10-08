@@ -419,6 +419,95 @@ describe("rendered feedback widget", () => {
     assert.equal(document.activeElement, outsideButton);
   });
 
+  test("isolates a throwing dismissal callback while closing and restoring focus", () => {
+    const consoleErrors = captureConsoleErrors();
+    const callbackError = new Error("dismissal analytics failed");
+    let cancelled = 0;
+    render(
+      <LikeDislike
+        closeButton
+        onCancel={() => {
+          cancelled += 1;
+          throw callbackError;
+        }}
+      />,
+    );
+    const dismissButton = screen.getByRole("button", {
+      name: "Dismiss feedback widget",
+    });
+    dismissButton.focus();
+    fireEvent.click(dismissButton);
+
+    assert.equal(cancelled, 1);
+    assert.equal(
+      document.activeElement,
+      screen.getByText("Feedback widget closed"),
+    );
+    assert.equal(
+      screen.queryByRole("button", { name: "Dismiss feedback widget" }),
+      null,
+    );
+    assert.deepEqual(consoleErrors, [
+      ["Sentimeter widget callback threw:", callbackError],
+    ]);
+  });
+
+  test("isolates a rejected async dismissal callback after closing and restoring focus", async () => {
+    const consoleErrors = captureConsoleErrors();
+    const callbackError = new Error("async dismissal analytics failed");
+    const unhandled: unknown[] = [];
+    const onUnhandled = (reason: unknown) => unhandled.push(reason);
+    let rejectCallback!: (reason: unknown) => void;
+    const pendingCallback = new Promise<void>((_, reject) => {
+      rejectCallback = reject;
+    });
+    let cancelled = 0;
+    let submits = 0;
+    process.on("unhandledRejection", onUnhandled);
+
+    try {
+      render(
+        <LikeDislike
+          closeButton
+          submit={async () => {
+            submits += 1;
+          }}
+          onCancel={() => {
+            cancelled += 1;
+            return pendingCallback;
+          }}
+        />,
+      );
+      const dismissButton = screen.getByRole("button", {
+        name: "Dismiss feedback widget",
+      });
+      dismissButton.focus();
+      fireEvent.click(dismissButton);
+
+      const focusAnchor = screen.getByText("Feedback widget closed");
+      assert.equal(document.activeElement, focusAnchor);
+      assert.equal(cancelled, 1);
+      assert.equal(submits, 0);
+      assert.equal(
+        screen.queryByRole("button", { name: "Dismiss feedback widget" }),
+        null,
+      );
+
+      await act(async () => {
+        rejectCallback(callbackError);
+        await new Promise((resolve) => setTimeout(resolve, 20));
+      });
+
+      assert.deepEqual(unhandled, []);
+      assert.deepEqual(consoleErrors, [
+        ["Sentimeter widget callback threw:", callbackError],
+      ]);
+      assert.equal(document.activeElement, focusAnchor);
+    } finally {
+      process.off("unhandledRejection", onUnhandled);
+    }
+  });
+
   test("returns focus to the same anchor after explicit dismissal", () => {
     let cancelled = false;
     render(<LikeDislike closeButton onCancel={() => (cancelled = true)} />);
