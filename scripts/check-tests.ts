@@ -5,7 +5,8 @@ import { join, relative } from "node:path";
 // mocks leak between files, so each test file must be named in the script.
 const webRoot = join(process.cwd(), "apps/web");
 const ignoredDirs = new Set([".next", "node_modules", "_generated"]);
-const testFilePattern = /\.test\.tsx?$/;
+// Every file name `bun test` picks up: *.test.*, *_test.*, *.spec.*, *_spec.*
+const testFilePattern = /[._](test|spec)\.[jt]sx?$/;
 
 function walkTestFiles(dir: string, files: string[] = []) {
   for (const entry of readdirSync(dir)) {
