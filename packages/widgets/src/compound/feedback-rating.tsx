@@ -85,7 +85,7 @@ export function FeedbackRating({
   const { state, selectedValue, disabled, select, size } = useFeedbackContext();
   const [hoverValue, setHoverValue] = React.useState<number | null>(null);
 
-  const isLocked = disabled || state === "submitting";
+  const isLocked = disabled || state === "submitting" || state === "done";
   const { iconClass, btnClass, emojiClass } = SIZE_MAP[size];
   const wrapperClass = cn(
     "mt-4 w-full items-center justify-center rounded-2xl border border-border/60 bg-muted/20",
@@ -165,7 +165,8 @@ export function FeedbackRating({
 
   /* ── Stars ──────────────────────────────────────────────── */
   if (variant === "stars") {
-    const previewValue = hoverValue ?? selectedValue ?? 0;
+    const previewValue =
+      (isLocked ? selectedValue : (hoverValue ?? selectedValue)) ?? 0;
 
     if (ratingStyle === "emoji") {
       return (
