@@ -7,7 +7,8 @@ import {
   screen,
   within,
 } from "@testing-library/react";
-import { getFunctionName } from "convex/server";
+import { getFunctionName, type FunctionReturnType } from "convex/server";
+import { api } from "../../../convex/_generated/api";
 import { useContext } from "react";
 import { AppRouterContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { NavigationGuardProvider } from "nextjs-nav-guard";
@@ -25,6 +26,16 @@ const router = {
 const originalConfirm = window.confirm;
 const confirmNavigation = mock(() => false);
 const searchParams = new URLSearchParams();
+let analyticsResult:
+  | FunctionReturnType<typeof api.feedback.getAnalytics>
+  | undefined;
+let volumeResult:
+  | FunctionReturnType<typeof api.feedback.getVolumeSeries>
+  | undefined;
+let feedbackResult:
+  | FunctionReturnType<typeof api.feedback.getFeedback>
+  | undefined;
+const queryCalls = mock((name: string, args: unknown) => ({ name, args }));
 let deleteResult: Promise<unknown>;
 const deleteProject = mock(() => deleteResult);
 const syncUser = async () => {};
@@ -54,10 +65,17 @@ mock.module("next/navigation", () => ({
 mock.module("convex/react", () => ({
   useConvexAuth: () => ({ isLoading: false, isAuthenticated: true }),
   useQuery: (query: Parameters<typeof getFunctionName>[0], args: unknown) => {
+    queryCalls(getFunctionName(query), args);
     if (args === "skip") return undefined;
     if (getFunctionName(query) === "projects:getProject") {
       return { project, activeApiKey: { key: "pk_test_fixture" } };
     }
+    if (getFunctionName(query) === "feedback:getAnalytics")
+      return analyticsResult;
+    if (getFunctionName(query) === "feedback:getVolumeSeries")
+      return volumeResult;
+    if (getFunctionName(query) === "feedback:getFeedback")
+      return feedbackResult;
     return undefined;
   },
   useMutation: (mutation: Parameters<typeof getFunctionName>[0]) => {
@@ -77,6 +95,11 @@ mock.module("convex/react", () => ({
 const { ProjectClient } = await import("./project-client");
 
 beforeEach(() => {
+  analyticsResult = undefined;
+  volumeResult = undefined;
+  feedbackResult = undefined;
+  queryCalls.mockClear();
+  for (const key of Array.from(searchParams.keys())) searchParams.delete(key);
   replace.mockClear();
   push.mockClear();
   deleteProject.mockClear();
@@ -307,4 +330,200 @@ test("page unload is guarded only while the origin draft is dirty", async () => 
   const dirtyUnload = new Event("beforeunload", { cancelable: true });
   window.dispatchEvent(dirtyUnload);
   expect(dirtyUnload.defaultPrevented).toBe(true);
+});
+
+function setAnalyticsFixture({
+  range = "all",
+  widgetType,
+  counts,
+  points = [{ ts: Date.UTC(2026, 9, 8), total: 1, positive: 1, negative: 0 }],
+}: {
+  range?: "24h" | "7d" | "30d" | "all";
+  widgetType?: "emoji" | "thumbs" | "star";
+  counts: Record<"emoji" | "thumbs" | "star", Record<string, number>>;
+  points?: NonNullable<typeof volumeResult>["points"];
+}) {
+  searchParams.set("range", range);
+  if (widgetType) searchParams.set("widget", widgetType);
+  const byWidgetType = {
+    emoji: Object.values(counts.emoji).reduce((sum, count) => sum + count, 0),
+    thumbs: Object.values(counts.thumbs).reduce((sum, count) => sum + count, 0),
+    star: Object.values(counts.star).reduce((sum, count) => sum + count, 0),
+  };
+  const byValue: Record<string, number> = {};
+  for (const widgetCounts of Object.values(counts)) {
+    for (const [value, count] of Object.entries(widgetCounts)) {
+      byValue[value] = (byValue[value] ?? 0) + count;
+    }
+  }
+  analyticsResult = {
+    total: Object.values(byWidgetType).reduce((sum, count) => sum + count, 0),
+    byValue,
+    topLocations: [],
+    byWidgetType,
+    byWidgetTypeByValue: counts,
+    range,
+    widgetType: widgetType ?? null,
+  };
+  volumeResult = {
+    requestedRange: range,
+    effectiveRange: range === "all" ? "30d" : range,
+    widgetType: widgetType ?? null,
+    granularity: range === "24h" ? "hour" : "day",
+    from: Date.UTC(2026, 8, 9),
+    to: Date.UTC(2026, 9, 9),
+    points,
+  };
+  feedbackResult = [];
+}
+
+async function renderAnalytics() {
+  render(
+    <AppRouterContext.Provider value={router}>
+      <NavigationGuardProvider>
+        <ProjectClient projectId={project._id} />
+      </NavigationGuardProvider>
+    </AppRouterContext.Provider>,
+  );
+  await screen.findByText(
+    "Project dashboard data loaded. Live updates are connected.",
+  );
+}
+
+function kpiCard(label: string) {
+  return screen
+    .getAllByText(label, { selector: "span.text-sm.font-medium" })[0]!
+    .closest<HTMLElement>('[data-slot="card"]')!;
+}
+
+test("all-time sentiment includes older feedback across widget types while volume stays bounded", async () => {
+  // All-time aggregates include old negative/neutral rows; only one recent
+  // positive response remains in the intentionally capped volume series.
+  setAnalyticsFixture({
+    counts: {
+      emoji: { "1": 1, "3": 1, "5": 1 },
+      thumbs: { "0": 1, "1": 1 },
+      star: { "1": 1, "3": 1, "5": 1 },
+    },
+  });
+  await renderAnalytics();
+
+  expect(within(kpiCard("Total responses")).getByText("8")).toBeDefined();
+  expect(within(kpiCard("Sentiment")).getByText("50%")).toBeDefined();
+  expect(kpiCard("Sentiment").textContent).toContain("3 positive of 6");
+  expect(within(kpiCard("Negative")).getByText("3")).toBeDefined();
+  expect(kpiCard("Negative").textContent).toContain("38% of responses");
+  const distribution = screen
+    .getByText("Distribution across all widgets")
+    .closest<HTMLElement>('[data-slot="card"]')!;
+  expect(within(distribution).getByText("8")).toBeDefined();
+  expect(within(distribution).getByText("25%")).toBeDefined();
+  const chart = screen
+    .getByText("Response volume")
+    .closest<HTMLElement>('[data-slot="card"]')!;
+  expect(within(chart).getByText("LAST 30 DAYS")).toBeDefined();
+  expect(chart.textContent).toContain(
+    "Response volume for the last 30 days: 1 total responses",
+  );
+  expect(chart.textContent).not.toContain("Response volume for all time");
+});
+
+for (const widgetType of ["emoji", "thumbs", "star"] as const) {
+  test(`all-time ${widgetType} filter uses its full aggregate and widget-specific sentiment`, async () => {
+    setAnalyticsFixture({
+      widgetType,
+      counts: {
+        emoji: {},
+        thumbs: {},
+        star: {},
+        [widgetType]:
+          widgetType === "thumbs"
+            ? { "0": 1, "1": 1 }
+            : { "1": 1, "3": 1, "5": 1 },
+      },
+    });
+    await renderAnalytics();
+
+    expect(within(kpiCard("Sentiment")).getByText("50%")).toBeDefined();
+    expect(kpiCard("Sentiment").textContent).toContain("1 positive of 2");
+    expect(within(kpiCard("Negative")).getByText("1")).toBeDefined();
+    expect(kpiCard("Negative").textContent).toContain(
+      widgetType === "thumbs" ? "50% of responses" : "33% of responses",
+    );
+    expect(queryCalls).toHaveBeenCalledWith("feedback:getAnalytics", {
+      projectId: project._id,
+      range: "all",
+      widgetType,
+    });
+    expect(queryCalls).toHaveBeenCalledWith("feedback:getVolumeSeries", {
+      projectId: project._id,
+      range: "all",
+      widgetType,
+    });
+  });
+}
+
+for (const range of ["24h", "7d", "30d"] as const) {
+  test(`${range} sentiment and volume retain the selected range`, async () => {
+    setAnalyticsFixture({
+      range,
+      counts: { emoji: {}, thumbs: { "0": 2, "1": 1 }, star: {} },
+      points: [
+        { ts: Date.UTC(2026, 9, 8), total: 3, positive: 1, negative: 2 },
+      ],
+    });
+    await renderAnalytics();
+
+    expect(within(kpiCard("Sentiment")).getByText("33%")).toBeDefined();
+    expect(within(kpiCard("Negative")).getByText("2")).toBeDefined();
+    expect(queryCalls).toHaveBeenCalledWith("feedback:getAnalytics", {
+      projectId: project._id,
+      range,
+      widgetType: undefined,
+    });
+    const chart = screen
+      .getByText("Response volume")
+      .closest<HTMLElement>('[data-slot="card"]')!;
+    const label =
+      range === "24h"
+        ? "LAST 24 HOURS"
+        : range === "7d"
+          ? "LAST 7 DAYS"
+          : "LAST 30 DAYS";
+    expect(within(chart).getByText(label)).toBeDefined();
+    expect(chart.textContent).toContain("3 total responses");
+  });
+}
+
+test("neutral-only all-time feedback remains in the distribution without changing scored sentiment", async () => {
+  setAnalyticsFixture({
+    counts: { emoji: { "3": 2 }, thumbs: {}, star: {} },
+    points: [],
+  });
+  await renderAnalytics();
+
+  expect(within(kpiCard("Total responses")).getByText("2")).toBeDefined();
+  expect(within(kpiCard("Sentiment")).getByText("0%")).toBeDefined();
+  expect(kpiCard("Sentiment").textContent).toContain("0 positive of 0");
+  expect(within(kpiCard("Negative")).getByText("0")).toBeDefined();
+  const distribution = screen
+    .getByText("Distribution across all widgets")
+    .closest<HTMLElement>('[data-slot="card"]')!;
+  expect(within(distribution).getByText("100%")).toBeDefined();
+});
+
+test("empty all-time analytics has zero sentiment and a bounded empty chart", async () => {
+  setAnalyticsFixture({
+    counts: { emoji: {}, thumbs: {}, star: {} },
+    points: [],
+  });
+  await renderAnalytics();
+
+  expect(within(kpiCard("Total responses")).getByText("0")).toBeDefined();
+  expect(within(kpiCard("Sentiment")).getByText("0%")).toBeDefined();
+  expect(within(kpiCard("Negative")).getByText("0")).toBeDefined();
+  expect(kpiCard("Negative").textContent).toContain("none in range");
+  expect(
+    screen.getByText("Response volume for the last 30 days: no responses."),
+  ).toBeDefined();
 });
