@@ -1,0 +1,36 @@
+Evidence uses real query handlers with an in-memory DB fixture, no network or database writes.
+{
+  "selectedRange": "all",
+  "analyticsTotal": 2,
+  "analyticsByValue": {
+    "1": 1,
+    "5": 1
+  },
+  "volumeEffectiveRange": "30d",
+  "dashboardSentimentTotals": {
+    "total": 1,
+    "positive": 1,
+    "negative": 0
+  },
+  "dashboardSentimentPercent": 100
+}
+35 | const volume = await (getVolumeSeries as any)._handler(ctx, { projectId: project._id, range: "all" });
+36 | const sum = volume.points.reduce((acc: any, point: any) => ({ total: acc.total + point.total, positive: acc.positive + point.positive, negative: acc.negative + point.negative }), {total:0, positive:0, negative:0});
+37 | writeFileSync("/private/tmp/sentimeter-poteto/dashboard-discovery/all-time-fixture.json", JSON.stringify({project,feedback,analytics,volume},null,2));
+38 | console.log("Evidence uses real query handlers with an in-memory DB fixture, no network or database writes.");
+39 | console.log(JSON.stringify({ selectedRange: "all", analyticsTotal: analytics.total, analyticsByValue: analytics.byValue, volumeEffectiveRange: volume.effectiveRange, dashboardSentimentTotals: sum, dashboardSentimentPercent: Math.round(sum.positive/(sum.positive+sum.negative)*100) },null,2));
+40 | assert.equal(sum.total, analytics.total, "All-time totals feeding sentiment should cover the same feedback as Total responses");
+            ^
+AssertionError: All-time totals feeding sentiment should cover the same feedback as Total responses
+
+1 !== 2
+
+ generatedMessage: false,
+     actual: 1,
+   expected: 2,
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /private/tmp/sentimeter-poteto/dashboard-discovery/all-time-query-repro.ts:40:8
+
+Bun v1.3.9 (macOS arm64)

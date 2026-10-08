@@ -1,0 +1,7 @@
+{
+  "checkout": "/Users/abhi/.codex/worktrees/all-time-sentiment/sentimeter",
+  "branch": "codex/all-time-sentiment",
+  "baseline": "ea286396fed6e1d04e9ecd757dd47329d5ff7b03",
+  "initialChanges": [],
+  "fixtureOnly": true
+}
