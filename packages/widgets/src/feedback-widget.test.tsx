@@ -9,17 +9,30 @@ import {
 } from "@testing-library/react";
 import {
   EmojiFeedback,
+  FeedbackRating,
+  FeedbackWidget,
   LikeDislike,
   StarRating,
+  useFeedbackContext,
   type WidgetPayload,
 } from "./index";
 
 const originalFetch = globalThis.fetch;
+const originalConsoleError = console.error;
 
 afterEach(() => {
   cleanup();
   globalThis.fetch = originalFetch;
+  console.error = originalConsoleError;
 });
+
+function captureConsoleErrors() {
+  const errors: unknown[][] = [];
+  console.error = (...args: unknown[]) => {
+    errors.push(args);
+  };
+  return errors;
+}
 
 describe("rendered feedback widget", () => {
   const ratingCases = [
@@ -196,6 +209,146 @@ describe("rendered feedback widget", () => {
     assert.ok(await screen.findByText("Thanks!"));
     assert.equal(payloads.length, 2);
     assert.deepEqual(payloads[1], payloads[0]);
+  });
+
+  test("names the text field and caps it at the hosted intake limit", () => {
+    render(<LikeDislike showInput />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Like" }));
+    const input = screen.getByRole("textbox", {
+      name: "Additional feedback",
+    }) as HTMLTextAreaElement;
+
+    assert.equal(input.maxLength, 500);
+  });
+
+  test("keeps saved feedback successful when a success callback throws", async () => {
+    const consoleErrors = captureConsoleErrors();
+    const callbackError = new Error("host analytics failed");
+    let submits = 0;
+    const submitErrors: unknown[] = [];
+
+    render(
+      <LikeDislike
+        autoHide={false}
+        submit={async () => {
+          submits += 1;
+        }}
+        onSubmitSuccess={() => {
+          throw callbackError;
+        }}
+        onSubmitError={(error) => submitErrors.push(error)}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Like" }));
+    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+    assert.ok(await screen.findByText("Thanks!"));
+    assert.equal(screen.queryByRole("button", { name: "Try Again" }), null);
+    assert.equal(submits, 1);
+    assert.deepEqual(submitErrors, []);
+    assert.equal(consoleErrors[0]?.[1], callbackError);
+  });
+
+  test("logs a rejected async success callback instead of leaking it", async () => {
+    const consoleErrors = captureConsoleErrors();
+    const callbackError = new Error("async host analytics failed");
+    const unhandled: unknown[] = [];
+    const onUnhandled = (reason: unknown) => unhandled.push(reason);
+    process.on("unhandledRejection", onUnhandled);
+
+    try {
+      render(
+        <LikeDislike
+          autoHide={false}
+          submit={async () => {}}
+          onSubmitSuccess={async () => {
+            throw callbackError;
+          }}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: "Like" }));
+      fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+      assert.ok(await screen.findByText("Thanks!"));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      assert.deepEqual(unhandled, []);
+      assert.equal(consoleErrors[0]?.[1], callbackError);
+    } finally {
+      process.off("unhandledRejection", onUnhandled);
+    }
+  });
+
+  test("still submits and recovers when start and error callbacks throw", async () => {
+    captureConsoleErrors();
+    let attempts = 0;
+
+    render(
+      <LikeDislike
+        autoHide={false}
+        submit={async () => {
+          attempts += 1;
+          if (attempts === 1) throw new Error("offline");
+        }}
+        onSubmitStart={() => {
+          throw new Error("start callback failed");
+        }}
+        onSubmitError={() => {
+          throw new Error("error callback failed");
+        }}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Like" }));
+    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+    fireEvent.click(await screen.findByRole("button", { name: "Try Again" }));
+
+    assert.ok(await screen.findByText("Thanks!"));
+    assert.equal(attempts, 2);
+  });
+
+  test("sends one payload when a custom footer submits twice in one tick", async () => {
+    const payloads: WidgetPayload[] = [];
+
+    function DoubleSubmitFooter() {
+      const { submitSelected, selectedValue } = useFeedbackContext();
+      if (selectedValue === null) return null;
+      return (
+        <button
+          type="button"
+          onClick={() => {
+            void submitSelected();
+            void submitSelected();
+          }}
+        >
+          Send
+        </button>
+      );
+    }
+
+    render(
+      <FeedbackWidget
+        widgetType="thumbs"
+        autoHide={false}
+        submit={async (payload) => {
+          payloads.push(payload);
+        }}
+      >
+        <FeedbackRating variant="thumbs" />
+        <DoubleSubmitFooter />
+      </FeedbackWidget>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Like" }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    });
+
+    assert.equal(payloads.length, 1);
   });
 
   test("keeps success visible when auto-hide is disabled and focuses its status", async () => {

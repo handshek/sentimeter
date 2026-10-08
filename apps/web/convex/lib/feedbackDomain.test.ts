@@ -6,8 +6,13 @@ import {
   getCorsOrigin,
   getFeedbackRangeBounds,
   isFeedbackValueAllowed,
+  MAX_FEEDBACK_LOCATION_LENGTH,
+  MAX_FEEDBACK_TEXT_LENGTH,
   normalizeAllowedOrigins,
+  normalizeFeedbackLocation,
+  normalizeFeedbackText,
   normalizeOrigin,
+  rankTopLocations,
 } from "./feedbackDomain";
 
 describe("feedback domain rules", () => {
@@ -28,6 +33,42 @@ describe("feedback domain rules", () => {
     assert.equal(classifyFeedbackSentiment("star", 5), "positive");
     assert.equal(classifyFeedbackSentiment("emoji", 3), "neutral");
     assert.equal(classifyFeedbackSentiment("emoji", 1), "negative");
+  });
+
+  test("trims and caps submitter-controlled location and text", () => {
+    assert.equal(normalizeFeedbackLocation("  /pricing  "), "/pricing");
+    assert.equal(normalizeFeedbackLocation("   "), null);
+    assert.equal(
+      normalizeFeedbackLocation("/".repeat(1000))?.length,
+      MAX_FEEDBACK_LOCATION_LENGTH,
+    );
+
+    assert.equal(normalizeFeedbackText("  great  "), "great");
+    assert.equal(normalizeFeedbackText("   "), undefined);
+    assert.equal(
+      normalizeFeedbackText("a".repeat(1000))?.length,
+      MAX_FEEDBACK_TEXT_LENGTH,
+    );
+  });
+
+  test("ranks top locations as rows so any location string is safe", () => {
+    const counts = new Map<string, number>([
+      ["$reserved", 2],
+      ["_system", 2],
+      ["/", 5],
+    ]);
+    for (let index = 0; index < 20; index += 1) {
+      counts.set(`/page-${index}`, 1);
+    }
+
+    const top = rankTopLocations(counts);
+
+    assert.equal(top.length, 8);
+    assert.deepEqual(top.slice(0, 3), [
+      { location: "/", total: 5 },
+      { location: "$reserved", total: 2 },
+      { location: "_system", total: 2 },
+    ]);
   });
 
   test("normalizes and deduplicates allowed origins", () => {

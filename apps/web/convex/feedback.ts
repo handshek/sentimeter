@@ -12,7 +12,9 @@ import {
   getCorsOrigin,
   getFeedbackRangeBounds,
   isFeedbackValueAllowed,
+  normalizeFeedbackLocation,
   normalizeOrigin,
+  rankTopLocations,
   type RangePreset,
   type WidgetType,
 } from "./lib/feedbackDomain";
@@ -37,7 +39,7 @@ export const submitFeedbackInternal = internalMutation({
     if (!isFeedbackValueAllowed(args.widgetType, args.value)) {
       return { ok: false as const, error: "invalid_value" as const };
     }
-    const location = args.location.trim();
+    const location = normalizeFeedbackLocation(args.location);
     if (!location) {
       return { ok: false as const, error: "invalid_body" as const };
     }
@@ -71,16 +73,8 @@ export const submitFeedbackInternal = internalMutation({
       }
     }
 
-    const globalLimit = await rateLimiter.limit(ctx, "feedbackGlobal");
-    if (!globalLimit.ok) {
-      return {
-        ok: false as const,
-        error: "rate_limited" as const,
-        retryAfter: globalLimit.retryAfter,
-        corsOrigin,
-      };
-    }
-
+    // Per-key first: a public key over its own limit must not spend the
+    // global budget shared by every project.
     const keyLimit = await rateLimiter.limit(ctx, "feedbackPerKey", {
       key: args.apiKey,
     });
@@ -89,6 +83,16 @@ export const submitFeedbackInternal = internalMutation({
         ok: false as const,
         error: "rate_limited" as const,
         retryAfter: keyLimit.retryAfter,
+        corsOrigin,
+      };
+    }
+
+    const globalLimit = await rateLimiter.limit(ctx, "feedbackGlobal");
+    if (!globalLimit.ok) {
+      return {
+        ok: false as const,
+        error: "rate_limited" as const,
+        retryAfter: globalLimit.retryAfter,
         corsOrigin,
       };
     }
@@ -217,10 +221,7 @@ export const getAnalytics = query({
           .collect();
 
     const byValue: Record<string, number> = {};
-    const byLocation: Record<
-      string,
-      { total: number; byValue: Record<string, number> }
-    > = {};
+    const locationCounts = new Map<string, number>();
     const byWidgetType: Record<WidgetType, number> = {
       emoji: 0,
       thumbs: 0,
@@ -236,10 +237,10 @@ export const getAnalytics = query({
       const valueKey = String(doc.value);
       byValue[valueKey] = (byValue[valueKey] ?? 0) + 1;
 
-      const loc = doc.location;
-      const locAgg = (byLocation[loc] ??= { total: 0, byValue: {} });
-      locAgg.total += 1;
-      locAgg.byValue[valueKey] = (locAgg.byValue[valueKey] ?? 0) + 1;
+      locationCounts.set(
+        doc.location,
+        (locationCounts.get(doc.location) ?? 0) + 1,
+      );
 
       byWidgetType[doc.widgetType] += 1;
       const widgetAgg = byWidgetTypeByValue[doc.widgetType];
@@ -249,7 +250,7 @@ export const getAnalytics = query({
     return {
       total: docs.length,
       byValue,
-      byLocation,
+      topLocations: rankTopLocations(locationCounts),
       byWidgetType,
       byWidgetTypeByValue,
       range: args.range ?? "7d",

@@ -72,7 +72,7 @@ mock.module("convex/react", () => ({
         return {
           total,
           byValue: total ? { "1": 1, "4": 1, "5": 1 } : {},
-          byLocation: total ? { [location]: { total, byValue: {} } } : {},
+          topLocations: total ? [{ location, total }] : [],
           byWidgetType: {
             emoji: total ? 1 : 0,
             thumbs: total ? 1 : 0,

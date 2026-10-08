@@ -17,11 +17,13 @@ stored Convex feedback row.
 2. Require `apiKey`, `location`, `widgetType`, and numeric `value`.
 3. Trim optional `text` to 500 characters.
 4. Validate widget value by type.
-5. Look up active API key.
-6. Normalize and enforce allowed origins.
-7. Apply global and per-key rate limits.
-8. Insert feedback.
-9. Return CORS headers that match the project origin policy.
+5. Trim `location` and cap it at 256 characters.
+6. Look up active API key.
+7. Normalize and enforce allowed origins.
+8. Apply the per-key rate limit, then the global one, so a key over its own
+   limit never spends the shared global budget.
+9. Insert feedback.
+10. Return CORS headers that match the project origin policy.
 
 ## Widget Value Rules
 

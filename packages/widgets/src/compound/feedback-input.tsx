@@ -8,8 +8,14 @@ import type { WidgetSize } from "./feedback-context";
 
 export type FeedbackInputProps = {
   placeholder?: string;
+  /** Accessible name for the text field. */
+  label?: string;
+  /** Matches the hosted intake limit so text is never silently truncated. */
+  maxLength?: number;
   className?: string;
 };
+
+export const FEEDBACK_TEXT_MAX_LENGTH = 500;
 
 const TEXTAREA_SIZE_MAP: Record<WidgetSize, string> = {
   sm: "min-h-[110px] px-3 py-2.5",
@@ -20,6 +26,8 @@ const TEXTAREA_SIZE_MAP: Record<WidgetSize, string> = {
 
 export function FeedbackInput({
   placeholder = "Share your thoughts",
+  label = "Additional feedback",
+  maxLength = FEEDBACK_TEXT_MAX_LENGTH,
   className,
 }: FeedbackInputProps) {
   const { state, disabled, text, setText, size, selectedValue } =
@@ -35,7 +43,9 @@ export function FeedbackInput({
           TEXTAREA_SIZE_MAP[size],
         )}
         rows={4}
+        aria-label={label}
         placeholder={placeholder}
+        maxLength={maxLength}
         value={text}
         onChange={(e) => setText(e.target.value)}
         disabled={disabled || state === "submitting"}
