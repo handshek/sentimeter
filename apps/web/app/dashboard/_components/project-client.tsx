@@ -849,15 +849,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
     };
   }, [volume?.points]);
 
-  const topLocations = useMemo(() => {
-    const byLocation = analytics?.byLocation ?? {};
-    const entries = Object.entries(byLocation).map(([location, agg]) => ({
-      location,
-      total: agg.total,
-    }));
-    entries.sort((a, b) => b.total - a.total);
-    return entries.slice(0, 8);
-  }, [analytics?.byLocation]);
+  const topLocations = analytics?.topLocations ?? [];
 
   const byWidgetType = analytics?.byWidgetType ?? {
     emoji: 0,

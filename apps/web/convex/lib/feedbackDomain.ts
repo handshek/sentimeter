@@ -3,6 +3,9 @@ export type RangePreset = "24h" | "7d" | "30d" | "all";
 export type Sentiment = "positive" | "neutral" | "negative";
 
 export const MAX_CREATED_AT = Number.MAX_SAFE_INTEGER;
+export const MAX_FEEDBACK_TEXT_LENGTH = 500;
+export const MAX_FEEDBACK_LOCATION_LENGTH = 256;
+export const TOP_LOCATIONS_LIMIT = 8;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const RANGE_MS: Record<Exclude<RangePreset, "all">, number> = {
@@ -29,6 +32,31 @@ export function isFeedbackValueAllowed(widgetType: WidgetType, value: number) {
   if (!Number.isFinite(value)) return false;
   if (widgetType === "thumbs") return value === 0 || value === 1;
   return Number.isInteger(value) && value >= 1 && value <= 5;
+}
+
+export function normalizeFeedbackLocation(location: string) {
+  const trimmed = location.trim();
+  return trimmed ? trimmed.slice(0, MAX_FEEDBACK_LOCATION_LENGTH) : null;
+}
+
+export function normalizeFeedbackText(text: string) {
+  const trimmed = text.trim();
+  return trimmed ? trimmed.slice(0, MAX_FEEDBACK_TEXT_LENGTH) : undefined;
+}
+
+// Locations are submitter-controlled, so they are returned as rows rather than
+// object keys, which Convex limits in count and character set.
+export function rankTopLocations(
+  counts: Map<string, number>,
+  limit = TOP_LOCATIONS_LIMIT,
+) {
+  return Array.from(counts, ([location, total]) => ({ location, total }))
+    .sort(
+      (a, b) =>
+        b.total - a.total ||
+        (a.location < b.location ? -1 : a.location > b.location ? 1 : 0),
+    )
+    .slice(0, limit);
 }
 
 export function classifyFeedbackSentiment(

@@ -1,5 +1,6 @@
 import { httpAction } from "./_generated/server";
 import { internal } from "./_generated/api";
+import { normalizeFeedbackText } from "./lib/feedbackDomain";
 
 function withCorsHeaders(
   origin: string | null,
@@ -65,8 +66,10 @@ export const feedbackPost = httpAction(async (ctx, request) => {
   const value = body?.value;
   const location =
     typeof body?.location === "string" ? body.location : undefined;
-  const rawText = typeof body?.text === "string" ? body.text.trim() : undefined;
-  const text = rawText && rawText.length > 0 ? rawText.slice(0, 500) : undefined;
+  const text =
+    typeof body?.text === "string"
+      ? normalizeFeedbackText(body.text)
+      : undefined;
   const origin = request.headers.get("origin") || undefined;
 
   if (
