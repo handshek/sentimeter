@@ -1,0 +1,168 @@
+bun test v1.3.9 (cf6cdbbb)
+
+app/dashboard/_components/project-client.test.tsx:
+32 |   // throw errors w/ suggestions for better queries. Opt in so off by default.
+33 |   throwSuggestions: false,
+34 |   // called when getBy* queries fail. (message, container) => Error
+35 |   getElementError(message, container) {
+36 |     const prettifiedDOM = (0, _prettyDom.prettyDOM)(container);
+37 |     const error = new Error([message, `Ignored nodes: comments, ${config.defaultIgnore}\n${prettifiedDOM}`].filter(Boolean).join('\n\n'));
+                           ^
+TestingLibraryElementError: Unable to find an element with the text: 3. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<div
+  class="group/card min-w-0 gap-6 overflow-hidden rounded-xl bg-card py-6 text-sm text-card-foreground shadow-xs ring-1 ring-foreground/10 has-[>img:first-child]:pt-0 data-[size=sm]:gap-4 data-[size=sm]:py-4 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl flex flex-col"
+  data-size="sm"
+  data-slot="card"
+>
+  <div
+    class="group/card-header @container/card-header auto-rows-min rounded-t-xl px-6 group-data-[size=sm]/card:px-4 has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-6 group-data-[size=sm]/card:[.border-b]:pb-4 flex flex-row items-start gap-2"
+    data-slot="card-header"
+  >
+    <div>
+      <div
+        class="text-base font-semibold tracking-tight"
+      >
+        Sentiment
+      </div>
+      <p
+        class="mt-1 text-xs text-muted-foreground"
+      >
+        Distribution across all widgets
+      </p>
+    </div>
+  </div>
+  <div
+    class="px-6 group-data-[size=sm]/card:px-4 flex flex-1 flex-col gap-5"
+    data-slot="card-content"
+  >
+    <div
+      class="flex items-baseline gap-2"
+    >
+      <div
+        aria-hidden="true"
+        class="max-w-full animate-pulse rounded bg-muted/70 motion-reduce:animate-none h-7 w-20"
+      />
+      <div
+        aria-hidden="true"
+        class="max-w-full animate-pulse rounded bg-muted/70 motion-reduce:animate-none h-3 w-16"
+      />
+    </div>
+    <div
+      aria-hidden="true"
+      class="max-w-full animate-pulse bg-muted/70 motion-reduce:animate-none h-2.5 w-full rounded-sm"
+    />
+    <div
+      class="space-y-3"
+    >
+      <div
+        class="flex items-center justify-between"
+      >
+        <div
+          class="flex items-center gap-2.5"
+        >
+          <div
+            aria-hidden="true"
+            class="max-w-full animate-pulse bg-muted/70 motion-reduce:animate-none h-2 w-2 rounded-full"
+          />
+          <div
+            aria-hidden="true"
+            class="max-w-full animate-pulse bg-muted/70 motion-reduce:animate-none h-4 w-4 rounded"
+          />
+          <div
+            aria-hidden="true"
+            class="max-w-full animate-pulse rounded bg-muted/70 motion-reduce:animate-none h-4 w-16"
+          />
+        </div>
+        <div
+          class="flex items-center gap-3"
+        >
+          <div
+            aria-hidden="true"
+            class="max-w-full animate-pulse rounded bg-muted/70 motion-reduce:animate-none h-4 w-8"
+          />
+          <div
+            aria-hidden="true"
+            class="max-w-full animate-pulse bg-muted/70 motion-reduce:animate-none h-5 w-11 rounded-full"
+          />
+        </div>
+      </div>
+      <div
+        class="flex items-center justify-between"
+      >
+        <div
+          class="flex items-center gap-2.5"
+        >
+          <div
+            aria-hidden="true"
+            class="max-w-full animate-pulse bg-muted/70 motion-reduce:animate-none h-2 w-2 rounded-full"
+          />
+          <div
+            aria-hidden="true"
+            class="max-w-full animate-pulse bg-muted/70 motion-reduce:animate-none h-4 w-4 rounded"
+          />
+          <div
+            aria-hidden="true"
+            class="max-w-full animate-pulse rounded bg-muted/70 motion-reduce:animate-none h-4 w-16"
+          />
+        </div>
+        <div
+          class="flex items-center gap-3"
+        >
+          <div
+            aria-hidden="true"
+            class="max-w-full animate-pulse rounded bg-muted/70 motion-reduce:animate-none h-4 w-8"
+          />
+          <div
+            aria-hidden="true"
+            class="max-w-full animate-pulse bg-muted/70 motion-reduce:animate-none h-5 w-11 rounded-full"
+          />
+        </div>
+      </div>
+      <div
+        class="flex items-center justify-between"
+      >
+        <div
+          class="flex items-center gap-2.5"
+        >
+          <div
+            aria-hidden="true"
+            class="max-w-full animate-pulse bg-muted/70 motion-reduce:animate-none h-2 w-2 rounded-full"
+          />
+          <div
+            aria-hidden="true"
+            class="max-w-full animate-pulse bg-muted/70 motion-reduce:animate-none h-4 w-4 rounded"
+          />
+          <div
+            aria-hidden="true"
+            class="max-w-full animate-pulse rounded bg-muted/70 motion-reduce:animate-none h-4 w-16"
+          />
+        </div>
+        <div
+          class="flex items-center gap-3"
+        >
+          <div
+            aria-hidden="true"
+            class="max-w-full animate-pulse rounded bg-muted/70 motion-reduce:animate-none h-4 w-8"
+          />
+          <div
+            aria-hidden="true"
+            class="max-w-full animate-pulse bg-muted/70 motion-reduce:animate-none h-5 w-11 rounded-full"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      at getElementError (/Users/abhi/.codex/worktrees/all-time-sentiment/sentimeter/node_modules/.bun/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:23)
+      at <anonymous> (/Users/abhi/.codex/worktrees/all-time-sentiment/sentimeter/node_modules/.bun/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38)
+      at <anonymous> (/Users/abhi/.codex/worktrees/all-time-sentiment/sentimeter/node_modules/.bun/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17)
+      at <anonymous> (/Users/abhi/.codex/worktrees/all-time-sentiment/sentimeter/node_modules/.bun/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19)
+      at <anonymous> (/Users/abhi/.codex/worktrees/all-time-sentiment/sentimeter/apps/web/app/dashboard/_components/project-client.test.tsx:573:31)
+(fail) sentiment distribution renders analytics while volume is still loading [83.96ms]
+
+ 0 pass
+ 20 filtered out
+ 1 fail
+Ran 1 test across 1 file. [421.00ms]

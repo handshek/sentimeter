@@ -377,14 +377,18 @@ function setAnalyticsFixture({
   feedbackResult = [];
 }
 
-async function renderAnalytics() {
-  render(
+function renderProject() {
+  return render(
     <AppRouterContext.Provider value={router}>
       <NavigationGuardProvider>
         <ProjectClient projectId={project._id} />
       </NavigationGuardProvider>
     </AppRouterContext.Provider>,
   );
+}
+
+async function renderAnalytics() {
+  renderProject();
   await screen.findByText(
     "Project dashboard data loaded. Live updates are connected.",
   );
@@ -526,4 +530,61 @@ test("empty all-time analytics has zero sentiment and a bounded empty chart", as
   expect(
     screen.getByText("Response volume for the last 30 days: no responses."),
   ).toBeDefined();
+});
+
+test("sentiment distribution waits for analytics even after volume resolves", async () => {
+  setAnalyticsFixture({
+    counts: { emoji: {}, thumbs: {}, star: { "1": 1, "3": 1, "5": 1 } },
+  });
+  analyticsResult = undefined;
+  renderProject();
+
+  const distribution = (
+    await screen.findByText("Distribution across all widgets")
+  ).closest<HTMLElement>('[data-slot="card"]')!;
+  expect(
+    within(distribution).queryByText("responses")?.textContent,
+  ).toBeUndefined();
+  expect(within(distribution).queryByText("Positive")).toBeNull();
+  expect(within(distribution).queryByText("Neutral")).toBeNull();
+  expect(within(distribution).queryByText("Negative")).toBeNull();
+  expect(
+    distribution.querySelector('.animate-pulse[aria-hidden="true"]'),
+  ).not.toBeNull();
+  const chart = screen
+    .getByText("Response volume")
+    .closest<HTMLElement>('[data-slot="card"]')!;
+  expect(chart.textContent).toContain(
+    "Response volume for the last 30 days: 1 total responses",
+  );
+  expect(within(chart).queryByText("Loading response volume.")).toBeNull();
+});
+
+test("sentiment distribution renders analytics while volume is still loading", async () => {
+  setAnalyticsFixture({
+    counts: { emoji: {}, thumbs: {}, star: { "1": 1, "3": 1, "5": 1 } },
+  });
+  volumeResult = undefined;
+  renderProject();
+
+  const distribution = (
+    await screen.findByText("Distribution across all widgets")
+  ).closest<HTMLElement>('[data-slot="card"]')!;
+  expect(within(distribution).getByText("3")).toBeDefined();
+  expect(within(distribution).getByText("responses")).toBeDefined();
+  expect(within(distribution).getByText("Positive")).toBeDefined();
+  expect(within(distribution).getByText("Neutral")).toBeDefined();
+  expect(within(distribution).getByText("Negative")).toBeDefined();
+  expect(within(distribution).getAllByText("1")).toHaveLength(3);
+  expect(within(distribution).getAllByText("33%")).toHaveLength(3);
+  expect(
+    distribution.querySelector('.animate-pulse[aria-hidden="true"]'),
+  ).toBeNull();
+  const chart = screen
+    .getByText("Response volume")
+    .closest<HTMLElement>('[data-slot="card"]')!;
+  expect(within(chart).getByText("Loading response volume.")).toBeDefined();
+  expect(
+    within(chart).queryByText("Response volume by time period"),
+  ).toBeNull();
 });
