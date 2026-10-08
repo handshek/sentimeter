@@ -30,6 +30,7 @@ It consists of:
 - `bun run format` — Formats the codebase with Prettier
 - `bun run check-types` — Runs type checking across the repo
 - `bun run test` — Runs local unit tests
+- `bun run check-tests` — Checks every `apps/web` test file is listed in its `test` script
 - `bun run check-env` — Checks local dashboard environment variables
 
 **Do NOT run:** `bun run dev` (assume already running)
