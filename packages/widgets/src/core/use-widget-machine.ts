@@ -21,15 +21,21 @@ type UseWidgetMachineArgs = {
 };
 
 // Host callbacks are observers: a throwing callback must not change what the
-// widget shows or whether feedback is sent again.
+// widget shows or whether feedback is sent again. Async callbacks are not
+// awaited, so callback order stays the same, but their rejections are logged.
+function reportCallbackError(error: unknown) {
+  console.error("Sentimeter widget callback threw:", error);
+}
+
 function notify<Args extends unknown[]>(
   callback: ((...args: Args) => void) | undefined,
   ...args: Args
 ) {
   try {
-    callback?.(...args);
+    const result: unknown = callback?.(...args);
+    if (result instanceof Promise) result.catch(reportCallbackError);
   } catch (error) {
-    console.error("Sentimeter widget callback threw:", error);
+    reportCallbackError(error);
   }
 }
 

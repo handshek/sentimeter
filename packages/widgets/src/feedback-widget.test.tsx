@@ -251,6 +251,37 @@ describe("rendered feedback widget", () => {
     assert.equal(consoleErrors[0]?.[1], callbackError);
   });
 
+  test("logs a rejected async success callback instead of leaking it", async () => {
+    const consoleErrors = captureConsoleErrors();
+    const callbackError = new Error("async host analytics failed");
+    const unhandled: unknown[] = [];
+    const onUnhandled = (reason: unknown) => unhandled.push(reason);
+    process.on("unhandledRejection", onUnhandled);
+
+    try {
+      render(
+        <LikeDislike
+          autoHide={false}
+          submit={async () => {}}
+          onSubmitSuccess={async () => {
+            throw callbackError;
+          }}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: "Like" }));
+      fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+      assert.ok(await screen.findByText("Thanks!"));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      assert.deepEqual(unhandled, []);
+      assert.equal(consoleErrors[0]?.[1], callbackError);
+    } finally {
+      process.off("unhandledRejection", onUnhandled);
+    }
+  });
+
   test("still submits and recovers when start and error callbacks throw", async () => {
     captureConsoleErrors();
     let attempts = 0;
