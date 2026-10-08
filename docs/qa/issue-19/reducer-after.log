@@ -1,0 +1,15 @@
+bun test v1.3.9 (cf6cdbbb)
+(pass) allowed origins draft > tracks edits as dirty and discards back to the saved value [0.26ms]
+(pass) allowed origins draft > preserves dirty input when live project data refreshes
+(pass) allowed origins draft > preserves input and its dirty state after a failed save
+(pass) allowed origins draft > uses the server-normalized value as the new clean baseline
+(pass) allowed origins draft > retains edits and the save lock while a request is pending
+(pass) allowed origins draft > keeps a later edit to the old baseline through pending hydration
+(pass) allowed origins draft > discarding during a save follows its eventual saved result
+(pass) allowed origins draft > an edit after pending discard is preserved when the save completes
+(pass) allowed origins draft > discarding during a save follows its eventual saved result
+(pass) allowed origins draft > an edit after pending discard is preserved when the save completes
+
+ 8 pass
+ 0 fail
+Ran 8 tests across 1 file. [79.00ms]

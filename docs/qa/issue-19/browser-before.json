@@ -1,0 +1,13 @@
+{
+  "name": "before",
+  "source": "/Users/abhi/.codex/worktrees/sentimeter-discovery/sentimeter",
+  "head": "ea286396fed6e1d04e9ecd757dd47329d5ff7b03",
+  "status": "",
+  "fixtureNow": 1791547200000,
+  "data": "Real registered query handlers with in-memory DB adapter; browser Convex/auth/navigation hooks mocked. No live Convex or Clerk network.",
+  "allTimeExpected": {
+    "total": 2,
+    "sentimentPercent": 50,
+    "negative": 1
+  }
+}
