@@ -1,0 +1,3 @@
+All checks exited successfully: bun run lint, bun run check-types, bun run test, bun run build, bun run check-registry, bun run check-docs, bun run check-tests. Focused tests, Prettier and git diff --check passed.
+
+Original browser reproduction repeated on desktop 1280x720 and mobile 390x844, with actual DOM viewport dimensions measured. Real ProjectClient and shadcn UI; mocked auth/hooks/router/mutations. Real registered Convex query handlers executed against an in-memory database at 2026-10-09T12:00:00Z. No live backend persistence, indexes, transactions or subscription semantics verified. No dedicated safe test account or verified staging backend was available.

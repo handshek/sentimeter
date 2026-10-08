@@ -1,0 +1,20 @@
+bun test v1.3.9 (cf6cdbbb)
+(pass) failed deletion stays on the project and displays a retryable error [218.56ms]
+(pass) successful deletion navigates only after the request completes [58.84ms]
+(pass) failed origin save preserves the draft and keeps its retry available [99.18ms]
+(pass) closing dirty settings asks before discarding the draft [131.19ms]
+(pass) a successful save announces the normalized origins and clears the dirty state [111.34ms]
+(pass) failed key rotation explains that the current key remains active [87.30ms]
+(pass) a canceled project link keeps unsaved origins on the current project [54.94ms]
+(pass) confirming departure allows the project link through [50.72ms]
+(pass) same-project links do not warn because they preserve the origin draft [47.58ms]
+(pass) page unload is guarded only while the origin draft is dirty [47.27ms]
+(pass) a pending origin save preserves later edits and blocks overlapping saves [82.91ms]
+(pass) a failed pending origin save keeps the later draft available to retry [93.77ms]
+(pass) discarding a pending origin draft retains the save lock when settings reopen [139.17ms]
+(pass) discarding a pending origin draft retains the save lock when settings reopen [139.17ms]
+
+ 13 pass
+ 0 fail
+ 49 expect() calls
+Ran 13 tests across 1 file. [1.72s]

@@ -308,3 +308,107 @@ test("page unload is guarded only while the origin draft is dirty", async () => 
   window.dispatchEvent(dirtyUnload);
   expect(dirtyUnload.defaultPrevented).toBe(true);
 });
+
+test("a pending origin save preserves later edits and blocks overlapping saves", async () => {
+  let resolveSave!: (value: { allowedOrigins: string[] }) => void;
+  originSaveResult = new Promise((resolve) => {
+    resolveSave = resolve;
+  });
+  await openSettings();
+  const input = screen.getByRole("textbox", {
+    name: "Allowed origins",
+  }) as HTMLTextAreaElement;
+  fireEvent.change(input, { target: { value: "https://first.example.com/" } });
+  fireEvent.click(screen.getByRole("button", { name: "Save origins" }));
+  fireEvent.change(input, { target: { value: "https://second.example.com" } });
+  const saveButton = screen.getByRole("button", {
+    name: /Saving|Save origins/,
+  }) as HTMLButtonElement;
+
+  expect(input.disabled).toBe(false);
+  expect(saveButton.disabled).toBe(true);
+  fireEvent.click(saveButton);
+  expect(updateAllowedOrigins).toHaveBeenCalledTimes(1);
+  expect(updateAllowedOrigins).toHaveBeenCalledWith({
+    projectId: project._id,
+    allowedOrigins: ["https://first.example.com/"],
+  });
+
+  await act(async () =>
+    resolveSave({ allowedOrigins: ["https://first.example.com"] }),
+  );
+
+  expect(input.value).toBe("https://second.example.com");
+  expect(screen.queryByText("Allowed origins saved.")).toBeNull();
+  expect(screen.getByText("Unsaved changes")).toBeDefined();
+  expect(
+    (screen.getByRole("button", { name: "Save origins" }) as HTMLButtonElement)
+      .disabled,
+  ).toBe(false);
+  const dirtyUnload = new Event("beforeunload", { cancelable: true });
+  window.dispatchEvent(dirtyUnload);
+  expect(dirtyUnload.defaultPrevented).toBe(true);
+});
+
+test("a failed pending origin save keeps the later draft available to retry", async () => {
+  let rejectSave!: (error: Error) => void;
+  originSaveResult = new Promise((_, reject) => {
+    rejectSave = reject;
+  });
+  await openSettings();
+  const input = screen.getByRole("textbox", {
+    name: "Allowed origins",
+  }) as HTMLTextAreaElement;
+  fireEvent.change(input, { target: { value: "https://first.example.com" } });
+  fireEvent.click(screen.getByRole("button", { name: "Save origins" }));
+  fireEvent.change(input, { target: { value: "https://second.example.com" } });
+  await act(async () => rejectSave(new Error("request failed")));
+
+  expect(input.value).toBe("https://second.example.com");
+  expect(
+    screen.getByText(
+      "Could not save allowed origins. Your edits are still here; check each URL and try again.",
+    ),
+  ).toBeDefined();
+  expect(
+    (screen.getByRole("button", { name: "Save origins" }) as HTMLButtonElement)
+      .disabled,
+  ).toBe(false);
+});
+
+test("discarding a pending origin draft retains the save lock when settings reopen", async () => {
+  let resolveSave!: (value: { allowedOrigins: string[] }) => void;
+  originSaveResult = new Promise((resolve) => {
+    resolveSave = resolve;
+  });
+  await openSettings();
+  fireEvent.change(screen.getByRole("textbox", { name: "Allowed origins" }), {
+    target: { value: "https://first.example.com/" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Save origins" }));
+  fireEvent.click(screen.getByRole("button", { name: "Close" }));
+  fireEvent.click(screen.getByRole("button", { name: "Discard changes" }));
+  fireEvent.click(screen.getByRole("button", { name: "Settings" }));
+  expect(
+    (
+      screen.getByRole("button", {
+        name: "Saving…",
+      }) as HTMLButtonElement
+    ).disabled,
+  ).toBe(true);
+
+  await act(async () =>
+    resolveSave({ allowedOrigins: ["https://first.example.com"] }),
+  );
+
+  expect(
+    (
+      screen.getByRole("textbox", {
+        name: "Allowed origins",
+      }) as HTMLTextAreaElement
+    ).value,
+  ).toBe("https://first.example.com");
+  expect(screen.getByText("Allowed origins saved.")).toBeDefined();
+  fireEvent.click(screen.getByRole("button", { name: "Close" }));
+  expect(screen.queryByRole("alertdialog")).toBeNull();
+});

@@ -1,0 +1,13 @@
+{
+  "name": "origins-after",
+  "source": "/Users/abhi/.codex/worktrees/origin-save-draft/sentimeter",
+  "head": "ea286396fed6e1d04e9ecd757dd47329d5ff7b03",
+  "status": "M apps/web/app/dashboard/_components/project-client.test.tsx\n M apps/web/app/dashboard/_components/project-settings-state.test.ts\n M apps/web/app/dashboard/_components/project-settings-state.ts\n?? apps/web/vercel.json",
+  "fixtureNow": 1791547200000,
+  "data": "Real registered query handlers with in-memory DB adapter; browser Convex/auth/navigation hooks mocked. No live Convex or Clerk network.",
+  "allTimeExpected": {
+    "total": 2,
+    "sentimentPercent": 50,
+    "negative": 1
+  }
+}
