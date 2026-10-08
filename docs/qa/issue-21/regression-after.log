@@ -1,0 +1,10 @@
+bun test v1.3.9 (cf6cdbbb)
+
+src/feedback-widget.test.tsx:
+(pass) rendered feedback widget > isolates a throwing dismissal callback while closing and restoring focus [75.32ms]
+(pass) rendered feedback widget > isolates a rejected async dismissal callback after closing and restoring focus [51.67ms]
+
+ 2 pass
+ 35 filtered out
+ 0 fail
+Ran 2 tests across 1 file. [809.00ms]
