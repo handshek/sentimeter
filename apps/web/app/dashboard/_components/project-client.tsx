@@ -67,6 +67,7 @@ import {
   useState,
 } from "react";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { classifyFeedbackSentiment } from "../../../convex/lib/feedbackDomain";
 import {
   Area,
   AreaChart as RechartsAreaChart,
@@ -205,16 +206,6 @@ function maskKey(key: string) {
   const start = key.slice(0, 7);
   const end = key.slice(-4);
   return `${start}…${end}`;
-}
-
-function classifyValueSentiment(
-  widgetType: "emoji" | "thumbs" | "star",
-  value: number,
-): "positive" | "neutral" | "negative" {
-  if (widgetType === "thumbs") return value === 1 ? "positive" : "negative";
-  if (value >= 4) return "positive";
-  if (value <= 2) return "negative";
-  return "neutral";
 }
 
 function toneFor(delta: number): Tone {
@@ -765,18 +756,16 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   }, [volume?.granularity, volume?.points]);
 
   const totals = useMemo(() => {
-    const points = volume?.points ?? [];
-    let positive = 0;
-    let negative = 0;
-    let total = 0;
-    for (const p of points) {
-      total += p.total;
-      positive += p.positive;
-      negative += p.negative;
+    const counts = { positive: 0, neutral: 0, negative: 0 };
+    for (const widgetType of ["emoji", "thumbs", "star"] as const) {
+      const byValue = analytics?.byWidgetTypeByValue[widgetType] ?? {};
+      for (const [value, count] of Object.entries(byValue)) {
+        const sentiment = classifyFeedbackSentiment(widgetType, Number(value));
+        counts[sentiment] += count;
+      }
     }
-    const neutral = Math.max(0, total - positive - negative);
-    return { total, positive, neutral, negative };
-  }, [volume?.points]);
+    return { total: analytics?.total ?? 0, ...counts };
+  }, [analytics]);
 
   const sentimentScore =
     totals.positive + totals.negative > 0
@@ -868,7 +857,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
     const q = searchInput.trim().toLowerCase();
     return items.filter((f) => {
       if (sentimentFilter !== "all") {
-        const sent = classifyValueSentiment(f.widgetType, f.value);
+        const sent = classifyFeedbackSentiment(f.widgetType, f.value);
         if (sent !== sentimentFilter) return false;
       }
       if (q) {
@@ -888,8 +877,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
     visibleCount: filteredFeed.length,
     hasLocalFilters: hasLocalFeedFilters,
   });
+  const volumeRange =
+    volume?.effectiveRange ?? (range === "all" ? "30d" : range);
   const responseVolumeSummary = formatResponseVolumeSummary({
-    rangeLabel: RANGE_SUMMARY_LABEL[range],
+    rangeLabel: RANGE_SUMMARY_LABEL[volumeRange],
     points: chartData,
   });
   const dashboardLoading =
@@ -1065,7 +1056,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   const segNegativePct =
     totals.total > 0 ? (totals.negative / totals.total) * 100 : 0;
 
-  const rangeLabel = RANGE_LABEL[range];
+  const volumeRangeLabel = RANGE_LABEL[volumeRange];
 
   return (
     <div className="min-w-0 space-y-6" aria-busy={dashboardLoading}>
@@ -1603,7 +1594,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                   variant="outline"
                   className={cn("text-[10px] tracking-widest", CHIP_SLATE)}
                 >
-                  {rangeLabel}
+                  {volumeRangeLabel}
                 </Badge>
               </div>
               <p className="text-xs text-muted-foreground">
@@ -1709,7 +1700,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             </div>
           </CardHeader>
           <CardContent className="flex flex-1 flex-col gap-5">
-            {volume === undefined ? (
+            {analytics === undefined ? (
               <SentimentCardSkeleton />
             ) : (
               <>
@@ -2051,7 +2042,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                 </TableRow>
               ) : (
                 filteredFeed.map((f) => {
-                  const sent = classifyValueSentiment(f.widgetType, f.value);
+                  const sent = classifyFeedbackSentiment(f.widgetType, f.value);
                   const hasText =
                     "text" in f &&
                     typeof f.text === "string" &&
