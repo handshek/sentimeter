@@ -1,0 +1,70 @@
+bun test v1.3.9 (cf6cdbbb)
+
+src/feedback-widget.test.tsx:
+419 |     assert.equal(document.activeElement, outsideButton);
+420 |   });
+421 |
+422 |   test("isolates a throwing dismissal callback while closing and restoring focus", () => {
+423 |     const consoleErrors = captureConsoleErrors();
+424 |     const callbackError = new Error("dismissal analytics failed");
+                                    ^
+error: dismissal analytics failed
+      at <anonymous> (/Users/abhi/.codex/worktrees/dismiss-callback/sentimeter/packages/widgets/src/feedback-widget.test.tsx:424:31)
+      at fn (node:test:210:18)
+445 |     );
+446 |     assert.equal(
+447 |       screen.queryByRole("button", { name: "Dismiss feedback widget" }),
+448 |       null,
+449 |     );
+450 |     assert.deepEqual(consoleErrors, [
+                 ^
+AssertionError: Expected values to be strictly deep-equal:
++ actual - expected
+
++ []
+- [
+-   [
+-     'Sentimeter widget callback threw:',
+-     Error: dismissal analytics failed
+-         at <anonymous> (/Users/abhi/.codex/worktrees/dismiss-callback/sentimeter/packages/widgets/src/feedback-widget.test.tsx:424:31)
+-         at fn (node:test:210:18)
+-   ]
+- ]
+
+ generatedMessage: true,
+     actual: [],
+   expected: [
+  [ "Sentimeter widget callback threw:", 419 |     assert.equal(document.activeElement, outsideButton);
+420 |   });
+421 |
+422 |   test("isolates a throwing dismissal callback while closing and restoring focus", () => {
+423 |     const consoleErrors = captureConsoleErrors();
+424 |     const callbackError = new Error("dismissal analytics failed");
+                                    ^
+error: dismissal analytics failed
+      at /Users/abhi/.codex/worktrees/dismiss-callback/sentimeter/packages/widgets/src/feedback-widget.test.tsx:424:31
+      at fn (node:test:210:18)
+ ]
+],
+   operator: "deepStrictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/abhi/.codex/worktrees/dismiss-callback/sentimeter/packages/widgets/src/feedback-widget.test.tsx:450:12
+      at fn (node:test:210:18)
+(fail) rendered feedback widget > isolates a throwing dismissal callback while closing and restoring focus [49.25ms]
+452 |     ]);
+453 |   });
+454 |
+455 |   test("isolates a rejected async dismissal callback after closing and restoring focus", async () => {
+456 |     const consoleErrors = captureConsoleErrors();
+457 |     const callbackError = new Error("async dismissal analytics failed");
+                                    ^
+error: async dismissal analytics failed
+      at <anonymous> (/Users/abhi/.codex/worktrees/dismiss-callback/sentimeter/packages/widgets/src/feedback-widget.test.tsx:457:31)
+      at fn (node:test:210:18)
+(fail) rendered feedback widget > isolates a rejected async dismissal callback after closing and restoring focus [8.79ms]
+
+ 0 pass
+ 35 filtered out
+ 2 fail
+Ran 2 tests across 1 file. [436.00ms]

@@ -10,7 +10,7 @@ import type {
   WidgetType,
 } from "../types";
 import { DEFAULT_FEEDBACK_ENDPOINT, submitFeedback } from "../core/submit";
-import { useWidgetMachine } from "../core/use-widget-machine";
+import { notify, useWidgetMachine } from "../core/use-widget-machine";
 
 export type WidgetSize = "sm" | "default" | "md" | "lg";
 
@@ -131,7 +131,7 @@ export function FeedbackProvider({
 
   const cancel = React.useCallback(() => {
     hide();
-    onCancel?.();
+    notify(onCancel);
   }, [hide, onCancel]);
 
   const value = React.useMemo<FeedbackContextValue>(
