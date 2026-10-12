@@ -1,10 +1,7 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import {
-  DocsPage,
-  DocsTitle,
-  DocsDescription,
-} from "fumadocs-ui/layouts/notebook/page";
+import { DocsPage } from "fumadocs-ui/layouts/notebook/page";
 import { Button } from "@workspace/ui/components/button";
 import { widgetDocs } from "../_lib/widget-catalog";
 import { WidgetDemo } from "./_components/widget-demo";
@@ -19,30 +16,35 @@ export const metadata: Metadata = {
 export default function ComponentsPage() {
   return (
     <DocsPage role="main" tabIndex={-1} full breadcrumb={{ enabled: false }}>
-      <DocsTitle>Feedback Widgets</DocsTitle>
-      <DocsDescription className="mb-2! max-w-2xl!">
-        Small, accessible feedback components. Copy the source into your app,
-        make it yours, and connect any backend.
-      </DocsDescription>
-      <div className="mb-8 flex flex-wrap items-center gap-4">
-        <Button asChild variant="outline" className="h-11">
-          <Link href="/components/getting-started">
-            Installation & Integration{" "}
-            <ArrowRight aria-hidden="true" className="size-4" />
-          </Link>
-        </Button>
-        <span className="text-sm text-muted-foreground">
-          MIT licensed. No account required.
-        </span>
-      </div>
+      <header className="docs-header">
+        <p className="ds-eyebrow text-muted-foreground">
+          The component library
+        </p>
+        <h1 className="ds-page-title">Small asks. Useful answers.</h1>
+        <p className="ds-lead max-w-prose text-muted-foreground">
+          Feedback widgets that belong in your product. Try the interaction,
+          install the source, and make it yours.
+        </p>
+        <div className="flex flex-wrap items-center gap-4">
+          <Button asChild variant="outline">
+            <Link href="/components/getting-started">
+              Installation & Integration{" "}
+              <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
+          </Button>
+          <span className="ds-caption text-muted-foreground">
+            MIT licensed. No account required.
+          </span>
+        </div>
+      </header>
       <div className="grid gap-6 xl:grid-cols-2">
         {widgetDocs.map((widget) => (
           <section
             key={widget.slug}
             aria-labelledby={`title-${widget.slug}`}
-            className="min-w-0 rounded-xl border border-border"
+            className="ds-panel min-w-0 overflow-hidden"
           >
-            <div className="border-b bg-muted/20 px-0 py-6 min-[360px]:px-3">
+            <div className="docs-preview border-b px-0 py-8 min-[360px]:px-3">
               <WidgetDemo
                 widget={{
                   slug: widget.slug,
@@ -52,17 +54,14 @@ export default function ComponentsPage() {
                 }}
               />
             </div>
-            <div className="space-y-3 p-5">
-              <h2
-                id={`title-${widget.slug}`}
-                className="text-lg font-semibold tracking-tight"
-              >
+            <div className="space-y-3 p-6">
+              <h2 id={`title-${widget.slug}`} className="ds-title">
                 {widget.name}
               </h2>
-              <p className="text-sm leading-6 text-muted-foreground">
+              <p className="ds-body text-muted-foreground">
                 {widget.description}
               </p>
-              <Button asChild variant="ghost" className="h-11 -ml-3">
+              <Button asChild variant="ghost" className="-ml-3">
                 <Link href={`/components/${widget.slug}`}>
                   Preview & Install{" "}
                   <ArrowRight aria-hidden="true" className="size-4" />
@@ -72,10 +71,26 @@ export default function ComponentsPage() {
           </section>
         ))}
       </div>
-      <p className="mt-4 text-xs text-muted-foreground">
+      <p className="ds-caption mt-5 text-muted-foreground">
         All previews run locally. Nothing is sent or stored.
       </p>
+      <aside className="ds-inset mt-10 flex flex-wrap items-center justify-between gap-6 p-6">
+        <div className="max-w-xl space-y-2">
+          <p className="ds-label">
+            One visual language, throughout the product.
+          </p>
+          <p className="ds-body text-muted-foreground">
+            Explore the typography, color, spacing, and composition rules behind
+            Sentimeter’s website and components.
+          </p>
+        </div>
+        <Button asChild variant="outline">
+          <Link href="/design-system">
+            Explore the system{" "}
+            <ArrowRight aria-hidden="true" className="size-4" />
+          </Link>
+        </Button>
+      </aside>
     </DocsPage>
   );
 }
-import type { Metadata } from "next";

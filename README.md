@@ -5,6 +5,7 @@ match your app's theme, and connect your own backend. No account required.
 
 [Browse widgets](https://try-sentimeter.vercel.app/components) ·
 [Getting started](https://try-sentimeter.vercel.app/components/getting-started) ·
+[Design system](https://try-sentimeter.vercel.app/design-system) ·
 [Agent docs](https://try-sentimeter.vercel.app/llms.txt) ·
 [Contributing](CONTRIBUTING.md)
 
@@ -36,9 +37,35 @@ handler to save feedback using your own backend; resolve only after saving
 succeeds and throw on failure. A custom handler takes precedence over a hosted
 `apiKey`. With neither configured, submission stays local.
 
-Installation adds 1 widget wrapper + 12 shared feedback-system files, using your
-local shadcn Button, Textarea, utilities, and theme tokens plus `lucide-react`.
+Installation adds 1 widget wrapper + 13 shared feedback-system files, using your
+local shadcn Button, Textarea, Label, utilities, and theme tokens plus `lucide-react`.
 You own the installed source; no runtime Sentimeter package or iframe is needed.
+
+## Design System
+
+Sentimeter's [design system](https://try-sentimeter.vercel.app/design-system)
+covers the whole product: typography, semantic light/dark
+colors, spacing, surfaces, icons, motion, component states, and complete page
+patterns. The website and docs share these coded foundations. Explore the live
+specimens or read [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) for source ownership and
+the contribution contract.
+
+For installed feedback widgets, the host remains in control of its global theme.
+The widget inherits your app’s colors, font, and radius. Pick the stacked card
+or the inline bar, and swap in your own glyphs:
+
+```tsx
+<EmojiFeedback layout="inline" showInput autoHide={false} />
+<StarRating glyph={{ glyph: "❤️", label: "heart" }} />
+```
+
+The widget downloads no fonts and ships no stylesheet.
+
+The installed `feedback-system/design-system.ts` owns the recipes. Use typed
+`FeedbackStyle` overrides through the `style` prop for local `--feedback-*`
+tokens, or reuse the compound components for a new widget composition. See the
+[widget design reference](https://try-sentimeter.vercel.app/design-system/widgets)
+for examples and the composition contract.
 
 ## Agents
 
@@ -104,6 +131,7 @@ bun run check-types
 bun run lint
 bun run build
 bun run check-registry
+bun run check-design
 bun run check-docs
 ```
 

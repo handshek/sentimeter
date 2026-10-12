@@ -11,6 +11,11 @@ export const docsTree: Root = {
       name: "Installation & Integration",
       url: "/components/getting-started",
     },
+    {
+      type: "page",
+      name: "Design System",
+      url: "/design-system",
+    },
     { type: "separator", name: "Feedback Widgets" },
     ...widgetDocs.map((widget) => ({
       type: "page" as const,
@@ -34,7 +39,7 @@ export const gettingStartedSections = [
     url: "#prerequisites",
     depth: 2,
     content:
-      "Prerequisites: React, TypeScript, Tailwind CSS and shadcn. Uses your local Button, Textarea, theme tokens and utilities.",
+      "Prerequisites: React, TypeScript, Tailwind CSS and shadcn. Uses your local Button, Textarea, Label, theme tokens and utilities.",
   },
   {
     title: "Install a Widget",
@@ -63,5 +68,56 @@ export const gettingStartedSections = [
     depth: 2,
     content:
       "llms.txt, Markdown docs, namespaced registry @sentimeter, components.json and shadcn MCP integration.",
+  },
+];
+
+export const designSystemSections = [
+  {
+    title: "System overview",
+    url: "/design-system",
+    content:
+      "Sentimeter’s shared visual language for the website, documentation, dashboard, and feedback widgets. Foundations, reusable components, and page composition.",
+  },
+  {
+    title: "Typography",
+    url: "/design-system/typography",
+    content:
+      "Geist Sans and Geist Mono, responsive type scale, display and page headings, section titles, body copy, labels, captions, code, and readable line lengths.",
+  },
+  {
+    title: "Color",
+    url: "/design-system/color",
+    content:
+      "Semantic colors and foreground pairs. Background, card, muted, primary action, accent, border, focus, destructive, and status colors in light and dark themes.",
+  },
+  {
+    title: "Layout and space",
+    url: "/design-system/layout",
+    content:
+      "Spacing scale, responsive containers, content grids, section rhythm, radius, surfaces, and elevation. The parent owns composition; components own internal spacing.",
+  },
+  {
+    title: "Icons and motion",
+    url: "/design-system/icons-motion",
+    content:
+      "Lucide icons, accessible labels, glyph size and stroke, touch targets, transitions, and reduced motion. Native emoji is an explicit widget option.",
+  },
+  {
+    title: "Components",
+    url: "/design-system/components",
+    content:
+      "Installed shadcn components and interactive states: buttons, form controls, badges, cards, tabs, tables, feedback, focus, disabled, error, and success.",
+  },
+  {
+    title: "Page patterns",
+    url: "/design-system/patterns",
+    content:
+      "Composing foundations and components into landing pages, documentation, dashboards, forms, empty states, and error recovery.",
+  },
+  {
+    title: "Feedback widgets",
+    url: "/design-system/widgets",
+    content:
+      "The widget inherits the host theme. Stacked and inline layouts, custom glyphs, tokens, Lucide icons, native emoji, and submission states.",
   },
 ];

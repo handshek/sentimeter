@@ -6,6 +6,18 @@ Sentimeter is a shadcn-first feedback collection system. Developers install open
 
 Read `CONTEXT.md` before domain-level refactors, architecture work, or renaming product concepts. Read `DESIGN_PHILOSOPHY.md` before UI work.
 
+Read `DESIGN_SYSTEM.md` before UI work on the website, documentation, product
+screens, or widgets. Use `packages/ui/src/styles/globals.css` for semantic colors
+and `foundations.css` for the shared `ds-*` type, spacing, and surface roles.
+Use installed shadcn primitives and locally loaded font variables. The live
+reference is `/design-system`; show new roles in a real composition there.
+Widgets use the canonical recipes and `feedbackStyles` in
+`packages/widgets/src/design-system.ts`, which holds one theme recipe that
+reads the host's shadcn variables. Run `bun run check-design` after presentation
+changes, plus relevant interaction tests and registry validation for widgets.
+The site and widget guards detect source drift; browser checks still verify
+real fonts, layout, contrast, keyboard interaction, and states.
+
 It consists of:
 
 - A Next.js 16 dashboard (apps/web)
@@ -31,6 +43,7 @@ It consists of:
 - `bun run check-types` — Runs type checking across the repo
 - `bun run test` — Runs local unit tests
 - `bun run check-tests` — Checks every `apps/web` test file is listed in its `test` script
+- `bun run check-design` — Tests and runs the site and widget design drift guards
 - `bun run check-env` — Checks local dashboard environment variables
 
 **Do NOT run:** `bun run dev` (assume already running)

@@ -53,7 +53,7 @@ ${code("tsx", getUsageSnippet(widget, undefined, "custom"))}
 
 Implement /api/feedback in your own app. Validate untrusted input, enforce your app's authentication and abuse protection, and persist before returning success. That endpoint is not supplied by Sentimeter.
 
-The submit payload contains apiKey, location, widgetType, value, and optional text. Without a hosted key, apiKey is an empty string. Emoji and stars use 1–5; thumbs use 0 or 1. Resolve only after persistence succeeds; throw on failure to keep the widget retryable. onSubmitError receives the original error.
+The submit payload contains apiKey, location, widgetType, value, and optional text. Without a hosted key, apiKey is an empty string. Emoji and stars use 1–5; thumbs use 0 or 1. Custom glyphs change only the presentation: faces always take five glyphs, thumbs two (like, then dislike), and stars one repeated glyph, so the values stay the same. Resolve only after persistence succeeds; throw on failure to keep the widget retryable. onSubmitError receives the original error.
 
 ## Submission Precedence
 
@@ -73,6 +73,20 @@ ${widget.props.map((row) => `| ${[row.prop, row.type, row.defaultValue, row.desc
 ## Compound Composition
 
 ${code("tsx", getCompoundSnippet(widget))}
+
+## Design System
+
+The widget inherits the host app’s shadcn colors, font, and radius. It does not change the surrounding app.
+
+${code("tsx", getUsageSnippet(widget, { layout: "inline", showInput: true }))}
+
+The installed feedback-system/design-system.ts holds the recipe and its --feedback-* tokens. Import FeedbackStyle from @/components/sentimeter/feedback-system and use the style prop for local token overrides. The icon variants use Lucide.
+
+Below a 320px widget content-box width, the stacked card's inset is 16px. At 320px and above, the preset’s inset applies. This is a container breakpoint, not a viewport breakpoint. layout="inline" sizes to its content and wraps the question above the choices when space runs out.
+
+Preserve the shared composition: heading, supporting description, a response well (FeedbackResponse) holding the rating and the optional comment, then Cancel and an explicit Submit. Cancel clears an unsent choice; closeButton dismisses the widget. The comment is named by a visually hidden label and hinted by its placeholder. Selection and keyboard focus are distinct states. A submitted comment remains read-only while confirmation replaces the action row. With autoHide enabled in page flow, reserve space in the host layout if later removal would cause a jump.
+
+Widget token and composition reference: ${SITE_URL}/design-system/widgets.
 
 ## Optional Hosted Analytics
 
@@ -97,6 +111,7 @@ Requires React, TypeScript, Tailwind CSS, and a configured shadcn app. Public de
 ## Getting Started
 
 - [Getting Started](${SITE_URL}/components/getting-started): Prerequisites, installation, custom persistence, errors, and accessibility.
+- [Design System](${SITE_URL}/design-system): Typography, semantic color, spacing, components, page patterns, and widget composition.
 - [Widget Catalog](${SITE_URL}/components): Try all three launch widgets.
 - [Repository](${REPOSITORY_URL}): Canonical source, MIT license, and contributor guidance.
 

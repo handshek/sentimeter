@@ -1,0 +1,189 @@
+@layer base {
+  :root {
+    --ds-font-body:
+      var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    --ds-font-code: var(--font-geist-mono), ui-monospace, monospace;
+    --ds-type-display: clamp(2.75rem, 1.875rem + 3.5vw, 4.5rem);
+    --ds-type-page: clamp(2rem, 1.625rem + 1.5vw, 2.75rem);
+    --ds-type-section: clamp(1.75rem, 1.5rem + 1vw, 2.25rem);
+    --ds-type-title: 1.25rem;
+    --ds-type-lead: clamp(1.125rem, 1.0625rem + 0.25vw, 1.25rem);
+    --ds-type-body: 1rem;
+    --ds-type-label: 0.875rem;
+    --ds-type-caption: 0.75rem;
+    --ds-type-code: 0.8125rem;
+    --ds-page-width: 75rem;
+    --ds-reading-width: 65ch;
+    --ds-gutter: clamp(1.25rem, 0.875rem + 1.5vw, 2rem);
+    --ds-section-space: clamp(4rem, 2.5rem + 6vw, 7rem);
+    --ds-panel-inset: clamp(1.25rem, 0.875rem + 1.5vw, 2rem);
+    --ds-stack-gap: 1.5rem;
+    --ds-radius-control: calc(var(--radius) - 2px);
+    --ds-radius-panel: calc(var(--radius) + 4px);
+    /* One hairline edge, drawn as a ring so it never shifts layout. The
+       feedback widget draws its card with the same edge and depth. */
+    --ds-edge: color-mix(in oklab, var(--foreground) 8%, transparent);
+    --ds-shadow-color: oklch(0 0 0 / 5%);
+    --ds-shadow-panel:
+      0 0 0 1px var(--ds-edge), 0 1px 2px var(--ds-shadow-color),
+      0 4px 12px oklch(0 0 0 / 3%);
+    --ds-shadow-raised:
+      0 0 0 1px var(--ds-edge), 0 1px 2px var(--ds-shadow-color),
+      0 8px 24px var(--ds-shadow-color);
+    --ds-inset-surface: color-mix(in oklab, var(--muted) 50%, var(--card));
+    --ds-duration-fast: 120ms;
+    --ds-duration-normal: 180ms;
+    --ds-ease: cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .dark {
+    --ds-shadow-color: oklch(0 0 0 / 40%);
+    --ds-shadow-panel:
+      0 0 0 1px var(--ds-edge), 0 1px 2px var(--ds-shadow-color),
+      0 4px 12px oklch(0 0 0 / 20%);
+  }
+}
+
+@utility ds-display {
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-type-display);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+@utility ds-page-title {
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-type-page);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+@utility ds-section-title {
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-type-section);
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+@utility ds-title {
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-type-title);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+@utility ds-heading {
+  font-family: var(--ds-font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+@utility ds-lead {
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-type-lead);
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+}
+
+@utility ds-body {
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-type-body);
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+
+@utility ds-body-sm {
+  font-family: var(--ds-font-body);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.005em;
+  text-wrap: pretty;
+}
+
+@utility ds-label {
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-type-label);
+  font-weight: 500;
+  line-height: 1.43;
+  letter-spacing: -0.005em;
+}
+
+@utility ds-caption {
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-type-caption);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+@utility ds-code {
+  font-family: var(--ds-font-code);
+  font-size: var(--ds-type-code);
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.02em;
+  font-variant-ligatures: none;
+}
+
+@utility ds-eyebrow {
+  font-family: var(--ds-font-code);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@utility ds-container {
+  width: min(calc(100% - var(--ds-gutter) * 2), var(--ds-page-width));
+  margin-inline: auto;
+}
+
+@utility ds-section {
+  padding-block: var(--ds-section-space);
+}
+
+@utility ds-panel {
+  border-radius: var(--ds-radius-panel);
+  background: var(--card);
+  color: var(--card-foreground);
+  box-shadow: var(--ds-shadow-panel);
+}
+
+@utility ds-inset {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--ds-inset-surface);
+  color: var(--foreground);
+}
+
+@utility ds-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-stack-gap);
+}
+
+@utility ds-reading {
+  max-width: var(--ds-reading-width);
+}
+
+@utility ds-focus {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}

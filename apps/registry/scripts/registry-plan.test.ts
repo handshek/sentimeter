@@ -40,6 +40,7 @@ describe("Registry Item plan", () => {
     assert.doesNotMatch(generated, /@repo\//);
     assert.match(generated, /@\/components\/ui\/button/);
     assert.match(generated, /@\/components\/ui\/textarea/);
+    assert.match(generated, /@\/components\/ui\/label/);
     assert.match(generated, /@\/lib\/utils/);
 
     const preset = first.find(
@@ -48,6 +49,17 @@ describe("Registry Item plan", () => {
     assert.equal(
       preset?.content,
       await readFile(path.join(widgetSourceRoot, "emoji-feedback.tsx"), "utf8"),
+    );
+    const designSystem = first.find(
+      (artifact) => artifact.source === "design-system.ts",
+    );
+    assert.equal(
+      designSystem?.target,
+      "components/sentimeter/feedback-system/design-system.ts",
+    );
+    assert.equal(
+      designSystem?.content,
+      await readFile(path.join(widgetSourceRoot, "design-system.ts"), "utf8"),
     );
   });
 

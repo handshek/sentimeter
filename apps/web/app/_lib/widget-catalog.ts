@@ -1,5 +1,5 @@
 import registry from "../../../registry/registry.json";
-import type { WidgetSize } from "@repo/widgets";
+import type { WidgetLayout, WidgetSize } from "@repo/widgets";
 
 export const SITE_URL = registry.homepage;
 export const REPOSITORY_URL = "https://github.com/handshek/sentimeter";
@@ -96,6 +96,7 @@ export type WidgetDocConfig = {
 };
 
 export type WidgetDemoOptions = {
+  layout: WidgetLayout;
   variant: "emoji" | "icons";
   size: WidgetSize;
   showInput: boolean;
@@ -108,8 +109,10 @@ export function getUsageSnippet(
 ) {
   const variant = options?.variant ?? widget.defaultVariant;
   const size = options?.size ?? "default";
+  const layout = options?.layout ?? "stacked";
   const props = [
     "autoHide={false}",
+    ...(layout !== "stacked" ? [`layout="${layout}"`] : []),
     ...(variant !== widget.defaultVariant ? [`variant="${variant}"`] : []),
     ...(size !== "default" ? [`size="${size}"`] : []),
     ...(options?.showInput ? ["showInput"] : []),
@@ -150,16 +153,21 @@ export function getCompoundSnippet(widget: WidgetDocConfig) {
   return `"use client";
 
 import {
-  FeedbackDescription, FeedbackFooter, FeedbackRating,
-  FeedbackTitle, FeedbackWidget,
+  FeedbackDescription, FeedbackFooter, FeedbackInput, FeedbackRating,
+  FeedbackResponse, FeedbackTitle, FeedbackWidget,
 } from "@/components/sentimeter/feedback-system";
 
 export function FeedbackExample() {
   return (
     <FeedbackWidget widgetType="${widget.preview}" autoHide={false}>
-      <FeedbackTitle>How was your experience?</FeedbackTitle>
-      <FeedbackDescription>Your feedback helps us improve.</FeedbackDescription>
-      <FeedbackRating variant="${ratingVariant}" ${styleProp}="${widget.defaultVariant}" />
+      <div data-slot="feedback-header" className="flex flex-col gap-1">
+        <FeedbackTitle>How was your experience?</FeedbackTitle>
+        <FeedbackDescription>Your feedback helps us improve.</FeedbackDescription>
+      </div>
+      <FeedbackResponse>
+        <FeedbackRating variant="${ratingVariant}" ${styleProp}="${widget.defaultVariant}" />
+        <FeedbackInput />
+      </FeedbackResponse>
       <FeedbackFooter />
     </FeedbackWidget>
   );
@@ -200,6 +208,20 @@ const sharedProps: WidgetDocRow[] = [
     description: "Additional class names applied to the root widget.",
   },
   {
+    prop: "style",
+    type: "FeedbackStyle",
+    defaultValue: "-",
+    description:
+      "Inline styles and typed --feedback-* token overrides, scoped to this widget. No global theme changes.",
+  },
+  {
+    prop: "layout",
+    type: '"stacked" | "inline"',
+    defaultValue: '"stacked"',
+    description:
+      "Stacked is the card. Inline is a one-line bar that opens after a choice and collapses when done; it shows the title but not the description.",
+  },
+  {
     prop: "title",
     type: "ReactNode",
     defaultValue: '"Rate your experience" / "Was this helpful?"',
@@ -220,8 +242,21 @@ const sharedProps: WidgetDocRow[] = [
   {
     prop: "submitLabel",
     type: "string",
-    defaultValue: '"Submit"',
+    defaultValue: '"Submit" / inline "Send"',
     description: "Label used for the submit action.",
+  },
+  {
+    prop: "showCancel",
+    type: "boolean",
+    defaultValue: "true",
+    description:
+      "Shows Cancel beside Submit after a choice. Cancel clears the unsent choice and comment.",
+  },
+  {
+    prop: "cancelLabel",
+    type: "string",
+    defaultValue: '"Cancel"',
+    description: "Label used for the Cancel action.",
   },
   {
     prop: "thankYouMessage",
@@ -252,7 +287,7 @@ const sharedProps: WidgetDocRow[] = [
     prop: "closeButton",
     type: "boolean",
     defaultValue: "false",
-    description: "Shows a close button in the widget chrome.",
+    description: "Shows a close button that dismisses the whole widget.",
   },
   {
     prop: "submit",
@@ -293,10 +328,16 @@ const sharedProps: WidgetDocRow[] = [
       "Fires with the original thrown error and payload when submission fails.",
   },
   {
+    prop: "onReset",
+    type: "() => void",
+    defaultValue: "-",
+    description: "Fires when Cancel clears an unsent choice.",
+  },
+  {
     prop: "onCancel",
     type: "() => void",
     defaultValue: "-",
-    description: "Fires when a user cancels a dismissible widget.",
+    description: "Fires when the close button dismisses the widget.",
   },
 ];
 
@@ -322,7 +363,14 @@ const widgetDefinitions: Omit<
         type: '"emoji" | "icons"',
         defaultValue: '"emoji"',
         description:
-          "Native mode uses five emojis (worst to best: 😖 😕 😐 😊 😍) or Lucide face icons.",
+          "Built-in faces: five native emoji (worst to best: 😖 😕 😐 😊 😍), or Lucide face icons. Faces stay grayscale until hovered or chosen.",
+      },
+      {
+        prop: "glyphs",
+        type: "FaceGlyphs",
+        defaultValue: "-",
+        description:
+          "Five custom glyphs, worst to best (values 1–5): emoji, icons, images, or { glyph, label }. Replaces variant.",
       },
     ],
   },
@@ -344,7 +392,14 @@ const widgetDefinitions: Omit<
         type: '"icons" | "emoji"',
         defaultValue: '"icons"',
         description:
-          "Lucide thumbs up/down, or Unicode 👎 (0) / 👍 (1) for the same payload values.",
+          "Lucide thumbs up/down, or Unicode 👍 (1) / 👎 (0) for the same payload values. Like is shown first.",
+      },
+      {
+        prop: "glyphs",
+        type: "ThumbGlyphs",
+        defaultValue: "-",
+        description:
+          "Two custom glyphs: like (value 1), then dislike (value 0). Emoji, icons, images, or { glyph, label }. Replaces variant.",
       },
     ],
   },
@@ -367,6 +422,13 @@ const widgetDefinitions: Omit<
         defaultValue: '"icons"',
         description:
           "Lucide stars with hover preview, or five ⭐ emoji (grayscale until included in the preview) for values 1–5.",
+      },
+      {
+        prop: "glyph",
+        type: "FeedbackGlyph",
+        defaultValue: "-",
+        description:
+          'One custom glyph repeated five times, such as a heart. Pass { glyph, label: "heart" } so controls read “Rate 3 hearts”. Replaces variant.',
       },
     ],
   },

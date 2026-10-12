@@ -154,17 +154,13 @@ const RANGE_SUMMARY_LABEL: Record<RangeOption, string> = {
 };
 
 const SENTIMENT_TINT = {
-  positive:
-    "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/20",
-  negative:
-    "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-300 dark:border-rose-500/20",
+  positive: "bg-success-subtle text-success border-success/20",
+  negative: "bg-destructive/10 text-destructive border-destructive/20",
   neutral: "bg-muted text-muted-foreground border-border",
-  amber:
-    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/20",
+  amber: "bg-warning-subtle text-warning border-warning/20",
 } as const;
 
-const CHIP_SLATE =
-  "bg-zinc-100 text-zinc-700 border-zinc-200 dark:bg-zinc-800/60 dark:text-zinc-300 dark:border-zinc-700/60";
+const CHIP_SLATE = "bg-muted text-muted-foreground border-border";
 
 function formatShortDate(ms: number) {
   return new Date(ms).toLocaleDateString([], {
@@ -471,7 +467,7 @@ function ProjectPageSkeleton() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card size="sm" className="lg:col-span-2">
+        <Card size="sm" className="ds-panel ring-0 lg:col-span-2">
           <CardHeader className="flex flex-row items-start justify-between gap-3">
             <div className="min-w-0 flex-1 space-y-2">
               <Sk className="h-5 w-40" />
@@ -485,7 +481,7 @@ function ProjectPageSkeleton() {
           </CardContent>
         </Card>
 
-        <Card size="sm" className="flex flex-col">
+        <Card size="sm" className="ds-panel ring-0 flex flex-col">
           <CardHeader className="flex flex-row items-start gap-2">
             <div className="space-y-2">
               <Sk className="h-5 w-24" />
@@ -499,7 +495,7 @@ function ProjectPageSkeleton() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Card size="sm">
+        <Card size="sm" className="ds-panel ring-0">
           <CardHeader className="flex flex-row items-start justify-between gap-2">
             <div className="space-y-2">
               <Sk className="h-5 w-32" />
@@ -512,7 +508,7 @@ function ProjectPageSkeleton() {
           </CardContent>
         </Card>
 
-        <Card size="sm">
+        <Card size="sm" className="ds-panel ring-0">
           <CardHeader className="flex flex-row items-start justify-between gap-2">
             <div className="flex items-center gap-2">
               <Sk className="h-5 w-28" />
@@ -526,7 +522,7 @@ function ProjectPageSkeleton() {
         </Card>
       </div>
 
-      <Card size="sm">
+      <Card size="sm" className="ds-panel ring-0">
         <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <Sk className="h-5 w-36" />
@@ -979,9 +975,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
 
   if (projectQueryArgs === "skip") {
     return (
-      <Card size="sm">
+      <Card size="sm" className="ds-panel ring-0">
         <CardContent>
-          <div className="text-sm text-muted-foreground" role="status">
+          <div className="ds-label text-muted-foreground" role="status">
             {deleting ? "Deleting project…" : "Redirecting…"}
           </div>
         </CardContent>
@@ -990,9 +986,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
   }
 
   const chartConfig = {
-    positive: { label: "Positive", color: "oklch(0.72 0.17 153)" },
-    neutral: { label: "Neutral", color: "oklch(0.84 0.01 250)" },
-    negative: { label: "Negative", color: "oklch(0.64 0.22 25)" },
+    positive: { label: "Positive", color: "var(--success)" },
+    neutral: { label: "Neutral", color: "var(--muted-foreground)" },
+    negative: { label: "Negative", color: "var(--destructive)" },
   } satisfies ChartConfig;
 
   const kpiCards = [
@@ -1183,13 +1179,13 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               <div className="flex flex-col gap-6 px-4 pb-8">
                 <section className="space-y-3">
                   <div>
-                    <div className="text-sm font-semibold">Publishable key</div>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <div className="ds-label">Publishable key</div>
+                    <p className="mt-1 ds-caption text-muted-foreground">
                       Publishable write key for client-side widget feedback.
                     </p>
                   </div>
 
-                  <div className="rounded-lg border border-border/70 bg-muted/40 px-3 py-2 font-mono text-sm break-all">
+                  <div className="ds-inset ds-code px-3 py-2 break-all">
                     {data ? (
                       keyDisplay
                     ) : (
@@ -1257,7 +1253,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                   </p>
                   {keyActionError ? (
                     <p
-                      className="text-xs text-destructive"
+                      className="ds-caption text-destructive"
                       role="alert"
                       aria-live="assertive"
                     >
@@ -1269,7 +1265,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                       readOnly
                       value={activeKey}
                       aria-label="Publishable key to copy manually"
-                      className="font-mono text-xs"
+                      className="ds-code"
                       onFocus={(event) => event.currentTarget.select()}
                     />
                   ) : null}
@@ -1285,24 +1281,21 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                         className={cn(
                           "relative flex h-2 w-2 shrink-0",
                           hasOriginRestrictions
-                            ? "text-emerald-500"
-                            : "text-amber-500",
+                            ? "text-success"
+                            : "text-warning",
                         )}
                       >
                         <span
                           className={cn(
                             "absolute inline-flex h-full w-full rounded-full opacity-40",
                             hasOriginRestrictions
-                              ? "bg-emerald-500"
-                              : "animate-pulse bg-amber-500 motion-reduce:animate-none",
+                              ? "bg-success"
+                              : "animate-pulse bg-warning motion-reduce:animate-none",
                           )}
                         />
                         <span className="relative inline-flex h-2 w-2 rounded-full bg-current" />
                       </span>
-                      <div
-                        id="allowed-origins-label"
-                        className="text-sm font-semibold"
-                      >
+                      <div id="allowed-origins-label" className="ds-label">
                         Allowed origins
                       </div>
                     </div>
@@ -1332,7 +1325,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
 
                   <p
                     id="allowed-origins-description"
-                    className="text-xs text-muted-foreground"
+                    className="ds-caption text-muted-foreground"
                   >
                     One origin per line. Leave blank to accept any origin.
                   </p>
@@ -1372,11 +1365,11 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                           : "Save origins"}
                     </Button>
                     {!hasOriginRestrictions ? (
-                      <span className="text-xs text-amber-600 dark:text-amber-400">
+                      <span className="ds-caption text-warning">
                         All origins accepted
                       </span>
                     ) : (
-                      <span className="text-xs text-muted-foreground">
+                      <span className="ds-caption text-muted-foreground">
                         {project?.allowedOrigins?.length} origin
                         {(project?.allowedOrigins?.length ?? 0) !== 1
                           ? "s"
@@ -1388,7 +1381,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                   {originSaveError ? (
                     <p
                       id="allowed-origins-status"
-                      className="text-xs text-destructive"
+                      className="ds-caption text-destructive"
                       role="alert"
                     >
                       {originSaveError}
@@ -1396,7 +1389,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                   ) : (
                     <p
                       id="allowed-origins-status"
-                      className="text-xs text-muted-foreground"
+                      className="ds-caption text-muted-foreground"
                       role="status"
                       aria-live="polite"
                     >
@@ -1415,10 +1408,8 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
 
                 <section className="space-y-3">
                   <div>
-                    <div className="text-sm font-semibold text-destructive">
-                      Danger zone
-                    </div>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <div className="ds-label text-destructive">Danger zone</div>
+                    <p className="mt-1 ds-caption text-muted-foreground">
                       Deleting a project permanently removes its feedback and
                       keys.
                     </p>
@@ -1460,7 +1451,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                     {deleting ? "Deleting project…" : ""}
                   </p>
                   {deleteError ? (
-                    <p className="text-xs text-destructive" role="alert">
+                    <p className="ds-caption text-destructive" role="alert">
                       {deleteError}
                     </p>
                   ) : null}
@@ -1494,13 +1485,13 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0 space-y-1">
           {project ? (
-            <h1 className="break-words text-3xl font-bold tracking-tight [overflow-wrap:anywhere]">
+            <h1 className="ds-page-title break-words [overflow-wrap:anywhere]">
               {project.name}
             </h1>
           ) : (
             <div className="h-8 w-56 animate-pulse rounded bg-muted/70 motion-reduce:animate-none" />
           )}
-          <p className="text-sm text-muted-foreground">
+          <p className="ds-label text-muted-foreground">
             Feedback overview
             {project ? (
               <>
@@ -1511,12 +1502,12 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           </p>
         </div>
         <div
-          className="flex items-center gap-2 text-xs text-muted-foreground"
+          className="flex items-center gap-2 ds-caption text-muted-foreground"
           aria-hidden="true"
         >
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70 motion-reduce:animate-none" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-70 motion-reduce:animate-none" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
           </span>
           {feed === undefined
             ? "Connecting…"
@@ -1541,14 +1532,14 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           : kpiCards.map((kpi) => {
               const Icon = kpi.icon;
               return (
-                <Card key={kpi.key} size="sm" className="gap-3">
+                <Card key={kpi.key} size="sm" className="ds-panel gap-3 ring-0">
                   <CardHeader className="flex flex-row items-start gap-2">
                     <div className="flex items-center gap-2.5">
                       <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-muted/40 text-muted-foreground">
                         <Icon className="h-4 w-4" aria-hidden="true" />
                       </span>
                       <div className="flex items-center gap-1">
-                        <span className="text-sm font-medium">{kpi.label}</span>
+                        <span className="ds-label">{kpi.label}</span>
                         <Info
                           className="h-3.5 w-3.5 text-muted-foreground/60"
                           aria-hidden="true"
@@ -1558,7 +1549,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div className="flex items-end justify-between gap-2">
-                      <div className="font-mono text-3xl font-bold leading-none tracking-tight">
+                      <div className="ds-page-title tabular-nums">
                         {kpi.value}
                       </div>
                       {kpi.delta ? (
@@ -1570,9 +1561,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                         />
                       ) : null}
                     </div>
-                    <p className="font-mono text-[11.5px] text-muted-foreground">
-                      {kpi.sub}
-                    </p>
+                    <p className="ds-code text-muted-foreground">{kpi.sub}</p>
                   </CardContent>
                 </Card>
               );
@@ -1580,32 +1569,29 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card size="sm" className="lg:col-span-2">
+        <Card size="sm" className="ds-panel ring-0 lg:col-span-2">
           <CardHeader className="flex flex-row items-start justify-between gap-3">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span
-                  id="response-volume-title"
-                  className="text-base font-semibold tracking-tight"
-                >
+                <span id="response-volume-title" className="ds-title">
                   Response volume
                 </span>
                 <Badge
                   variant="outline"
-                  className={cn("text-[10px] tracking-widest", CHIP_SLATE)}
+                  className={cn("ds-caption", CHIP_SLATE)}
                 >
                   {volumeRangeLabel}
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="ds-caption text-muted-foreground">
                 Daily sentiment-coded submissions
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <div className="hidden items-center gap-3 text-[11.5px] text-muted-foreground sm:inline-flex">
-                <Legend color="oklch(0.72 0.17 153)" label="Positive" />
-                <Legend color="oklch(0.84 0.01 250)" label="Neutral" />
-                <Legend color="oklch(0.64 0.22 25)" label="Negative" />
+              <div className="hidden items-center gap-3 ds-caption text-muted-foreground sm:inline-flex">
+                <Legend color="var(--success)" label="Positive" />
+                <Legend color="var(--muted-foreground)" label="Neutral" />
+                <Legend color="var(--destructive)" label="Negative" />
               </div>
               <Select
                 value={chartType}
@@ -1688,13 +1674,11 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           </CardContent>
         </Card>
 
-        <Card size="sm" className="flex flex-col">
+        <Card size="sm" className="ds-panel ring-0 flex flex-col">
           <CardHeader className="flex flex-row items-start gap-2">
             <div>
-              <div className="text-base font-semibold tracking-tight">
-                Sentiment
-              </div>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <div className="ds-title">Sentiment</div>
+              <p className="mt-1 ds-caption text-muted-foreground">
                 Distribution across all widgets
               </p>
             </div>
@@ -1705,10 +1689,12 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
             ) : (
               <>
                 <div className="flex items-baseline gap-2">
-                  <div className="font-mono text-[28px] font-bold leading-none tracking-tight">
+                  <div className="ds-page-title tabular-nums">
                     {totals.total.toLocaleString()}
                   </div>
-                  <div className="text-xs text-muted-foreground">responses</div>
+                  <div className="ds-caption text-muted-foreground">
+                    responses
+                  </div>
                 </div>
 
                 <div
@@ -1719,21 +1705,21 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                     className="h-full"
                     style={{
                       width: `${segPositivePct}%`,
-                      background: "oklch(0.72 0.17 153)",
+                      background: "var(--success)",
                     }}
                   />
                   <span
                     className="h-full"
                     style={{
                       width: `${segNeutralPct}%`,
-                      background: "oklch(0.84 0.01 250)",
+                      background: "var(--muted-foreground)",
                     }}
                   />
                   <span
                     className="h-full"
                     style={{
                       width: `${segNegativePct}%`,
-                      background: "oklch(0.64 0.22 25)",
+                      background: "var(--destructive)",
                     }}
                   />
                   {totals.total === 0 ? (
@@ -1743,7 +1729,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
 
                 <div className="space-y-3">
                   <SentimentRow
-                    color="oklch(0.72 0.17 153)"
+                    color="var(--success)"
                     icon={
                       <Smile
                         className="h-4 w-4 text-muted-foreground"
@@ -1756,7 +1742,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                     tint={SENTIMENT_TINT.positive}
                   />
                   <SentimentRow
-                    color="oklch(0.84 0.01 250)"
+                    color="var(--muted-foreground)"
                     icon={
                       <Meh
                         className="h-4 w-4 text-muted-foreground"
@@ -1769,7 +1755,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                     tint={SENTIMENT_TINT.neutral}
                   />
                   <SentimentRow
-                    color="oklch(0.64 0.22 25)"
+                    color="var(--destructive)"
                     icon={
                       <Frown
                         className="h-4 w-4 text-muted-foreground"
@@ -1789,13 +1775,11 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Card size="sm">
+        <Card size="sm" className="ds-panel ring-0">
           <CardHeader className="flex flex-row items-start justify-between gap-2">
             <div>
-              <div className="text-base font-semibold tracking-tight">
-                By widget type
-              </div>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <div className="ds-title">By widget type</div>
+              <p className="mt-1 ds-caption text-muted-foreground">
                 Which widget drives the most responses
               </p>
             </div>
@@ -1825,14 +1809,14 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                           className={cn(
                             "h-4 w-4",
                             row.key === "star"
-                              ? "text-amber-500"
+                              ? "text-warning"
                               : "text-muted-foreground",
                           )}
                           aria-hidden="true"
                         />
                         <span className="font-medium">{row.label}</span>
                       </div>
-                      <div className="font-mono text-[12.5px] tabular-nums text-muted-foreground">
+                      <div className="ds-code tabular-nums text-muted-foreground">
                         {row.value.toLocaleString()} · {pct.toFixed(1)}%
                       </div>
                     </div>
@@ -1852,12 +1836,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           </CardContent>
         </Card>
 
-        <Card size="sm">
+        <Card size="sm" className="ds-panel ring-0">
           <CardHeader className="flex flex-row items-start justify-between gap-2">
             <div className="flex items-center gap-2">
-              <div className="text-base font-semibold tracking-tight">
-                Top locations
-              </div>
+              <div className="ds-title">Top locations</div>
               <Badge variant="outline" className={CHIP_SLATE}>
                 {topLocations.length}
               </Badge>
@@ -1885,7 +1867,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                         aria-hidden="true"
                       />
                       <div
-                        className="min-w-0 flex-1 truncate font-mono text-[12.5px]"
+                        className="min-w-0 flex-1 truncate ds-code"
                         title={row.location || "/"}
                       >
                         {row.location || "/"}
@@ -1899,7 +1881,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <div className="w-24 text-right font-mono text-[12.5px] tabular-nums text-muted-foreground">
+                      <div className="w-24 text-right ds-code tabular-nums text-muted-foreground">
                         {row.total} · {pct.toFixed(1)}%
                       </div>
                     </div>
@@ -1907,7 +1889,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                 })}
               </div>
             ) : (
-              <div className="py-8 text-center text-sm text-muted-foreground">
+              <div className="py-8 text-center ds-label text-muted-foreground">
                 No locations yet.
               </div>
             )}
@@ -1915,12 +1897,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
         </Card>
       </div>
 
-      <Card size="sm">
+      <Card size="sm" className="ds-panel ring-0">
         <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <span className="text-base font-semibold tracking-tight">
-              Recent feedback
-            </span>
+            <span className="ds-title">Recent feedback</span>
             <Badge variant="outline" className={CHIP_SLATE}>
               {(analytics?.total ?? 0).toLocaleString()} total
             </Badge>
@@ -1929,8 +1909,8 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               className={cn("gap-1.5", SENTIMENT_TINT.positive)}
             >
               <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70 motion-reduce:animate-none" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-70 motion-reduce:animate-none" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-success" />
               </span>
               Live
             </Badge>
@@ -1982,22 +1962,22 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="pl-4 text-[11px] uppercase tracking-widest text-muted-foreground">
+                <TableHead className="pl-4 ds-eyebrow text-muted-foreground">
                   Widget
                 </TableHead>
-                <TableHead className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                <TableHead className="ds-eyebrow text-muted-foreground">
                   Value
                 </TableHead>
-                <TableHead className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                <TableHead className="ds-eyebrow text-muted-foreground">
                   Location
                 </TableHead>
-                <TableHead className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                <TableHead className="ds-eyebrow text-muted-foreground">
                   Message
                 </TableHead>
-                <TableHead className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                <TableHead className="ds-eyebrow text-muted-foreground">
                   Sentiment
                 </TableHead>
-                <TableHead className="pr-4 text-right text-[11px] uppercase tracking-widest text-muted-foreground">
+                <TableHead className="pr-4 text-right ds-eyebrow text-muted-foreground">
                   Received
                 </TableHead>
               </TableRow>
@@ -2033,7 +2013,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                 <TableRow className="hover:bg-transparent">
                   <TableCell
                     colSpan={6}
-                    className="py-10 text-center text-sm text-muted-foreground"
+                    className="py-10 text-center ds-label text-muted-foreground"
                   >
                     {searchInput.trim() || sentimentFilter !== "all"
                       ? "No feedback matches your filters."
@@ -2063,7 +2043,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                               aria-hidden="true"
                             />
                           </span>
-                          <span className="text-sm font-medium capitalize">
+                          <span className="ds-label capitalize">
                             {f.widgetType}
                           </span>
                         </div>
@@ -2073,7 +2053,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                           f.value === 1 ? (
                             <>
                               <ThumbsUp
-                                className="h-4 w-4 text-emerald-600"
+                                className="h-4 w-4 text-success"
                                 aria-hidden="true"
                               />
                               <span className="sr-only">Like</span>
@@ -2081,7 +2061,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                           ) : (
                             <>
                               <ThumbsDown
-                                className="h-4 w-4 text-rose-500"
+                                className="h-4 w-4 text-destructive"
                                 aria-hidden="true"
                               />
                               <span className="sr-only">Dislike</span>
@@ -2096,7 +2076,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                               {f.value}
                             </span>
                             <Star
-                              className="h-3.5 w-3.5 text-amber-500"
+                              className="h-3.5 w-3.5 text-warning"
                               aria-hidden="true"
                             />
                           </span>
@@ -2119,10 +2099,10 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                           </span>
                         )}
                       </TableCell>
-                      <TableCell className="font-mono text-[12.5px] text-muted-foreground">
+                      <TableCell className="ds-code text-muted-foreground">
                         {f.location || "/"}
                       </TableCell>
-                      <TableCell className="max-w-[280px] truncate text-sm text-muted-foreground">
+                      <TableCell className="max-w-[280px] truncate ds-label text-muted-foreground">
                         {hasText ? (
                           <span title={f.text!.trim()}>
                             &ldquo;{f.text!.trim()}&rdquo;
@@ -2139,7 +2119,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
                           {sent}
                         </Badge>
                       </TableCell>
-                      <TableCell className="pr-4 text-right font-mono text-[12.5px] tabular-nums text-muted-foreground">
+                      <TableCell className="pr-4 text-right ds-code tabular-nums text-muted-foreground">
                         {formatRelativeTime(f.createdAt)}
                       </TableCell>
                     </TableRow>
@@ -2150,7 +2130,7 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
           </Table>
         </CardContent>
         <Separator className="mb-0" />
-        <div className="px-5 py-3 text-xs text-muted-foreground">
+        <div className="px-5 py-3 ds-caption text-muted-foreground">
           {feedbackFeedSummary}
         </div>
       </Card>
@@ -2185,7 +2165,7 @@ function Sk({ className }: { className?: string }) {
 
 function KpiCardSkeleton() {
   return (
-    <Card size="sm" className="gap-3">
+    <Card size="sm" className="ds-panel ring-0 gap-3">
       <CardHeader className="flex flex-row items-start gap-2">
         <div className="flex items-center gap-2.5">
           <span className="inline-flex h-9 w-9 shrink-0 animate-pulse items-center justify-center rounded-lg border border-border bg-muted/60 motion-reduce:animate-none" />
@@ -2338,12 +2318,10 @@ function SentimentRow({
           aria-hidden="true"
         />
         {icon}
-        <span className="text-sm font-medium">{label}</span>
+        <span className="ds-label">{label}</span>
       </div>
       <div className="flex items-center gap-3">
-        <span className="font-mono text-[12.5px] tabular-nums">
-          {count.toLocaleString()}
-        </span>
+        <span className="ds-code tabular-nums">{count.toLocaleString()}</span>
         <Badge
           variant="outline"
           className={cn("min-w-[42px] justify-center", tint)}

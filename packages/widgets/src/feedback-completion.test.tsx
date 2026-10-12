@@ -190,7 +190,7 @@ for (const {
     }) as HTMLTextAreaElement;
     fireEvent.change(input, { target: { value: "Original feedback" } });
     fireEvent.click(screen.getByRole("button", { name: "Submit" }));
-    await screen.findByRole("button", { name: "Try Again" });
+    await screen.findByRole("button", { name: "Try again" });
     assert.equal(input.disabled, false);
     assert.equal(
       Array.from(
@@ -237,11 +237,8 @@ for (const variant of ["icons", "emoji"] as const) {
       />,
     );
     const filledStars = () =>
-      container.querySelectorAll(
-        variant === "icons"
-          ? 'svg[fill="currentColor"]'
-          : "button[aria-pressed] span.grayscale-0",
-      ).length;
+      container.querySelectorAll('[data-slot="feedback-glyph"].grayscale-0')
+        .length;
     const firstStar = screen.getByRole("button", { name: "Rate 1 star" });
     const fifthStar = screen.getByRole("button", { name: "Rate 5 stars" });
     fireEvent.click(fifthStar);

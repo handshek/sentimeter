@@ -36,6 +36,7 @@ type WidgetInstallCommandProps = {
 function formatDependency(name: string) {
   if (name === "button") return "Button";
   if (name === "textarea") return "Textarea";
+  if (name === "label") return "Label";
   return name;
 }
 
@@ -52,8 +53,8 @@ export function WidgetInstallCommand({
   const activeCommand = commands[manager];
 
   return (
-    <div className="space-y-3">
-      <div className="overflow-hidden rounded-xl border border-border bg-muted/30">
+    <div className="min-w-0 space-y-3">
+      <div className="ds-inset min-w-0 overflow-hidden">
         <Tabs
           value={manager}
           onValueChange={(value) => setManager(value as PackageManager)}
@@ -63,12 +64,12 @@ export function WidgetInstallCommand({
               className="hidden size-4 shrink-0 text-muted-foreground sm:block"
               aria-hidden="true"
             />
-            <TabsList className="h-auto max-w-full bg-transparent p-0 group-data-horizontal/tabs:h-auto">
+            <TabsList className="max-w-full bg-transparent p-0">
               {packageManagers.map((packageManager) => (
                 <TabsTrigger
                   key={packageManager}
                   value={packageManager}
-                  className="h-11 min-w-11 px-2 py-1 font-mono text-xs text-muted-foreground hover:text-foreground data-active:bg-background data-active:text-foreground sm:px-3"
+                  className="min-w-11 px-2 py-1 font-mono text-xs text-muted-foreground hover:text-foreground data-active:bg-background data-active:text-foreground sm:px-3"
                   translate="no"
                 >
                   {packageManager}
@@ -80,7 +81,7 @@ export function WidgetInstallCommand({
                 key={activeCommand}
                 text={activeCommand}
                 label="Copy Command"
-                className="h-11 px-2 text-xs sm:px-3 sm:text-sm"
+                className="px-2 text-xs sm:px-3 sm:text-sm"
               />
             </div>
           </div>
@@ -92,7 +93,7 @@ export function WidgetInstallCommand({
               className="m-0"
             >
               <code
-                className="block whitespace-pre-wrap break-all px-4 py-3 font-mono text-[13px] leading-6"
+                className="block whitespace-pre-wrap break-all px-4 py-3 ds-code"
                 translate="no"
               >
                 {commands[packageManager]}
@@ -105,10 +106,10 @@ export function WidgetInstallCommand({
       {metadata ? (
         <div className="px-1 py-1">
           <div className="space-y-1">
-            <p className="text-sm font-semibold">
+            <p className="ds-label">
               {metadata.targetFiles.length} Sentimeter Files
             </p>
-            <p className="text-xs leading-5 text-muted-foreground">
+            <p className="ds-caption text-muted-foreground">
               {metadata.widgetFileCount} widget wrapper +{" "}
               {metadata.sharedFileCount} shared feedback-system files
             </p>
@@ -116,7 +117,7 @@ export function WidgetInstallCommand({
 
           <Accordion type="single" collapsible className="mt-1">
             <AccordionItem value="installed-files" className="border-0">
-              <AccordionTrigger className="min-h-11 py-2 text-xs">
+              <AccordionTrigger className="min-h-11 py-2 text-sm">
                 View Exact File Paths
               </AccordionTrigger>
               <AccordionContent className="pb-2">
@@ -124,7 +125,7 @@ export function WidgetInstallCommand({
                   {metadata.targetFiles.map((targetFile) => (
                     <li key={targetFile}>
                       <code
-                        className="block break-all rounded-md bg-muted px-2 py-1.5 font-mono text-[11px] leading-4"
+                        className="ds-code block break-all rounded-md bg-muted px-2 py-1.5"
                         translate="no"
                       >
                         {targetFile}
@@ -136,7 +137,7 @@ export function WidgetInstallCommand({
             </AccordionItem>
           </Accordion>
 
-          <p className="border-t border-border pt-2 text-xs leading-5 text-muted-foreground">
+          <p className="border-t border-border pt-3 ds-caption text-muted-foreground">
             Adds or reuses the shadcn{" "}
             {metadata.shadcnDependencies.map(formatDependency).join(" and ")}{" "}
             components, plus the {metadata.packageDependencies.join(", ")}{" "}

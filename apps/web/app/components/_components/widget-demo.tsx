@@ -14,7 +14,7 @@ import type {
   WidgetDocConfig,
 } from "../../_lib/widget-catalog";
 
-const presets = { emoji: EmojiFeedback, thumbs: LikeDislike, star: StarRating };
+const widgets = { emoji: EmojiFeedback, thumbs: LikeDislike, star: StarRating };
 
 type WidgetDemoProps = {
   widget: Pick<WidgetDocConfig, "slug" | "preview" | "defaultVariant" | "name">;
@@ -25,6 +25,7 @@ export function WidgetDemo(props: WidgetDemoProps) {
   const { widget, options } = props;
   const key = [
     widget.slug,
+    options?.layout ?? "stacked",
     options?.variant ?? widget.defaultVariant,
     options?.size ?? "default",
     options?.showInput ?? false,
@@ -37,7 +38,7 @@ function WidgetDemoInstance({ widget, options }: WidgetDemoProps) {
   const [state, setState] = useState<WidgetState>("idle");
   const container = useRef<HTMLDivElement>(null);
   const focusAfterReset = useRef(false);
-  const Preset = presets[widget.preview];
+  const Widget = widgets[widget.preview];
 
   useEffect(() => {
     if (!focusAfterReset.current) return;
@@ -63,8 +64,9 @@ function WidgetDemoInstance({ widget, options }: WidgetDemoProps) {
         ref={container}
         className="flex min-h-36 w-full items-center justify-center"
       >
-        <Preset
+        <Widget
           key={instance}
+          layout={options?.layout ?? "stacked"}
           variant={options?.variant ?? widget.defaultVariant}
           size={options?.size ?? "default"}
           showInput={options?.showInput ?? false}
@@ -78,10 +80,9 @@ function WidgetDemoInstance({ widget, options }: WidgetDemoProps) {
           variant="ghost"
           onClick={reset}
           disabled={state === "submitting"}
-          className="h-11"
         >
           <RotateCcw className="size-4" aria-hidden="true" />
-          {state === "done" ? "Try Again" : "Reset"}
+          {state === "done" ? "Try again" : "Reset"}
         </Button>
       </div>
     </div>

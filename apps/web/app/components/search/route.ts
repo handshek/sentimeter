@@ -1,7 +1,10 @@
 import { createSearchAPI } from "fumadocs-core/search/server";
 import { widgetDocs } from "../../_lib/widget-catalog";
 import { getWidgetMarkdown } from "../../_lib/widget-markdown";
-import { gettingStartedSections } from "../../_lib/docs-navigation";
+import {
+  designSystemSections,
+  gettingStartedSections,
+} from "../../_lib/docs-navigation";
 
 // This public route intentionally sits outside the hosted /api auth boundary.
 export const { GET } = createSearchAPI("simple", {
@@ -16,6 +19,12 @@ export const { GET } = createSearchAPI("simple", {
       title: section.title,
       url: `/components/getting-started${section.url}`,
       breadcrumbs: ["Getting Started"],
+      content: section.content,
+    })),
+    ...designSystemSections.map((section) => ({
+      title: section.title,
+      url: section.url,
+      breadcrumbs: ["Design System"],
       content: section.content,
     })),
     ...widgetDocs.map((widget) => ({

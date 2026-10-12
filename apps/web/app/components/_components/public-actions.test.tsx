@@ -37,7 +37,7 @@ test("local demo submits without a request and resets selection with keyboard fo
     fireEvent.click(reaction);
     expect(reaction.getAttribute("aria-pressed")).toBe("true");
     fireEvent.click(screen.getByRole("button", { name: "Submit" }));
-    fireEvent.click(await screen.findByRole("button", { name: "Try Again" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Try again" }));
     const firstReaction = screen
       .getAllByRole("button")
       .find((button) => button.hasAttribute("aria-pressed"))!;
@@ -48,6 +48,21 @@ test("local demo submits without a request and resets selection with keyboard fo
       <WidgetDemo
         widget={widgetDocs[0]!}
         options={{ variant: "icons", size: "lg" }}
+      />,
+    );
+    expect(
+      screen
+        .getAllByRole("button")
+        .filter((button) => button.getAttribute("aria-pressed") === "true"),
+    ).toHaveLength(0);
+    const iconReaction = screen
+      .getAllByRole("button")
+      .find((button) => button.hasAttribute("aria-pressed"))!;
+    fireEvent.click(iconReaction);
+    view.rerender(
+      <WidgetDemo
+        widget={widgetDocs[0]!}
+        options={{ variant: "icons", size: "lg", layout: "inline" }}
       />,
     );
     expect(

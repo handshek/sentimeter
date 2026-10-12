@@ -50,7 +50,7 @@ export function CopyButton({
         variant="ghost"
         onClick={() => void copy()}
         disabled={pending}
-        className={cn("h-11", className)}
+        className={cn("", className)}
       >
         {copied ? (
           <Check className="size-4" aria-hidden="true" />

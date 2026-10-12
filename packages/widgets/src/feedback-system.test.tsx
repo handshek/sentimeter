@@ -20,12 +20,16 @@ describe("canonical widget feedback system", () => {
     assert.match(dislikeButton ?? "", /👎/);
     assert.match(likeButton ?? "", /👍/);
 
-    const iconMarkup = renderToStaticMarkup(<LikeDislike />);
-    assert.ok(
-      iconMarkup.indexOf('aria-label="Like"') <
-        iconMarkup.indexOf('aria-label="Dislike"'),
-      "icon mode keeps the existing Like then Dislike order",
-    );
+    for (const variant of ["icons", "emoji"] as const) {
+      const variantMarkup = renderToStaticMarkup(
+        <LikeDislike variant={variant} />,
+      );
+      assert.ok(
+        variantMarkup.indexOf('aria-label="Like"') <
+          variantMarkup.indexOf('aria-label="Dislike"'),
+        `${variant} mode shows Like before Dislike`,
+      );
+    }
   });
 
   test("lets consumer classes override default container classes", () => {
@@ -54,6 +58,7 @@ describe("canonical widget feedback system", () => {
       "FeedbackFooter",
       "FeedbackInput",
       "FeedbackRating",
+      "FeedbackResponse",
       "FeedbackTitle",
       "FeedbackWidget",
       "LikeDislike",

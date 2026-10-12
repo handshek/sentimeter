@@ -14,11 +14,9 @@ export function HostedProviders({
 }) {
   if (!hasHostedConfiguration()) {
     return (
-      <main className="mx-auto max-w-xl space-y-4 px-4 py-16">
-        <h1 className="text-2xl font-semibold">
-          Hosted Analytics Is Unavailable
-        </h1>
-        <p className="text-muted-foreground">
+      <main className="ds-container ds-section max-w-xl space-y-5">
+        <h1 className="ds-page-title">Hosted Analytics Is Unavailable</h1>
+        <p className="ds-body text-muted-foreground">
           Configure Clerk and Convex to use hosted analytics. The widget
           registry works without either service.
         </p>
@@ -33,6 +31,27 @@ export function HostedProviders({
 
   return (
     <ClerkProvider
+      appearance={{
+        variables: {
+          colorPrimary: "var(--primary)",
+          colorPrimaryForeground: "var(--primary-foreground)",
+          colorBackground: "var(--card)",
+          colorForeground: "var(--foreground)",
+          colorMuted: "var(--muted)",
+          colorMutedForeground: "var(--muted-foreground)",
+          colorInput: "var(--background)",
+          colorInputForeground: "var(--foreground)",
+          colorBorder: "var(--border)",
+          colorRing: "var(--ring)",
+          colorDanger: "var(--destructive)",
+          colorSuccess: "var(--success)",
+          colorWarning: "var(--warning)",
+          fontFamily: "var(--ds-font-body)",
+          fontFamilyButtons: "var(--ds-font-body)",
+          fontFamilyMono: "var(--ds-font-code)",
+          borderRadius: "var(--radius)",
+        },
+      }}
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
       signInFallbackRedirectUrl="/dashboard"

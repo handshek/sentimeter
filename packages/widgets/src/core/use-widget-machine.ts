@@ -122,6 +122,15 @@ export function useWidgetMachine({
     ],
   );
 
+  // Clears a choice that has not been submitted. Returns whether it reset.
+  const reset = React.useCallback(() => {
+    if (disabled || stateRef.current !== "selected") return false;
+    setSubmitError(null);
+    setSelectedValue(null);
+    setStateSafe("idle");
+    return true;
+  }, [disabled, setStateSafe]);
+
   const hide = React.useCallback(() => setHidden(true), []);
 
   return {
@@ -131,6 +140,7 @@ export function useWidgetMachine({
     submitError,
     select,
     submitSelected,
+    reset,
     hide,
   } as const;
 }

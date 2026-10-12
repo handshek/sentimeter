@@ -11,321 +11,217 @@ import {
   ThumbsDown,
   ThumbsUp,
 } from "lucide-react";
+import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
+import { feedbackStyles } from "../design-system";
+import type { FeedbackGlyph } from "../types";
 import { useFeedbackContext } from "./feedback-context";
-import type { WidgetSize } from "./feedback-context";
 
-/* ── Emoji data ─────────────────────────────────────────────── */
+type Choice = { value: number; label: string; glyph: React.ReactNode };
 
-const DEFAULT_EMOJIS = ["😖", "😕", "😐", "😊", "😍"] as const;
+const FACES = [
+  { value: 1, label: "Angry", emoji: "😖", Icon: Angry },
+  { value: 2, label: "Sad", emoji: "😕", Icon: Frown },
+  { value: 3, label: "Neutral", emoji: "😐", Icon: Meh },
+  { value: 4, label: "Happy", emoji: "😊", Icon: Smile },
+  { value: 5, label: "Delighted", emoji: "😍", Icon: Laugh },
+] as const;
 
-const THUMB_OPTIONS = [
-  { value: 0, label: "Dislike", emoji: "👎", Icon: ThumbsDown },
+// Display order: the positive response first.
+const THUMBS = [
   { value: 1, label: "Like", emoji: "👍", Icon: ThumbsUp },
+  { value: 0, label: "Dislike", emoji: "👎", Icon: ThumbsDown },
 ] as const;
 
-const LUCIDE_FACE_SET = [
-  { Icon: Angry, label: "Angry" },
-  { Icon: Frown, label: "Sad" },
-  { Icon: Meh, label: "Neutral" },
-  { Icon: Smile, label: "Happy" },
-  { Icon: Laugh, label: "Delighted" },
-] as const;
-
-/* ── Size map ───────────────────────────────────────────────── */
-
-const SIZE_MAP: Record<
-  WidgetSize,
-  { iconClass: string; btnClass: string; emojiClass: string }
-> = {
-  sm: {
-    iconClass: "size-[18px]",
-    btnClass: "size-[44px]",
-    emojiClass: "size-[44px] text-lg",
-  },
-  default: {
-    iconClass: "size-6",
-    btnClass: "size-[44px]",
-    emojiClass: "size-[44px] text-2xl",
-  },
-  md: {
-    iconClass: "size-6 @[320px]:size-7",
-    btnClass: "size-[44px] @[320px]:size-12",
-    emojiClass: "size-[44px] text-2xl @[320px]:size-12 @[320px]:text-3xl",
-  },
-  lg: {
-    iconClass: "size-6 @[360px]:size-8",
-    btnClass: "size-[44px] @[360px]:size-14",
-    emojiClass: "size-[44px] text-2xl @[360px]:size-14 @[360px]:text-4xl",
-  },
-};
-
-/* ── Props ──────────────────────────────────────────────────── */
+const EXPECTED_GLYPHS = { emoji: 5, thumbs: 2, stars: 1 } as const;
 
 export type FeedbackRatingProps = {
   variant: "emoji" | "stars" | "thumbs";
-  /** Only applies when variant is "emoji" (5-point mood scale) */
+  /** Built-in faces: native emoji or Lucide icons. */
   emojiStyle?: "emoji" | "icons";
-  /**
-   * Thumbs: Lucide vs Unicode 👎/👍. Stars: Lucide vs ⭐ row (grayscale until preview).
-   * @default "icons"
-   */
+  /** Built-in thumbs or stars: Lucide icons or native emoji. */
   ratingStyle?: "icons" | "emoji";
+  /**
+   * Custom glyphs, replacing the built-in set. Faces take five (worst to
+   * best), thumbs take two (like, then dislike), stars take one, repeated.
+   */
+  glyphs?: readonly FeedbackGlyph[];
   className?: string;
 };
 
-/* ── Component ──────────────────────────────────────────────── */
+function isGlyphObject(
+  glyph: FeedbackGlyph,
+): glyph is { glyph: React.ReactNode; label?: string } {
+  return (
+    typeof glyph === "object" &&
+    glyph !== null &&
+    !Array.isArray(glyph) &&
+    !React.isValidElement(glyph) &&
+    "glyph" in glyph
+  );
+}
+
+function readGlyph(glyph: FeedbackGlyph) {
+  return isGlyphObject(glyph)
+    ? { node: glyph.glyph, label: glyph.label }
+    : { node: glyph as React.ReactNode, label: undefined };
+}
+
+function builtInChoices(
+  variant: FeedbackRatingProps["variant"],
+  useEmoji: boolean,
+): Choice[] {
+  if (variant === "stars") {
+    return FACES.map(({ value }) => ({
+      value,
+      label: `Rate ${value} star${value === 1 ? "" : "s"}`,
+      glyph: useEmoji ? "⭐" : <Star aria-hidden="true" />,
+    }));
+  }
+  const set = variant === "thumbs" ? THUMBS : FACES;
+  return set.map(({ value, label, emoji, Icon }) => ({
+    value,
+    label:
+      variant === "thumbs"
+        ? label
+        : useEmoji
+          ? `Rating ${value} of 5`
+          : `${label} (${value} of 5)`,
+    glyph: useEmoji ? emoji : <Icon aria-hidden="true" />,
+  }));
+}
+
+function customChoices(
+  variant: FeedbackRatingProps["variant"],
+  glyphs: readonly FeedbackGlyph[],
+): Choice[] {
+  if (variant === "stars") {
+    const { node, label } = readGlyph(glyphs[0]);
+    return FACES.map(({ value }) => ({
+      value,
+      label: label
+        ? `Rate ${value} ${label}${value === 1 ? "" : "s"}`
+        : `Rate ${value} star${value === 1 ? "" : "s"}`,
+      glyph: node,
+    }));
+  }
+  if (variant === "thumbs") {
+    return THUMBS.map(({ value, label: fallback }, index) => {
+      const { node, label } = readGlyph(glyphs[index]);
+      return { value, label: label ?? fallback, glyph: node };
+    });
+  }
+  return FACES.map(({ value }, index) => {
+    const { node, label } = readGlyph(glyphs[index]);
+    return {
+      value,
+      label: label ? `${label} (${value} of 5)` : `Rating ${value} of 5`,
+      glyph: node,
+    };
+  });
+}
 
 export function FeedbackRating({
   variant,
   emojiStyle = "emoji",
   ratingStyle = "icons",
+  glyphs,
   className,
 }: FeedbackRatingProps) {
-  const { state, selectedValue, disabled, select, size } = useFeedbackContext();
+  const { state, selectedValue, disabled, select, layout } =
+    useFeedbackContext();
   const [hoverValue, setHoverValue] = React.useState<number | null>(null);
+  const locked = disabled || state === "submitting" || state === "done";
+  const useEmoji = (variant === "emoji" ? emojiStyle : ratingStyle) === "emoji";
+  const stars = variant === "stars";
+  const thumbs = variant === "thumbs";
+  const inline = layout === "inline";
+  const expected = EXPECTED_GLYPHS[variant];
+  const validGlyphs = glyphs?.length === expected ? glyphs : undefined;
 
-  const isLocked = disabled || state === "submitting" || state === "done";
-  const { iconClass, btnClass, emojiClass } = SIZE_MAP[size];
-  const wrapperClass = cn(
-    "mt-4 w-full items-center justify-center rounded-2xl border border-border/60 bg-muted/20",
-    variant === "thumbs"
-      ? "flex gap-2 p-2 @[320px]:gap-3 @[320px]:p-3"
-      : "grid grid-cols-5 place-items-center gap-px p-1 @[320px]:gap-2 @[320px]:p-2 @[360px]:gap-3 @[360px]:p-3",
-  );
-
-  /* ── Thumbs ─────────────────────────────────────────────── */
-  if (variant === "thumbs") {
-    if (ratingStyle === "emoji") {
-      return (
-        <div className={cn(wrapperClass, className)}>
-          {THUMB_OPTIONS.map(({ value, label, emoji }) => {
-            const selected = selectedValue === value;
-            return (
-              <button
-                key={value}
-                type="button"
-                disabled={isLocked}
-                onClick={() => select(value)}
-                className={cn(
-                  "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200 motion-reduce:transition-none",
-                  emojiClass,
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
-                  selected
-                    ? "bg-primary/10 ring-2 ring-primary/20"
-                    : "hover:bg-muted/50",
-                  isLocked ? "cursor-not-allowed opacity-50" : "cursor-pointer",
-                )}
-                aria-pressed={selected ? "true" : "false"}
-                aria-label={label}
-                title={label}
-              >
-                <span aria-hidden="true">{emoji}</span>
-              </button>
-            );
-          })}
-        </div>
+  React.useEffect(() => {
+    if (glyphs && glyphs.length !== expected) {
+      console.warn(
+        `Sentimeter: ${variant} ratings take ${expected} glyph${expected === 1 ? "" : "s"}, received ${glyphs.length}. Using the built-in set.`,
       );
     }
+  }, [expected, glyphs, variant]);
 
-    return (
-      <div className={cn(wrapperClass, className)}>
-        {[...THUMB_OPTIONS].reverse().map(({ value, label, Icon }) => {
-          const selected = selectedValue === value;
-          return (
-            <button
-              key={label}
-              type="button"
-              disabled={isLocked}
-              onClick={() => select(value)}
-              className={cn(
-                "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200 motion-reduce:transition-none",
-                btnClass,
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
-                selected
-                  ? "bg-primary/10 text-primary ring-2 ring-primary/20"
-                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-                isLocked ? "cursor-not-allowed opacity-50" : "cursor-pointer",
-              )}
-              aria-pressed={selected ? "true" : "false"}
-              aria-label={label}
-              title={label}
-            >
-              <Icon
-                strokeWidth={selected ? 2.5 : 2}
-                className={cn(iconClass, selected ? "text-primary" : undefined)}
-                aria-hidden="true"
-              />
-            </button>
-          );
-        })}
-      </div>
-    );
-  }
+  const options = validGlyphs
+    ? customChoices(variant, validGlyphs)
+    : builtInChoices(variant, useEmoji);
+  const previewValue = (!locked ? hoverValue : null) ?? selectedValue ?? 0;
 
-  /* ── Stars ──────────────────────────────────────────────── */
-  if (variant === "stars") {
-    const previewValue =
-      (isLocked ? selectedValue : (hoverValue ?? selectedValue)) ?? 0;
-
-    if (ratingStyle === "emoji") {
-      return (
-        <div className={cn(wrapperClass, className)}>
-          {Array.from({ length: 5 }).map((_, idx) => {
-            const value = idx + 1;
-            const filled = value <= previewValue;
-            const selected = selectedValue === value;
-            const label = `Rate ${value} star${value === 1 ? "" : "s"}`;
-            return (
-              <button
-                key={value}
-                type="button"
-                disabled={isLocked}
-                onMouseEnter={() => setHoverValue(value)}
-                onMouseLeave={() => setHoverValue(null)}
-                onFocus={() => setHoverValue(value)}
-                onBlur={() => setHoverValue(null)}
-                onClick={() => select(value)}
-                className={cn(
-                  "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200 motion-reduce:transition-none",
-                  emojiClass,
-                  "font-normal leading-none",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
-                  selected
-                    ? "bg-primary/10 ring-2 ring-primary/20"
-                    : "hover:bg-muted/50",
-                  isLocked ? "cursor-not-allowed opacity-50" : "cursor-pointer",
-                )}
-                aria-pressed={selected ? "true" : "false"}
-                aria-label={label}
-                title={label}
-              >
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    "select-none transition-[filter,color] duration-200 motion-reduce:transition-none",
-                    filled
-                      ? "text-primary grayscale-0"
-                      : "text-muted-foreground/65 grayscale",
-                  )}
-                >
-                  ⭐
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      );
-    }
-
-    return (
-      <div className={cn(wrapperClass, className)}>
-        {Array.from({ length: 5 }).map((_, idx) => {
-          const value = idx + 1;
-          const filled = value <= previewValue;
-          const selected = selectedValue === value;
-          const label = `Rate ${value} star${value === 1 ? "" : "s"}`;
-          return (
-            <button
-              key={value}
-              type="button"
-              disabled={isLocked}
-              onMouseEnter={() => setHoverValue(value)}
-              onMouseLeave={() => setHoverValue(null)}
-              onFocus={() => setHoverValue(value)}
-              onBlur={() => setHoverValue(null)}
-              onClick={() => select(value)}
-              className={cn(
-                "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200 motion-reduce:transition-none",
-                btnClass,
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
-                selected
-                  ? "bg-primary/10 text-primary ring-2 ring-primary/20"
-                  : filled
-                    ? "text-primary"
-                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-                isLocked ? "cursor-not-allowed opacity-50" : "cursor-pointer",
-              )}
-              aria-pressed={selected ? "true" : "false"}
-              aria-label={label}
-              title={label}
-            >
-              <Star
-                className={iconClass}
-                fill={filled ? "currentColor" : "none"}
-                aria-hidden="true"
-              />
-            </button>
-          );
-        })}
-      </div>
-    );
-  }
-
-  /* ── Emoji (default) — 5-point mood ───────────────────────── */
   return (
-    <div className={cn(wrapperClass, className)}>
-      {emojiStyle === "emoji"
-        ? DEFAULT_EMOJIS.map((emoji, idx) => {
-            const value = idx + 1;
-            const selected = selectedValue === value;
-            const label = `Rating ${value} of 5`;
-            return (
-              <button
-                key={emoji}
-                type="button"
-                disabled={isLocked}
-                onClick={() => select(value)}
-                className={cn(
-                  "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200 motion-reduce:transition-none",
-                  emojiClass,
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
-                  selected
-                    ? "bg-primary/10 ring-2 ring-primary/20"
-                    : "hover:bg-muted/50",
-                  isLocked ? "cursor-not-allowed opacity-50" : "cursor-pointer",
-                )}
-                aria-pressed={selected ? "true" : "false"}
-                aria-label={label}
-                title={label}
-              >
-                <span aria-hidden="true">{emoji}</span>
-              </button>
-            );
-          })
-        : LUCIDE_FACE_SET.map(({ Icon, label }, idx) => {
-            const value = idx + 1;
-            const selected = selectedValue === value;
-            const aria = `${label} (${value} of 5)`;
-            return (
-              <button
-                key={label}
-                type="button"
-                disabled={isLocked}
-                onClick={() => select(value)}
-                className={cn(
-                  "relative flex shrink-0 aspect-square items-center justify-center rounded-full transition-all duration-200 motion-reduce:transition-none",
-                  btnClass,
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
-                  selected
-                    ? "bg-primary/10 text-primary ring-2 ring-primary/20"
-                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-                  isLocked ? "cursor-not-allowed opacity-50" : "cursor-pointer",
-                )}
-                aria-pressed={selected ? "true" : "false"}
-                aria-label={aria}
-                title={aria}
-              >
-                <Icon
-                  className={cn(
-                    iconClass,
-                    selected ? "text-primary" : undefined,
-                  )}
-                  aria-hidden="true"
-                />
-              </button>
-            );
-          })}
+    <div
+      data-slot="feedback-rating"
+      role="group"
+      aria-label={
+        stars ? "Star rating" : thumbs ? "Helpfulness" : "Experience rating"
+      }
+      className={cn(
+        feedbackStyles.rating,
+        thumbs && !inline && feedbackStyles.thumbsRating,
+        inline && feedbackStyles.inlineRating,
+        stars &&
+          (inline
+            ? feedbackStyles.inlineStarsRating
+            : feedbackStyles.starsRating),
+        className,
+      )}
+    >
+      {options.map(({ value, label, glyph }) => {
+        const selected = selectedValue === value;
+        const filled = stars && value <= previewValue;
+
+        return (
+          <Button
+            key={value}
+            type="button"
+            variant="ghost"
+            disabled={locked}
+            aria-pressed={selected}
+            aria-label={label}
+            title={label}
+            data-slot="feedback-choice"
+            data-state={selected ? "selected" : "idle"}
+            onMouseEnter={
+              stars && !locked ? () => setHoverValue(value) : undefined
+            }
+            onMouseLeave={stars ? () => setHoverValue(null) : undefined}
+            onFocus={stars && !locked ? () => setHoverValue(value) : undefined}
+            onBlur={stars ? () => setHoverValue(null) : undefined}
+            onClick={() => select(value)}
+            className={cn(
+              feedbackStyles.choice,
+              feedbackStyles.focus,
+              thumbs && !inline && feedbackStyles.thumbChoice,
+              inline && feedbackStyles.inlineChoice,
+              !stars && selected && feedbackStyles.selected,
+              filled && feedbackStyles.filledStar,
+              (state === "done" || state === "submitting") &&
+                selected &&
+                feedbackStyles.submittedChoice,
+            )}
+          >
+            <span
+              aria-hidden="true"
+              data-slot="feedback-glyph"
+              className={cn(
+                feedbackStyles.glyph,
+                filled && feedbackStyles.filledGlyph,
+              )}
+            >
+              {glyph}
+            </span>
+            {thumbs && !inline ? (
+              <span aria-hidden="true" className={feedbackStyles.thumbLabel}>
+                {label}
+              </span>
+            ) : null}
+          </Button>
+        );
+      })}
     </div>
   );
 }

@@ -5,6 +5,10 @@ export {
   type FeedbackDescriptionProps,
 } from "./feedback-description";
 export { FeedbackRating, type FeedbackRatingProps } from "./feedback-rating";
+export {
+  FeedbackResponse,
+  type FeedbackResponseProps,
+} from "./feedback-response";
 export { FeedbackInput, type FeedbackInputProps } from "./feedback-input";
 export { FeedbackFooter, type FeedbackFooterProps } from "./feedback-footer";
 export { useFeedbackContext, type WidgetSize } from "./feedback-context";
