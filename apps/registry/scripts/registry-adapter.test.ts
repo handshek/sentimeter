@@ -32,7 +32,7 @@ describe("Registry Item Adapter", () => {
     const paths = await createTestPaths();
     const artifacts = await emitRegistry({ paths });
 
-    assert.equal(artifacts.length, 15);
+    assert.equal(artifacts.length, 17);
     assert.equal(
       await readFile(
         path.join(paths.stageRoot, "feedback-system", "index.ts"),

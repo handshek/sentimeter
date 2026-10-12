@@ -1,6 +1,15 @@
 import Link from "next/link";
-import { Github } from "lucide-react";
+import { Activity, ArrowUpRight, Github, Menu, X } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@workspace/ui/components/sheet";
 import { REPOSITORY_URL } from "../../_lib/widget-catalog";
 import { ThemeToggle } from "../theme-toggle";
 
@@ -9,42 +18,123 @@ export function HeaderSection({
 }: {
   analyticsEnabled: boolean;
 }) {
+  const links = [
+    { href: "/#widgets", label: "Widgets" },
+    { href: "/components/getting-started", label: "Documentation" },
+    { href: "/design-system", label: "Design system" },
+    ...(analyticsEnabled ? [{ href: "/dashboard", label: "Analytics" }] : []),
+  ];
+
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background">
-      <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-2 px-3 sm:px-6">
+    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
+      <div className="ds-container flex min-h-20 items-center justify-between gap-6">
         <Link
           href="/"
-          className="inline-flex min-h-11 items-center rounded-md text-lg font-semibold tracking-tight focus-visible:outline-2 focus-visible:outline-ring"
+          aria-label="Sentimeter home"
+          className="inline-flex min-h-11 shrink-0 items-center gap-2.5 rounded-md font-semibold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
         >
-          Sentimeter
+          <Activity aria-hidden="true" className="size-5 text-brand" />
+          <span className="text-lg">Sentimeter</span>
         </Link>
-        <nav aria-label="Main" className="flex items-center gap-1">
-          <Button asChild variant="ghost" className="h-11">
-            <Link href="/components">Widgets</Link>
-          </Button>
+        <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
+          {links.map((link) => (
+            <Button
+              key={link.href}
+              asChild
+              variant="ghost"
+              className="px-3 text-muted-foreground"
+            >
+              <Link href={link.href}>{link.label}</Link>
+            </Button>
+          ))}
+        </nav>
+        <div className="flex items-center gap-1">
           <Button
             asChild
             variant="ghost"
-            className="hidden h-11 sm:inline-flex"
+            size="icon"
+            className="hidden sm:inline-flex"
           >
-            <Link href="/#how-it-works">How It Works</Link>
-          </Button>
-          {analyticsEnabled && (
-            <Button
-              asChild
-              variant="ghost"
-              className="hidden h-11 text-muted-foreground md:inline-flex"
-            >
-              <Link href="/dashboard">Analytics</Link>
-            </Button>
-          )}
-          <ThemeToggle />
-          <Button asChild variant="ghost" size="icon" className="size-11">
             <a href={REPOSITORY_URL} aria-label="Sentimeter on GitHub">
-              <Github aria-hidden="true" className="size-5" />
+              <Github aria-hidden="true" className="size-4" />
             </a>
           </Button>
-        </nav>
+          <ThemeToggle />
+          <Button
+            asChild
+            variant="outline"
+            className="ml-2 hidden lg:inline-flex"
+          >
+            <Link href="/components">
+              Browse widgets{" "}
+              <ArrowUpRight aria-hidden="true" className="size-4" />
+            </Link>
+          </Button>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden"
+                aria-label="Open navigation"
+              >
+                <Menu aria-hidden="true" className="size-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent showCloseButton={false} className="gap-6 p-6">
+              <SheetHeader className="p-0 pr-10">
+                <SheetTitle className="ds-title">Sentimeter</SheetTitle>
+                <SheetDescription>
+                  Feedback components, made to feel at home.
+                </SheetDescription>
+              </SheetHeader>
+              <SheetClose asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-3 right-3"
+                  aria-label="Close navigation"
+                >
+                  <X aria-hidden="true" className="size-5" />
+                </Button>
+              </SheetClose>
+              <nav aria-label="Mobile" className="flex flex-col gap-2">
+                {links.map((link) => (
+                  <SheetClose asChild key={link.href}>
+                    <Button
+                      asChild
+                      variant="ghost"
+                      size="lg"
+                      className="justify-start px-3"
+                    >
+                      <Link href={link.href}>{link.label}</Link>
+                    </Button>
+                  </SheetClose>
+                ))}
+                <SheetClose asChild>
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="lg"
+                    className="justify-start px-3"
+                  >
+                    <a href={REPOSITORY_URL}>
+                      <Github aria-hidden="true" className="size-4" /> GitHub
+                    </a>
+                  </Button>
+                </SheetClose>
+              </nav>
+              <SheetClose asChild>
+                <Button asChild>
+                  <Link href="/components">
+                    Browse widgets{" "}
+                    <ArrowUpRight aria-hidden="true" className="size-4" />
+                  </Link>
+                </Button>
+              </SheetClose>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </header>
   );

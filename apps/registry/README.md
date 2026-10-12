@@ -27,6 +27,7 @@ apps/registry/.generated/sentimeter/
 ├── feedback-system/
 │   ├── index.ts
 │   ├── types.ts
+│   ├── design-system.ts
 │   ├── core/
 │   │   ├── submit.ts
 │   │   └── use-widget-machine.ts
@@ -51,6 +52,7 @@ components/sentimeter/
 ├── feedback-system/
 │   ├── index.ts
 │   ├── types.ts
+│   ├── design-system.ts
 │   ├── core/
 │   └── compound/
 └── <widget>.tsx
@@ -67,7 +69,11 @@ bunx shadcn add "https://registry.handshek.workers.dev/r/emoji-feedback.json"
 ```
 
 The first install pulls in the shared `feedback-system` tree. Installing another
-Sentimeter Widget adds its preset file while reusing that shared tree.
+Sentimeter Widget adds its wrapper file while reusing that shared tree. The
+design-system module travels with every install and reads the host's shadcn
+theme. Host-local Button, Textarea, and Label components
+and Lucide remain the only UI dependencies; no Sentimeter stylesheet or font
+download is required.
 
 ## Build flow
 

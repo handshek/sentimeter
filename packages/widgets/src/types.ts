@@ -1,4 +1,9 @@
+import type { ReactNode } from "react";
+
 export type WidgetState = "idle" | "selected" | "submitting" | "done";
+
+/** `stacked` is the card; `inline` is a one-line bar that opens after a choice. */
+export type WidgetLayout = "stacked" | "inline";
 
 export type WidgetSubmitErrorCode =
   | "missing_api_key"
@@ -46,5 +51,29 @@ export type WidgetCallbacks = {
   onSubmitStart?: (payload: WidgetPayload) => void;
   onSubmitSuccess?: (payload: WidgetPayload) => void;
   onSubmitError?: (error: unknown, payload: WidgetPayload) => void;
+  /** The close button dismissed the whole widget. */
   onCancel?: () => void;
+  /** Cancel cleared the choice and returned the widget to idle. */
+  onReset?: () => void;
 };
+
+/**
+ * One rating choice: an emoji string, an icon element, an image, or any node.
+ * Use the object form to give the choice an accessible name.
+ */
+export type FeedbackGlyph = ReactNode | { glyph: ReactNode; label?: string };
+
+/** Five faces from worst (value 1) to best (value 5). */
+export type FaceGlyphs = readonly [
+  worst: FeedbackGlyph,
+  poor: FeedbackGlyph,
+  neutral: FeedbackGlyph,
+  good: FeedbackGlyph,
+  best: FeedbackGlyph,
+];
+
+/** Thumbs in display order: like (value 1), then dislike (value 0). */
+export type ThumbGlyphs = readonly [
+  like: FeedbackGlyph,
+  dislike: FeedbackGlyph,
+];

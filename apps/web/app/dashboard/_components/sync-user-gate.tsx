@@ -42,8 +42,8 @@ export function SyncUserGate({
     return (
       <Panel>
         <div className="space-y-3">
-          <div className="text-sm font-semibold">Unable to load</div>
-          <div className="text-sm text-muted-foreground">
+          <div className="ds-title">Unable to load</div>
+          <div className="ds-body text-muted-foreground">
             Please refresh the page or try again.
           </div>
           <Button

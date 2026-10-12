@@ -9,7 +9,7 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <Card size="sm" className={cn("gap-0 px-5", className)}>
+    <Card size="sm" className={cn("ds-panel gap-0 px-5 ring-0", className)}>
       {children}
     </Card>
   );

@@ -500,7 +500,7 @@ async function renderAnalytics() {
 
 function kpiCard(label: string) {
   return screen
-    .getAllByText(label, { selector: "span.text-sm.font-medium" })[0]!
+    .getAllByText(label, { selector: "span.ds-label" })[0]!
     .closest<HTMLElement>('[data-slot="card"]')!;
 }
 

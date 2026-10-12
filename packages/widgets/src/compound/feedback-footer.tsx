@@ -4,29 +4,26 @@ import * as React from "react";
 import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
 import { useFeedbackContext } from "./feedback-context";
-import type { WidgetSize } from "./feedback-context";
-import { LoaderCircle } from "lucide-react";
+import { CheckCircle2, CircleAlert, LoaderCircle } from "lucide-react";
+import { feedbackStyles } from "../design-system";
 
 export type FeedbackFooterProps = {
   submitLabel?: string;
+  /** Clears the unsent choice and comment. */
   cancelLabel?: string;
   showCancel?: boolean;
   thankYouMessage?: React.ReactNode;
+  /** A short note at the start of the inline footer, such as "Optional". */
+  hint?: React.ReactNode;
   className?: string;
-};
-
-const FOOTER_BUTTON_SIZE_MAP: Record<WidgetSize, string> = {
-  sm: "py-4",
-  default: "py-5",
-  md: "py-5",
-  lg: "py-6",
 };
 
 export function FeedbackFooter({
   submitLabel = "Submit",
   cancelLabel = "Cancel",
-  showCancel = false,
+  showCancel = true,
   thankYouMessage = "Thanks!",
+  hint,
   className,
 }: FeedbackFooterProps) {
   const {
@@ -34,14 +31,20 @@ export function FeedbackFooter({
     submitError,
     disabled,
     submitSelected,
-    cancel,
+    reset,
     text,
-    size,
     containerRef,
+    layout,
   } = useFeedbackContext();
+  const inline = layout === "inline";
+  const actionsRef = React.useRef<HTMLDivElement>(null);
+  const [actionHeight, setActionHeight] = React.useState(0);
   const submitButtonRef = React.useRef<HTMLButtonElement>(null);
   const successRef = React.useRef<HTMLDivElement>(null);
   const shouldFocusSuccessRef = React.useRef(false);
+  const actionStyle = actionHeight
+    ? { minHeight: `max(var(--feedback-action-height), ${actionHeight}px)` }
+    : undefined;
 
   React.useEffect(() => {
     const activeElement = document.activeElement;
@@ -67,20 +70,38 @@ export function FeedbackFooter({
         role="status"
         aria-live="polite"
         aria-atomic="true"
+        data-slot="feedback-status"
         className={cn(
-          "mt-3 rounded-2xl border border-border/60 bg-muted/20 px-3 py-2 text-sm text-foreground",
+          feedbackStyles.success,
+          inline && feedbackStyles.inlineSuccess,
+          feedbackStyles.focus,
           className,
         )}
+        // Inline feedback collapses back to its bar, so only the stacked
+        // card keeps the measured action footprint.
+        style={inline ? undefined : actionStyle}
       >
-        {thankYouMessage}
+        <CheckCircle2
+          className={feedbackStyles.statusIcon}
+          aria-hidden="true"
+        />
+        <span>{thankYouMessage}</span>
       </div>
     );
   }
 
   if (state !== "selected" && state !== "submitting") return null;
 
+  const pending = disabled || state === "submitting";
+
   return (
-    <div className={cn("mt-5", className)}>
+    <div
+      data-slot="feedback-footer"
+      className={cn(
+        inline ? feedbackStyles.inlineFooter : feedbackStyles.footer,
+        className,
+      )}
+    >
       {state === "submitting" ? (
         <p
           role="status"
@@ -96,21 +117,41 @@ export function FeedbackFooter({
           role="status"
           aria-live="polite"
           aria-atomic="true"
-          className="mb-3 text-sm text-destructive"
+          className={cn(
+            feedbackStyles.error,
+            inline && feedbackStyles.inlineError,
+          )}
         >
-          {submitError.message}
+          <CircleAlert
+            className={cn(
+              feedbackStyles.errorIcon,
+              inline && feedbackStyles.inlineErrorIcon,
+            )}
+            aria-hidden="true"
+          />
+          <span>{submitError.message}</span>
         </p>
+      ) : inline && hint ? (
+        <p className={feedbackStyles.hint}>{hint}</p>
       ) : null}
-      <div className="flex gap-3">
+      <div
+        ref={actionsRef}
+        className={
+          inline ? feedbackStyles.inlineActions : feedbackStyles.actions
+        }
+        style={actionStyle}
+      >
         {showCancel ? (
           <Button
             type="button"
             variant="outline"
-            disabled={disabled || state === "submitting"}
-            onClick={cancel}
+            disabled={pending}
+            onClick={reset}
             className={cn(
-              "flex-1 rounded-2xl text-sm font-semibold",
-              FOOTER_BUTTON_SIZE_MAP[size],
+              feedbackStyles.action,
+              inline && feedbackStyles.compactAction,
+              inline ? feedbackStyles.ghostCancel : feedbackStyles.cancel,
+              feedbackStyles.focus,
             )}
           >
             {cancelLabel}
@@ -119,8 +160,13 @@ export function FeedbackFooter({
         <Button
           ref={submitButtonRef}
           type="button"
-          disabled={disabled || state === "submitting"}
+          disabled={pending}
+          aria-busy={state === "submitting" || undefined}
           onClick={() => {
+            const height = actionsRef.current?.offsetHeight ?? 0;
+            setActionHeight((previousHeight) =>
+              Math.max(previousHeight, height),
+            );
             shouldFocusSuccessRef.current =
               document.activeElement === submitButtonRef.current;
             void submitSelected(text);
@@ -129,20 +175,25 @@ export function FeedbackFooter({
             if (event.relatedTarget) shouldFocusSuccessRef.current = false;
           }}
           className={cn(
-            "flex-1 rounded-2xl text-sm font-semibold shadow-sm",
-            FOOTER_BUTTON_SIZE_MAP[size],
+            feedbackStyles.action,
+            inline && feedbackStyles.compactAction,
+            feedbackStyles.submit,
+            feedbackStyles.focus,
           )}
         >
           {state === "submitting" ? (
             <>
               <LoaderCircle
-                className="size-4 animate-spin motion-reduce:animate-none"
+                className={cn(
+                  feedbackStyles.statusIcon,
+                  "animate-spin text-current motion-reduce:animate-none",
+                )}
                 aria-hidden="true"
               />
               Submitting…
             </>
           ) : submitError ? (
-            "Try Again"
+            "Try again"
           ) : (
             submitLabel
           )}

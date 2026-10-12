@@ -1,5 +1,9 @@
 export type {
+  FaceGlyphs,
+  FeedbackGlyph,
+  ThumbGlyphs,
   WidgetCallbacks,
+  WidgetLayout,
   WidgetPayload,
   WidgetState,
   WidgetSubmit,
@@ -9,8 +13,10 @@ export type {
   FeedbackTitleProps,
   FeedbackDescriptionProps,
   FeedbackRatingProps,
+  FeedbackResponseProps,
   FeedbackInputProps,
   FeedbackFooterProps,
+  FeedbackStyle,
 } from "./feedback-system";
 
 export {
@@ -21,6 +27,7 @@ export {
   FeedbackTitle,
   FeedbackDescription,
   FeedbackRating,
+  FeedbackResponse,
   FeedbackInput,
   FeedbackFooter,
   useFeedbackContext,

@@ -1,12 +1,11 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  ArrowUpRight,
   Braces,
-  Database,
-  Palette,
-  Keyboard,
+  Check,
   Github,
-  Activity,
+  Layers3,
 } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -16,407 +15,391 @@ import {
   AccordionTrigger,
 } from "@workspace/ui/components/accordion";
 import {
-  widgetDocs,
   getUsageSnippet,
   REPOSITORY_URL,
+  widgetDocs,
 } from "../../_lib/widget-catalog";
-import { WidgetDemo } from "../../components/_components/widget-demo";
 import { CodeBlock } from "../../components/_components/code-block";
+import { WidgetSpecimen } from "./widget-specimen";
 
-const benefits = [
-  {
-    icon: Palette,
-    title: "Your theme, not an iframe",
-    description:
-      "Uses your shadcn Button, Textarea, and design tokens. No foreign stylesheet fighting with your app.",
-  },
-  {
-    icon: Keyboard,
-    title: "The small details, handled",
-    description:
-      "Keyboard focus, 44px reaction targets, loading states, readable success, and retryable errors. Start from working UI.",
-  },
-  {
-    icon: Database,
-    title: "No backend lock-in",
-    description:
-      "Pass a submit handler and save feedback wherever you already store data. Hosted analytics is there if you want it.",
-  },
-];
-const steps = [
+const scenarios = [
   {
     number: "01",
-    title: "Install",
+    family: "emoji" as const,
+    slug: "emoji-feedback",
+    eyebrow: "After onboarding · Feature discovery",
+    title: "Make room for a feeling.",
     description:
-      "Run one shadcn command. The widget and shared feedback system become readable files in your project.",
+      "Five reactions tell you how an experience landed. Add an optional comment when a little context would help.",
+    name: "Emoji feedback",
+    detail: "Five-point sentiment · Emoji, icons, or your own glyphs",
   },
   {
     number: "02",
-    title: "Make It Yours",
+    family: "thumbs" as const,
+    slug: "like-dislike",
+    eyebrow: "Documentation · AI responses",
+    title: "Ask one useful question.",
     description:
-      "Use a preset or compose your own. Change the copy, style, and placement—inline, in a popover, or in a dialog.",
+      "A simple yes or no, right where someone needs it. A lightweight way to learn which answers actually help.",
+    name: "Like / dislike",
+    layout: "inline" as const,
+    detail: "Binary feedback · Inline, out of the way until chosen",
   },
   {
     number: "03",
-    title: "Connect",
+    family: "star" as const,
+    slug: "star-rating",
+    eyebrow: "Support · Completed experiences",
+    title: "Give the experience a measure.",
     description:
-      "Save reactions with your own submit handler. Or add a project key to use Sentimeter’s optional hosted dashboard.",
-  },
-];
-const questions = [
-  {
-    q: "What is Sentimeter?",
-    a: "An open-source registry of React feedback widgets for shadcn apps. Start with emoji, thumbs, or stars, install the source, and connect your backend. The hosted analytics dashboard is optional.",
-  },
-  {
-    q: "Are the widgets free?",
-    a: "Yes. The widget source is MIT licensed. You can use it in personal and commercial projects, modify it, and keep it in your own codebase.",
-  },
-  {
-    q: "Do I own the installed code?",
-    a: "Yes. The shadcn CLI copies the source into your project. There is no Sentimeter runtime package or hosted iframe to depend on. Edit the files like any other component in your app.",
-  },
-  {
-    q: "What do I need in my app?",
-    a: "React, TypeScript, Tailwind CSS, and a configured shadcn project. The widgets use your local Button, Textarea, and utilities. For Next.js, render them inside a client boundary; for Astro, use a hydrated React island.",
-  },
-  {
-    q: "Where does feedback go?",
-    a: "You choose. A custom submit handler can send it to your API or database. A publishable project key enables optional Sentimeter analytics when no custom handler is set. Without either, the widget runs locally and stores nothing.",
-  },
-  {
-    q: "Can I customize the UI?",
-    a: "Change the variant, size, labels, optional text input, and success message through props. Use the compound components for your own layout, or edit the installed source directly. Your app’s theme tokens supply the colors and typography.",
+      "A familiar five-star scale for the moments that deserve a closer look. Keep the rating, invite the story behind it.",
+    name: "Star rating",
+    detail: "Five-star rating · Hover and keyboard feedback",
   },
 ];
 
-export function BenefitsSection() {
-  return (
-    <section
-      aria-labelledby="why-sentimeter"
-      className="border-y border-border bg-muted/20"
-    >
-      <div className="mx-auto max-w-6xl space-y-10 px-4 py-14 sm:px-6 sm:py-20">
-        <div className="max-w-xl space-y-3">
-          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-            Less Plumbing. More Product.
-          </p>
-          <h2
-            id="why-sentimeter"
-            className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl"
-          >
-            Feedback shouldn’t be a whole sprint.
-          </h2>
-          <p className="leading-7 text-muted-foreground">
-            You need to know what users think. You don’t need another UI system,
-            an embed, or a backend migration to ask.
-          </p>
-        </div>
-        <div className="grid gap-8 md:grid-cols-3">
-          {benefits.map(({ icon: Icon, title, description }) => (
-            <div key={title} className="space-y-3">
-              <Icon
-                aria-hidden="true"
-                className="mb-4 size-5 text-muted-foreground"
-              />
-              <h3 className="font-semibold">{title}</h3>
-              <p className="text-sm leading-6 text-muted-foreground">
-                {description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 export function ShowcaseSection() {
   return (
     <section
-      id="showcase"
-      aria-labelledby="try-widgets"
-      className="mx-auto max-w-6xl space-y-8 px-4 py-14 sm:px-6 sm:py-20"
+      id="widgets"
+      aria-labelledby="collection-title"
+      className="border-t border-border"
     >
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="max-w-xl space-y-3">
-          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-            The Registry
-          </p>
-          <h2
-            id="try-widgets"
-            className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl"
-          >
-            Small widgets. Real conversations.
-          </h2>
-          <p className="leading-7 text-muted-foreground">
-            Three ways to ask. The same accessible foundation, styled by your
-            app.
+      <div className="ds-container ds-section">
+        <div className="mb-12 flex flex-col justify-between gap-6 sm:mb-16 md:flex-row md:items-end">
+          <div className="max-w-xl">
+            <p className="ds-eyebrow mb-4 text-muted-foreground">
+              The collection
+            </p>
+            <h2 id="collection-title" className="ds-section-title text-balance">
+              The right question.
+              <br />
+              The right moment.
+            </h2>
+          </div>
+          <p className="ds-body max-w-sm text-muted-foreground">
+            Three response types. One considered foundation. Each one is real,
+            interactive, and ready for your codebase.
           </p>
         </div>
-        <Button asChild variant="ghost" className="h-11">
-          <Link href="/components">
-            Explore the Docs{" "}
-            <ArrowRight aria-hidden="true" className="size-4" />
-          </Link>
-        </Button>
-      </div>
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {widgetDocs.map((widget) => (
-          <section
-            key={widget.slug}
-            aria-labelledby={`showcase-${widget.slug}`}
-            className="min-w-0 rounded-xl border border-border"
-          >
-            <div className="border-b border-border bg-muted/20 px-0 py-6 min-[360px]:px-2">
-              <WidgetDemo
-                widget={{
-                  slug: widget.slug,
-                  name: widget.name,
-                  preview: widget.preview,
-                  defaultVariant: widget.defaultVariant,
-                }}
-              />
-            </div>
-            <div className="space-y-3 p-5">
-              <h3 id={`showcase-${widget.slug}`} className="font-semibold">
-                {widget.name}
-              </h3>
-              <p className="text-sm leading-6 text-muted-foreground">
-                {widget.description}
-              </p>
-              <Button asChild variant="ghost" className="-ml-3 h-11">
-                <Link href={`/components/${widget.slug}`}>
-                  Preview & Install{" "}
-                  <ArrowRight aria-hidden="true" className="size-4" />
-                </Link>
-              </Button>
-            </div>
-          </section>
-        ))}
-      </div>
-      <p className="text-xs text-muted-foreground">
-        These demos run locally. Nothing is sent or stored.
-      </p>
-    </section>
-  );
-}
-export function HowItWorksSection() {
-  return (
-    <section
-      id="how-it-works"
-      aria-labelledby="how-title"
-      className="border-y border-border bg-muted/20"
-    >
-      <div className="mx-auto max-w-6xl space-y-10 px-4 py-14 sm:px-6 sm:py-20">
-        <div className="space-y-3">
-          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-            How It Works
-          </p>
-          <h2
-            id="how-title"
-            className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl"
-          >
-            Install. Make it yours. Ship.
-          </h2>
-        </div>
-        <ol className="grid gap-8 md:grid-cols-3">
-          {steps.map((step) => (
-            <li key={step.number} className="space-y-3">
-              <span className="font-mono text-sm text-muted-foreground">
-                {step.number}
-              </span>
-              <h3 className="text-lg font-semibold">{step.title}</h3>
-              <p className="text-sm leading-6 text-muted-foreground">
-                {step.description}
-              </p>
-            </li>
+        <div className="divide-y divide-border border-y border-border">
+          {scenarios.map((scenario) => (
+            <article
+              key={scenario.slug}
+              className="grid gap-7 py-8 md:grid-cols-2 md:items-center md:gap-12 lg:gap-24"
+            >
+              <div className="flex gap-5 sm:gap-8">
+                <span
+                  className="ds-code pt-1 text-muted-foreground"
+                  aria-hidden="true"
+                >
+                  {scenario.number}
+                </span>
+                <div className="min-w-0">
+                  <p className="ds-eyebrow mb-3 text-muted-foreground">
+                    {scenario.eyebrow}
+                  </p>
+                  <h3 className="ds-title">{scenario.title}</h3>
+                  <p className="ds-body mt-3 max-w-md text-muted-foreground">
+                    {scenario.description}
+                  </p>
+                  <Button
+                    asChild
+                    variant="link"
+                    className="mt-5 px-0 text-foreground"
+                  >
+                    <Link href={`/components/${scenario.slug}`}>
+                      Explore {scenario.name.toLowerCase()}{" "}
+                      <ArrowUpRight aria-hidden="true" className="size-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+              <div className="ds-inset min-w-0 px-3 pt-6 pb-3 sm:px-6">
+                <div className="flex min-h-64 items-center">
+                  <WidgetSpecimen
+                    family={scenario.family}
+                    layout={"layout" in scenario ? scenario.layout : undefined}
+                  />
+                </div>
+                <p className="ds-caption border-t border-border px-4 py-3 text-center text-muted-foreground sm:px-0">
+                  {scenario.detail}
+                </p>
+              </div>
+            </article>
           ))}
-        </ol>
-        <Button asChild variant="outline" className="h-11">
-          <Link href="/components/getting-started">
-            Follow the Installation Guide{" "}
-            <ArrowRight aria-hidden="true" className="size-4" />
-          </Link>
-        </Button>
-      </div>
-    </section>
-  );
-}
-export function OwnershipSection() {
-  return (
-    <section
-      aria-labelledby="own-the-code"
-      className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-2 lg:gap-16"
-    >
-      <div className="space-y-5">
-        <Braces aria-hidden="true" className="size-6 text-muted-foreground" />
-        <h2
-          id="own-the-code"
-          className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl"
-        >
-          It’s your component now.
-        </h2>
-        <p className="leading-7 text-muted-foreground">
-          Not an opaque dependency. Not a widget with somebody else’s branding.
-          Just React source that belongs alongside the rest of your app.
+        </div>
+        <p className="ds-caption mt-5 text-muted-foreground">
+          All examples run locally. No feedback is sent or stored.
         </p>
-        <ul className="space-y-3 text-sm leading-6 text-muted-foreground">
-          <li>Use emoji or icons. Add optional text. Change every label.</li>
-          <li>
-            Keep a ready-made preset or build your layout with the compound
-            components.
-          </li>
-          <li>Bring your own API, database, and deployment.</li>
-        </ul>
-        <Button asChild variant="outline" className="h-11">
-          <Link href="/components/emoji-feedback">
-            See the Props & Examples{" "}
-            <ArrowRight aria-hidden="true" className="size-4" />
-          </Link>
-        </Button>
       </div>
-      <CodeBlock
-        code={getUsageSnippet(widgetDocs[0]!, {
-          variant: "icons",
-          showInput: true,
-        })}
-        label="Make It Yours"
-      />
     </section>
   );
 }
-export function IntegrationSection({
+
+export function HowItWorksSection({
   analyticsEnabled,
 }: {
   analyticsEnabled: boolean;
 }) {
   return (
     <section
-      aria-labelledby="integrations"
-      className="border-y border-border bg-muted/20"
+      id="how-it-works"
+      aria-labelledby="integration-title"
+      className="border-y border-border bg-muted/30"
     >
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 sm:py-20 md:grid-cols-2 md:gap-16">
-        <div className="space-y-4">
-          <Activity
-            aria-hidden="true"
-            className="size-5 text-muted-foreground"
-          />
-          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-            Optional Hosted Analytics
+      <div className="ds-container ds-section grid gap-10 lg:grid-cols-2 lg:gap-20">
+        <div>
+          <p className="ds-eyebrow mb-4 text-muted-foreground">
+            From registry to your repository
           </p>
           <h2
-            id="integrations"
-            className="text-balance text-2xl font-semibold tracking-tight"
+            id="integration-title"
+            className="ds-section-title max-w-md text-balance"
           >
-            Want the dashboard too?
+            Small integration.
+            <br />
+            Full ownership.
           </h2>
-          <p className="text-sm leading-7 text-muted-foreground">
-            Keep the open-source widgets. Add a publishable project key to
-            collect responses in Sentimeter, watch sentiment trends, and read
-            the live feedback feed. Configure allowed origins for production.
+          <p className="ds-body mt-5 max-w-md text-muted-foreground">
+            The component lives alongside the rest of your UI. You choose what
+            it looks like and where the feedback goes.
           </p>
-          <Button asChild variant="outline" className="h-11">
-            <Link
-              href={
-                analyticsEnabled
-                  ? "/dashboard"
-                  : "/components/getting-started#submission"
-              }
-            >
-              {analyticsEnabled
-                ? "Explore Analytics"
-                : "Read Integration Guidance"}
+          <ol className="mt-9 max-w-md divide-y divide-border border-y border-border">
+            {[
+              {
+                title: "Install the source",
+                text: "One shadcn command adds readable React files and the UI primitives they use.",
+              },
+              {
+                title: "Make it feel at home",
+                text: "Your theme is the default. Change the copy, pick a layout, or compose the individual parts.",
+              },
+              {
+                title: "Connect your backend",
+                text: "Pass an async submit handler. Send reactions and optional comments to your existing API.",
+              },
+            ].map((step, index) => (
+              <li key={step.title} className="flex gap-4 py-5">
+                <span className="ds-code pt-0.5 text-muted-foreground">
+                  0{index + 1}
+                </span>
+                <div>
+                  <h3 className="ds-heading">{step.title}</h3>
+                  <p className="ds-body-sm mt-1 text-muted-foreground">
+                    {step.text}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <Button asChild variant="link" className="mt-4 px-0 text-foreground">
+            <Link href="/components/getting-started">
+              Follow the installation guide{" "}
               <ArrowRight aria-hidden="true" className="size-4" />
             </Link>
           </Button>
         </div>
-        <div className="space-y-4">
-          <Braces aria-hidden="true" className="size-5 text-muted-foreground" />
-          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-            For You & Your Agent
-          </p>
-          <h2 className="text-balance text-2xl font-semibold tracking-tight">
-            Docs your tools can read.
-          </h2>
-          <p className="text-sm leading-7 text-muted-foreground">
-            Every widget has Markdown docs with exact install commands, props,
-            and integration examples. Add the registry namespace to use shadcn’s
-            existing MCP tooling. No extra Sentimeter server to configure.
-          </p>
-          <Button asChild variant="outline" className="h-11">
-            <Link href="/components/getting-started#agents">
-              Agent Setup <ArrowRight aria-hidden="true" className="size-4" />
-            </Link>
-          </Button>
+        <div className="min-w-0 space-y-4">
+          <CodeBlock
+            code={getUsageSnippet(
+              widgetDocs[0]!,
+              { showInput: true },
+              "custom",
+            )}
+            label="feedback.tsx"
+          />
+          <div className="flex gap-3 px-1">
+            <Braces
+              aria-hidden="true"
+              className="mt-1 size-4 shrink-0 text-muted-foreground"
+            />
+            <p className="ds-caption leading-6 text-muted-foreground">
+              Prefer a hosted destination? Sentimeter analytics is optional.{" "}
+              <Link
+                href={
+                  analyticsEnabled
+                    ? "/dashboard"
+                    : "/components/getting-started#submission"
+                }
+                className="rounded-sm text-foreground underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-ring"
+              >
+                {analyticsEnabled
+                  ? "Open the dashboard"
+                  : "Explore your connection options"}
+              </Link>
+              .
+            </p>
+          </div>
         </div>
       </div>
     </section>
   );
 }
-export function FaqSection() {
+
+export function SystemSection() {
   return (
-    <section
-      aria-labelledby="faq"
-      className="mx-auto grid max-w-6xl gap-8 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1fr_1.5fr] lg:gap-16"
-    >
-      <div className="space-y-4">
-        <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-          FAQ
-        </p>
-        <h2 id="faq" className="text-3xl font-semibold tracking-tight">
-          A few good questions.
-        </h2>
-        <p className="text-sm leading-6 text-muted-foreground">
-          Still curious? The source is open.
-        </p>
-        <Button asChild variant="ghost" className="-ml-3 h-11">
-          <a href={REPOSITORY_URL}>
-            <Github aria-hidden="true" className="size-4" />
-            View on GitHub
-          </a>
-        </Button>
+    <section aria-labelledby="system-title" className="ds-container ds-section">
+      <div className="grid gap-10 md:grid-cols-2 md:gap-20">
+        <div>
+          <p className="ds-eyebrow mb-4 text-muted-foreground">
+            Considered from the inside out
+          </p>
+          <h2
+            id="system-title"
+            className="ds-section-title max-w-md text-balance"
+          >
+            The details make it feel like yours.
+          </h2>
+          <p className="ds-body mt-5 max-w-md text-muted-foreground">
+            A shared language for type, space, surfaces, and interaction. The
+            same care, from a single reaction to the whole product.
+          </p>
+          <Button asChild variant="outline" className="mt-7">
+            <Link href="/design-system">
+              <Layers3 aria-hidden="true" className="size-4" />
+              Explore the design system{" "}
+              <ArrowUpRight aria-hidden="true" className="size-4" />
+            </Link>
+          </Button>
+        </div>
+        <dl className="divide-y divide-border border-y border-border">
+          {[
+            {
+              title: "A natural fit",
+              detail:
+                "Semantic shadcn tokens carry your colors, typography, and radius into the default widget.",
+            },
+            {
+              title: "Every state considered",
+              detail:
+                "Visible focus, explicit submission, readable confirmation, and errors you can recover from.",
+            },
+            {
+              title: "Room to make it your own",
+              detail:
+                "Two layouts, custom glyphs, and composable parts, with readable source when you want to go further.",
+            },
+          ].map((item) => (
+            <div
+              key={item.title}
+              className="grid gap-2 py-6 sm:grid-cols-[13rem_minmax(0,1fr)] sm:gap-6"
+            >
+              <dt className="ds-heading flex items-start gap-2">
+                <Check
+                  aria-hidden="true"
+                  className="mt-1 size-4 shrink-0 text-primary"
+                />
+                {item.title}
+              </dt>
+              <dd className="ds-body-sm text-muted-foreground">
+                {item.detail}
+              </dd>
+            </div>
+          ))}
+        </dl>
       </div>
-      <Accordion type="single" collapsible>
-        {questions.map((item, index) => (
-          <AccordionItem key={item.q} value={`faq-${index}`}>
-            <AccordionTrigger className="min-h-14 text-left">
-              {item.q}
-            </AccordionTrigger>
-            <AccordionContent className="text-sm leading-7 text-muted-foreground">
-              {item.a}
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
     </section>
   );
 }
+
+const questions = [
+  {
+    q: "Do I need an account to use the widgets?",
+    a: "No. Browse, try, and install the widgets without an account. You only need a Sentimeter account if you choose the optional hosted analytics dashboard.",
+  },
+  {
+    q: "What do I need in my project?",
+    a: "A React app with TypeScript, Tailwind CSS, and shadcn configured. The registry installs the widget source and its required shadcn components. In Astro, render it in a hydrated React island.",
+  },
+  {
+    q: "Where does the feedback go?",
+    a: "You choose. Pass a custom submit handler to send feedback to your API or database. Alternatively, use a publishable Sentimeter project key for hosted analytics. Without either, the widget completes locally and stores nothing.",
+  },
+  {
+    q: "Can I change the design?",
+    a: "Yes. The widget follows your app’s shadcn theme. Adjust its design tokens, swap in your own glyphs, or compose a layout from its shared parts. Since the source is in your repository, you can edit it directly.",
+  },
+  {
+    q: "Can I use this in a commercial project?",
+    a: "Yes. The widget source is MIT licensed. You can use, modify, and distribute it under that license, including in commercial projects.",
+  },
+];
+
+export function FaqSection() {
+  return (
+    <section
+      aria-labelledby="questions-title"
+      className="border-t border-border"
+    >
+      <div className="ds-container ds-section grid gap-8 lg:grid-cols-3 lg:gap-16">
+        <div>
+          <p className="ds-eyebrow mb-4 text-muted-foreground">
+            A few useful answers
+          </p>
+          <h2 id="questions-title" className="ds-section-title">
+            Before you ship.
+          </h2>
+          <Button
+            asChild
+            variant="link"
+            className="mt-5 px-0 text-muted-foreground"
+          >
+            <a href={REPOSITORY_URL}>
+              <Github aria-hidden="true" className="size-4" />
+              Explore the source{" "}
+              <ArrowUpRight aria-hidden="true" className="size-4" />
+            </a>
+          </Button>
+        </div>
+        <Accordion
+          type="single"
+          collapsible
+          className="border-t border-border lg:col-span-2"
+        >
+          {questions.map((item, index) => (
+            <AccordionItem key={item.q} value={`faq-${index}`}>
+              <AccordionTrigger className="min-h-16 py-5 text-left">
+                <span className="ds-heading">{item.q}</span>
+              </AccordionTrigger>
+              <AccordionContent className="ds-body-sm max-w-2xl pb-6 text-muted-foreground">
+                {item.a}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
+    </section>
+  );
+}
+
 export function CtaSection() {
   return (
     <section
       aria-labelledby="get-started"
-      className="border-t border-border bg-muted/20 px-4 py-14 sm:px-6 sm:py-20"
+      className="border-t border-border bg-muted/40"
     >
-      <div className="mx-auto max-w-6xl space-y-5">
-        <h2
-          id="get-started"
-          className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl"
-        >
-          Ask a better question. Ship a better product.
-        </h2>
-        <p className="max-w-xl leading-7 text-muted-foreground">
-          Pick a widget. Install the code. Start listening.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <Button asChild className="h-11 px-5">
+      <div className="ds-container ds-section flex flex-col justify-between gap-8 md:flex-row md:items-center">
+        <div>
+          <p className="ds-eyebrow mb-4 text-muted-foreground">
+            Better products begin with listening
+          </p>
+          <h2 id="get-started" className="ds-section-title text-balance">
+            Make your next release
+            <br />a conversation.
+          </h2>
+        </div>
+        <div>
+          <Button asChild size="lg">
             <Link href="/components">
-              Browse Widgets{" "}
+              Find your feedback widget{" "}
               <ArrowRight aria-hidden="true" className="size-4" />
             </Link>
           </Button>
-          <Button asChild variant="outline" className="h-11 px-5">
-            <Link href="/components/getting-started">Getting Started</Link>
-          </Button>
+          <p className="ds-caption mt-3 text-muted-foreground">
+            Open source. No account required.
+          </p>
         </div>
       </div>
     </section>

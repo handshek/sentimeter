@@ -3,15 +3,20 @@
 import * as React from "react";
 import {
   DEFAULT_FEEDBACK_ENDPOINT,
+  feedbackStyles,
   FeedbackWidget,
   FeedbackTitle,
   FeedbackDescription,
   FeedbackRating,
+  FeedbackResponse,
   FeedbackInput,
   FeedbackFooter,
+  type ThumbGlyphs,
   type WidgetCallbacks,
+  type WidgetLayout,
   type WidgetSubmit,
   type WidgetSize,
+  type FeedbackStyle,
 } from "./feedback-system";
 
 const DEFAULTS = {
@@ -31,6 +36,7 @@ export type LikeDislikeProps = {
   endpoint?: string;
   disabled?: boolean;
   className?: string;
+  style?: FeedbackStyle;
   title?: React.ReactNode;
   description?: React.ReactNode;
   showInput?: boolean;
@@ -43,6 +49,13 @@ export type LikeDislikeProps = {
   size?: WidgetSize;
   closeButton?: boolean;
   submit?: WidgetSubmit;
+  /** `stacked` (default) is the card; `inline` is a one-line bar. */
+  layout?: WidgetLayout;
+  /** Two custom glyphs: like, then dislike. Replaces `variant`. */
+  glyphs?: ThumbGlyphs;
+  /** Shows Cancel, which clears an unsent choice. Defaults to true. */
+  showCancel?: boolean;
+  cancelLabel?: string;
 } & WidgetCallbacks;
 
 export function LikeDislike({
@@ -51,10 +64,11 @@ export function LikeDislike({
   endpoint = DEFAULT_FEEDBACK_ENDPOINT,
   disabled,
   className,
+  style,
   title = DEFAULTS.title,
   description,
   showInput = DEFAULTS.showInput,
-  submitLabel = DEFAULTS.submitLabel,
+  submitLabel,
   thankYouMessage = DEFAULTS.thankYouMessage,
   doneDurationMs = 2000,
   autoHide = true,
@@ -62,8 +76,26 @@ export function LikeDislike({
   size = DEFAULTS.size,
   closeButton = false,
   submit,
+  layout = "stacked",
+  glyphs,
+  showCancel = true,
+  cancelLabel,
   ...callbacks
 }: LikeDislikeProps) {
+  const inline = layout === "inline";
+  const rating = (
+    <FeedbackRating variant="thumbs" ratingStyle={variant} glyphs={glyphs} />
+  );
+  const footer = (
+    <FeedbackFooter
+      submitLabel={submitLabel ?? (inline ? "Send" : DEFAULTS.submitLabel)}
+      cancelLabel={cancelLabel}
+      showCancel={showCancel}
+      thankYouMessage={thankYouMessage}
+      hint={inline && showInput ? "Optional" : undefined}
+    />
+  );
+
   return (
     <FeedbackWidget
       apiKey={apiKey}
@@ -74,23 +106,39 @@ export function LikeDislike({
       size={size}
       closeButton={closeButton}
       className={className}
+      style={style}
       doneDurationMs={doneDurationMs}
       autoHide={autoHide}
       submit={submit}
+      layout={layout}
       {...callbacks}
     >
-      <div className="space-y-1">
-        {title ? <FeedbackTitle>{title}</FeedbackTitle> : null}
-        {description ? (
-          <FeedbackDescription>{description}</FeedbackDescription>
-        ) : null}
-      </div>
-      <FeedbackRating variant="thumbs" ratingStyle={variant} />
-      {showInput ? <FeedbackInput /> : null}
-      <FeedbackFooter
-        submitLabel={submitLabel}
-        thankYouMessage={thankYouMessage}
-      />
+      {inline ? (
+        <>
+          <div data-slot="feedback-bar" className={feedbackStyles.bar}>
+            {title ? <FeedbackTitle>{title}</FeedbackTitle> : null}
+            {rating}
+          </div>
+          {showInput ? <FeedbackInput /> : null}
+          {footer}
+        </>
+      ) : (
+        <>
+          {title || description ? (
+            <div data-slot="feedback-header" className={feedbackStyles.header}>
+              {title ? <FeedbackTitle>{title}</FeedbackTitle> : null}
+              {description ? (
+                <FeedbackDescription>{description}</FeedbackDescription>
+              ) : null}
+            </div>
+          ) : null}
+          <FeedbackResponse>
+            {rating}
+            {showInput ? <FeedbackInput /> : null}
+          </FeedbackResponse>
+          {footer}
+        </>
+      )}
     </FeedbackWidget>
   );
 }

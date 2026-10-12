@@ -1,8 +1,13 @@
 @import "tailwindcss";
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
+/* Resolve shared utilities from the host theme without emitting its CSS twice. */
+@reference "@workspace/ui/globals.css";
 
 @source "../../node_modules/fumadocs-ui/dist/**/*.js";
+/* Keep workspace variants in this route's utility bundle alongside their base utilities. */
+@source "../../../../packages/widgets/src/**/*.{ts,tsx}";
+@source "../../../../packages/ui/src/**/*.{ts,tsx}";
 
 .docs-shell {
   --fd-layout-width: 1440px;
@@ -10,6 +15,18 @@
   --color-fd-foreground: var(--foreground);
   --color-fd-muted-foreground: var(--muted-foreground);
   --color-fd-border: var(--border);
+  --color-fd-muted: var(--muted);
+  --color-fd-popover: var(--popover);
+  --color-fd-popover-foreground: var(--popover-foreground);
+  --color-fd-card: var(--card);
+  --color-fd-card-foreground: var(--card-foreground);
+  --color-fd-primary: var(--primary);
+  --color-fd-primary-foreground: var(--primary-foreground);
+  --color-fd-secondary: var(--secondary);
+  --color-fd-secondary-foreground: var(--secondary-foreground);
+  --color-fd-accent: var(--accent);
+  --color-fd-accent-foreground: var(--accent-foreground);
+  --color-fd-ring: var(--ring);
 }
 
 .docs-shell #nd-page {
@@ -33,7 +50,15 @@
   min-width: 44px;
 }
 
-.docs-shell :is(a, button):focus-visible {
+/* Fumadocs renders header links as plain anchors; center their label in
+   the 44 px target instead of pinning it to the top. */
+.docs-shell #nd-subnav a {
+  display: inline-flex;
+  align-items: center;
+}
+
+.docs-shell
+  :is(a, button):not(:where([data-slot="feedback-widget"] *)):focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 3px;
 }
@@ -42,5 +67,102 @@
 @media (max-width: 359px) {
   .docs-shell #nd-page {
     padding-inline: 8px;
+  }
+}
+
+.docs-shell #nd-page {
+  padding-top: clamp(2rem, 5vw, 4rem);
+  padding-bottom: 5rem;
+}
+
+.docs-shell #nd-sidebar {
+  background: var(--background);
+}
+
+.docs-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.docs-header > p {
+  max-width: 60ch;
+}
+
+.docs-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 3.5rem;
+  min-width: 0;
+}
+
+.docs-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  min-width: 0;
+}
+
+.docs-header > *,
+.docs-content > *,
+.docs-section > * {
+  min-width: 0;
+}
+
+.docs-section > :is(p, ul, ol) {
+  max-width: 65ch;
+}
+
+.docs-section > h2 {
+  margin-bottom: 0.5rem;
+}
+
+.docs-content :is(p, li) > code {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--muted);
+  padding: 0.1em 0.3em;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  color: var(--foreground);
+  overflow-wrap: anywhere;
+}
+
+.docs-link {
+  color: var(--foreground);
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-underline-offset: 0.2em;
+}
+
+.docs-link:hover {
+  text-decoration-color: currentColor;
+}
+
+.docs-preview {
+  background: var(--muted);
+}
+
+.docs-props > [data-slot="table-container"] {
+  overflow: visible;
+}
+
+.docs-props :is(th, td) {
+  padding: 1rem;
+  vertical-align: top;
+}
+
+.docs-props thead {
+  background: var(--muted);
+}
+
+@media (max-width: 639px) {
+  .docs-header {
+    margin-bottom: 2rem;
+  }
+
+  .docs-content {
+    gap: 2.5rem;
   }
 }

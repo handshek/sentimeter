@@ -44,6 +44,7 @@ import { CodeBlock } from "./code-block";
 
 export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
   const defaults: WidgetDemoOptions = {
+    layout: "stacked",
     variant: widget.defaultVariant,
     size: "default",
     showInput: false,
@@ -54,22 +55,15 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
   }
 
   return (
-    <div className="space-y-6 text-[15px] leading-7 sm:space-y-8">
+    <div className="docs-content">
       <section id="preview" aria-label="Live Preview" className="min-w-0">
         <Tabs defaultValue="preview">
-          <TabsList
-            aria-label="Widget Example"
-            className="mb-3 h-auto group-data-horizontal/tabs:h-auto"
-          >
-            <TabsTrigger value="preview" className="h-11">
-              Preview
-            </TabsTrigger>
-            <TabsTrigger value="code" className="h-11">
-              Code
-            </TabsTrigger>
+          <TabsList aria-label="Widget Example" className="mb-3">
+            <TabsTrigger value="preview">Preview</TabsTrigger>
+            <TabsTrigger value="code">Code</TabsTrigger>
           </TabsList>
           <TabsContent value="preview" className="m-0">
-            <div className="rounded-xl border border-border bg-muted/20 px-0 py-3 min-[360px]:px-3 sm:px-6 sm:py-4">
+            <div className="docs-preview ds-panel px-3 py-8 sm:px-6 sm:py-10">
               <WidgetDemo widget={widget} options={options} />
             </div>
           </TabsContent>
@@ -81,7 +75,7 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
           </TabsContent>
         </Tabs>
         <div className="px-1 pt-2">
-          <p className="text-xs leading-5 text-muted-foreground">
+          <p className="ds-caption text-muted-foreground">
             Runs locally—no account, project, or network request required.
           </p>
           <Accordion type="single" collapsible>
@@ -90,7 +84,26 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
                 Customize Preview
               </AccordionTrigger>
               <AccordionContent className="space-y-4 pt-2">
-                <div className="grid max-w-md grid-cols-2 gap-4">
+                <div className="grid max-w-xl grid-cols-2 gap-4 sm:grid-cols-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="preview-layout">Layout</Label>
+                    <Select
+                      value={options.layout}
+                      onValueChange={(layout) =>
+                        updateOptions({
+                          layout: layout as WidgetDemoOptions["layout"],
+                        })
+                      }
+                    >
+                      <SelectTrigger id="preview-layout" className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="stacked">Stacked</SelectItem>
+                        <SelectItem value="inline">Inline</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="preview-variant">Variant</Label>
                     <Select
@@ -101,10 +114,7 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
                         })
                       }
                     >
-                      <SelectTrigger
-                        id="preview-variant"
-                        className="h-11 w-full data-[size=default]:h-11"
-                      >
+                      <SelectTrigger id="preview-variant" className="w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -123,10 +133,7 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
                         })
                       }
                     >
-                      <SelectTrigger
-                        id="preview-size"
-                        className="h-11 w-full data-[size=default]:h-11"
-                      >
+                      <SelectTrigger id="preview-size" className="w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -139,6 +146,14 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
                     </Select>
                   </div>
                 </div>
+                <p className="ds-body text-muted-foreground">
+                  Presets and layouts share the same parts, states, and glyph
+                  options. Explore the{" "}
+                  <Link href="/design-system/widgets" className="docs-link">
+                    design system
+                  </Link>{" "}
+                  for typography, tokens, and composition rules.
+                </p>
                 <div className="flex min-h-11 items-center gap-3">
                   <Switch
                     id="preview-input"
@@ -154,7 +169,6 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-11"
                   onClick={() => setOptions(defaults)}
                 >
                   Restore Defaults
@@ -164,8 +178,8 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
           </Accordion>
         </div>
       </section>
-      <section aria-labelledby="installation" className="min-w-0 space-y-4">
-        <h2 id="installation" className="text-xl font-semibold tracking-tight">
+      <section aria-labelledby="installation" className="docs-section min-w-0">
+        <h2 id="installation" className="ds-section-title">
           Installation
         </h2>
         <WidgetInstallCommand
@@ -173,11 +187,11 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
           metadata={widget.installMetadata}
         />
       </section>
-      <section aria-labelledby="usage" className="min-w-0 space-y-4">
-        <h2 id="usage" className="text-xl font-semibold tracking-tight">
+      <section aria-labelledby="usage" className="docs-section min-w-0">
+        <h2 id="usage" className="ds-section-title">
           Usage
         </h2>
-        <p className="text-muted-foreground">
+        <p className="ds-body text-muted-foreground">
           The local example does not store feedback. Choose Your Backend to save
           submissions. Examples follow your preview settings and keep success
           visible with{" "}
@@ -187,16 +201,9 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
           .
         </p>
         <Tabs defaultValue="local">
-          <TabsList
-            aria-label="Submission Example"
-            className="h-auto group-data-horizontal/tabs:h-auto"
-          >
-            <TabsTrigger value="local" className="h-11">
-              Local Example
-            </TabsTrigger>
-            <TabsTrigger value="custom" className="h-11">
-              Your Backend
-            </TabsTrigger>
+          <TabsList aria-label="Submission Example">
+            <TabsTrigger value="local">Local Example</TabsTrigger>
+            <TabsTrigger value="custom">Your Backend</TabsTrigger>
           </TabsList>
           <TabsContent value="local">
             <CodeBlock
@@ -204,8 +211,8 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
               label="Local Example"
             />
           </TabsContent>
-          <TabsContent value="custom" className="space-y-4">
-            <p className="text-muted-foreground">
+          <TabsContent value="custom" className="docs-section">
+            <p className="ds-body text-muted-foreground">
               Implement <code>/api/feedback</code> in your app. Validate the
               payload and persist it before returning success. No Sentimeter key
               is needed; the existing payload includes an empty{" "}
@@ -218,11 +225,11 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
           </TabsContent>
         </Tabs>
       </section>
-      <section aria-labelledby="submission" className="space-y-4">
-        <h2 id="submission" className="text-xl font-semibold tracking-tight">
+      <section aria-labelledby="submission" className="docs-section">
+        <h2 id="submission" className="ds-section-title">
           Submission Behavior
         </h2>
-        <p className="text-muted-foreground">
+        <p className="ds-body text-muted-foreground">
           A custom <code>submit</code> handler takes precedence. Without it, a
           non-empty <code>apiKey</code> enables hosted analytics. With neither
           configured, the widget completes locally without sending or persisting
@@ -245,13 +252,10 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
             <AccordionTrigger className="min-h-11">
               Optional Hosted Analytics
             </AccordionTrigger>
-            <AccordionContent className="space-y-4">
-              <p className="leading-7 text-muted-foreground">
+            <AccordionContent className="docs-section">
+              <p className="ds-body text-muted-foreground">
                 Create a project in the{" "}
-                <Link
-                  href="/dashboard"
-                  className="underline underline-offset-4"
-                >
+                <Link href="/dashboard" className="docs-link">
                   dashboard
                 </Link>
                 , use its publishable key, and configure allowed origins for
@@ -260,7 +264,7 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
                 timing. See{" "}
                 <Link
                   href="/components/getting-started#submission"
-                  className="underline underline-offset-4"
+                  className="docs-link"
                 >
                   integration guidance
                 </Link>
@@ -274,38 +278,36 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
           </AccordionItem>
         </Accordion>
       </section>
-      <section aria-labelledby="props" className="min-w-0 space-y-4">
-        <h2 id="props" className="text-xl font-semibold tracking-tight">
+      <section aria-labelledby="props" className="docs-section min-w-0">
+        <h2 id="props" className="ds-section-title">
           Props
         </h2>
         <div
           role="region"
           aria-label={`${widget.name} Props`}
           tabIndex={0}
-          className="max-w-full overflow-x-auto rounded-xl border border-border focus-visible:outline-2 focus-visible:outline-ring"
+          className="docs-props ds-panel max-w-full overflow-x-auto focus-visible:outline-2 focus-visible:outline-ring"
         >
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Prop</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Default</TableHead>
-                <TableHead>Description</TableHead>
+                <TableHead className="w-36">Prop</TableHead>
+                <TableHead className="w-48">Type</TableHead>
+                <TableHead className="w-32">Default</TableHead>
+                <TableHead className="min-w-64">Description</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {widget.props.map((row) => (
                 <TableRow key={row.prop}>
-                  <TableCell className="font-mono text-xs">
-                    {row.prop}
-                  </TableCell>
-                  <TableCell className="font-mono text-xs text-muted-foreground">
+                  <TableCell className="ds-code">{row.prop}</TableCell>
+                  <TableCell className="ds-code whitespace-normal break-words text-muted-foreground">
                     {row.type}
                   </TableCell>
-                  <TableCell className="font-mono text-xs text-muted-foreground">
+                  <TableCell className="ds-code whitespace-normal break-words text-muted-foreground">
                     {row.defaultValue}
                   </TableCell>
-                  <TableCell className="min-w-60 whitespace-normal text-sm leading-6">
+                  <TableCell className="ds-body min-w-64 whitespace-normal">
                     {row.description}
                   </TableCell>
                 </TableRow>

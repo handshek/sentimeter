@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@workspace/ui/lib/utils";
+import { feedbackStyles } from "../design-system";
 
 export type FeedbackDescriptionProps = {
   className?: string;
@@ -13,6 +14,11 @@ export function FeedbackDescription({
   children,
 }: FeedbackDescriptionProps) {
   return (
-    <p className={cn("text-sm text-muted-foreground", className)}>{children}</p>
+    <p
+      data-slot="feedback-description"
+      className={cn(feedbackStyles.description, className)}
+    >
+      {children}
+    </p>
   );
 }

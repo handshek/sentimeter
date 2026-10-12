@@ -38,9 +38,9 @@ export function CodeBlock({
     };
   }, [code, lang]);
   return (
-    <div className="docs-code min-w-0 overflow-hidden rounded-xl border border-border bg-muted/30">
+    <div className="docs-code ds-inset w-full min-w-0 max-w-full overflow-hidden">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-2">
-        <p className="text-sm font-medium">{label}</p>
+        <p className="ds-label">{label}</p>
         <CopyButton key={code} text={code} />
       </div>
       {highlighted?.code === code ? (
@@ -48,7 +48,7 @@ export function CodeBlock({
           tabIndex={0}
           aria-label={`${label} code`}
           translate="no"
-          className="max-w-full overflow-x-auto p-4 font-mono text-[13px] leading-6 focus-visible:outline-2 focus-visible:outline-ring [&_pre]:bg-transparent!"
+          className="max-w-full overflow-x-auto p-5 ds-code focus-visible:outline-2 focus-visible:outline-ring [&_pre]:bg-transparent!"
           dangerouslySetInnerHTML={{ __html: highlighted.html }}
         />
       ) : (
@@ -56,7 +56,7 @@ export function CodeBlock({
           tabIndex={0}
           aria-label={`${label} code`}
           translate="no"
-          className="max-w-full overflow-x-auto p-4 font-mono text-[13px] leading-6 focus-visible:outline-2 focus-visible:outline-ring"
+          className="max-w-full overflow-x-auto p-5 ds-code focus-visible:outline-2 focus-visible:outline-ring"
         >
           <code>{code}</code>
         </pre>

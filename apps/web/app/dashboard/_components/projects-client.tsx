@@ -6,6 +6,8 @@ import { FormEvent, useMemo, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "@workspace/ui/components/button";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
 import { Panel } from "./panel";
 import { SyncUserGate } from "./sync-user-gate";
 
@@ -17,8 +19,8 @@ export function ProjectsClient() {
   return (
     <div className="min-w-0 space-y-8">
       <div className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Projects</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="ds-page-title">Projects</h1>
+        <p className="ds-body text-muted-foreground">
           Create a project to generate a publishable key for widget feedback.
         </p>
       </div>
@@ -49,8 +51,8 @@ function ProjectsInner() {
     return (
       <Panel>
         <div className="space-y-2">
-          <div className="text-sm font-semibold">Create your first project</div>
-          <div className="text-sm text-muted-foreground">
+          <div className="ds-label">Create your first project</div>
+          <div className="ds-body text-muted-foreground">
             Projects group widgets and publishable keys. Start by naming one.
           </div>
         </div>
@@ -79,12 +81,12 @@ function ProjectsInner() {
     <div className="min-w-0 space-y-6">
       <Panel>
         <form onSubmit={onSubmit} className="space-y-3">
-          <div className="text-sm font-semibold">New project</div>
+          <div className="ds-label">New project</div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <label className="sr-only" htmlFor="project-name">
+            <Label className="sr-only" htmlFor="project-name">
               Project name
-            </label>
-            <input
+            </Label>
+            <Input
               id="project-name"
               name="project-name"
               autoComplete="off"
@@ -93,13 +95,13 @@ function ProjectsInner() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Project name"
-              className="h-10 w-full min-w-0 rounded-md border border-border/70 bg-background px-3 text-sm outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 motion-reduce:transition-none"
+              className="w-full min-w-0"
             />
-            <Button type="submit" disabled={!canSubmit} className="h-10">
+            <Button type="submit" disabled={!canSubmit}>
               {submitting ? "Creating…" : "Create"}
             </Button>
           </div>
-          <div className="text-xs text-muted-foreground">
+          <div className="ds-caption text-muted-foreground">
             Creating a project automatically generates the first publishable
             key.
           </div>
@@ -109,7 +111,7 @@ function ProjectsInner() {
           {submitError ? (
             <p
               id="project-name-error"
-              className="text-xs text-destructive"
+              className="ds-caption text-destructive"
               role="alert"
             >
               {submitError}
@@ -129,8 +131,8 @@ function ProjectsInner() {
       ) : (
         <div className="space-y-3">
           <div className="flex items-end justify-between gap-3">
-            <div className="text-sm font-semibold">Your projects</div>
-            <div className="text-xs text-muted-foreground">
+            <div className="ds-label">Your projects</div>
+            <div className="ds-caption text-muted-foreground">
               {projectList.length} total
             </div>
           </div>
@@ -141,10 +143,10 @@ function ProjectsInner() {
                 <Panel key={p._id}>
                   <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="min-w-0">
-                      <div className="break-words text-sm font-semibold [overflow-wrap:anywhere]">
+                      <div className="break-words ds-label [overflow-wrap:anywhere]">
                         {p.name}
                       </div>
-                      <div className="mt-1 text-xs text-muted-foreground">
+                      <div className="mt-1 ds-caption text-muted-foreground">
                         Created {formatDate(p.createdAt)}
                       </div>
                     </div>

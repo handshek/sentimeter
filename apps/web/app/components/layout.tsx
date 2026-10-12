@@ -28,8 +28,8 @@ export default function ComponentsLayout({
           githubUrl={REPOSITORY_URL}
           sidebar={{ collapsible: false }}
           links={[
-            { text: "Widgets", url: "/components", active: "nested-url" },
-            { text: "Home", url: "/" },
+            { text: "Documentation", url: "/components", active: "nested-url" },
+            { text: "Design system", url: "/design-system" },
           ]}
         >
           {children}

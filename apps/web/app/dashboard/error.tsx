@@ -11,9 +11,9 @@ export default function DashboardError({
 }) {
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border border-border/60 bg-muted/10 p-5">
-        <div className="text-sm font-semibold">Something went wrong</div>
-        <div className="mt-1 text-sm text-muted-foreground">
+      <div className="ds-panel p-6">
+        <div className="ds-title">Something went wrong</div>
+        <div className="ds-body mt-3 text-muted-foreground">
           An unexpected error occurred.
         </div>
       </div>

@@ -1,94 +1,112 @@
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowRight,
+  Check,
+  CheckCircle2,
+  MousePointer2,
+} from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
-import { widgetDocs } from "../../_lib/widget-catalog";
-import { WidgetDemo } from "../../components/_components/widget-demo";
+import { Badge } from "@workspace/ui/components/badge";
 import { WidgetInstallCommand } from "../../components/_components/widget-install-command";
+import { WidgetSpecimen } from "./widget-specimen";
 
 export function HeroSection() {
-  const widget = widgetDocs[0]!;
   return (
-    <section
-      aria-labelledby="introduction"
-      className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-10 sm:px-6 sm:py-16 lg:grid-cols-2 lg:gap-14 lg:py-20"
-    >
-      <div className="space-y-6">
-        <p className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span
-            className="size-1.5 rounded-full bg-primary"
-            aria-hidden="true"
-          />
-          Open source. Built for shadcn.
-        </p>
-        <h1
-          id="introduction"
-          className="max-w-xl text-balance text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.5rem]"
-        >
-          Feedback that feels like part of your app.
-        </h1>
-        <p className="max-w-lg text-pretty leading-7 text-muted-foreground">
-          Emoji, stars, and thumbs. Accessible React widgets that use your
-          theme, live in your codebase, and connect to your backend.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <Button asChild className="h-11 px-5">
-            <Link href="/components">
-              Browse Widgets{" "}
-              <ArrowRight aria-hidden="true" className="size-4" />
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="h-11 px-5">
-            <Link href="/components/getting-started">Read the Docs</Link>
-          </Button>
-        </div>
-        <p className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
-          {["MIT licensed", "No account needed", "Source you own"].map(
-            (text) => (
-              <span key={text} className="flex items-center gap-1.5">
-                <Check aria-hidden="true" className="size-3.5" />
-                {text}
-              </span>
-            ),
-          )}
-        </p>
-      </div>
-      <div className="min-w-0 space-y-3">
-        <div className="rounded-xl border border-border bg-muted/20">
-          <div className="flex items-center justify-between border-b border-border px-4 py-3 text-xs text-muted-foreground">
-            <span className="font-mono" translate="no">
-              emoji-feedback.tsx
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span
-                className="size-1.5 rounded-full bg-foreground"
-                aria-hidden="true"
-              />
-              Live Preview
-            </span>
-          </div>
-          <div className="px-0 py-5 min-[360px]:px-3 sm:px-6">
-            <WidgetDemo
-              widget={{
-                slug: widget.slug,
-                name: widget.name,
-                preview: widget.preview,
-                defaultVariant: widget.defaultVariant,
-              }}
+    <section aria-labelledby="introduction" className="ds-container">
+      <div className="grid items-center gap-12 py-16 sm:py-20 lg:grid-cols-2 lg:gap-16 lg:py-24">
+        <div>
+          <p className="ds-eyebrow mb-6 flex items-center gap-2.5 text-muted-foreground">
+            <span
+              className="size-1.5 rounded-full bg-brand"
+              aria-hidden="true"
             />
+            Open code. Built for shadcn.
+          </p>
+          <h1 id="introduction" className="ds-display max-w-xl text-balance">
+            A little feedback.
+            <br />A better product.
+          </h1>
+          <p className="ds-lead mt-7 max-w-md text-pretty text-muted-foreground">
+            Thoughtful feedback components that feel like part of your app.
+            Install the source. Make it yours. Start listening.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button asChild size="lg">
+              <Link href="/components">
+                Find your widget{" "}
+                <ArrowRight aria-hidden="true" className="size-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg">
+              <Link href="/components/getting-started">Read the docs</Link>
+            </Button>
+          </div>
+          <div className="ds-caption mt-6 flex flex-wrap gap-x-5 gap-y-2 text-muted-foreground">
+            {["MIT licensed", "No account required"].map((label) => (
+              <span key={label} className="flex items-center gap-1.5">
+                <Check aria-hidden="true" className="size-3.5" />
+                {label}
+              </span>
+            ))}
           </div>
         </div>
-        <WidgetInstallCommand registryName={widget.registryName} />
-        <p className="text-xs leading-5 text-muted-foreground">
-          Try it above. The demo runs locally; nothing is sent or stored.
-        </p>
+        <div className="min-w-0">
+          <div className="ds-panel">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-5 py-4">
+              <span className="ds-label text-muted-foreground">
+                A moment in your product
+              </span>
+              <Badge variant="secondary" className="h-6 px-2.5">
+                Live example
+              </Badge>
+            </div>
+            <div className="bg-muted/35 px-0 pt-8 pb-3 sm:px-8">
+              <div className="mx-auto mb-7 flex max-w-80 items-start gap-3 px-4 sm:px-0">
+                <CheckCircle2
+                  aria-hidden="true"
+                  className="mt-0.5 size-5 shrink-0 text-primary"
+                />
+                <div>
+                  <p className="ds-label text-foreground">
+                    Your workspace is ready
+                  </p>
+                  <p className="ds-caption mt-1 text-muted-foreground">
+                    The perfect moment to ask how it felt.
+                  </p>
+                </div>
+              </div>
+              <div className="min-h-64">
+                <WidgetSpecimen showInput />
+              </div>
+            </div>
+            <div className="ds-caption flex items-start gap-2 border-t border-border px-5 py-3 text-muted-foreground">
+              <MousePointer2
+                aria-hidden="true"
+                className="mt-0.5 size-3.5 shrink-0"
+              />
+              Try a reaction. This example runs locally and stores nothing.
+            </div>
+          </div>
+          <div className="mt-4">
+            <WidgetInstallCommand registryName="emoji-feedback" />
+          </div>
+        </div>
       </div>
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-border pt-6 text-sm text-muted-foreground lg:col-span-2">
-        <span>For React apps built with</span>
-        {["Next.js", "Vite", "React Router", "Astro + React"].map((name) => (
-          <span key={name} className="font-medium text-foreground">
-            {name}
-          </span>
-        ))}
+      <div className="flex flex-wrap items-center justify-between gap-5 border-t border-border py-6">
+        <p className="ds-caption text-muted-foreground">
+          React components. Your theme. Your backend.
+        </p>
+        <Button
+          asChild
+          variant="ghost"
+          className="gap-3 px-0 text-muted-foreground hover:bg-transparent hover:text-foreground"
+        >
+          <Link href="#widgets">
+            Explore the collection{" "}
+            <ArrowDown aria-hidden="true" className="size-4" />
+          </Link>
+        </Button>
       </div>
     </section>
   );

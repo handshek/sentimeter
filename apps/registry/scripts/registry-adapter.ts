@@ -430,6 +430,9 @@ async function validateHostFixture(options: {
                 "@/components/ui/textarea": [
                   path.join(uiRoot, "components", "textarea.tsx"),
                 ],
+                "@/components/ui/label": [
+                  path.join(uiRoot, "components", "label.tsx"),
+                ],
                 "@/lib/utils": [path.join(uiRoot, "lib", "utils.ts")],
                 "@workspace/ui/lib/utils": [
                   path.join(uiRoot, "lib", "utils.ts"),

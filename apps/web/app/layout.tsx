@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import "@workspace/ui/globals.css";
 import { ToasterProvider } from "./components/toaster-provider";
@@ -7,13 +6,17 @@ import { NavigationGuardProvider } from "nextjs-nav-guard";
 import { SITE_URL } from "./_lib/widget-catalog";
 import { ThemeProvider } from "./_components/theme-provider";
 
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
+const geistSans = localFont({
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
+  display: "swap",
 });
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
+  weight: "100 900",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -32,8 +35,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={jakarta.variable} suppressHydrationWarning>
-      <body className={`${jakarta.variable} ${geistMono.variable} font-sans`}>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="font-sans antialiased">
         {/* Mount before auth/data gates so history is guarded before Next handles it. */}
         <NavigationGuardProvider>
           <ThemeProvider>

@@ -1,7 +1,12 @@
 "use client";
 
 import * as React from "react";
-import type { WidgetCallbacks, WidgetSubmit, WidgetType } from "../types";
+import type {
+  WidgetCallbacks,
+  WidgetLayout,
+  WidgetSubmit,
+  WidgetType,
+} from "../types";
 import { cn } from "@workspace/ui/lib/utils";
 import {
   FeedbackProvider,
@@ -10,6 +15,13 @@ import {
 } from "./feedback-context";
 import { Button } from "@workspace/ui/components/button";
 import { X } from "lucide-react";
+import {
+  feedbackLayouts,
+  feedbackSizes,
+  feedbackTheme,
+  feedbackStyles,
+  type FeedbackStyle,
+} from "../design-system";
 
 export type FeedbackWidgetProps = {
   apiKey?: string;
@@ -20,26 +32,24 @@ export type FeedbackWidgetProps = {
   size?: WidgetSize;
   closeButton?: boolean;
   className?: string;
+  /** `stacked` (default) is the card; `inline` is a one-line bar. */
+  layout?: WidgetLayout;
+  style?: FeedbackStyle;
   doneDurationMs?: number;
   autoHide?: boolean;
   submit?: WidgetSubmit;
   children: React.ReactNode;
 } & WidgetCallbacks;
 
-const CONTAINER_SIZE_MAP: Record<WidgetSize, string> = {
-  sm: "max-w-[360px] p-4",
-  default: "max-w-[400px] p-4",
-  md: "max-w-[440px] p-4",
-  lg: "max-w-[480px] p-4",
-};
-
 function FeedbackWidgetInner({
   closeButton,
   className,
+  style,
   children,
 }: {
   closeButton?: boolean;
   className?: string;
+  style?: FeedbackStyle;
   children: React.ReactNode;
 }) {
   const {
@@ -50,7 +60,9 @@ function FeedbackWidgetInner({
     state,
     containerRef,
     focusAnchorRef,
+    layout,
   } = useFeedbackContext();
+  const inline = layout === "inline";
 
   if (hidden) {
     return (
@@ -63,11 +75,21 @@ function FeedbackWidgetInner({
   return (
     <div
       ref={containerRef}
+      data-slot="feedback-widget"
+      data-layout={layout}
+      data-state={state}
       className={cn(
-        "@container relative w-full rounded-xl border border-border bg-background shadow-sm",
-        CONTAINER_SIZE_MAP[size],
+        feedbackStyles.root,
+        inline ? feedbackStyles.rootInline : feedbackStyles.rootStacked,
+        feedbackTheme.className,
         className,
       )}
+      style={{
+        ...feedbackTheme.style,
+        ...feedbackSizes[size],
+        ...feedbackLayouts[layout],
+        ...style,
+      }}
       aria-disabled={disabled ? "true" : "false"}
       aria-busy={state === "submitting" ? "true" : undefined}
     >
@@ -77,13 +99,27 @@ function FeedbackWidgetInner({
           variant="ghost"
           size="icon-sm"
           onClick={cancel}
-          className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+          className={cn(
+            feedbackStyles.close,
+            inline && feedbackStyles.inlineClose,
+            feedbackStyles.focus,
+          )}
           aria-label="Dismiss feedback widget"
         >
-          <X className="size-4" aria-hidden="true" />
+          <X className={feedbackStyles.statusIcon} aria-hidden="true" />
         </Button>
       ) : null}
-      {children}
+      <div
+        className={cn(
+          inline ? feedbackStyles.contentInline : feedbackStyles.content,
+          closeButton &&
+            (inline
+              ? feedbackStyles.inlineCloseBar
+              : feedbackStyles.closeHeader),
+        )}
+      >
+        {children}
+      </div>
     </div>
   );
 }
@@ -97,6 +133,8 @@ export function FeedbackWidget({
   size,
   closeButton,
   className,
+  layout = "stacked",
+  style,
   doneDurationMs,
   autoHide,
   submit,
@@ -111,12 +149,17 @@ export function FeedbackWidget({
       widgetType={widgetType}
       disabled={disabled}
       size={size}
+      layout={layout}
       doneDurationMs={doneDurationMs}
       autoHide={autoHide}
       submit={submit}
       {...callbacks}
     >
-      <FeedbackWidgetInner closeButton={closeButton} className={className}>
+      <FeedbackWidgetInner
+        closeButton={closeButton}
+        className={className}
+        style={style}
+      >
         {children}
       </FeedbackWidgetInner>
     </FeedbackProvider>

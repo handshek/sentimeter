@@ -33,6 +33,12 @@ export const SOURCE_MAPPINGS: readonly SourceMapping[] = [
     item: "feedback-system",
   },
   {
+    source: "design-system.ts",
+    staged: "feedback-system/design-system.ts",
+    target: "components/sentimeter/feedback-system/design-system.ts",
+    item: "feedback-system",
+  },
+  {
     source: "core/submit.ts",
     staged: "feedback-system/core/submit.ts",
     target: "components/sentimeter/feedback-system/core/submit.ts",
@@ -79,6 +85,13 @@ export const SOURCE_MAPPINGS: readonly SourceMapping[] = [
     item: "feedback-system",
   },
   {
+    source: "compound/feedback-response.tsx",
+    staged: "feedback-system/compound/feedback-response.tsx",
+    target:
+      "components/sentimeter/feedback-system/compound/feedback-response.tsx",
+    item: "feedback-system",
+  },
+  {
     source: "compound/feedback-title.tsx",
     staged: "feedback-system/compound/feedback-title.tsx",
     target: "components/sentimeter/feedback-system/compound/feedback-title.tsx",
@@ -120,6 +133,7 @@ export const SOURCE_MAPPINGS: readonly SourceMapping[] = [
 const IMPORT_REWRITES = new Map<string, string>([
   ["@workspace/ui/components/button", "@/components/ui/button"],
   ["@workspace/ui/components/textarea", "@/components/ui/textarea"],
+  ["@workspace/ui/components/label", "@/components/ui/label"],
   ["@workspace/ui/lib/utils", "@/lib/utils"],
 ]);
 
@@ -168,7 +182,7 @@ export function createExpectedRegistry(
         description:
           "Core types, submit function, and compound components for Sentimeter widgets.",
         dependencies: ["lucide-react"],
-        registryDependencies: ["button", "textarea"],
+        registryDependencies: ["button", "textarea", "label"],
         files: filesFor("feedback-system"),
       },
       {
