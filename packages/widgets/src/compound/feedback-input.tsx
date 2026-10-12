@@ -48,7 +48,7 @@ export function FeedbackInput({
         maxLength={maxLength}
         value={text}
         onChange={(e) => setText(e.target.value)}
-        disabled={disabled || state === "submitting"}
+        disabled={disabled || state === "submitting" || state === "done"}
       />
     </div>
   );
