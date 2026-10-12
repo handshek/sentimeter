@@ -1,0 +1,293 @@
+bun test v1.3.9 (cf6cdbbb)
+
+src/feedback-completion.test.tsx:
+ 96 |     assert.equal(input.disabled, true);
+ 97 |     assert.equal(controls.every((control) => control.disabled), true);
+ 98 | 
+ 99 |     await act(async () => resolveSubmit());
+100 |     assert.equal(screen.getByRole("status").textContent, "Thanks!");
+101 |     assert.equal(input.disabled, true);
+                 ^
+AssertionError: Expected values to be strictly equal:
+
+false !== true
+
+ generatedMessage: true,
+     actual: false,
+   expected: true,
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/abhi/.codex/worktrees/widget-done-lock/sentimeter/packages/widgets/src/feedback-completion.test.tsx:101:12
+      at processTicksAndRejections (native:7:39)
+(fail) emoji symbols locks submitted feedback until the widget is reset [22.45ms]
+140 |     assert.deepEqual(payloads, [
+141 |       { apiKey: "", location: "/", widgetType, value, text: "Original feedback" },
+142 |       { apiKey: "", location: "/", widgetType, value: alternateValue, text: "Corrected feedback" },
+143 |     ]);
+144 |     assert.equal(input.value, "Corrected feedback");
+145 |     assert.equal(input.disabled, true);
+                 ^
+AssertionError: Expected values to be strictly equal:
+
+false !== true
+
+ generatedMessage: true,
+     actual: false,
+   expected: true,
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/abhi/.codex/worktrees/widget-done-lock/sentimeter/packages/widgets/src/feedback-completion.test.tsx:145:12
+      at processTicksAndRejections (native:7:39)
+(fail) emoji symbols permits corrections after a failed submission [16.98ms]
+ 96 |     assert.equal(input.disabled, true);
+ 97 |     assert.equal(controls.every((control) => control.disabled), true);
+ 98 | 
+ 99 |     await act(async () => resolveSubmit());
+100 |     assert.equal(screen.getByRole("status").textContent, "Thanks!");
+101 |     assert.equal(input.disabled, true);
+                 ^
+AssertionError: Expected values to be strictly equal:
+
+false !== true
+
+ generatedMessage: true,
+     actual: false,
+   expected: true,
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/abhi/.codex/worktrees/widget-done-lock/sentimeter/packages/widgets/src/feedback-completion.test.tsx:101:12
+      at processTicksAndRejections (native:7:39)
+(fail) emoji icons locks submitted feedback until the widget is reset [4.83ms]
+140 |     assert.deepEqual(payloads, [
+141 |       { apiKey: "", location: "/", widgetType, value, text: "Original feedback" },
+142 |       { apiKey: "", location: "/", widgetType, value: alternateValue, text: "Corrected feedback" },
+143 |     ]);
+144 |     assert.equal(input.value, "Corrected feedback");
+145 |     assert.equal(input.disabled, true);
+                 ^
+AssertionError: Expected values to be strictly equal:
+
+false !== true
+
+ generatedMessage: true,
+     actual: false,
+   expected: true,
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/abhi/.codex/worktrees/widget-done-lock/sentimeter/packages/widgets/src/feedback-completion.test.tsx:145:12
+      at processTicksAndRejections (native:7:39)
+(fail) emoji icons permits corrections after a failed submission [15.00ms]
+ 96 |     assert.equal(input.disabled, true);
+ 97 |     assert.equal(controls.every((control) => control.disabled), true);
+ 98 | 
+ 99 |     await act(async () => resolveSubmit());
+100 |     assert.equal(screen.getByRole("status").textContent, "Thanks!");
+101 |     assert.equal(input.disabled, true);
+                 ^
+AssertionError: Expected values to be strictly equal:
+
+false !== true
+
+ generatedMessage: true,
+     actual: false,
+   expected: true,
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/abhi/.codex/worktrees/widget-done-lock/sentimeter/packages/widgets/src/feedback-completion.test.tsx:101:12
+      at processTicksAndRejections (native:7:39)
+(fail) thumb icons locks submitted feedback until the widget is reset [3.01ms]
+140 |     assert.deepEqual(payloads, [
+141 |       { apiKey: "", location: "/", widgetType, value, text: "Original feedback" },
+142 |       { apiKey: "", location: "/", widgetType, value: alternateValue, text: "Corrected feedback" },
+143 |     ]);
+144 |     assert.equal(input.value, "Corrected feedback");
+145 |     assert.equal(input.disabled, true);
+                 ^
+AssertionError: Expected values to be strictly equal:
+
+false !== true
+
+ generatedMessage: true,
+     actual: false,
+   expected: true,
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/abhi/.codex/worktrees/widget-done-lock/sentimeter/packages/widgets/src/feedback-completion.test.tsx:145:12
+      at processTicksAndRejections (native:7:39)
+(fail) thumb icons permits corrections after a failed submission [9.49ms]
+ 96 |     assert.equal(input.disabled, true);
+ 97 |     assert.equal(controls.every((control) => control.disabled), true);
+ 98 | 
+ 99 |     await act(async () => resolveSubmit());
+100 |     assert.equal(screen.getByRole("status").textContent, "Thanks!");
+101 |     assert.equal(input.disabled, true);
+                 ^
+AssertionError: Expected values to be strictly equal:
+
+false !== true
+
+ generatedMessage: true,
+     actual: false,
+   expected: true,
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/abhi/.codex/worktrees/widget-done-lock/sentimeter/packages/widgets/src/feedback-completion.test.tsx:101:12
+      at processTicksAndRejections (native:7:39)
+(fail) thumb emoji locks submitted feedback until the widget is reset [2.23ms]
+140 |     assert.deepEqual(payloads, [
+141 |       { apiKey: "", location: "/", widgetType, value, text: "Original feedback" },
+142 |       { apiKey: "", location: "/", widgetType, value: alternateValue, text: "Corrected feedback" },
+143 |     ]);
+144 |     assert.equal(input.value, "Corrected feedback");
+145 |     assert.equal(input.disabled, true);
+                 ^
+AssertionError: Expected values to be strictly equal:
+
+false !== true
+
+ generatedMessage: true,
+     actual: false,
+   expected: true,
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/abhi/.codex/worktrees/widget-done-lock/sentimeter/packages/widgets/src/feedback-completion.test.tsx:145:12
+      at processTicksAndRejections (native:7:39)
+(fail) thumb emoji permits corrections after a failed submission [5.29ms]
+ 96 |     assert.equal(input.disabled, true);
+ 97 |     assert.equal(controls.every((control) => control.disabled), true);
+ 98 | 
+ 99 |     await act(async () => resolveSubmit());
+100 |     assert.equal(screen.getByRole("status").textContent, "Thanks!");
+101 |     assert.equal(input.disabled, true);
+                 ^
+AssertionError: Expected values to be strictly equal:
+
+false !== true
+
+ generatedMessage: true,
+     actual: false,
+   expected: true,
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/abhi/.codex/worktrees/widget-done-lock/sentimeter/packages/widgets/src/feedback-completion.test.tsx:101:12
+      at processTicksAndRejections (native:7:39)
+(fail) star icons locks submitted feedback until the widget is reset [3.14ms]
+140 |     assert.deepEqual(payloads, [
+141 |       { apiKey: "", location: "/", widgetType, value, text: "Original feedback" },
+142 |       { apiKey: "", location: "/", widgetType, value: alternateValue, text: "Corrected feedback" },
+143 |     ]);
+144 |     assert.equal(input.value, "Corrected feedback");
+145 |     assert.equal(input.disabled, true);
+                 ^
+AssertionError: Expected values to be strictly equal:
+
+false !== true
+
+ generatedMessage: true,
+     actual: false,
+   expected: true,
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/abhi/.codex/worktrees/widget-done-lock/sentimeter/packages/widgets/src/feedback-completion.test.tsx:145:12
+      at processTicksAndRejections (native:7:39)
+(fail) star icons permits corrections after a failed submission [9.04ms]
+ 96 |     assert.equal(input.disabled, true);
+ 97 |     assert.equal(controls.every((control) => control.disabled), true);
+ 98 | 
+ 99 |     await act(async () => resolveSubmit());
+100 |     assert.equal(screen.getByRole("status").textContent, "Thanks!");
+101 |     assert.equal(input.disabled, true);
+                 ^
+AssertionError: Expected values to be strictly equal:
+
+false !== true
+
+ generatedMessage: true,
+     actual: false,
+   expected: true,
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/abhi/.codex/worktrees/widget-done-lock/sentimeter/packages/widgets/src/feedback-completion.test.tsx:101:12
+      at processTicksAndRejections (native:7:39)
+(fail) star emoji locks submitted feedback until the widget is reset [2.38ms]
+140 |     assert.deepEqual(payloads, [
+141 |       { apiKey: "", location: "/", widgetType, value, text: "Original feedback" },
+142 |       { apiKey: "", location: "/", widgetType, value: alternateValue, text: "Corrected feedback" },
+143 |     ]);
+144 |     assert.equal(input.value, "Corrected feedback");
+145 |     assert.equal(input.disabled, true);
+                 ^
+AssertionError: Expected values to be strictly equal:
+
+false !== true
+
+ generatedMessage: true,
+     actual: false,
+   expected: true,
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/abhi/.codex/worktrees/widget-done-lock/sentimeter/packages/widgets/src/feedback-completion.test.tsx:145:12
+      at processTicksAndRejections (native:7:39)
+(fail) star emoji permits corrections after a failed submission [6.40ms]
+161 |     fireEvent.click(fifthStar);
+162 |     assert.equal(filledStars(), 5);
+163 |     fireEvent.mouseEnter(firstStar);
+164 |     assert.equal(filledStars(), 1);
+165 |     fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+166 |     assert.equal(filledStars(), 5);
+                 ^
+AssertionError: Expected values to be strictly equal:
+
+1 !== 5
+
+ generatedMessage: true,
+     actual: 1,
+   expected: 5,
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/abhi/.codex/worktrees/widget-done-lock/sentimeter/packages/widgets/src/feedback-completion.test.tsx:166:12
+      at fn (node:test:210:18)
+      at done (unknown:1:1)
+      at endTest (node:test:204:13)
+      at processTicksAndRejections (native:7:39)
+(fail) icons stars retain the submitted fill while locked despite hover or focus previews [2.10ms]
+161 |     fireEvent.click(fifthStar);
+162 |     assert.equal(filledStars(), 5);
+163 |     fireEvent.mouseEnter(firstStar);
+164 |     assert.equal(filledStars(), 1);
+165 |     fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+166 |     assert.equal(filledStars(), 5);
+                 ^
+AssertionError: Expected values to be strictly equal:
+
+1 !== 5
+
+ generatedMessage: true,
+     actual: 1,
+   expected: 5,
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/abhi/.codex/worktrees/widget-done-lock/sentimeter/packages/widgets/src/feedback-completion.test.tsx:166:12
+      at fn (node:test:210:18)
+      at done (unknown:1:1)
+      at endTest (node:test:204:13)
+      at processTicksAndRejections (native:7:39)
+(fail) emoji stars retain the submitted fill while locked despite hover or focus previews [1.72ms]
+
+ 0 pass
+ 14 fail
+Ran 14 tests across 1 file. [316.00ms]

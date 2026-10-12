@@ -1,0 +1,26 @@
+bun test v1.3.9 (cf6cdbbb)
+(pass) failed deletion stays on the project and displays a retryable error [268.75ms]
+(pass) successful deletion navigates only after the request completes [77.36ms]
+(pass) failed origin save preserves the draft and keeps its retry available [76.05ms]
+(pass) closing dirty settings asks before discarding the draft [116.54ms]
+(pass) a successful save announces the normalized origins and clears the dirty state [101.80ms]
+(pass) failed key rotation explains that the current key remains active [70.36ms]
+(pass) a canceled project link keeps unsaved origins on the current project [44.90ms]
+(pass) confirming departure allows the project link through [50.86ms]
+(pass) same-project links do not warn because they preserve the origin draft [44.19ms]
+(pass) page unload is guarded only while the origin draft is dirty [40.77ms]
+(fail) all-time sentiment includes older feedback across widget types while volume stays bounded [29.89ms]
+(fail) all-time emoji filter uses its full aggregate and widget-specific sentiment [27.98ms]
+(fail) all-time thumbs filter uses its full aggregate and widget-specific sentiment [25.27ms]
+(fail) all-time star filter uses its full aggregate and widget-specific sentiment [22.37ms]
+(pass) 24h sentiment and volume retain the selected range [23.25ms]
+(pass) 7d sentiment and volume retain the selected range [25.19ms]
+(pass) 30d sentiment and volume retain the selected range [28.94ms]
+(fail) neutral-only all-time feedback remains in the distribution without changing scored sentiment [27.50ms]
+(fail) empty all-time analytics has zero sentiment and a bounded empty chart [22.36ms]
+(fail) empty all-time analytics has zero sentiment and a bounded empty chart [22.36ms]
+
+ 13 pass
+ 6 fail
+ 57 expect() calls
+Ran 19 tests across 1 file. [1.64s]

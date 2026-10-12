@@ -1,0 +1,39 @@
+{"hidden":"Feedback widget closed","focusRestored":true,"unhandled":["Dismiss analytics rejected"],"reported":[]}
+24 |     hidden: anchor.textContent,
+25 |     focusRestored: document.activeElement === anchor,
+26 |     unhandled: unhandled.map(reason => reason instanceof Error ? reason.message : String(reason)),
+27 |     reported: reported.map(args => args.map(String)),
+28 |   }));
+29 |   assert.deepEqual(unhandled, []);
+              ^
+AssertionError: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   Error
++       at /private/tmp/sentimeter-poteto/dismiss-fix/reproduction.ts:9:27
++       at asyncModuleEvaluation (unknown:2)
++       at processTicksAndRejections (unknown:7:39)
++ ]
+- []
+
+ generatedMessage: true,
+     actual: [
+   5 |
+ 6 | const unhandled: unknown[] = [];
+ 7 | const reported: unknown[][] = [];
+ 8 | const originalError = console.error;
+ 9 | const callbackError = new Error("Dismiss analytics rejected");
+10 | const onUnhandled = (reason: unknown) => { unhandled.push(reason); };
+                          ^
+error: Dismiss analytics rejected
+      at /private/tmp/sentimeter-poteto/dismiss-fix/reproduction.ts:10:22
+
+],
+   expected: [],
+   operator: "deepStrictEqual",
+       code: "ERR_ASSERTION"
+
+      at /private/tmp/sentimeter-poteto/dismiss-fix/reproduction.ts:29:10
+
+Bun v1.3.9 (macOS arm64)

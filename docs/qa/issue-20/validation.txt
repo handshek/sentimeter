@@ -1,0 +1,7 @@
+All checks exited successfully: bun run lint, bun run check-types, bun run test, bun run build, bun run check-registry, bun run check-docs, bun run check-tests. Focused tests, Prettier and git diff --check passed.
+
+Original browser reproduction repeated on desktop 1280x720 and mobile 390x844, with actual DOM viewport dimensions measured. Real ProjectClient and shadcn UI; mocked auth/hooks/router/mutations. Real registered Convex query handlers executed against an in-memory database at 2026-10-09T12:00:00Z. No live backend persistence, indexes, transactions or subscription semantics verified. No dedicated safe test account or verified staging backend was available.
+
+Follow-up loading coverage baseline: 63beba8e3a74fccfdcc3fddca711945c31cf2069, initially clean. Two additional mocked-query component cases cover independently pending analytics and volume. Each case exits 1 when only the old volume-based distribution guard is restored temporarily; application source is restored byte-identically afterward. The current component suite passes 21 tests and 103 assertions (11 new cases in this PR).
+
+Follow-up checks passed: bun run lint, bun run check-types, bun run test, bun run check-docs, bun run check-tests, focused component tests, Prettier and git diff --check. Build and registry checks were already successful for the application fix; they were not rerun for this tests/evidence-only follow-up.

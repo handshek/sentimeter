@@ -1,0 +1,264 @@
+{
+  "project": {
+    "_id": "project-test",
+    "userId": "user-test",
+    "name": "Fixture project",
+    "mode": "development",
+    "allowedOrigins": [],
+    "createdAt": 1783771200000
+  },
+  "fixtureNow": 1791547200000,
+  "cases": {
+    "all:all": {
+      "analytics": {
+        "total": 2,
+        "byValue": {
+          "1": 1,
+          "5": 1
+        },
+        "topLocations": [
+          {
+            "location": "/old",
+            "total": 1
+          },
+          {
+            "location": "/recent",
+            "total": 1
+          }
+        ],
+        "byWidgetType": {
+          "emoji": 0,
+          "thumbs": 0,
+          "star": 2
+        },
+        "byWidgetTypeByValue": {
+          "emoji": {},
+          "thumbs": {},
+          "star": {
+            "1": 1,
+            "5": 1
+          }
+        },
+        "range": "all",
+        "widgetType": null
+      },
+      "volume": {
+        "requestedRange": "all",
+        "effectiveRange": "30d",
+        "widgetType": null,
+        "granularity": "day",
+        "from": 1788955200000,
+        "to": 1791547200000,
+        "points": [
+          {
+            "ts": 1788912000000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1788998400000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1789084800000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1789171200000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1789257600000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1789344000000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1789430400000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1789516800000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1789603200000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1789689600000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1789776000000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1789862400000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1789948800000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1790035200000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1790121600000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1790208000000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1790294400000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1790380800000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1790467200000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1790553600000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1790640000000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1790726400000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1790812800000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1790899200000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1790985600000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1791072000000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1791158400000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1791244800000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1791331200000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          },
+          {
+            "ts": 1791417600000,
+            "total": 1,
+            "positive": 1,
+            "negative": 0
+          },
+          {
+            "ts": 1791504000000,
+            "total": 0,
+            "positive": 0,
+            "negative": 0
+          }
+        ]
+      },
+      "feedback": [
+        {
+          "_id": "recent-positive",
+          "projectId": "project-test",
+          "widgetType": "star",
+          "value": 5,
+          "location": "/recent",
+          "text": "Recent positive fixture response",
+          "createdAt": 1791460800000
+        },
+        {
+          "_id": "older-negative",
+          "projectId": "project-test",
+          "widgetType": "star",
+          "value": 1,
+          "location": "/old",
+          "text": "Older negative fixture response",
+          "createdAt": 1786363200000
+        }
+      ]
+    }
+  },
+  "scope": "Selected all-time/all-widgets reproduction case; other runner cases omitted from published evidence."
+}

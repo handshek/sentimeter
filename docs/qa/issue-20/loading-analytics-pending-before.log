@@ -1,0 +1,30 @@
+bun test v1.3.9 (cf6cdbbb)
+
+app/dashboard/_components/project-client.test.tsx:
+The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+542 |   const distribution = (
+543 |     await screen.findByText("Distribution across all widgets")
+544 |   ).closest<HTMLElement>('[data-slot="card"]')!;
+545 |   expect(
+546 |     within(distribution).queryByText("responses")?.textContent,
+547 |   ).toBeUndefined();
+          ^
+error: expect(received).toBeUndefined()
+
+Received: "responses"
+
+      at <anonymous> (/Users/abhi/.codex/worktrees/all-time-sentiment/sentimeter/apps/web/app/dashboard/_components/project-client.test.tsx:547:5)
+(fail) sentiment distribution waits for analytics even after volume resolves [92.41ms]
+
+ 0 pass
+ 20 filtered out
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [672.00ms]

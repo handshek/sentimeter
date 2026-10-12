@@ -27,7 +27,7 @@ function reportCallbackError(error: unknown) {
   console.error("Sentimeter widget callback threw:", error);
 }
 
-function notify<Args extends unknown[]>(
+export function notify<Args extends unknown[]>(
   callback: ((...args: Args) => void) | undefined,
   ...args: Args
 ) {

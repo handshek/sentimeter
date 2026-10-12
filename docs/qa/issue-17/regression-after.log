@@ -1,0 +1,21 @@
+bun test v1.3.9 (cf6cdbbb)
+
+src/feedback-completion.test.tsx:
+(pass) emoji symbols locks submitted feedback until the widget is reset [26.31ms]
+(pass) emoji symbols permits corrections after a failed submission [12.69ms]
+(pass) emoji icons locks submitted feedback until the widget is reset [8.80ms]
+(pass) emoji icons permits corrections after a failed submission [10.88ms]
+(pass) thumb icons locks submitted feedback until the widget is reset [3.23ms]
+(pass) thumb icons permits corrections after a failed submission [8.89ms]
+(pass) thumb emoji locks submitted feedback until the widget is reset [2.33ms]
+(pass) thumb emoji permits corrections after a failed submission [5.55ms]
+(pass) star icons locks submitted feedback until the widget is reset [3.73ms]
+(pass) star icons permits corrections after a failed submission [8.34ms]
+(pass) star emoji locks submitted feedback until the widget is reset [2.41ms]
+(pass) star emoji permits corrections after a failed submission [5.63ms]
+(pass) icons stars retain the submitted fill while locked despite hover or focus previews [2.63ms]
+(pass) emoji stars retain the submitted fill while locked despite hover or focus previews [1.66ms]
+
+ 14 pass
+ 0 fail
+Ran 14 tests across 1 file. [287.00ms]
