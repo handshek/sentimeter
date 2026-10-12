@@ -1,0 +1,11 @@
+bun test v1.3.9 (cf6cdbbb)
+error: expect(received).toBe(expected)
+Expected: "https://second.example.com"
+Received: "https://first.example.com"
+(fail) pending allowed-origin save must preserve a later edit [160.50ms]
+(fail) pending allowed-origin save must preserve a later edit [160.50ms]
+
+ 0 pass
+ 1 fail
+ 3 expect() calls
+Ran 1 test across 1 file. [743.00ms]

@@ -1,0 +1,8 @@
+bun test v1.3.9 (cf6cdbbb)
+(pass) pending allowed-origin save must preserve a later edit [173.10ms]
+(pass) pending allowed-origin save must preserve a later edit [173.10ms]
+
+ 1 pass
+ 0 fail
+ 3 expect() calls
+Ran 1 test across 1 file. [506.00ms]
