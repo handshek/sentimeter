@@ -216,7 +216,7 @@ export function HowItWorksSection({
               className="mt-1 size-4 shrink-0 text-muted-foreground"
             />
             <p className="ds-caption leading-6 text-muted-foreground">
-              Prefer a hosted destination? Sentimeter analytics is optional.{" "}
+              Without a submit handler, feedback completes locally.{" "}
               <Link
                 href={
                   analyticsEnabled
@@ -307,7 +307,7 @@ export function SystemSection() {
 const questions = [
   {
     q: "Do I need an account to use the widgets?",
-    a: "No. Browse, try, and install the widgets without an account. You only need a Sentimeter account if you choose the optional hosted analytics dashboard.",
+    a: "No. Browse, try, and install the widgets without an account.",
   },
   {
     q: "What do I need in my project?",
@@ -315,7 +315,7 @@ const questions = [
   },
   {
     q: "Where does the feedback go?",
-    a: "You choose. Pass a custom submit handler to send feedback to your API or database. Alternatively, use a publishable Sentimeter project key for hosted analytics. Without either, the widget completes locally and stores nothing.",
+    a: "You choose. Pass a custom submit handler to send feedback to your API or database. Without one, the widget completes locally and stores nothing.",
   },
   {
     q: "Can I change the design?",
