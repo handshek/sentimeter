@@ -177,7 +177,8 @@ for the validation order.
 
 ## Waitlist is unavailable
 
-1. Confirm the web deployment has `NEXT_PUBLIC_CONVEX_URL` and `WAITLIST_SECRET`,
+1. If the form is hidden, the coming-soon page only offers repository updates.
+   Confirm the web deployment has `NEXT_PUBLIC_CONVEX_URL` and `WAITLIST_SECRET`,
    and its secret matches the selected Convex deployment.
 2. Confirm that backend has `waitlist.join` and its schema/index deployed.
 3. Inspect server and Convex logs without copying secrets into issues. Invalid

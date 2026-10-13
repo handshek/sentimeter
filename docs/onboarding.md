@@ -38,11 +38,12 @@ Markdown, or `llms.txt`.
 
 Clerk and Convex providers do not mount on public registry pages. In development,
 the dashboard, sign-in, and Advanced tester work when configured. Without hosted
-configuration, protected routes return 503 and `/widgets` redirects to
-`/components`.
+configuration, `/dashboard` shows the coming-soon page without an email form.
+Sign-in, sign-up and dashboard project subpaths redirect there; `/widgets`
+redirects to `/components`.
 
 Production defaults to the waitlist when `NEXT_PUBLIC_CONVEX_URL` and
-`WAITLIST_SECRET` are set, or to the unavailable state otherwise. `WAITLIST_SECRET`
+`WAITLIST_SECRET` are set, or to the same coming-soon page without a form otherwise. `WAITLIST_SECRET`
 must match in the web app and Convex deployment. It is optional for development
 hosted analytics and `check-env`. `HOSTED_ANALYTICS=live` explicitly enables a
 future hosted launch when Clerk and Convex are also configured. Leave it unset
