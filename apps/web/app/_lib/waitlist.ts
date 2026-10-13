@@ -32,7 +32,17 @@ export async function joinWaitlist(
       source: "dashboard",
       secret,
     });
-  } catch {
+  } catch (error) {
+    const details =
+      error instanceof Error
+        ? { name: error.name, message: error.message }
+        : { name: "UnknownError", message: "Non-Error thrown" };
+    for (const value of [signup.email, signup.ip, secret]) {
+      if (!value) continue;
+      details.name = details.name.replaceAll(value, "[redacted]");
+      details.message = details.message.replaceAll(value, "[redacted]");
+    }
+    console.error("Waitlist signup failed", details);
     return "unavailable";
   }
 }
