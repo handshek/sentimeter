@@ -24,6 +24,27 @@ It consists of:
 - A shadcn registry app (apps/registry) — Cloudflare Worker serving registry JSON so developers can `shadcn add "https://registry.handshek.workers.dev/r/emoji-feedback.json"` and have the component fit naturally into their existing shadcn project
 - An embeddable widgets package (packages/widgets)
 
+## Optional component state workbench
+
+The project includes Jakub Krehel's [`state-machine`](.agents/skills/state-machine/SKILL.md)
+skill. Use it only when the user explicitly invokes it; installation does not
+request a workbench. Read the [assessment and usage notes](docs/research/state-machine-skill-assessment.md)
+first. Preserve both upstream explicit-invocation settings when updating it.
+
+When using it in Sentimeter, these project rules override the upstream switcher spec:
+
+- Compose installed shadcn controls, Lucide icons, semantic colors and local font
+  roles. Do not copy its custom SVGs, raw colors, system-font reset or `all: unset`
+  styling. Separate the workbench controls through layout and a clear label.
+- Scope shortcuts to the workbench controls so they do not intercept interaction
+  inside the component, including composite controls and editable fields.
+- Use local fixtures and explicit mock submission handlers. Do not connect a
+  workbench to live Clerk/Convex data or mutations. If no safe data seam exists,
+  report that limitation and ask before adding one, as the upstream skill requires.
+- Use real reachable states and existing component APIs; widgets have no
+  controlled state prop. Keep scratch routes development-only and out of PRs and
+  deployed builds. Leave them available locally until the user asks for removal.
+
 ## Tech stack
 
 - **Monorepo:** Turborepo, Bun
