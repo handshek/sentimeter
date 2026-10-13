@@ -1,90 +1,48 @@
-# Welcome to your Convex functions directory!
+# Sentimeter Convex backend
 
-Write your Convex functions here.
-See https://docs.convex.dev/functions for more.
+Convex stores the public hosted-analytics waitlist and the unreleased hosted
+analytics data used during development. Published registry widgets complete
+locally or call a host-supplied `submit` handler; they do not call this backend.
 
-A query function that takes two arguments looks like:
+## Tables
 
-```ts
-// convex/myFunctions.ts
-import { query } from "./_generated/server";
-import { v } from "convex/values";
+The canonical schema is [schema.ts](schema.ts).
 
-export const myQueryFunction = query({
-  // Validators for arguments.
-  args: {
-    first: v.number(),
-    second: v.string(),
-  },
+- `waitlist` holds normalized email, signup time, and source, indexed by email.
+- `users` maps Clerk identities to local users.
+- `projects` holds user-owned projects, development/production mode, and allowed
+  browser origins.
+- `apiKeys` holds publishable project keys and revocation times.
+- `feedback` holds ratings, comments, locations, and submission times.
 
-  // Function implementation.
-  handler: async (ctx, args) => {
-    // Read the database as many times as you need here.
-    // See https://docs.convex.dev/database/reading-data.
-    const documents = await ctx.db.query("tablename").collect();
+The last four tables belong to unreleased hosted analytics, dev only.
 
-    // Arguments passed from the client are properties of the args object.
-    console.log(args.first, args.second);
+## Functions
 
-    // Write arbitrary JavaScript here: filter, aggregate, build derived data,
-    // remove non-public properties, or create new objects.
-    return documents;
-  },
-});
-```
+- `waitlist.join` verifies a private shared secret, validates email, applies
+  per-IP and global limits, and succeeds quietly for duplicate emails.
+  The site calls it through a Next.js server action.
+- `users.syncUser` synchronizes the authenticated Clerk identity.
+- `projects` provides authenticated project/key/origin management.
+- `feedback` stores hosted submissions internally and provides authenticated
+  feedback, analytics, and volume queries.
+- `http` and `httpActions` expose development hosted intake with CORS and
+  project-key, origin, payload, and rate checks.
 
-Using this query function in a React component looks like:
+Pure validation rules and rate-limit configuration live in `lib/`. The
+`@convex-dev/rate-limiter` component is registered in `convex.config.ts`.
+`_generated/` contains Convex-generated API bindings; regenerate those with the
+Convex CLI rather than editing them manually.
 
-```ts
-const data = useQuery(api.myFunctions.myQueryFunction, {
-  first: 10,
-  second: "hello",
-});
-```
+## Configuration and deployment
 
-A mutation function looks like:
+Development hosted analytics uses the optional values in
+[../.env.example](../.env.example). Convex requires `CLERK_JWT_ISSUER_DOMAIN` for
+its auth provider. Waitlist requests require `WAITLIST_SECRET` to match the web
+app's private value.
 
-```ts
-// convex/myFunctions.ts
-import { mutation } from "./_generated/server";
-import { v } from "convex/values";
-
-export const myMutationFunction = mutation({
-  // Validators for arguments.
-  args: {
-    first: v.string(),
-    second: v.string(),
-  },
-
-  // Function implementation.
-  handler: async (ctx, args) => {
-    // Insert or modify documents in the database here.
-    // Mutations can also read from the database like queries.
-    // See https://docs.convex.dev/database/writing-data.
-    const message = { body: args.first, author: args.second };
-    const id = await ctx.db.insert("messages", message);
-
-    // Optionally, return a value from your mutation.
-    return await ctx.db.get("messages", id);
-  },
-});
-```
-
-Using this mutation function in a React component looks like:
-
-```ts
-const mutation = useMutation(api.myFunctions.myMutationFunction);
-function handleButtonPress() {
-  // fire and forget, the most common way to use mutations
-  mutation({ first: "Hello!", second: "me" });
-  // OR
-  // use the result once the mutation has completed
-  mutation({ first: "Hello!", second: "me" }).then((result) =>
-    console.log(result),
-  );
-}
-```
-
-Use the Convex CLI to push your functions to a deployment. See everything
-the Convex CLI can do by running `npx convex -h` in your project root
-directory. To learn more, launch the docs with `npx convex docs`.
+Use `bunx convex dev --once` from `apps/web` for an already configured
+development deployment. Complete any interactive setup yourself first.
+Production deploys through the Vercel build command with a production deploy
+key. Follow the [runbook](../../../docs/ops/runbook.md) before changing
+production configuration or deployment.

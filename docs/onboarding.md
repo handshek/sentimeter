@@ -2,7 +2,8 @@
 
 ## Repository Shape
 
-- `apps/web` - public widget catalog and docs, plus optional Clerk/Convex analytics.
+- `apps/web` - public widget catalog, docs, production waitlist, and unreleased
+  hosted analytics for development.
 - `apps/registry` - Cloudflare Worker plus the private Registry Item Adapter and
   generated JSON.
 - `packages/widgets` - canonical reusable open-code Widget implementations.
@@ -15,7 +16,7 @@
 3. Read `apps/web/convex/schema.ts` to understand stored data.
 4. Read `apps/registry/registry.json` before changing Registry Item shape.
 5. Read `packages/widgets/src/feedback-system.ts`, `types.ts`, and
-   `core/submit.ts` before changing Widget behavior.
+   `core/errors.ts` before changing Widget behavior.
 
 ## Local Commands
 
@@ -24,7 +25,7 @@ starts the public site without hosted setup. Use Node.js 20.9+ and the repo's Bu
 version. No `.env.local` is needed to work on the homepage, catalog, previews,
 Markdown, or `llms.txt`.
 
-### Optional Hosted Setup
+### Unreleased hosted analytics setup, dev only
 
 1. Configure a Convex project and a Clerk app in their dashboards.
 2. Copy `apps/web/.env.example` to `.env.local` and replace the placeholders.
@@ -35,9 +36,17 @@ Markdown, or `llms.txt`.
 4. Run `bun run check-env`. Human contributors can start the full development
    loop with `bun run dev`; perform any login or project-selection prompt yourself.
 
-Clerk and Convex providers do not mount on public registry pages. Without hosted
-setup, protected routes return 503 and `/widgets` redirects to `/components`.
-The existing Advanced tester remains for configured integrations, not public discovery.
+Clerk and Convex providers do not mount on public registry pages. In development,
+the dashboard, sign-in, and Advanced tester work when configured. Without hosted
+configuration, protected routes return 503 and `/widgets` redirects to
+`/components`.
+
+Production defaults to the waitlist when `NEXT_PUBLIC_CONVEX_URL` and
+`WAITLIST_SECRET` are set, or to the unavailable state otherwise. `WAITLIST_SECRET`
+must match in the web app and Convex deployment. It is optional for development
+hosted analytics and `check-env`. `HOSTED_ANALYTICS=live` explicitly enables a
+future hosted launch when Clerk and Convex are also configured. Leave it unset
+for the registry release. Follow the [runbook](ops/runbook.md) for launch setup.
 
 ### Checks
 
@@ -45,6 +54,9 @@ The existing Advanced tester remains for configured integrations, not public dis
 - `bun run lint` - lint the monorepo.
 - `bun run check-types` - type-check the monorepo.
 - `bun run test` - run local unit tests.
+- `bun run check-tests` - check web test-script coverage.
+- `bun run check-design` - run site and widget design guards.
+- `bun run build` - build the registry and public site.
 - `bun run registry:emit` - materialize ignored Registry Item staging.
 - `bun run check-registry` - validate a temporary shadcn build and host fixture.
 - `bun run registry:build` - atomically refresh public shadcn registry JSON.

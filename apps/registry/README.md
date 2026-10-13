@@ -29,7 +29,7 @@ apps/registry/.generated/sentimeter/
 │   ├── types.ts
 │   ├── design-system.ts
 │   ├── core/
-│   │   ├── submit.ts
+│   │   ├── errors.ts
 │   │   └── use-widget-machine.ts
 │   └── compound/
 ├── emoji-feedback.tsx
@@ -68,12 +68,21 @@ Example:
 bunx shadcn add "https://registry.handshek.workers.dev/r/emoji-feedback.json"
 ```
 
+This example uses `REGISTRY_URL` from [site.config.ts](site.config.ts).
+`SITE_URL` and `REPOSITORY_URL` live in the same file so the public catalog and
+registry generation share one host configuration. Follow the
+[domain switch runbook](../../docs/ops/runbook.md) before changing these hosts.
+
 The first install pulls in the shared `feedback-system` tree. Installing another
-Sentimeter Widget adds its wrapper file while reusing that shared tree. The
+Sentimeter Widget adds its wrapper file while reusing those 14 shared files. The
 design-system module travels with every install and reads the host's shadcn
 theme. Host-local Button, Textarea, and Label components
 and Lucide remain the only UI dependencies; no Sentimeter stylesheet or font
 download is required.
+
+Widgets complete locally unless the host supplies a custom `submit` handler.
+The handler receives the rating, optional comment, widget type, and location.
+The registry includes no hosted endpoint or project-key integration.
 
 ## Build flow
 
