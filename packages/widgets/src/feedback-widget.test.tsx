@@ -15,6 +15,7 @@ import {
   FeedbackWidget,
   LikeDislike,
   StarRating,
+  WidgetSubmitError,
   useFeedbackContext,
   type FeedbackStyle,
   type WidgetPayload,
@@ -372,7 +373,6 @@ describe("rendered feedback widget", () => {
 
     render(
       <LikeDislike
-        apiKey="   "
         onSelect={() => events.push("select")}
         onStateChange={(state) => events.push(state)}
         onSubmitStart={(payload) => {
@@ -397,7 +397,6 @@ describe("rendered feedback widget", () => {
       "done",
     ]);
     assert.deepEqual(submittedPayload, {
-      apiKey: "",
       location: "/",
       widgetType: "thumbs",
       value: 1,
@@ -452,7 +451,44 @@ describe("rendered feedback widget", () => {
     assert.deepEqual(payloads[1], payloads[0]);
   });
 
-  test("names the text field and caps it at the hosted intake limit", () => {
+  test("preserves custom submit error details and the feedback location on retry", async () => {
+    const error = new WidgetSubmitError(
+      "rate_limited",
+      "Please wait before trying again.",
+      {
+        status: 429,
+        retryAfterMs: 1000,
+      },
+    );
+    const payloads: WidgetPayload[] = [];
+    const failures: unknown[] = [];
+    render(
+      <LikeDislike
+        location="/pricing"
+        autoHide={false}
+        submit={async (payload) => {
+          payloads.push(payload);
+          if (payloads.length === 1) throw error;
+        }}
+        onSubmitError={(failure) => failures.push(failure)}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Like" }));
+    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    assert.ok(await screen.findByText(error.message));
+    assert.equal(failures[0], error);
+    assert.equal(error.retryAfterMs, 1000);
+    assert.deepEqual(payloads[0], {
+      location: "/pricing",
+      widgetType: "thumbs",
+      value: 1,
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Try again" }));
+    assert.ok(await screen.findByText("Thanks!"));
+    assert.deepEqual(payloads[1], payloads[0]);
+  });
+
+  test("names the text field and caps it at the default comment limit", () => {
     render(<LikeDislike showInput />);
 
     fireEvent.click(screen.getByRole("button", { name: "Like" }));

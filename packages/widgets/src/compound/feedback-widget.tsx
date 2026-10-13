@@ -24,9 +24,7 @@ import {
 } from "../design-system";
 
 export type FeedbackWidgetProps = {
-  apiKey?: string;
   location?: string;
-  endpoint?: string;
   widgetType: WidgetType;
   disabled?: boolean;
   size?: WidgetSize;
@@ -125,9 +123,7 @@ function FeedbackWidgetInner({
 }
 
 export function FeedbackWidget({
-  apiKey,
   location,
-  endpoint,
   widgetType,
   disabled,
   size,
@@ -143,9 +139,7 @@ export function FeedbackWidget({
 }: FeedbackWidgetProps) {
   return (
     <FeedbackProvider
-      apiKey={apiKey}
       location={location}
-      endpoint={endpoint}
       widgetType={widgetType}
       disabled={disabled}
       size={size}

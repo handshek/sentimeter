@@ -1,9 +1,9 @@
 import registry from "../../../registry/registry.json";
 import type { WidgetLayout, WidgetSize } from "@repo/widgets";
+import { REGISTRY_URL } from "../../../registry/site.config";
 
-export const SITE_URL = registry.homepage;
-export const REPOSITORY_URL = "https://github.com/handshek/sentimeter";
-export const REGISTRY_BASE_URL = "https://registry.handshek.workers.dev/r";
+export { SITE_URL, REPOSITORY_URL } from "../../../registry/site.config";
+export const REGISTRY_BASE_URL = `${REGISTRY_URL}/r`;
 export const namespaceConfig = JSON.stringify(
   {
     registries: { "@sentimeter": `${REGISTRY_BASE_URL}/{name}.json` },
@@ -105,7 +105,7 @@ export type WidgetDemoOptions = {
 export function getUsageSnippet(
   widget: Pick<WidgetDocConfig, "slug" | "componentName" | "defaultVariant">,
   options?: Partial<WidgetDemoOptions>,
-  submission: "local" | "custom" | "hosted" = "local",
+  submission: "local" | "custom" = "local",
 ) {
   const variant = options?.variant ?? widget.defaultVariant;
   const size = options?.size ?? "default";
@@ -117,7 +117,6 @@ export function getUsageSnippet(
     ...(size !== "default" ? [`size="${size}"`] : []),
     ...(options?.showInput ? ["showInput"] : []),
     ...(submission === "custom" ? ["submit={saveFeedback}"] : []),
-    ...(submission === "hosted" ? ['apiKey="pk_your-project-key"'] : []),
   ].join("\n      ");
   const customSubmit =
     submission === "custom"
@@ -176,24 +175,10 @@ export function FeedbackExample() {
 
 const sharedProps: WidgetDocRow[] = [
   {
-    prop: "apiKey",
-    type: "string",
-    defaultValue: '""',
-    description:
-      "Publishable Sentimeter project key. When set without a custom submit handler, feedback is sent to hosted analytics.",
-  },
-  {
     prop: "location",
     type: "string",
     defaultValue: '"/"',
-    description: "Stable route or identifier for the feedback source.",
-  },
-  {
-    prop: "endpoint",
-    type: "string",
-    defaultValue: "Sentimeter production URL",
-    description:
-      "Optional. Defaults to Sentimeter’s hosted ingest URL; override for staging or self-host.",
+    description: "Stable route or identifier included in the submit payload.",
   },
   {
     prop: "disabled",
@@ -294,7 +279,7 @@ const sharedProps: WidgetDocRow[] = [
     type: "WidgetSubmit",
     defaultValue: "-",
     description:
-      "Custom async submit handler. Takes precedence over hosted and local-only submission.",
+      "Custom async handler receiving widgetType, value, optional text, and location. Without a handler, submission completes locally.",
   },
   {
     prop: "onSelect",

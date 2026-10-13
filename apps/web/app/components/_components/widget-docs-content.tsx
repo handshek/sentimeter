@@ -214,9 +214,9 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
           <TabsContent value="custom" className="docs-section">
             <p className="ds-body text-muted-foreground">
               Implement <code>/api/feedback</code> in your app. Validate the
-              payload and persist it before returning success. No Sentimeter key
-              is needed; the existing payload includes an empty{" "}
-              <code>apiKey</code>.
+              payload and persist it before returning success. The payload
+              includes <code>location</code>, <code>widgetType</code>,{" "}
+              <code>value</code>, and optional <code>text</code>.
             </p>
             <CodeBlock
               code={getUsageSnippet(widget, options, "custom")}
@@ -230,11 +230,10 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
           Submission Behavior
         </h2>
         <p className="ds-body text-muted-foreground">
-          A custom <code>submit</code> handler takes precedence. Without it, a
-          non-empty <code>apiKey</code> enables hosted analytics. With neither
-          configured, the widget completes locally without sending or persisting
-          feedback. Failed custom submissions remain retryable;{" "}
-          <code>onSubmitError</code> receives the original error.
+          A custom <code>submit</code> handler saves feedback. Without one, the
+          widget completes locally without sending or persisting feedback.
+          Failed custom submissions remain retryable; <code>onSubmitError</code>{" "}
+          receives the original error.
         </p>
         <Accordion type="single" collapsible>
           <AccordionItem value="compound">
@@ -245,34 +244,6 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
               <CodeBlock
                 code={getCompoundSnippet(widget)}
                 label="Compound Example"
-              />
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="hosted">
-            <AccordionTrigger className="min-h-11">
-              Optional Hosted Analytics
-            </AccordionTrigger>
-            <AccordionContent className="docs-section">
-              <p className="ds-body text-muted-foreground">
-                Create a project in the{" "}
-                <Link href="/dashboard" className="docs-link">
-                  dashboard
-                </Link>
-                , use its publishable key, and configure allowed origins for
-                production. Hosted failures expose{" "}
-                <code>WidgetSubmitError</code> codes, HTTP status, and retry
-                timing. See{" "}
-                <Link
-                  href="/components/getting-started#submission"
-                  className="docs-link"
-                >
-                  integration guidance
-                </Link>
-                .
-              </p>
-              <CodeBlock
-                code={getUsageSnippet(widget, options, "hosted")}
-                label="Hosted Example"
               />
             </AccordionContent>
           </AccordionItem>

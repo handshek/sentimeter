@@ -53,16 +53,12 @@ ${code("tsx", getUsageSnippet(widget, undefined, "custom"))}
 
 Implement /api/feedback in your own app. Validate untrusted input, enforce your app's authentication and abuse protection, and persist before returning success. That endpoint is not supplied by Sentimeter.
 
-The submit payload contains apiKey, location, widgetType, value, and optional text. Without a hosted key, apiKey is an empty string. Emoji and stars use 1–5; thumbs use 0 or 1. Custom glyphs change only the presentation: faces always take five glyphs, thumbs two (like, then dislike), and stars one repeated glyph, so the values stay the same. Resolve only after persistence succeeds; throw on failure to keep the widget retryable. onSubmitError receives the original error.
+The submit payload contains location, widgetType, value, and optional text. The location prop defaults to "/"; set it to identify the feedback source. Emoji and stars use 1–5; thumbs use 0 or 1. Custom glyphs change only the presentation: faces always take five glyphs, thumbs two (like, then dislike), and stars one repeated glyph, so the values stay the same. Resolve only after persistence succeeds; throw on failure to keep the widget retryable. onSubmitError receives the original error.
 
-## Submission Precedence
+## Submission behavior
 
-1. Custom submit handler, when supplied.
-2. Hosted submission, when a non-empty apiKey is supplied without submit.
-3. Local-only completion, when neither is supplied.
-
-endpoint overrides hosted intake only; it does not replace a custom submit handler.
-Hosted failures are WidgetSubmitError instances with code, optional HTTP status, and optional retryAfterMs. Codes: missing_api_key, invalid_key, origin_not_allowed, rate_limited, invalid_value, invalid_body, network_error, unknown.
+A supplied custom submit handler saves feedback. Without one, the widget completes locally without sending or storing anything.
+Custom handlers can throw WidgetSubmitError with a user-facing message and optional status and retryAfterMs. Other errors show a safe retry message. onSubmitError receives the original error for your own logging.
 
 ## Props
 
@@ -88,12 +84,6 @@ Preserve the shared composition: heading, supporting description, a response wel
 
 Widget token and composition reference: ${SITE_URL}/design-system/widgets.
 
-## Optional Hosted Analytics
-
-${code("tsx", getUsageSnippet(widget, undefined, "hosted"))}
-
-Create a project at ${SITE_URL}/dashboard, use its publishable key, and configure allowed origins for production. Hosted analytics is optional; custom submit takes precedence.
-
 ## Accessibility and Layout
 
 Provide at least 288px of container width. Reaction controls stay on one row and retain at least 44×44px targets. Scaling follows the container, not the viewport.
@@ -104,9 +94,9 @@ Preserve accessible names, aria-pressed, visible keyboard focus, disabled states
 export function getAgentIndex() {
   return `# Sentimeter
 
-> An open-source, shadcn-first registry of accessible React feedback widgets. Install source into your app and connect your own backend. Hosted analytics is optional.
+> An open-source, shadcn-first registry of accessible React feedback widgets. Install source into your app and connect your own backend.
 
-Requires React, TypeScript, Tailwind CSS, and a configured shadcn app. Public demos run locally without sending or storing feedback. A custom submit handler takes precedence over apiKey-based hosted submission; neither configured means local-only completion.
+Requires React, TypeScript, Tailwind CSS, and a configured shadcn app. Public demos run locally without sending or storing feedback. Pass a custom submit handler to save feedback; without one, submission completes locally.
 
 ## Getting Started
 

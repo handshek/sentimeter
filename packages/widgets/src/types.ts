@@ -6,12 +6,7 @@ export type WidgetState = "idle" | "selected" | "submitting" | "done";
 export type WidgetLayout = "stacked" | "inline";
 
 export type WidgetSubmitErrorCode =
-  | "missing_api_key"
-  | "invalid_key"
-  | "origin_not_allowed"
   | "rate_limited"
-  | "invalid_value"
-  | "invalid_body"
   | "network_error"
   | "unknown";
 
@@ -36,7 +31,6 @@ export class WidgetSubmitError extends Error {
 export type WidgetType = "emoji" | "thumbs" | "star";
 
 export type WidgetPayload = {
-  apiKey: string;
   location: string;
   widgetType: WidgetType;
   value: number;

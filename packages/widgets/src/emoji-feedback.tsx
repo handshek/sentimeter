@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import {
-  DEFAULT_FEEDBACK_ENDPOINT,
   feedbackStyles,
   FeedbackWidget,
   FeedbackTitle,
@@ -20,7 +19,6 @@ import {
 } from "./feedback-system";
 
 const DEFAULTS = {
-  apiKey: "",
   location: "/",
   title: "Rate your experience",
   showInput: false,
@@ -31,9 +29,7 @@ const DEFAULTS = {
 } as const;
 
 export type EmojiFeedbackProps = {
-  apiKey?: string;
   location?: string;
-  endpoint?: string;
   disabled?: boolean;
   className?: string;
   style?: FeedbackStyle;
@@ -58,9 +54,7 @@ export type EmojiFeedbackProps = {
 } & WidgetCallbacks;
 
 export function EmojiFeedback({
-  apiKey = DEFAULTS.apiKey,
   location = DEFAULTS.location,
-  endpoint = DEFAULT_FEEDBACK_ENDPOINT,
   disabled,
   className,
   style,
@@ -97,9 +91,7 @@ export function EmojiFeedback({
 
   return (
     <FeedbackWidget
-      apiKey={apiKey}
       location={location}
-      endpoint={endpoint}
       widgetType="emoji"
       disabled={disabled}
       size={size}

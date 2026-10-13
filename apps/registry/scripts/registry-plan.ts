@@ -1,8 +1,9 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import ts from "typescript";
+import { REGISTRY_URL, SITE_URL } from "../site.config";
 
-export const REGISTRY_BASE_URL = "https://registry.handshek.workers.dev/r";
+export const REGISTRY_BASE_URL = `${REGISTRY_URL}/r`;
 
 export type SourceMapping = Readonly<{
   source: string;
@@ -39,9 +40,9 @@ export const SOURCE_MAPPINGS: readonly SourceMapping[] = [
     item: "feedback-system",
   },
   {
-    source: "core/submit.ts",
-    staged: "feedback-system/core/submit.ts",
-    target: "components/sentimeter/feedback-system/core/submit.ts",
+    source: "core/errors.ts",
+    staged: "feedback-system/core/errors.ts",
+    target: "components/sentimeter/feedback-system/core/errors.ts",
     item: "feedback-system",
   },
   {
@@ -173,14 +174,14 @@ export function createExpectedRegistry(
   return {
     $schema: "https://ui.shadcn.com/schema/registry.json",
     name: "sentimeter",
-    homepage: "https://try-sentimeter.vercel.app",
+    homepage: SITE_URL,
     items: [
       {
         name: "feedback-system",
         type: "registry:block",
         title: "Feedback System",
         description:
-          "Core types, submit function, and compound components for Sentimeter widgets.",
+          "Core types, submission errors, and compound components for Sentimeter widgets.",
         dependencies: ["lucide-react"],
         registryDependencies: ["button", "textarea", "label"],
         files: filesFor("feedback-system"),

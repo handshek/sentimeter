@@ -53,7 +53,7 @@ export const gettingStartedSections = [
     url: "#submission",
     depth: 2,
     content:
-      "Pass an asynchronous submit handler to validate and persist feedback. Custom submit takes precedence over apiKey and optional hosted analytics. Configure allowed origins. Errors are retryable; WidgetSubmitError includes code, status and retryAfterMs.",
+      "Pass an asynchronous submit handler to validate and persist feedback. Without a handler, submission completes locally. Custom handlers can throw WidgetSubmitError with a user-facing message and retryAfterMs. Failed submissions remain retryable.",
   },
   {
     title: "Keep the Widget Accessible",

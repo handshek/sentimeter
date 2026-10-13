@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import {
-  DEFAULT_FEEDBACK_ENDPOINT,
   feedbackStyles,
   FeedbackWidget,
   FeedbackTitle,
@@ -20,7 +19,6 @@ import {
 } from "./feedback-system";
 
 const DEFAULTS = {
-  apiKey: "",
   location: "/",
   title: "Rate your experience",
   showInput: false,
@@ -31,9 +29,7 @@ const DEFAULTS = {
 } as const;
 
 export type StarRatingProps = {
-  apiKey?: string;
   location?: string;
-  endpoint?: string;
   disabled?: boolean;
   className?: string;
   style?: FeedbackStyle;
@@ -59,9 +55,7 @@ export type StarRatingProps = {
 } & WidgetCallbacks;
 
 export function StarRating({
-  apiKey = DEFAULTS.apiKey,
   location = DEFAULTS.location,
-  endpoint = DEFAULT_FEEDBACK_ENDPOINT,
   disabled,
   className,
   style,
@@ -102,9 +96,7 @@ export function StarRating({
 
   return (
     <FeedbackWidget
-      apiKey={apiKey}
       location={location}
-      endpoint={endpoint}
       widgetType="star"
       disabled={disabled}
       size={size}

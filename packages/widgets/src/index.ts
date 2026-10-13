@@ -20,9 +20,7 @@ export type {
 } from "./feedback-system";
 
 export {
-  DEFAULT_FEEDBACK_ENDPOINT,
   WidgetSubmitError,
-  submitFeedback,
   FeedbackWidget,
   FeedbackTitle,
   FeedbackDescription,

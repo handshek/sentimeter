@@ -46,7 +46,6 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
 import {
-  DEFAULT_FEEDBACK_ENDPOINT,
   EmojiFeedback,
   LikeDislike,
   StarRating,
@@ -79,6 +78,7 @@ import { copyText, type CopyTextResult } from "../../_lib/clipboard";
 import {
   createWidgetRigState,
   getProjectDashboardHref,
+  submitToConvexSite,
   widgetRigReducer,
 } from "./widgets-playground-behavior";
 
@@ -89,7 +89,6 @@ type WidgetSlug = WidgetInstallMetadata["slug"];
 const DEFAULT_WIDGET_SLUG: WidgetSlug = "emoji-feedback";
 
 type WidgetCommon = {
-  apiKey: string;
   location: string;
   disabled: boolean;
   thankYouMessage: string;
@@ -267,7 +266,6 @@ function PopoverWidgetDemo({ common }: { common: WidgetCommon }) {
             className="w-auto border-0 bg-transparent p-0 shadow-none"
           >
             <EmojiFeedback
-              apiKey={common.apiKey}
               location={common.location}
               disabled={common.disabled}
               title={common.title}
@@ -364,7 +362,6 @@ function WidgetRig({
   );
 
   const widgetCommon = {
-    apiKey: common.apiKey,
     location: common.location,
     disabled: common.disabled,
     thankYouMessage: common.thankYouMessage,
@@ -388,7 +385,6 @@ function WidgetRig({
     (selectedValue == null
       ? null
       : {
-          apiKey: common.apiKey,
           location: common.location,
           widgetType,
           value: selectedValue,
@@ -597,30 +593,6 @@ function ShowcaseWidget({
   return <EmojiFeedback key={key} {...commonProps} />;
 }
 
-async function submitToConvexSite(payload: WidgetPayload): Promise<void> {
-  const siteUrl = process.env.NEXT_PUBLIC_CONVEX_SITE_URL?.trim();
-  const endpoint = siteUrl
-    ? `${siteUrl.replace(/\/+$/, "")}/feedback`
-    : DEFAULT_FEEDBACK_ENDPOINT;
-
-  const res = await fetch(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  if (res.ok) return;
-
-  let error = `HTTP ${res.status}`;
-  try {
-    const body = await res.json();
-    if (typeof body?.error === "string") error = body.error;
-  } catch {
-    // ignore
-  }
-  throw new Error(error);
-}
-
 export function WidgetsPlaygroundClient({
   installMetadata,
 }: {
@@ -777,16 +749,17 @@ export function WidgetsPlaygroundClient({
 
   const injectedMockSubmit = useMockSubmit(mockOutcome, mockDelayMs);
 
-  const realSubmit = React.useCallback<WidgetSubmit>(async (payload) => {
-    await submitToConvexSite(payload);
-  }, []);
+  const realSubmit = React.useCallback<WidgetSubmit>(
+    async (payload) => {
+      await submitToConvexSite(payload, apiKey);
+    },
+    [apiKey],
+  );
 
   const submit = submitMode === "mock" ? injectedMockSubmit : realSubmit;
 
   const common = React.useMemo(
     () => ({
-      apiKey,
-      endpoint: DEFAULT_FEEDBACK_ENDPOINT,
       location,
       disabled,
       thankYouMessage,
@@ -800,7 +773,6 @@ export function WidgetsPlaygroundClient({
       size: widgetSize,
     }),
     [
-      apiKey,
       disabled,
       doneDurationMs,
       location,
@@ -1378,8 +1350,6 @@ export function WidgetsPlaygroundClient({
                         <div className="-mx-4 overflow-hidden rounded-xl border border-border bg-muted/30 p-0 min-[360px]:mx-0 min-[360px]:p-3 sm:p-6">
                           <div className="flex items-center justify-center">
                             <FeedbackWidget
-                              apiKey={common.apiKey}
-                              endpoint={common.endpoint}
                               location={common.location}
                               widgetType="emoji"
                               disabled={common.disabled}
@@ -1413,8 +1383,6 @@ export function WidgetsPlaygroundClient({
                         <div className="-mx-4 overflow-hidden rounded-xl border border-border bg-muted/30 p-0 min-[360px]:mx-0 min-[360px]:p-3 sm:p-6">
                           <div className="flex items-center justify-center">
                             <FeedbackWidget
-                              apiKey={common.apiKey}
-                              endpoint={common.endpoint}
                               location={common.location}
                               widgetType="star"
                               disabled={common.disabled}

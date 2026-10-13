@@ -6,6 +6,7 @@ import {
   widgetDocs,
 } from "./widget-catalog";
 import { getWidgetMarkdown } from "./widget-markdown";
+import { REGISTRY_URL } from "../../../registry/site.config";
 
 test("every launch widget has a complete, compatible registry install", () => {
   expect(widgetDocs.map((widget) => widget.slug)).toEqual([
@@ -22,7 +23,7 @@ test("every launch widget has a complete, compatible registry install", () => {
       `components/sentimeter/${widget.slug}.tsx`,
     );
     expect(metadata.targetFiles).toContain(
-      "components/sentimeter/feedback-system/core/submit.ts",
+      "components/sentimeter/feedback-system/core/errors.ts",
     );
     expect(metadata.targetFiles).toContain(
       "components/sentimeter/feedback-system/design-system.ts",
@@ -34,7 +35,7 @@ test("every launch widget has a complete, compatible registry install", () => {
     ]);
     expect(metadata.packageDependencies).toEqual(["lucide-react"]);
     expect(getInstallCommands(widget.registryName).bun).toBe(
-      `bunx shadcn@latest add "https://registry.handshek.workers.dev/r/${widget.slug}.json"`,
+      `bunx shadcn@latest add "${REGISTRY_URL}/r/${widget.slug}.json"`,
     );
   }
   expect(getWidgetDoc("not-a-widget")).toBeUndefined();
@@ -53,6 +54,11 @@ test("generated examples keep the layout alongside submission options", () => {
     expect(example).toContain('size="lg"');
     expect(example).toContain("submit={saveFeedback}");
     const markdown = getWidgetMarkdown(widget);
+    expect(markdown).not.toContain("apiKey");
+    expect(markdown).not.toContain("/dashboard");
+    expect(markdown).not.toContain("Hosted Analytics");
+    expect(widget.props.map((row) => row.prop)).not.toContain("endpoint");
+    expect(markdown).toContain('| location | string | "/" |');
     expect(markdown).toContain("| layout |");
     expect(markdown).toContain("| style | FeedbackStyle |");
     expect(markdown).toContain("/design-system");

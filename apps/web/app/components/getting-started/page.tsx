@@ -73,8 +73,8 @@ export default function GettingStartedPage() {
             <CodeBlock code={widget.usageSnippet} label="Local Example" />
           </div>
           <p className="ds-body text-muted-foreground">
-            With neither <code>submit</code> nor <code>apiKey</code>, submission
-            completes locally. Nothing is sent or stored. These examples use{" "}
+            Without a <code>submit</code> handler, submission completes locally.
+            Nothing is sent or stored. These examples use{" "}
             <code>{"autoHide={false}"}</code> so success stays readable; the
             widget default is to hide it after 2 seconds.
           </p>
@@ -94,9 +94,10 @@ export default function GettingStartedPage() {
           <p className="ds-body text-muted-foreground">
             Pass an asynchronous <code>submit</code> handler. It receives{" "}
             <code>location</code>, <code>widgetType</code>, <code>value</code>,
-            optional <code>text</code>, and an empty <code>apiKey</code> when no
-            Sentimeter key is provided. Resolve only after saving succeeds;
-            throw on failure so users can retry.
+            and optional <code>text</code>. The <code>location</code> prop
+            defaults to <code>{'"/"'}</code>; set it to identify the feedback
+            source. Resolve only after saving succeeds; throw on failure so
+            users can retry.
           </p>
           <div className="not-prose">
             <CodeBlock
@@ -112,24 +113,9 @@ export default function GettingStartedPage() {
             thumbs use 0 or 1.
           </p>
           <p className="ds-body text-muted-foreground">
-            Custom <code>submit</code> always takes precedence over hosted
-            submission. Without a custom handler, a non-empty publishable{" "}
-            <code>apiKey</code> enables optional{" "}
-            <Link href="/dashboard" className="docs-link">
-              hosted analytics
-            </Link>
-            . Configure allowed origins in the project settings for production;
-            use <code>endpoint</code> only to override hosted intake, not to
-            replace a custom handler.
-          </p>
-          <p className="ds-body text-muted-foreground">
-            Hosted failures are <code>WidgetSubmitError</code> instances with{" "}
-            <code>code</code>, optional HTTP <code>status</code>, and optional{" "}
-            <code>retryAfterMs</code>. Codes are <code>missing_api_key</code>,{" "}
-            <code>invalid_key</code>, <code>origin_not_allowed</code>,{" "}
-            <code>rate_limited</code>, <code>invalid_value</code>,{" "}
-            <code>invalid_body</code>, <code>network_error</code>, and{" "}
-            <code>unknown</code>. The UI shows safe, retryable feedback;{" "}
+            Your handler can throw <code>WidgetSubmitError</code> with a
+            user-facing message, optional <code>status</code>, and optional{" "}
+            <code>retryAfterMs</code>. Other errors show a safe retry message.{" "}
             <code>onSubmitError</code> receives the original error for your own
             logging.
           </p>

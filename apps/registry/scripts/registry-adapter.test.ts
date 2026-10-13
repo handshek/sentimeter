@@ -33,6 +33,12 @@ describe("Registry Item Adapter", () => {
     const artifacts = await emitRegistry({ paths });
 
     assert.equal(artifacts.length, 17);
+    assert.ok(
+      artifacts.some((artifact) => artifact.source === "core/errors.ts"),
+    );
+    for (const artifact of artifacts) {
+      assert.doesNotMatch(artifact.content, /apiKey|FEEDBACK_ENDPOINT|fetch\(/);
+    }
     assert.equal(
       await readFile(
         path.join(paths.stageRoot, "feedback-system", "index.ts"),
@@ -61,6 +67,125 @@ describe("Registry Item Adapter", () => {
       await readFile(path.join(target, "sentinel.txt"), "utf8"),
       "old",
     );
+  });
+
+  test("refreshes cached hosts from site config before building registry items", async () => {
+    const paths = await createTestPaths();
+    const expected = createExpectedRegistry();
+    const previousManifest = {
+      ...expected,
+      homepage: "https://previous-site.test",
+      items: expected.items.map((item) =>
+        item.name === "feedback-system"
+          ? item
+          : {
+              ...item,
+              registryDependencies: [
+                "https://previous-registry.test/r/feedback-system.json",
+              ],
+            },
+      ),
+    };
+    await writeFile(
+      paths.manifestPath,
+      JSON.stringify(previousManifest),
+      "utf8",
+    );
+
+    await runRegistryCommand("build", {
+      paths,
+      shadcnBuild: writeFakeShadcnOutput,
+      hostTypecheck: async () => {},
+    });
+
+    assert.deepEqual(
+      JSON.parse(await readFile(paths.manifestPath, "utf8")),
+      expected,
+    );
+    assert.deepEqual(
+      JSON.parse(
+        await readFile(path.join(paths.publicRoot, "registry.json"), "utf8"),
+      ),
+      expected,
+    );
+    const wrapper: unknown = JSON.parse(
+      await readFile(
+        path.join(paths.publicRoot, "emoji-feedback.json"),
+        "utf8",
+      ),
+    );
+    assert.ok(
+      wrapper !== null &&
+        typeof wrapper === "object" &&
+        "registryDependencies" in wrapper,
+    );
+    assert.deepEqual(
+      wrapper.registryDependencies,
+      expected.items[1].registryDependencies,
+    );
+  });
+
+  test("host refresh rejects descriptor drift and changed dependency paths", async () => {
+    const expected = createExpectedRegistry();
+    const invalidManifests = [
+      { ...expected, unexpected: true },
+      { ...expected, homepage: "https://previous-site.test/unexpected" },
+      {
+        ...expected,
+        items: expected.items.map((item) =>
+          item.name === "emoji-feedback"
+            ? { ...item, title: "Unexpected title" }
+            : item,
+        ),
+      },
+      {
+        ...expected,
+        items: expected.items.map((item) =>
+          item.name === "emoji-feedback"
+            ? {
+                ...item,
+                registryDependencies: [
+                  "https://previous-registry.test/r/unexpected.json",
+                ],
+              }
+            : item,
+        ),
+      },
+      {
+        ...expected,
+        items: expected.items.map((item) =>
+          item.name === "emoji-feedback"
+            ? {
+                ...item,
+                files: item.files.map((file) => ({
+                  ...file,
+                  target: "components/unexpected.tsx",
+                })),
+              }
+            : item,
+        ),
+      },
+    ];
+    for (const manifest of invalidManifests) {
+      const paths = await createTestPaths();
+      const original = JSON.stringify(manifest);
+      await writeFile(paths.manifestPath, original, "utf8");
+      await mkdir(paths.stageRoot, { recursive: true });
+      await writeFile(
+        path.join(paths.stageRoot, "sentinel.txt"),
+        "old",
+        "utf8",
+      );
+      await assert.rejects(
+        emitRegistry({ paths }),
+        isAdapterError("invalid_manifest"),
+      );
+      assert.equal(await readFile(paths.manifestPath, "utf8"), original);
+      assert.equal(
+        await readFile(path.join(paths.stageRoot, "sentinel.txt"), "utf8"),
+        "old",
+      );
+    }
   });
 
   test("checks deterministic output through injected build and host Adapters", async () => {
@@ -212,6 +337,11 @@ describe("Registry Item Adapter", () => {
 
   test("leaves prior staging intact when canonical source is missing", async () => {
     const paths = await createTestPaths();
+    const originalManifest = JSON.stringify({
+      ...createExpectedRegistry(),
+      homepage: "https://previous-site.test",
+    });
+    await writeFile(paths.manifestPath, originalManifest, "utf8");
     await mkdir(paths.stageRoot, { recursive: true });
     await writeFile(path.join(paths.stageRoot, "sentinel.txt"), "old", "utf8");
     const missingSourcePaths = {
@@ -227,6 +357,7 @@ describe("Registry Item Adapter", () => {
       await readFile(path.join(paths.stageRoot, "sentinel.txt"), "utf8"),
       "old",
     );
+    assert.equal(await readFile(paths.manifestPath, "utf8"), originalManifest);
   });
 });
 
