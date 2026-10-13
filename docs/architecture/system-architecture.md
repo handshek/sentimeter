@@ -19,7 +19,7 @@ Development enables live mode when Clerk and Convex are configured. Production
 requires the explicit `HOSTED_ANALYTICS=live` override for that behavior.
 
 Otherwise, production shows the waitlist when `NEXT_PUBLIC_CONVEX_URL` and
-`WAITLIST_SECRET` are set, or an unavailable page. Sign-in and dashboard project
+`WAITLIST_SECRET` are set, or the same coming-soon page without a form. Sign-in and dashboard project
 routes redirect to `/dashboard`; `/widgets` redirects to the catalog. Legacy
 widget documentation redirects remain. Public specimens always complete locally.
 

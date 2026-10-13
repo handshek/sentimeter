@@ -1,23 +1,11 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Analytics } from "@vercel/analytics/next";
+import { geistSans, geistMono } from "./_lib/fonts";
 import "@workspace/ui/globals.css";
 import { ToasterProvider } from "./components/toaster-provider";
 import { NavigationGuardProvider } from "nextjs-nav-guard";
 import { SITE_URL } from "./_lib/widget-catalog";
 import { ThemeProvider } from "./_components/theme-provider";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-  display: "swap",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -27,6 +15,19 @@ export const metadata: Metadata = {
   },
   description:
     "Accessible, open-code React feedback widgets for shadcn apps. Install the source and connect your own backend. No account required.",
+  openGraph: {
+    type: "website",
+    siteName: "Sentimeter",
+    title: "Sentimeter | Feedback widgets for shadcn apps",
+    description:
+      "Accessible, open-source React feedback widgets. Install the source and connect your own backend.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sentimeter | Feedback widgets for shadcn apps",
+    description:
+      "Accessible, open-source React feedback widgets. Install the source and connect your own backend.",
+  },
 };
 
 export default function RootLayout({
@@ -48,6 +49,7 @@ export default function RootLayout({
             <ToasterProvider />
           </ThemeProvider>
         </NavigationGuardProvider>
+        <Analytics />
       </body>
     </html>
   );

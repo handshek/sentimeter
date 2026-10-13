@@ -43,6 +43,7 @@ app's private value.
 
 Use `bunx convex dev --once` from `apps/web` for an already configured
 development deployment. Complete any interactive setup yourself first.
-Production deploys through the Vercel build command with a production deploy
-key. Follow the [runbook](../../../docs/ops/runbook.md) before changing
-production configuration or deployment.
+Vercel deploys Convex only when `VERCEL_ENV=production` and `CONVEX_DEPLOY_KEY`
+is non-empty. Other builds run `bun run build` without deploying Convex. Follow
+the [runbook](../../../docs/ops/runbook.md) before changing production
+configuration or deployment.

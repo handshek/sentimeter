@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Button } from "@workspace/ui/components/button";
-import { hasHostedConfiguration } from "../_lib/hosted-config";
+import { hostedMode } from "../_lib/hosted-config";
 import ConvexClientProvider from "./convex-clerk-provider";
 
 export function HostedProviders({
@@ -12,7 +12,7 @@ export function HostedProviders({
   children?: ReactNode;
   withConvex?: boolean;
 }) {
-  if (!hasHostedConfiguration()) {
+  if (hostedMode() !== "live") {
     return (
       <main className="ds-container ds-section max-w-xl space-y-5">
         <h1 className="ds-page-title">Hosted Analytics Is Unavailable</h1>

@@ -15,8 +15,10 @@ import type * as lib_auth from "../lib/auth.js";
 import type * as lib_feedbackDomain from "../lib/feedbackDomain.js";
 import type * as lib_nanoid from "../lib/nanoid.js";
 import type * as lib_rateLimits from "../lib/rateLimits.js";
+import type * as lib_waitlistValidation from "../lib/waitlistValidation.js";
 import type * as projects from "../projects.js";
 import type * as users from "../users.js";
+import type * as waitlist from "../waitlist.js";
 
 import type {
   ApiFromModules,
@@ -32,8 +34,10 @@ declare const fullApi: ApiFromModules<{
   "lib/feedbackDomain": typeof lib_feedbackDomain;
   "lib/nanoid": typeof lib_nanoid;
   "lib/rateLimits": typeof lib_rateLimits;
+  "lib/waitlistValidation": typeof lib_waitlistValidation;
   projects: typeof projects;
   users: typeof users;
+  waitlist: typeof waitlist;
 }>;
 
 /**

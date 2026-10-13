@@ -3,6 +3,8 @@
 Open-source feedback widgets for shadcn apps. Install accessible React source,
 match your app's theme, and connect your own backend. No account required.
 
+![Sentimeter feedback widgets](.github/assets/hero.png)
+
 [Browse widgets](https://try-sentimeter.vercel.app/components) ·
 [Getting started](https://try-sentimeter.vercel.app/components/getting-started) ·
 [Design system](https://try-sentimeter.vercel.app/design-system) ·
@@ -36,6 +38,10 @@ This completes locally: **nothing is sent or stored**. Pass an async `submit`
 handler to save feedback using your own backend; resolve only after saving
 succeeds and throw on failure. The payload contains `widgetType`, `value`,
 optional `text`, and `location`. Without a handler, submission completes locally.
+
+![Stacked and inline feedback flows](.github/assets/demo.gif)
+
+[Watch the demo video](.github/assets/demo.mp4).
 
 Installation adds 1 widget wrapper + 14 shared feedback-system files, using your
 local shadcn Button, Textarea, Label, utilities, and theme tokens plus `lucide-react`.
@@ -147,10 +153,12 @@ bun run check-docs
 
 `check-registry` builds and type-checks installed source in a temporary host.
 `registry:emit` emits staging; `registry:build` refreshes ignored public JSON.
-The registry deploys after verified pushes to `master`; Vercel Git deployments
-build the site and deploy Convex. Configure their secrets before enabling the
-launch deploys using the [runbook](docs/ops/runbook.md). `check-env` validates
-development hosted configuration; it is not required for public-site work.
+The registry deploys after verified pushes to `master`. Vercel builds deploy
+Convex only when `VERCEL_ENV=production` and `CONVEX_DEPLOY_KEY` is non-empty.
+Other builds run `bun run build`, so the public site can deploy before production
+Convex is configured. Configure deployment secrets using the
+[runbook](docs/ops/runbook.md). `check-env` validates development hosted
+configuration; it is not required for public-site work.
 
 ## License
 

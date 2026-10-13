@@ -10,13 +10,14 @@
     "start": "next start",
     "lint": "eslint --max-warnings 0",
     "check-types": "next typegen && tsc --noEmit",
-    "test": "bun test convex/lib app/_lib/widget-catalog.test.ts app/components/_components/public-actions.test.tsx app/dashboard/_components/feedback-feed-summary.test.ts app/dashboard/_components/project-accessibility.test.ts app/dashboard/_components/project-settings-state.test.ts app/dashboard/_components/project-view-query.test.ts app/widgets/_components/widgets-playground-behavior.test.ts && bun test app/dashboard/_components/project-client.test.tsx && bun test app/dashboard/_components/dashboard-layout.test.tsx && bun test app/components/convex-clerk-provider.test.tsx"
+    "test": "bun test convex/lib app/_lib/widget-catalog.test.ts app/_lib/hosted-config.test.ts app/_lib/waitlist-request.test.ts app/components/_components/public-actions.test.tsx app/dashboard/_components/feedback-feed-summary.test.ts app/dashboard/_components/project-accessibility.test.ts app/dashboard/_components/project-settings-state.test.ts app/dashboard/_components/project-view-query.test.ts app/widgets/_components/widgets-playground-behavior.test.ts && bun test app/dashboard/_components/project-client.test.tsx && bun test app/dashboard/_components/dashboard-layout.test.tsx && bun test app/components/convex-clerk-provider.test.tsx && bun test convex/waitlist.test.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.0.4",
     "@convex-dev/rate-limiter": "^0.3.2",
     "@repo/widgets": "*",
     "@tailwindcss/postcss": "^4.2.1",
+    "@vercel/analytics": "^2.0.1",
     "@workspace/ui": "workspace:*",
     "convex": "^1.32.0",
     "fumadocs-core": "16.10.5",
@@ -43,6 +44,7 @@
     "@types/node": "^22.15.3",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
+    "convex-test": "0.0.41",
     "eslint": "^9.39.1",
     "shiki": "^4.0.2",
     "typescript": "5.9.2"

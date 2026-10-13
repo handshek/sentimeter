@@ -11,18 +11,22 @@ import {
   SheetTrigger,
 } from "@workspace/ui/components/sheet";
 import { REPOSITORY_URL } from "../../_lib/widget-catalog";
+import type { HostedMode } from "../../_lib/hosted-config";
 import { ThemeToggle } from "../theme-toggle";
 
-export function HeaderSection({
-  analyticsEnabled,
-}: {
-  analyticsEnabled: boolean;
-}) {
+export function HeaderSection({ hostedMode }: { hostedMode: HostedMode }) {
   const links = [
     { href: "/#widgets", label: "Widgets" },
     { href: "/components/getting-started", label: "Documentation" },
     { href: "/design-system", label: "Design system" },
-    ...(analyticsEnabled ? [{ href: "/dashboard", label: "Analytics" }] : []),
+    ...(hostedMode !== "off"
+      ? [
+          {
+            href: "/dashboard",
+            label: hostedMode === "live" ? "Analytics" : "Analytics (soon)",
+          },
+        ]
+      : []),
   ];
 
   return (

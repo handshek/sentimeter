@@ -7,13 +7,11 @@ import {
   SystemSection,
   FaqSection,
   CtaSection,
+  HostedAnalyticsTeaser,
 } from "./product-sections";
+import type { HostedMode } from "../../_lib/hosted-config";
 
-export function LandingPage({
-  analyticsEnabled,
-}: {
-  analyticsEnabled: boolean;
-}) {
+export function LandingPage({ hostedMode }: { hostedMode: HostedMode }) {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <a
@@ -22,16 +20,17 @@ export function LandingPage({
       >
         Skip to content
       </a>
-      <HeaderSection analyticsEnabled={analyticsEnabled} />
+      <HeaderSection hostedMode={hostedMode} />
       <main id="main" className="flex-1 [&_section[id]]:scroll-mt-24">
         <HeroSection />
         <ShowcaseSection />
-        <HowItWorksSection analyticsEnabled={analyticsEnabled} />
+        <HowItWorksSection hostedMode={hostedMode} />
         <SystemSection />
         <FaqSection />
+        {hostedMode === "waitlist" && <HostedAnalyticsTeaser />}
         <CtaSection />
       </main>
-      <FooterSection analyticsEnabled={analyticsEnabled} />
+      <FooterSection hostedMode={hostedMode} />
     </div>
   );
 }

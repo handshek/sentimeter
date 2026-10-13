@@ -1,12 +1,9 @@
 import Link from "next/link";
 import { Activity, ArrowUpRight } from "lucide-react";
 import { REPOSITORY_URL } from "../../_lib/widget-catalog";
+import type { HostedMode } from "../../_lib/hosted-config";
 
-export function FooterSection({
-  analyticsEnabled,
-}: {
-  analyticsEnabled: boolean;
-}) {
+export function FooterSection({ hostedMode }: { hostedMode: HostedMode }) {
   const groups = [
     {
       name: "Build",
@@ -21,8 +18,16 @@ export function FooterSection({
       links: [
         { href: REPOSITORY_URL, label: "GitHub" },
         { href: "/llms.txt", label: "For AI agents" },
-        ...(analyticsEnabled
-          ? [{ href: "/dashboard", label: "Hosted analytics" }]
+        ...(hostedMode !== "off"
+          ? [
+              {
+                href: "/dashboard",
+                label:
+                  hostedMode === "live"
+                    ? "Hosted analytics"
+                    : "Analytics (soon)",
+              },
+            ]
           : []),
       ],
     },
@@ -76,12 +81,6 @@ export function FooterSection({
               className="inline-flex min-h-11 items-center rounded-sm hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
             >
               Privacy
-            </Link>
-            <Link
-              href="/terms"
-              className="inline-flex min-h-11 items-center rounded-sm hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
-            >
-              Terms
             </Link>
           </nav>
         </div>

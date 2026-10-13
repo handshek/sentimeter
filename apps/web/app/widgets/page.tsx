@@ -1,11 +1,11 @@
 import * as React from "react";
 import { redirect } from "next/navigation";
-import { hasHostedConfiguration } from "../_lib/hosted-config";
+import { hostedMode } from "../_lib/hosted-config";
 import { widgetDocs } from "../_lib/widget-catalog";
 import { WidgetsPlaygroundClient } from "./_components/widgets-playground-client";
 
 export default function WidgetsPlaygroundPage() {
-  if (!hasHostedConfiguration()) redirect("/components");
+  if (hostedMode() !== "live") redirect("/components");
 
   return (
     <React.Suspense

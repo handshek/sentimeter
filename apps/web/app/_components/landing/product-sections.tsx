@@ -21,6 +21,7 @@ import {
 } from "../../_lib/widget-catalog";
 import { CodeBlock } from "../../components/_components/code-block";
 import { WidgetSpecimen } from "./widget-specimen";
+import type { HostedMode } from "../../_lib/hosted-config";
 
 const scenarios = [
   {
@@ -138,11 +139,7 @@ export function ShowcaseSection() {
   );
 }
 
-export function HowItWorksSection({
-  analyticsEnabled,
-}: {
-  analyticsEnabled: boolean;
-}) {
+export function HowItWorksSection({ hostedMode }: { hostedMode: HostedMode }) {
   return (
     <section
       id="how-it-works"
@@ -215,24 +212,50 @@ export function HowItWorksSection({
               aria-hidden="true"
               className="mt-1 size-4 shrink-0 text-muted-foreground"
             />
-            <p className="ds-caption leading-6 text-muted-foreground">
-              Without a submit handler, feedback completes locally.{" "}
-              <Link
-                href={
-                  analyticsEnabled
-                    ? "/dashboard"
-                    : "/components/getting-started#submission"
-                }
-                className="rounded-sm text-foreground underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-ring"
-              >
-                {analyticsEnabled
-                  ? "Open the dashboard"
-                  : "Explore your connection options"}
-              </Link>
-              .
+            <p className="ds-body-sm text-muted-foreground">
+              {hostedMode === "live" ? (
+                <>
+                  Prefer a hosted destination?{" "}
+                  <Link
+                    href="/dashboard"
+                    className="rounded-sm text-foreground underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-ring"
+                  >
+                    Open the analytics dashboard
+                  </Link>
+                  .
+                </>
+              ) : (
+                "Try the widgets without a backend. Without a submit handler, feedback completes locally."
+              )}
             </p>
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+export function HostedAnalyticsTeaser() {
+  return (
+    <section
+      aria-labelledby="analytics-teaser-title"
+      className="border-y border-border bg-muted/30"
+    >
+      <div className="ds-container flex flex-col items-start justify-between gap-6 py-10 sm:flex-row sm:items-center">
+        <div className="space-y-2">
+          <h2 id="analytics-teaser-title" className="ds-title">
+            Hosted analytics, coming soon
+          </h2>
+          <p className="ds-body-sm text-muted-foreground">
+            Join the waitlist for a hosted place to review your feedback.
+          </p>
+        </div>
+        <Button asChild variant="outline">
+          <Link href="/dashboard">
+            Join the waitlist{" "}
+            <ArrowRight aria-hidden="true" className="size-4" />
+          </Link>
+        </Button>
       </div>
     </section>
   );
