@@ -12,7 +12,8 @@ bun run --cwd apps/web dev
 ```
 
 No Clerk or Convex configuration is required for the homepage, catalog, or docs.
-See [onboarding](docs/onboarding.md) for optional hosted setup and checks.
+See [onboarding](docs/onboarding.md) for unreleased hosted development setup and
+checks.
 
 ## Where Changes Belong
 
@@ -23,18 +24,21 @@ See [onboarding](docs/onboarding.md) for optional hosted setup and checks.
 - Shared UI primitives: use shadcn components in `packages/ui`.
 
 Keep installed widgets local, theme-aware, keyboard-accessible, and usable in a
-288px container with 44×44px reaction targets. Preserve custom/local/hosted
-submission precedence and the public API. Discuss new widget types or changes to
+288px container with 44×44px reaction targets. A custom `submit` handler saves
+feedback; without it, the widget completes locally. Preserve that behavior and
+the public API. Discuss new widget types or changes to
 the registry footprint in an issue first; this launch focuses on three widgets.
 
 ## Before a Pull Request
 
 ```sh
 bun run test
+bun run check-tests
 bun run check-types
 bun run lint
 bun run build
 bun run check-registry
+bun run check-design
 bun run check-docs
 ```
 

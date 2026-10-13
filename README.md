@@ -34,10 +34,10 @@ export function FeedbackExample() {
 
 This completes locally: **nothing is sent or stored**. Pass an async `submit`
 handler to save feedback using your own backend; resolve only after saving
-succeeds and throw on failure. A custom handler takes precedence over a hosted
-`apiKey`. With neither configured, submission stays local.
+succeeds and throw on failure. The payload contains `widgetType`, `value`,
+optional `text`, and `location`. Without a handler, submission completes locally.
 
-Installation adds 1 widget wrapper + 13 shared feedback-system files, using your
+Installation adds 1 widget wrapper + 14 shared feedback-system files, using your
 local shadcn Button, Textarea, Label, utilities, and theme tokens plus `lucide-react`.
 You own the installed source; no runtime Sentimeter package or iframe is needed.
 
@@ -102,20 +102,24 @@ Open [localhost:3000](http://localhost:3000). The homepage, catalog, previews,
 human docs, and agent docs work without hosted environment variables. See
 [CONTRIBUTING.md](CONTRIBUTING.md) and [onboarding](docs/onboarding.md) for checks.
 
-## Optional Hosted Analytics
+## Hosted analytics is coming
 
-Hosted Sentimeter analytics remains available through `/dashboard`. Installers
-do not need it. To run hosted routes, configure Clerk and Convex using
-`apps/web/.env.example` and the [onboarding guide](docs/onboarding.md).
-Unconfigured hosted routes return an honest 503; the parked `/widgets` tester
-redirects to the catalog. Existing widget documentation URLs still redirect to
-their component pages.
+The public release is the widget registry. Hosted analytics is unreleased and
+available for development only. The production `/dashboard` page offers a
+waitlist when its Convex URL and secret are configured. Sign-in and project
+routes redirect there; `/widgets` redirects to the catalog.
+
+To develop the hosted dashboard, configure Clerk and Convex using
+[apps/web/.env.example](apps/web/.env.example) and the
+[onboarding guide](docs/onboarding.md). Installed widgets submit through your
+own handler or complete locally.
 
 ## Architecture
 
 - `packages/widgets/src`: canonical widget behavior for workspace previews and installed source.
 - `apps/registry`: adapter and Cloudflare Worker serving the shadcn registry.
-- `apps/web`: public registry/docs plus optional Clerk/Convex-backed analytics.
+- `apps/web`: public registry/docs, production waitlist, and unreleased hosted
+  analytics for development.
 - `apps/web/app/_lib/widget-catalog.ts`: public descriptions and examples;
   registry manifest owns installed paths and dependencies.
 
@@ -123,10 +127,16 @@ Generated `.generated` and `public/r` trees are ignored build output. Do not edi
 them. See [system architecture](docs/architecture/system-architecture.md) and
 [project documentation](docs/README.md) for details.
 
+The links and install commands above use the current hosts from
+[apps/registry/site.config.ts](apps/registry/site.config.ts). Domain changes start
+there; follow the [deployment runbook](docs/ops/runbook.md) to update routing,
+regenerate the registry, and refresh these examples.
+
 ## Checks and Registry Builds
 
 ```sh
 bun run test
+bun run check-tests
 bun run check-types
 bun run lint
 bun run build
@@ -137,8 +147,10 @@ bun run check-docs
 
 `check-registry` builds and type-checks installed source in a temporary host.
 `registry:emit` emits staging; `registry:build` refreshes ignored public JSON.
-Deployment remains a separate maintainer action. `check-env` validates hosted
-configuration only; it is not required for public-site development.
+The registry deploys after verified pushes to `master`; Vercel Git deployments
+build the site and deploy Convex. Configure their secrets before enabling the
+launch deploys using the [runbook](docs/ops/runbook.md). `check-env` validates
+development hosted configuration; it is not required for public-site work.
 
 ## License
 

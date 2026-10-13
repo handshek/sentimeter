@@ -7,7 +7,7 @@
       "name": "feedback-system",
       "type": "registry:block",
       "title": "Feedback System",
-      "description": "Core types, submit function, and compound components for Sentimeter widgets.",
+      "description": "Core types, submission errors, and compound components for Sentimeter widgets.",
       "dependencies": ["lucide-react"],
       "registryDependencies": ["button", "textarea", "label"],
       "files": [
@@ -27,9 +27,9 @@
           "target": "components/sentimeter/feedback-system/design-system.ts"
         },
         {
-          "path": ".generated/sentimeter/feedback-system/core/submit.ts",
+          "path": ".generated/sentimeter/feedback-system/core/errors.ts",
           "type": "registry:component",
-          "target": "components/sentimeter/feedback-system/core/submit.ts"
+          "target": "components/sentimeter/feedback-system/core/errors.ts"
         },
         {
           "path": ".generated/sentimeter/feedback-system/core/use-widget-machine.ts",

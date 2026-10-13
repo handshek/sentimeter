@@ -6,8 +6,8 @@ updated or deleted when behavior changes.
 
 ## Start Here
 
-- [Project README](../README.md) - product overview, setup, commands, and current
-  roadmap.
+- [Project README](../README.md) - registry launch overview, setup, and commands.
+- [Changelog](../CHANGELOG.md) - public release history.
 - [Onboarding](onboarding.md) - practical walkthrough for working in the repo.
 - [Context](../CONTEXT.md) - product and system language for larger changes.
 - [Design philosophy](../DESIGN_PHILOSOPHY.md) - UI principles and constraints.
@@ -17,12 +17,14 @@ updated or deleted when behavior changes.
 - [System architecture](architecture/system-architecture.md) - runtime surfaces
   and data flow.
 - [Feedback intake](architecture/feedback-intake.md) - widget submission,
-  validation, CORS, rate limits, and storage.
+  validation, CORS, rate limits, and storage for unreleased hosted analytics.
+- [Registry subdomain decision](adr/0001-registry-on-own-subdomain.md) - the
+  stable install URL and its Cloudflare Worker routing.
 
 ## Operations
 
-- [Runbook](ops/runbook.md) - checks and first-response steps for common
-  failures.
+- [Runbook](ops/runbook.md) - checks, deployment setup, domain changes, and
+  first-response steps for common failures.
 
 ## Research
 
@@ -32,7 +34,8 @@ updated or deleted when behavior changes.
 ## Maintenance Rules
 
 - Keep root Markdown limited to repo instructions, product context, design
-  constraints, and the README.
+  constraints, contribution and license files, the changelog, and the README.
+- Keep architecture decisions under `docs/adr/`.
 - Keep architecture notes under `docs/architecture/`.
 - Keep incident response and deployment notes under `docs/ops/`.
 - Keep dated investigations under `docs/research/` if they are added later.

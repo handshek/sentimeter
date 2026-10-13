@@ -15,6 +15,24 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
+    "web#build": {
+      "dependsOn": ["^build"],
+      "env": [
+        "CLERK_JWT_ISSUER_DOMAIN",
+        "CLERK_SECRET_KEY",
+        "NODE_ENV",
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "NEXT_PUBLIC_CONVEX_URL",
+        "NEXT_PUBLIC_CONVEX_SITE_URL"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*",
+        "$TURBO_ROOT$/apps/registry/site.config.ts",
+        "$TURBO_ROOT$/apps/registry/registry.json"
+      ],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
     "registry#build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/packages/widgets/src/**"],
@@ -26,9 +44,26 @@
     "check-types": {
       "dependsOn": ["^check-types"]
     },
+    "web#check-types": {
+      "dependsOn": ["^check-types"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/registry/site.config.ts",
+        "$TURBO_ROOT$/apps/registry/registry.json"
+      ]
+    },
     "test": {
       "dependsOn": ["^test"],
       "passThroughEnv": ["SENTIMETER_POLISH_FIXTURES_DIR"]
+    },
+    "web#test": {
+      "dependsOn": ["^test"],
+      "passThroughEnv": ["SENTIMETER_POLISH_FIXTURES_DIR"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/registry/site.config.ts",
+        "$TURBO_ROOT$/apps/registry/registry.json"
+      ]
     },
     "dev": {
       "cache": false,

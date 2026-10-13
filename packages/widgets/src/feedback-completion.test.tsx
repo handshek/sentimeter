@@ -145,7 +145,6 @@ for (const {
     assert.equal(screen.queryByRole("button", { name: "Submit" }), null);
     assert.deepEqual(payloads, [
       {
-        apiKey: "",
         location: "/",
         widgetType,
         value,
@@ -204,14 +203,12 @@ for (const {
     await screen.findByText("Thanks!");
     assert.deepEqual(payloads, [
       {
-        apiKey: "",
         location: "/",
         widgetType,
         value,
         text: "Original feedback",
       },
       {
-        apiKey: "",
         location: "/",
         widgetType,
         value: alternateValue,

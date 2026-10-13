@@ -52,7 +52,6 @@ describe("canonical widget feedback system", () => {
 
     assert.deepEqual(packageJson.exports, { ".": "./src/index.ts" });
     assert.deepEqual(Object.keys(widgetExports).sort(), [
-      "DEFAULT_FEEDBACK_ENDPOINT",
       "EmojiFeedback",
       "FeedbackDescription",
       "FeedbackFooter",
@@ -64,7 +63,6 @@ describe("canonical widget feedback system", () => {
       "LikeDislike",
       "StarRating",
       "WidgetSubmitError",
-      "submitFeedback",
       "useFeedbackContext",
     ]);
   });

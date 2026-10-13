@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
-import { describe, test } from "node:test";
+import { afterEach, describe, test } from "node:test";
 import { copyText } from "../../_lib/clipboard";
+import { WidgetSubmitError } from "@repo/widgets";
 import {
   createWidgetRigState,
   getProjectDashboardHref,
+  submitToConvexSite,
   widgetRigReducer,
 } from "./widgets-playground-behavior";
 
@@ -13,7 +15,6 @@ describe("widgets playground behavior", () => {
     state: "selected" as const,
     selectedValue: 5,
     lastPayload: {
-      apiKey: "pk_test",
       location: "/pricing",
       widgetType: "star" as const,
       value: 5,
@@ -78,6 +79,83 @@ describe("widgets playground behavior", () => {
     assert.equal(
       getProjectDashboardHref("project-123"),
       "/dashboard/projects/project-123",
+    );
+  });
+});
+
+describe("dev playground hosted submission", () => {
+  const originalFetch = globalThis.fetch;
+  const originalSiteUrl = process.env.NEXT_PUBLIC_CONVEX_SITE_URL;
+  const payload = {
+    location: "/pricing",
+    widgetType: "star",
+    value: 5,
+  } as const;
+
+  function replaceFetch(
+    implementation: (
+      ...args: Parameters<typeof fetch>
+    ) => ReturnType<typeof fetch>,
+  ) {
+    globalThis.fetch = Object.assign(implementation, {
+      preconnect: originalFetch.preconnect,
+    });
+  }
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    if (originalSiteUrl === undefined)
+      delete process.env.NEXT_PUBLIC_CONVEX_SITE_URL;
+    else process.env.NEXT_PUBLIC_CONVEX_SITE_URL = originalSiteUrl;
+  });
+
+  test("posts the project key with the public widget payload to the configured site", async () => {
+    process.env.NEXT_PUBLIC_CONVEX_SITE_URL = " https://example.test/// ";
+    let request: { url: unknown; options?: RequestInit } | undefined;
+    replaceFetch(async (url, options) => {
+      request = { url, options };
+      return new Response(null, { status: 200 });
+    });
+    await submitToConvexSite(payload, " pk_project ");
+    assert.equal(request?.url, "https://example.test/feedback");
+    assert.equal(request?.options?.method, "POST");
+    assert.deepEqual(JSON.parse(String(request?.options?.body)), {
+      ...payload,
+      apiKey: "pk_project",
+    });
+    assert.equal("apiKey" in payload, false);
+  });
+
+  test("requires the local environment URL and project key before fetching", async () => {
+    let requests = 0;
+    replaceFetch(async () => {
+      requests += 1;
+      return new Response(null, { status: 200 });
+    });
+    delete process.env.NEXT_PUBLIC_CONVEX_SITE_URL;
+    await assert.rejects(
+      submitToConvexSite(payload, "pk_project"),
+      /NEXT_PUBLIC_CONVEX_SITE_URL/,
+    );
+    process.env.NEXT_PUBLIC_CONVEX_SITE_URL = "https://example.test";
+    await assert.rejects(submitToConvexSite(payload, " "), /project key/);
+    assert.equal(requests, 0);
+  });
+
+  test("keeps rate-limit details available to the widget", async () => {
+    process.env.NEXT_PUBLIC_CONVEX_SITE_URL = "https://example.test";
+    replaceFetch(async () =>
+      Response.json({ retryAfter: 1000 }, { status: 429 }),
+    );
+    await assert.rejects(
+      submitToConvexSite(payload, "pk_project"),
+      (error: unknown) => {
+        assert.ok(error instanceof WidgetSubmitError);
+        assert.equal(error.code, "rate_limited");
+        assert.equal(error.status, 429);
+        assert.equal(error.retryAfterMs, 1000);
+        return true;
+      },
     );
   });
 });

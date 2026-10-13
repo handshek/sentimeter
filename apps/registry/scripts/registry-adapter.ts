@@ -161,7 +161,7 @@ export async function emitRegistry(options: {
 }): Promise<readonly PlannedArtifact[]> {
   const mappings = options.mappings ?? SOURCE_MAPPINGS;
   const manifest = await readJson(options.paths.manifestPath);
-  validateManifest(manifest, mappings);
+  const refreshedManifest = resolveManifestUrls(manifest, mappings);
 
   const artifacts = await planRegistryArtifacts({
     sourceRoot: options.paths.sourceRoot,
@@ -182,7 +182,71 @@ export async function emitRegistry(options: {
     },
   );
 
+  if (JSON.stringify(manifest) !== JSON.stringify(refreshedManifest)) {
+    await writeFile(
+      options.paths.manifestPath,
+      `${JSON.stringify(refreshedManifest, null, 2)}\n`,
+      "utf8",
+    );
+  }
+
   return artifacts;
+}
+
+function resolveManifestUrls(
+  actual: unknown,
+  mappings: readonly SourceMapping[],
+): ReturnType<typeof createExpectedRegistry> {
+  const expected = createExpectedRegistry(mappings);
+  const refreshed =
+    isRecord(actual) &&
+    isAbsoluteUrlAtPath(actual.homepage, "/") &&
+    Array.isArray(actual.items)
+      ? {
+          ...actual,
+          homepage: expected.homepage,
+          items: actual.items.map((item: unknown) => {
+            if (!isRecord(item)) return item;
+            const expectedItem = expected.items.find(
+              (candidate) => candidate.name === item.name,
+            );
+            if (
+              !expectedItem ||
+              expectedItem.name === "feedback-system" ||
+              !Array.isArray(item.registryDependencies) ||
+              item.registryDependencies.length !== 1 ||
+              !isAbsoluteUrlAtPath(
+                item.registryDependencies[0],
+                "/r/feedback-system.json",
+              )
+            ) {
+              return item;
+            }
+            return {
+              ...item,
+              registryDependencies: expectedItem.registryDependencies,
+            };
+          }),
+        }
+      : actual;
+  validateManifest(refreshed, mappings);
+  return expected;
+}
+
+function isAbsoluteUrlAtPath(value: unknown, pathname: string): boolean {
+  if (typeof value !== "string" || !/^https?:\/\//.test(value)) return false;
+  try {
+    const url = new URL(value);
+    return (
+      url.pathname === pathname &&
+      !url.search &&
+      !url.hash &&
+      !url.username &&
+      !url.password
+    );
+  } catch {
+    return false;
+  }
 }
 
 export async function validateBuiltOutput(options: {

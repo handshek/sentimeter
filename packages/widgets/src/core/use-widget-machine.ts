@@ -7,7 +7,7 @@ import type {
   WidgetSubmit,
   WidgetSubmitError,
 } from "../types";
-import { normalizeSubmitError } from "./submit";
+import { normalizeSubmitError } from "./errors";
 
 type UseWidgetMachineArgs = {
   payloadBase: Omit<WidgetPayload, "value">;

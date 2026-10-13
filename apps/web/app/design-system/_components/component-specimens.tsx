@@ -512,7 +512,7 @@ function NavigationSpecimens() {
             <h3 className="ds-title">Your components. Your backend.</h3>
             <p className="ds-body max-w-prose text-muted-foreground">
               Edit the source in your project and connect your own submit
-              handler. Hosted Sentimeter analytics is optional.
+              handler. Without a handler, feedback completes locally.
             </p>
             <Button asChild variant="outline">
               <Link href="/components/getting-started#submission">

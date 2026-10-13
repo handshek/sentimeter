@@ -2,7 +2,11 @@
 
 ## What is this project?
 
-Sentimeter is a shadcn-first feedback collection system. Developers install open-code React components from the shadcn registry into their own shadcn projects, the components adapt to the host app's existing UI structure, their users submit emoji/star/thumbs reactions, and the developer sees real-time analytics on a hosted dashboard.
+Sentimeter is an open-source, shadcn-first feedback widget registry. Developers
+install open-code React components into their own shadcn projects. The widgets
+adapt to the host app and submit through a custom handler or complete locally.
+Hosted analytics is unreleased and available in development only. Production
+shows a coming-soon page with a waitlist when configured.
 
 Read `CONTEXT.md` before domain-level refactors, architecture work, or renaming product concepts. Read `DESIGN_PHILOSOPHY.md` before UI work.
 
@@ -20,8 +24,10 @@ real fonts, layout, contrast, keyboard interaction, and states.
 
 It consists of:
 
-- A Next.js 16 dashboard (apps/web)
-- A shadcn registry app (apps/registry) — Cloudflare Worker serving registry JSON so developers can `shadcn add "https://registry.handshek.workers.dev/r/emoji-feedback.json"` and have the component fit naturally into their existing shadcn project
+- A Next.js 16 public site, docs, waitlist, and development dashboard (apps/web)
+- A shadcn registry app (apps/registry), a Cloudflare Worker serving registry
+  JSON. Canonical public hosts live in `apps/registry/site.config.ts`; use
+  `${REGISTRY_URL}/r/emoji-feedback.json` for a full-URL shadcn install.
 - An embeddable widgets package (packages/widgets)
 
 ## Optional component state workbench
@@ -222,7 +228,7 @@ Only use `bun` or `bunx` for installing dependencies
 │       │   │   ├── feedback-widget.tsx +
 │       │   │   └── index.ts +
 │       │   ├── core
-│       │   │   ├── submit.ts +
+│       │   │   ├── errors.ts +
 │       │   │   └── use-widget-machine.ts +
 │       │   ├── feedback-system.ts +
 │       │   ├── feedback-system.test.tsx +

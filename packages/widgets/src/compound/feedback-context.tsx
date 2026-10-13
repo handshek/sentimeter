@@ -10,7 +10,6 @@ import type {
   WidgetSubmitError,
   WidgetType,
 } from "../types";
-import { DEFAULT_FEEDBACK_ENDPOINT, submitFeedback } from "../core/submit";
 import { notify, useWidgetMachine } from "../core/use-widget-machine";
 
 export type WidgetSize = "sm" | "default" | "md" | "lg";
@@ -52,9 +51,7 @@ export function useFeedbackContext(): FeedbackContextValue {
 /* ── Provider props ────────────────────────────────────────── */
 
 export type FeedbackProviderProps = {
-  apiKey?: string;
   location?: string;
-  endpoint?: string;
   widgetType: WidgetType;
   disabled?: boolean;
   size?: WidgetSize;
@@ -66,9 +63,7 @@ export type FeedbackProviderProps = {
 } & WidgetCallbacks;
 
 export function FeedbackProvider({
-  apiKey = "",
   location = "/",
-  endpoint = DEFAULT_FEEDBACK_ENDPOINT,
   widgetType,
   disabled = false,
   size = "default",
@@ -85,21 +80,14 @@ export function FeedbackProvider({
   onCancel,
   onReset,
 }: FeedbackProviderProps) {
-  const normalizedApiKey = apiKey.trim();
   const payloadBase = React.useMemo<Omit<WidgetPayload, "value">>(
-    () => ({ apiKey: normalizedApiKey, location, widgetType }),
-    [location, normalizedApiKey, widgetType],
-  );
-
-  const defaultSubmit = React.useCallback<WidgetSubmit>(
-    (payload) => submitFeedback(payload, endpoint),
-    [endpoint],
+    () => ({ location, widgetType }),
+    [location, widgetType],
   );
 
   const localSubmit = React.useCallback<WidgetSubmit>(async () => {}, []);
 
-  const resolvedSubmit =
-    submit ?? (normalizedApiKey ? defaultSubmit : localSubmit);
+  const resolvedSubmit = submit ?? localSubmit;
 
   const machine = useWidgetMachine({
     payloadBase,

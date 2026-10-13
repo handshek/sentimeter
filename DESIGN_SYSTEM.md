@@ -286,8 +286,8 @@ Lucide icons. `glyphs` (faces, thumbs) and `glyph` (stars) replace the set with
 anything renderable: an emoji string, an icon element, an `<img>`, or
 `{ glyph, label }` for an accessible name. The scale never changes: faces take
 five glyphs worst to best (values 1–5), thumbs take two in display order (like
-= 1, dislike = 0), and stars take one glyph repeated five times. Saved values,
-hosted validation, and the dashboard are therefore unaffected by presentation.
+= 1, dislike = 0), and stars take one glyph repeated five times. Custom submit
+payload values are therefore unaffected by presentation.
 A list of the wrong length falls back to the built-in set and warns.
 
 ### Theme

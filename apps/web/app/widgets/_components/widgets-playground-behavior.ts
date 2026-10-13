@@ -1,4 +1,64 @@
-import type { WidgetPayload, WidgetState } from "@repo/widgets";
+import {
+  WidgetSubmitError,
+  type WidgetPayload,
+  type WidgetState,
+} from "@repo/widgets";
+
+export async function submitToConvexSite(
+  payload: WidgetPayload,
+  apiKey: string,
+): Promise<void> {
+  const siteUrl = process.env.NEXT_PUBLIC_CONVEX_SITE_URL?.trim();
+  if (!siteUrl) {
+    throw new Error(
+      "Set NEXT_PUBLIC_CONVEX_SITE_URL to test hosted submission.",
+    );
+  }
+  const normalizedApiKey = apiKey.trim();
+  if (!normalizedApiKey) {
+    throw new Error("Choose a project key to test hosted submission.");
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(`${siteUrl.replace(/\/+$/, "")}/feedback`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...payload, apiKey: normalizedApiKey }),
+    });
+  } catch (cause) {
+    throw new WidgetSubmitError(
+      "network_error",
+      "Check your connection and try again.",
+      { cause },
+    );
+  }
+  if (response.ok) return;
+
+  let retryAfterMs: number | undefined;
+  try {
+    const body: unknown = await response.json();
+    if (
+      body !== null &&
+      typeof body === "object" &&
+      "retryAfter" in body &&
+      typeof body.retryAfter === "number" &&
+      Number.isFinite(body.retryAfter) &&
+      body.retryAfter >= 0
+    ) {
+      retryAfterMs = body.retryAfter;
+    }
+  } catch {
+    // HTTP status still identifies the failure if its body is not JSON.
+  }
+  throw new WidgetSubmitError(
+    response.status === 429 ? "rate_limited" : "unknown",
+    response.status === 429
+      ? "Too many responses. Please try again soon."
+      : `Hosted test failed (HTTP ${response.status}). Check the project key and allowed origins.`,
+    { status: response.status, retryAfterMs },
+  );
+}
 
 export type SubmitResult = {
   ok: boolean;

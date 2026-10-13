@@ -11,7 +11,7 @@ export type FeedbackInputProps = {
   placeholder?: string;
   /** Accessible name for the text field. */
   label?: string;
-  /** Matches the hosted intake limit so text is never silently truncated. */
+  /** Maximum comment length. Defaults to 500 characters. */
   maxLength?: number;
   className?: string;
 };

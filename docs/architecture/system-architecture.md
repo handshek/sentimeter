@@ -1,21 +1,27 @@
 # System Architecture
 
-Sentimeter is intentionally split into install-time, runtime, and analytics
-surfaces.
+Sentimeter launches as an open-source widget registry. Hosted sections below
+describe **unreleased hosted analytics, dev only**. The production dashboard is
+a coming-soon page with an optional waitlist.
 
 ## Surfaces
 
-### Public Registry and Optional Dashboard (`apps/web`)
+### Public registry and development dashboard (`apps/web`)
 
 The Next.js 16 App Router app owns the widget-led homepage, `/components`
 catalog, Getting Started guide, and component documentation. These routes run
 without Clerk or Convex providers or hosted environment variables. Component
 Markdown endpoints and `/llms.txt` are statically generated from the same catalog.
 
-Clerk is scoped to sign-in/sign-up and hosted routes; Convex clients are created
-only inside the dashboard or configured `/widgets` tester. Unconfigured hosted
-routes return 503. The tester is parked, not advertised, and redirects to the
-catalog when hosted setup is absent. Legacy `/widgets/[slug]` redirects remain.
+In live mode, Clerk is scoped to sign-in/sign-up and hosted routes; Convex
+clients are created only inside the dashboard or configured `/widgets` tester.
+Development enables live mode when Clerk and Convex are configured. Production
+requires the explicit `HOSTED_ANALYTICS=live` override for that behavior.
+
+Otherwise, production shows the waitlist when `NEXT_PUBLIC_CONVEX_URL` and
+`WAITLIST_SECRET` are set, or an unavailable page. Sign-in and dashboard project
+routes redirect to `/dashboard`; `/widgets` redirects to the catalog. Legacy
+widget documentation redirects remain. Public specimens always complete locally.
 
 ### Registry (`apps/registry`)
 
@@ -28,16 +34,23 @@ Widget behavior.
 ### Widgets (`packages/widgets`)
 
 The widgets package is the sole canonical source for Widget behavior. The
-dashboard imports its workspace form through `@repo/widgets`, while the registry
+site imports its workspace form through `@repo/widgets`, while the registry
 emitter produces host-local open code from the same source. Submission chooses
-a custom `submit` handler first, then hosted HTTP intake for a non-empty `apiKey`,
-then local-only completion. Local demos supply neither and do not persist or
-send feedback. `endpoint` overrides hosted intake only.
+a custom `submit` handler, or local completion when no handler is supplied.
+Published widgets contain no project-key or hosted-endpoint integration. Local
+demos do not persist or send feedback.
 
 ### Convex (`apps/web/convex`)
 
-Convex stores users, projects, API keys, and feedback. Convex queries power the
-dashboard. Convex HTTP actions receive public widget submissions.
+Convex stores public waitlist signups. A Next.js server action calls the
+shared-secret-protected `waitlist.join` mutation after checking the honeypot.
+The mutation validates emails, applies per-IP and global limits, and returns
+quiet success for duplicate emails.
+
+For unreleased hosted analytics in development, Convex stores users, projects,
+API keys, and feedback. Queries power the dashboard. HTTP actions receive
+submissions from the internal tester's custom handler, whose URL comes from
+`NEXT_PUBLIC_CONVEX_SITE_URL`.
 
 ## Install and Submission Flow
 
@@ -47,12 +60,10 @@ Browse /components -> try a local demo -> shadcn add -> own the installed source
     v
 User reacts -> custom submit? -> developer's backend
     |
-    +-> otherwise, apiKey? -> optional hosted intake (below)
-    |
-    +-> neither -> local completion; nothing sent or stored
+    +-> no submit handler -> local completion; nothing sent or stored
 ```
 
-## Optional Hosted Request Flow
+## Unreleased hosted request flow, dev only
 
 ```text
 Developer creates project
@@ -61,13 +72,13 @@ Developer creates project
 Dashboard creates project + publishable API key in Convex
     |
     v
-Developer installs registry item with shadcn add
+Developer opens the configured internal /widgets tester
     |
     v
-User reacts in host app widget
+User reacts in the tester widget
     |
     v
-Widget POSTs feedback to Convex HTTP action
+Tester custom submit handler POSTs feedback to Convex HTTP action
     |
     v
 Convex validates key, origin, value, and rate limits
@@ -114,6 +125,7 @@ the public output.
 - Canonical Widget behavior: `packages/widgets/src/`
 - Public Widget Catalog and examples: `apps/web/app/_lib/widget-catalog.ts`
 - Installed files and dependencies: `apps/registry/registry.json`
+- Public hosts and legal contact: `apps/registry/site.config.ts`
 - Agent documentation renderer: `apps/web/app/_lib/widget-markdown.ts`
 - Private Registry Item staging: `apps/registry/.generated/sentimeter/`
 - Generated registry output: `apps/registry/public/r/`

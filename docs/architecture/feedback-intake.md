@@ -1,11 +1,14 @@
 # Feedback Intake
 
-Feedback Intake is the path from a user reaction in an installed widget to a
-stored Convex feedback row.
+**Unreleased hosted analytics, dev only.** Feedback Intake is the path from a
+reaction in the configured internal `/widgets` tester to a stored Convex
+feedback row. Published widgets use a custom `submit` handler or complete
+locally; they include no hosted submitter.
 
 ## Entry Points
 
-- Client submitter: `packages/widgets/src/core/submit.ts`
+- Tester submitter: `apps/web/app/widgets/_components/widgets-playground-client.tsx`
+- Tester endpoint configuration: `NEXT_PUBLIC_CONVEX_SITE_URL`
 - HTTP action routing: `apps/web/convex/http.ts`
 - HTTP action implementation: `apps/web/convex/httpActions.ts`
 - Domain rules: `apps/web/convex/lib/feedbackDomain.ts`
