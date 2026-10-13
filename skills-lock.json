@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "skills": {
+    "state-machine": {
+      "source": "jakubkrehel/skills",
+      "ref": "4c66b1fa86e9ab70187b43d7da9b6fdb29f2ef63",
+      "sourceType": "github",
+      "skillPath": "skills/state-machine/SKILL.md",
+      "computedHash": "9e714ed2746c3973188853f0fd44d214787b0f6fa0baa9db5f594e13474693ad"
+    }
+  }
+}
