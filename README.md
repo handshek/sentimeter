@@ -147,10 +147,12 @@ bun run check-docs
 
 `check-registry` builds and type-checks installed source in a temporary host.
 `registry:emit` emits staging; `registry:build` refreshes ignored public JSON.
-The registry deploys after verified pushes to `master`; Vercel Git deployments
-build the site and deploy Convex. Configure their secrets before enabling the
-launch deploys using the [runbook](docs/ops/runbook.md). `check-env` validates
-development hosted configuration; it is not required for public-site work.
+The registry deploys after verified pushes to `master`. Vercel builds deploy
+Convex only when `VERCEL_ENV=production` and `CONVEX_DEPLOY_KEY` is non-empty.
+Other builds run `bun run build`, so the public site can deploy before production
+Convex is configured. Configure deployment secrets using the
+[runbook](docs/ops/runbook.md). `check-env` validates development hosted
+configuration; it is not required for public-site work.
 
 ## License
 

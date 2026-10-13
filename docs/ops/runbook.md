@@ -84,6 +84,9 @@ domain route in Wrangler yet.
 
 ### Convex production and Vercel
 
+The public site can deploy before production Convex is provisioned. Complete
+this setup to enable the production waitlist and deploy Convex changes.
+
 1. In the existing Convex project's dashboard, create or select production and
    confirm its deployment name. Copy its URL and generate a production deploy
    key from **Settings → Deploy Keys**.
@@ -100,12 +103,15 @@ domain route in Wrangler yet.
    Keep preview deployment credentials separate from production.
 4. Confirm **Settings → Build and Deployment → Root Directory** is `apps/web`.
    The committed [vercel.json](../../apps/web/vercel.json) uses
-   `npx convex deploy --cmd 'bun run build'`. Keep any dashboard build override
-   consistent with it. This deployment command builds the site for the selected
-   backend and pushes Convex functions, indexes, and schema using the deploy
-   key. It is not a local verification command.
-5. Deploy the reviewed Git commit. Check the Vercel build log and Convex schema
-   and function updates. Environment changes require a fresh Vercel deployment.
+   `npx convex deploy --cmd 'bun run build'` only when `VERCEL_ENV=production`
+   and `CONVEX_DEPLOY_KEY` is non-empty. All other builds, including previews
+   and production without a deploy key, run plain `bun run build`. Keep any
+   dashboard build override consistent with this condition. The Convex command
+   builds the site for the selected backend and pushes functions, indexes, and
+   schema using the deploy key. It is not a local verification command.
+5. Deploy the reviewed Git commit. Check the Vercel build log. If the build
+   deployed Convex, also check its schema and function updates. Environment
+   changes require a fresh Vercel deployment.
 6. In the project's **Analytics** tab, select **Enable** for Web Analytics. The
    installed Analytics component still needs this provider setting. See
    [Vercel's setup guide](https://vercel.com/docs/analytics/quickstart).
