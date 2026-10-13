@@ -5,15 +5,17 @@ import { UserButton } from "@clerk/nextjs";
 import { Activity } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { ThemeToggle } from "../_components/theme-toggle";
-import { hasHostedConfiguration } from "../_lib/hosted-config";
+import { hostedMode } from "../_lib/hosted-config";
 import { HostedProviders } from "../components/hosted-providers";
+import { ComingSoon } from "./_components/coming-soon";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  if (!hasHostedConfiguration()) return <HostedProviders />;
+  const mode = hostedMode();
+  if (mode !== "live") return <ComingSoon mode={mode} />;
 
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");

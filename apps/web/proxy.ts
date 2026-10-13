@@ -4,7 +4,7 @@ import {
   type NextRequest,
   type NextFetchEvent,
 } from "next/server";
-import { hasHostedConfiguration } from "./app/_lib/hosted-config";
+import { hostedMode, hostedRedirect } from "./app/_lib/hosted-config";
 
 const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
@@ -19,15 +19,13 @@ const hostedMiddleware = clerkMiddleware(async (auth, req) => {
 
 export default function proxy(request: NextRequest, event: NextFetchEvent) {
   // Clerk validates its keys before invoking the middleware callback.
-  if (!hasHostedConfiguration()) {
-    if (request.nextUrl.pathname === "/widgets") {
-      return NextResponse.redirect(new URL("/components", request.url));
+  const mode = hostedMode();
+  if (mode !== "live") {
+    const destination = hostedRedirect(request.nextUrl.pathname, mode);
+    if (destination) {
+      return NextResponse.redirect(new URL(destination, request.url));
     }
-
-    return new NextResponse(
-      "Hosted analytics is unavailable. Browse the widget registry at /components.",
-      { status: 503, headers: { "Cache-Control": "no-store" } },
-    );
+    return NextResponse.next();
   }
 
   return hostedMiddleware(request, event);
