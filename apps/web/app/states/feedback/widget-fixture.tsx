@@ -63,7 +63,8 @@ function ScenarioDriver({
   value: number;
   comment: string;
 }) {
-  const { state, select, setText, cancel, containerRef } = useFeedbackContext();
+  const { state, select, setText, cancel, submitSelected } =
+    useFeedbackContext();
   const phase = useRef<"initial" | "selected" | "ready">("initial");
 
   useEffect(() => {
@@ -89,21 +90,18 @@ function ScenarioDriver({
 
     if (state !== "selected") return;
 
-    const submitButton = Array.from(
-      containerRef.current?.querySelectorAll<HTMLButtonElement>(
-        '[data-slot="feedback-footer"] button',
-      ) ?? [],
-    ).at(-1);
-
-    if (!submitButton) {
-      throw new Error(
-        "The feedback workbench could not find the Submit action.",
-      );
-    }
-
     phase.current = "ready";
-    submitButton.click();
-  }, [cancel, comment, containerRef, scenario, select, setText, state, value]);
+    void submitSelected(comment);
+  }, [
+    cancel,
+    comment,
+    scenario,
+    select,
+    setText,
+    state,
+    submitSelected,
+    value,
+  ]);
 
   return null;
 }

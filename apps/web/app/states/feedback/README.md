@@ -18,8 +18,10 @@ between list buttons; H toggles its visibility when workbench controls are
 focused. Shortcuts do not intercept the widget or editable/composite controls.
 Restart scenario restores its fixture. Browser back/forward restores URL choices.
 
-The fixture uses the public feedback context from a nonvisual title child;
-the real footer's submit button still handles the submission and its sizing.
+The fixture uses the public feedback context from a nonvisual title child to
+select a response, populate its comment, and submit it. It does not inspect the
+widget's DOM or depend on footer button order. To exercise click-driven sizing
+and focus behavior, choose Selected and use the widget's submit button.
 No production widget API or rendering is changed.
 
 This workbench is versioned for local development. The route returns not-found
