@@ -18,7 +18,7 @@ The actual skill was inspected in the upstream Git repository.
 - Local copy: [SKILL.md](../../.agents/skills/state-machine/SKILL.md),
   [switcher.md](../../.agents/skills/state-machine/switcher.md) and
   [Codex invocation policy](../../.agents/skills/state-machine/agents/openai.yaml).
-- License: [MIT, copyright 2026 Jakub Krehel](../licenses/jakubkrehel-skills-LICENSE).
+- License: [MIT, copyright 2026 Jakub Krehel](#upstream-license-notice).
 - Installed with Vercel's official `skills` CLI 1.7.1; [skills-lock.json](../../skills-lock.json)
   records the source, exact revision, path and content hash. Upstream files are
   unchanged, including `disable-model-invocation: true` and
@@ -37,7 +37,7 @@ skills add https://github.com/jakubkrehel/skills/tree/4c66b1fa86e9ab70187b43d7da
 ```
 
 For an update, inspect the new upstream revision first, then use its commit in
-that command. Review the generated lockfile and refresh the upstream license if
+that command. Review the generated lockfile and refresh the embedded upstream notice if
 needed. Keep project adaptations in `AGENTS.md` and this document instead of
 patching the vendored files or changing their invocation defaults.
 
@@ -97,3 +97,37 @@ user run any interactive login or authorization step. For subsequent UI changes,
 run the existing design and interaction checks, registry validation when widgets
 change, and browser checks across themes, widths, keyboard and changed states.
 The workbench complements those checks; it does not replace them.
+
+## Upstream license notice
+
+This notice applies to the vendored `state-machine` skill files. The upstream
+MIT terms require the copyright and permission notice to accompany copies.
+
+<details>
+<summary>MIT license — Jakub Krehel</summary>
+
+```text
+MIT License
+
+Copyright (c) 2026 Jakub Krehel
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+</details>
