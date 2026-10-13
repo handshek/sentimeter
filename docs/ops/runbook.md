@@ -44,8 +44,8 @@ domain route in Wrangler yet.
    status; do not assume a generic Vercel DNS target.
 3. Set `SITE_URL` to `https://<domain>` and `REGISTRY_URL` to
    `https://registry.<domain>` in `site.config.ts`. Keep `REPOSITORY_URL` as the
-   GitHub repository. Supply `LEGAL_CONTACT_EMAIL` before launch. Until then,
-   privacy requests link to the repository's issues page.
+   GitHub repository. `LEGAL_CONTACT_EMAIL` stays as is; the privacy page links
+   to it.
 4. Add this field to [wrangler.json](../../apps/registry/wrangler.json), replacing
    the example hostname:
 
