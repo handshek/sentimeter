@@ -19,7 +19,7 @@
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"
   },
   "dependencies": {
-    "hono": "^4.12.8"
+    "hono": "^4.13.14"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
@@ -28,6 +28,6 @@
     "globals": "^16.5.0",
     "shadcn": "3.5.1-canary.0",
     "typescript": "5.9.2",
-    "wrangler": "^4.4.0"
+    "wrangler": "^4.152.0"
   }
 }
