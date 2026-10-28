@@ -1,11 +1,18 @@
+# Dependency updates arrive once a month, on the 8th, as at most one grouped PR
+# per ecosystem. Major versions are never proposed automatically: upgrade them
+# deliberately (TypeScript, ESLint, @types/node, ...) when there's a reason to.
 version: 2
 updates:
   - package-ecosystem: bun
     directory: /
     schedule:
-      interval: monthly
-    open-pull-requests-limit: 5
+      interval: cron
+      cronjob: "0 9 8 * *"
+      timezone: Asia/Kolkata
+    open-pull-requests-limit: 2
     ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
       # 0.4+ changes the component API and needs `convex codegen` against a
       # logged-in deployment; upgrade it by hand with that regeneration.
       - dependency-name: "@convex-dev/rate-limiter"
@@ -15,7 +22,12 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: monthly
+      interval: cron
+      cronjob: "0 9 8 * *"
+      timezone: Asia/Kolkata
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       actions:
         patterns: ["*"]
