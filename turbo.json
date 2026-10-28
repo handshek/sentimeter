@@ -4,16 +4,6 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "env": [
-        "CLERK_JWT_ISSUER_DOMAIN",
-        "CLERK_SECRET_KEY",
-        "HOSTED_ANALYTICS",
-        "WAITLIST_SECRET",
-        "NODE_ENV",
-        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
-        "NEXT_PUBLIC_CONVEX_URL",
-        "NEXT_PUBLIC_CONVEX_SITE_URL"
-      ],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
@@ -70,11 +60,6 @@
       ]
     },
     "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "web#dev": {
-      "with": ["web#dev:convex"],
       "cache": false,
       "persistent": true
     },
