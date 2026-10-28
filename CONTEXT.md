@@ -58,48 +58,6 @@ The public description of installable Widgets: identity, defaults, examples,
 props, and documentation links. The catalog serves both human and agent docs;
 Registry Items remain authoritative for installed files and dependencies.
 
-### Feedback Intake
-
-Unreleased hosted analytics, dev only. The workflow that turns a submission from
-the internal hosted tester into a stored feedback row. It
-includes payload validation, API-key lookup, origin allowlisting, rate limiting,
-text trimming, value validation, CORS response shaping, and Convex insertion.
-
-### Project
-
-Unreleased hosted analytics, dev only. A developer-owned workspace for a product
-or app that receives feedback. Projects
-own API keys, allowed origins, feedback rows, dashboard analytics, and install
-instructions.
-
-### API Key
-
-Unreleased hosted analytics, dev only. A public publishable key used by the
-internal hosted tester to identify a destination project. Keys can be rotated;
-revoked keys must not accept feedback. Published widget props and payloads do
-not include this key.
-
-### Allowed Origin
-
-Unreleased hosted analytics, dev only. An optional list of browser origins
-permitted to submit feedback for a project.
-An empty list means development-friendly open intake. A non-empty list turns
-origin checks into a first-class production gate.
-
-### Dashboard
-
-Unreleased hosted analytics, dev only. The authenticated developer workspace for
-projects, install guidance, API-key management, origin configuration, and
-realtime analytics. Production routes show the coming-soon page instead.
-
-### Analytics
-
-Unreleased hosted analytics, dev only. Aggregated feedback views derived from
-Convex feedback rows: totals, rating
-breakdowns, widget breakdowns, location breakdowns, and time series. Analytics
-should make recent product sentiment visible without hiding the raw feedback
-stream.
-
 ### Waitlist Signup
 
 A request to receive news about hosted analytics. The production form collects
@@ -120,6 +78,54 @@ optional `text`, and `location`. The host decides how to save the feedback. The
 widget shows confirmation when the handler resolves and retains the response
 for retry when it throws. `WidgetSubmitError` carries a useful message and an
 optional retry delay.
+
+### Hosted analytics (unreleased, local only)
+
+These concepts belong to the unreleased dashboard. Their code opens only with
+`HOSTED_ANALYTICS=live` plus Clerk and Convex keys; production never routes to
+them.
+
+#### Feedback Intake
+
+The workflow that turns a submission from
+the internal hosted tester into a stored feedback row. It
+includes payload validation, API-key lookup, origin allowlisting, rate limiting,
+text trimming, value validation, CORS response shaping, and Convex insertion.
+
+#### Project
+
+A developer-owned workspace for a product
+or app that receives feedback. Projects
+own API keys, allowed origins, feedback rows, dashboard analytics, and install
+instructions.
+
+#### API Key
+
+A public publishable key used by the
+internal hosted tester to identify a destination project. Keys can be rotated;
+revoked keys must not accept feedback. Published widget props and payloads do
+not include this key.
+
+#### Allowed Origin
+
+An optional list of browser origins
+permitted to submit feedback for a project.
+An empty list means development-friendly open intake. A non-empty list turns
+origin checks into a first-class production gate.
+
+#### Dashboard
+
+The authenticated developer workspace for
+projects, install guidance, API-key management, origin configuration, and
+realtime analytics. Production routes show the coming-soon page instead.
+
+#### Analytics
+
+Aggregated feedback views derived from
+Convex feedback rows: totals, rating
+breakdowns, widget breakdowns, location breakdowns, and time series. Analytics
+should make recent product sentiment visible without hiding the raw feedback
+stream.
 
 If docs conflict with code, treat code as current behavior and update docs when
 practical.
