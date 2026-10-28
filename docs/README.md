@@ -9,6 +9,7 @@ updated or deleted when behavior changes.
 - [Project README](../README.md) - registry launch overview, setup, and commands.
 - [Contributing](../CONTRIBUTING.md) - local setup, where changes belong, and
   adding a widget.
+- [Code of Conduct](../CODE_OF_CONDUCT.md) and [security policy](../SECURITY.md).
 - [Agent instructions](../AGENTS.md) - repository map, commands, and rules for
   coding agents.
 - [Changelog](../CHANGELOG.md) - public release history.

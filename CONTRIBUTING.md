@@ -57,11 +57,13 @@ Then touch these places, in order:
 
 Use [Conventional Commits](https://www.conventionalcommits.org):
 `type(scope): summary`, with types `feat`, `fix`, `refactor`, `docs`, `test`,
-`build`, `ci`, or `chore`. Small commits are easier to review.
+`build`, `ci`, or `chore`. Small commits are easier to review. A pre-commit hook
+formats staged files with Prettier; nothing else runs at commit time.
 
 ## Before a Pull Request
 
 ```sh
+bun run format:check
 bun run test
 bun run check-types
 bun run lint
@@ -76,4 +78,6 @@ names. For UI changes, also check narrow screens, keyboard use, light/dark
 tokens, success/error states, and the exact copied installation command. Include
 a short description and relevant screenshots in your PR. Keep commits scoped.
 
-Contributions are licensed under the [MIT License](LICENSE).
+Please follow the [Code of Conduct](CODE_OF_CONDUCT.md), and report security
+issues privately as described in [SECURITY.md](SECURITY.md). Contributions are
+licensed under the [MIT License](LICENSE).
