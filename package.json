@@ -7,16 +7,23 @@
     "check-docs": "bun run scripts/check-docs.ts",
     "check-env": "bun run scripts/check-env.ts",
     "check-registry": "bun run --cwd apps/registry registry:check",
+    "check-types": "turbo run check-types",
     "dev": "turbo run dev --filter=web",
     "dev:hosted": "turbo run dev dev:convex --filter=web",
+    "format": "git ls-files -z | xargs -0 prettier --write --ignore-unknown --log-level warn",
+    "format:check": "git ls-files -z | xargs -0 prettier --check --ignore-unknown --log-level warn",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types",
-    "registry:emit": "bun run --cwd apps/registry registry:emit",
+    "prepare": "husky",
     "registry:build": "bun run --cwd apps/registry registry:build",
+    "registry:emit": "bun run --cwd apps/registry registry:emit",
     "test": "turbo run test"
   },
+  "lint-staged": {
+    "*": "prettier --write --ignore-unknown"
+  },
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^15",
     "prettier": "^3.7.4",
     "turbo": "^2.8.15",
     "typescript": "5.9.2"

@@ -1,0 +1,16 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "tailwindCSS.classFunctions": ["cn", "cva"],
+  "search.exclude": {
+    "**/.next": true,
+    "**/.turbo": true,
+    "**/_generated": true,
+    "apps/registry/.generated": true,
+    "apps/registry/public/r": true,
+    "apps/registry/worker-configuration.d.ts": true,
+    "bun.lock": true
+  }
+}

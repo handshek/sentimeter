@@ -58,7 +58,7 @@ Run from the repository root.
 | `bun run check-registry` | Temporary shadcn build plus host-fixture type check            |
 | `bun run registry:build` | Refresh public registry JSON                                   |
 | `bun run check-docs`     | Markdown link check                                            |
-| `bun run format`         | Prettier                                                       |
+| `bun run format`         | Prettier on tracked files (`format:check` in CI)               |
 | `bun run build`          | Build registry and site                                        |
 
 Do not start `dev` or `dev:hosted` yourself; assume the user runs the dev loop.

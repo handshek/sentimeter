@@ -1,0 +1,27 @@
+name: Bug report
+description: A widget, the registry, or the docs site does something wrong.
+title: "[bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: widget
+    attributes:
+      label: Widget or page
+      placeholder: emoji-feedback, /components/star-rating, ...
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: A minimal repo or snippet helps most.
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: Next.js 16, React 19, Tailwind 4, Chrome 140
