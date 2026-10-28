@@ -10,10 +10,10 @@ const markdownLinkPattern = /!?\[[^\]]*\]\(([^)]+)\)/g;
 function listMarkdownFiles() {
   return execFileSync(
     "git",
-    ["ls-files", "--cached", "--others", "--exclude-standard", "*.md"],
+    ["ls-files", "-z", "--cached", "--others", "--exclude-standard", "*.md"],
     { cwd: repoRoot, encoding: "utf8" },
   )
-    .split("\n")
+    .split("\0")
     .filter(Boolean)
     .filter(
       (path) => !path.includes(".agents/skills/") || path.endsWith("/SKILL.md"),
