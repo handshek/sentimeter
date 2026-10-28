@@ -142,7 +142,6 @@ regenerate the registry, and refresh these examples.
 
 ```sh
 bun run test
-bun run check-tests
 bun run check-types
 bun run lint
 bun run build

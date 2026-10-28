@@ -69,7 +69,6 @@ When using it in Sentimeter, these project rules override the upstream switcher 
 - `bun run format` — Formats the codebase with Prettier
 - `bun run check-types` — Runs type checking across the repo
 - `bun run test` — Runs local unit tests
-- `bun run check-tests` — Checks every `apps/web` test file is listed in its `test` script
 - `bun run check-design` — Tests and runs the site and widget design drift guards
 - `bun run check-env` — Checks local dashboard environment variables
 

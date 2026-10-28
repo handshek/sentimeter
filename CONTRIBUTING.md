@@ -33,7 +33,6 @@ the registry footprint in an issue first; this launch focuses on three widgets.
 
 ```sh
 bun run test
-bun run check-tests
 bun run check-types
 bun run lint
 bun run build

@@ -119,7 +119,7 @@ skills are tracked; contributor process stays low-friction.
 - Run a codemod that turns relative imports in `apps/web` into `@/…`.
 - Make `apps/registry` a declared workspace dependency of `web` with an `exports` entry for `registry.json` and `site.config`. Drop the turbo input hacks.
 - Derive the widget slug unions from one source (`registry-plan.ts`/catalog) to cut the hand-edit spots. Document the rest in CONTRIBUTING.
-- Replace the hand-listed web `test` script with `scripts/test-web.ts`. It globs `*.test.ts(x)` and runs each isolated suite in its own process. Remove `check-tests` if it becomes redundant.
+- Replace the hand-listed web `test` script with `apps/web/scripts/run-tests.ts`. It globs `*.test.ts(x)` and runs each isolated suite in its own process. Remove `check-tests` if it becomes redundant.
 - Gitignore `worker-configuration.d.ts` and generate it in `check-types`. Remove the leftover `publishConfig`/`outDir`.
 - *Deferred (not this PR):* splitting `project-client.tsx` and the playground. That's hosted code and can wait until hosted work resumes. Renaming the Cloudflare worker would change the live registry URL, so skip it.
 
