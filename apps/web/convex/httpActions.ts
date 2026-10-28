@@ -2,10 +2,7 @@ import { httpAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { normalizeFeedbackText } from "./lib/feedbackDomain";
 
-function withCorsHeaders(
-  origin: string | null,
-  headers: HeadersInit = {},
-) {
+function withCorsHeaders(origin: string | null, headers: HeadersInit = {}) {
   return {
     ...(origin ? { "access-control-allow-origin": origin } : {}),
     "access-control-allow-methods": "POST, OPTIONS",
@@ -96,7 +93,11 @@ export const feedbackPost = httpAction(async (ctx, request) => {
   if (!result.ok) {
     const originHeader = "corsOrigin" in result ? result.corsOrigin : "*";
     if (result.error === "invalid_key")
-      return json(401, { error: "invalid_key", code: "invalid_key" }, { origin: originHeader });
+      return json(
+        401,
+        { error: "invalid_key", code: "invalid_key" },
+        { origin: originHeader },
+      );
     if (result.error === "origin_not_allowed")
       return json(
         403,
@@ -121,8 +122,16 @@ export const feedbackPost = httpAction(async (ctx, request) => {
         },
       );
     if (result.error === "invalid_value")
-      return json(400, { error: "invalid_value", code: "invalid_value" }, { origin: originHeader });
-    return json(400, { error: "invalid_body", code: "invalid_body" }, { origin: originHeader });
+      return json(
+        400,
+        { error: "invalid_value", code: "invalid_value" },
+        { origin: originHeader },
+      );
+    return json(
+      400,
+      { error: "invalid_body", code: "invalid_body" },
+      { origin: originHeader },
+    );
   }
 
   return json(200, { ok: true }, { origin: result.corsOrigin });

@@ -12,7 +12,6 @@ skills are tracked; contributor process stays low-friction.
 
 ## What shadcn does that we'll copy
 
-
 - The root holds only config and core docs. Generated output is gitignored and explained by a README in that folder.
 - Every app and package has a README.
 - Files are kebab-case throughout. Tests are colocated as `*.test.ts`.
@@ -26,6 +25,7 @@ skills are tracked; contributor process stays low-friction.
 ## Findings (what's wrong in Sentimeter today)
 
 ### A. Local setup friction (highest impact)
+
 1. Root `bun run dev` runs `turbo --filter=web`. In `turbo.json`, `web#dev.with: ["web#dev:convex"]` also starts `convex dev`, which needs a Convex login. So the first command a newcomer runs fails.
 2. Hosted mode currently turns itself on in dev whenever Clerk and Convex keys exist (`apps/web/app/_lib/hosted-config.ts:resolveHostedMode`). There is no explicit opt-in.
 3. `.env.example` is missing `CLERK_JWT_ISSUER_DOMAIN`, and it disagrees with other docs about `bunx` vs `npx`. There is also a stray root `.env.local`.
@@ -37,6 +37,7 @@ skills are tracked; contributor process stays low-friction.
 6. `turbo.json` repeats the Clerk/Convex env lists across `build` and `web#build`. It also passes through `SENTIMETER_POLISH_FIXTURES_DIR`, which only one test uses.
 
 ### B. Root clutter and untracked junk
+
 7. `.design-system/` (37 MB), `sentimeter-pencil-test.pen`, `public/r/` (empty), `apps/registry/registry/sentimeter/` (empty), `apps/registry/.tmp/` and `apps/web/app/lib/` (empty) are not ignored. `design/` is ignored only through the local `.git/info/exclude`.
 8. `.gitignore` still lists TestSprite paths, and the root `.vercel/` is redundant.
 9. `docs/qa/issue-{17,19,20,21}/` holds 52 tracked files: about 884 KB of JPGs, logs and JSON. It is evidence for the hosted dashboard that nothing links to.
@@ -45,6 +46,7 @@ skills are tracked; contributor process stays low-friction.
     - `DESIGN_PHILOSOPHY.md:32` still describes API keys and endpoint overrides.
 
 ### C. Agent-facing files
+
 11. `AGENTS.md` is stale:
     - The tree at L69–245 lists files that no longer exist and leaves out real ones. It ends with leftover export legend lines.
     - It presents Clerk and Convex as the core stack.
@@ -55,6 +57,7 @@ skills are tracked; contributor process stays low-friction.
 13. `.agents/skills` tracks 14 skills. All are generic or third-party; even `state-machine` comes from `jakubkrehel/skills`. `skills-lock.json` lists only one of them. Under the user's rule, none of the current skills qualify as project-specific. Sentimeter-specific skills (design philosophy, widget authoring) can be added later.
 
 ### D. Code layout and navigability
+
 14. `apps/web/app/components/` is a public route (`/components`) that also holds app-wide providers (`convex-clerk-provider.tsx`, `hosted-providers.tsx`, `toaster-provider.tsx`). That gives both `app/components/_components` and `app/_components`, plus both `app/components/design-system` and `app/design-system`.
 15. Public, hosted and dev-only routes are mixed together. shadcn uses route groups like `(app)`. We should split into `(site)`, `(hosted)` and dev-only routes.
 16. Package scopes are mixed: `@repo/widgets`, `@repo/eslint-config` and `@repo/typescript-config` next to `@workspace/ui`.
@@ -77,6 +80,7 @@ skills are tracked; contributor process stays low-friction.
 24. Convex files are camelCase (`httpActions.ts`). That's fine, because Convex module names map to API paths, but the exception should be documented, not renamed.
 
 ### E. Docs accuracy and per-package READMEs
+
 25. `packages/widgets`, `packages/ui` and `packages/typescript-config` have no README. `packages/eslint-config/README.md` is titled `@turbo/eslint-config`.
 26. Stale docs:
     - `docs/onboarding.md:74` points to tests in `core/`, but they're in `src/*.test.tsx`.
@@ -87,14 +91,16 @@ skills are tracked; contributor process stays low-friction.
 27. `docs/ops/runbook.md` mixes maintainer-only deploy/DNS work into contributor docs.
 
 ### F. Community and process
+
 28. `.github/` contains only `workflows/ci.yml`. There are no issue forms, PR template, SECURITY.md, CODE_OF_CONDUCT, dependabot or FUNDING.
 29. A `format` script exists, but there's no prettier config, no `format:check`, no `.editorconfig` and no `.vscode/`. Nothing checks formatting.
 
 ## Roadmap (one PR per phase, in this order)
 
 **PR 1: Clean clone and one-command local dev** (findings 1–8)
+
 - `bun run dev` runs the site only (no Convex). Add `dev:hosted`, which adds Convex and needs `HOSTED_ANALYTICS=live` in `apps/web/.env.local`.
-- Change `resolveHostedMode` so hosted routes are reachable only when that flag is set *and* the keys exist. Production keeps `waitlist`/`off`. Update `hosted-config.test.ts`.
+- Change `resolveHostedMode` so hosted routes are reachable only when that flag is set _and_ the keys exist. Production keeps `waitlist`/`off`. Update `hosted-config.test.ts`.
 - `.env.example`:
   - Group variables into "site (none required)", "waitlist" and "hosted (local only)".
   - Add the missing variable.
@@ -108,6 +114,7 @@ skills are tracked; contributor process stays low-friction.
 - Deduplicate the turbo env lists.
 
 **PR 2: Structure for navigation** (findings 14–21, 23)
+
 - Add route groups in `apps/web/app`:
   - `(site)/`: landing, components docs, design-system, privacy, llms.
   - `(hosted)/`: dashboard, sign-in/up, widgets playground.
@@ -121,9 +128,10 @@ skills are tracked; contributor process stays low-friction.
 - Derive the widget slug unions from one source (`registry-plan.ts`/catalog) to cut the hand-edit spots. Document the rest in CONTRIBUTING.
 - Replace the hand-listed web `test` script with `apps/web/scripts/run-tests.ts`. It globs `*.test.ts(x)` and runs each isolated suite in its own process. Remove `check-tests` if it becomes redundant.
 - Gitignore `worker-configuration.d.ts` and generate it in `check-types`. Remove the leftover `publishConfig`/`outDir`.
-- *Deferred (not this PR):* splitting `project-client.tsx` and the playground. That's hosted code and can wait until hosted work resumes. Renaming the Cloudflare worker would change the live registry URL, so skip it.
+- _Deferred (not this PR):_ splitting `project-client.tsx` and the playground. That's hosted code and can wait until hosted work resumes. Renaming the Cloudflare worker would change the live registry URL, so skip it.
 
 **PR 3: Docs and agent files** (findings 9–13, 24–27), written against the final structure
+
 - Rewrite `AGENTS.md` (shadcn-lean, accurate):
   - What the repo is.
   - A short folder map with one line per folder.
@@ -141,6 +149,7 @@ skills are tracked; contributor process stays low-friction.
 - Untrack `docs/qa/` using `git rm --cached` plus exclude, so the local copy is kept. Old PR links still work because they point to commit SHAs.
 
 **PR 4: Lightweight community and process** (findings 28–29)
+
 - `.github/ISSUE_TEMPLATE/{bug_report,feature_request}.yml` plus `config.yml`.
 - A `pull_request_template.md` with a 4-line checklist.
 - `dependabot.yml`: monthly, minor and patch grouped.
