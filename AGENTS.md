@@ -1,258 +1,86 @@
-# AGENTS.md — Sentimeter
+# AGENTS.md
 
-## What is this project?
+Instructions for coding agents working in this repository. Humans should start
+with [README.md](README.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Sentimeter is an open-source, shadcn-first feedback widget registry. Developers
-install open-code React components into their own shadcn projects. The widgets
-adapt to the host app and submit through a custom handler or complete locally.
-Hosted analytics is unreleased and available in development only. Production
-shows a coming-soon page with a waitlist when configured.
+## What this is
 
-Read `CONTEXT.md` before domain-level refactors, architecture work, or renaming product concepts. Read `DESIGN_PHILOSOPHY.md` before UI work.
+Sentimeter is an open-source shadcn registry of accessible React feedback
+widgets (emoji, thumbs, stars). Developers install the source with
+`shadcn add`; widgets inherit the host theme and save through a host `submit`
+handler or complete locally. Hosted analytics (dashboard, Clerk, Convex) is
+unreleased: its code lives here but only opens locally with an explicit opt-in.
 
-Read `DESIGN_SYSTEM.md` before UI work on the website, documentation, product
-screens, or widgets. Use `packages/ui/src/styles/globals.css` for semantic colors
-and `foundations.css` for the shared `ds-*` type, spacing, and surface roles.
-Use installed shadcn primitives and locally loaded font variables. The live
-reference is `/design-system`; show new roles in a real composition there.
-Widgets use the canonical recipes and `feedbackStyles` in
-`packages/widgets/src/design-system.ts`, which holds one theme recipe that
-reads the host's shadcn variables. Run `bun run check-design` after presentation
-changes, plus relevant interaction tests and registry validation for widgets.
-The site and widget guards detect source drift; browser checks still verify
-real fonts, layout, contrast, keyboard interaction, and states.
+Read [CONTEXT.md](CONTEXT.md) for domain language before renaming concepts or
+changing architecture. Read [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) before any UI
+change.
 
-It consists of:
+## Repository map
 
-- A Next.js 16 public site, docs, waitlist, and development dashboard (apps/web)
-- A shadcn registry app (apps/registry), a Cloudflare Worker serving registry
-  JSON. Canonical public hosts live in `apps/registry/site.config.ts`; use
-  `${REGISTRY_URL}/r/emoji-feedback.json` for a full-URL shadcn install.
-- An embeddable widgets package (packages/widgets)
-
-## Optional component state workbench
-
-The project includes Jakub Krehel's [`state-machine`](.agents/skills/state-machine/SKILL.md)
-skill. Use it only when the user explicitly invokes it; installation does not
-request a workbench. Read the [assessment and usage notes](docs/research/state-machine-skill-assessment.md)
-first. Preserve both upstream explicit-invocation settings when updating it.
-
-When using it in Sentimeter, these project rules override the upstream switcher spec:
-
-- Compose installed shadcn controls, Lucide icons, semantic colors and local font
-  roles. Do not copy its custom SVGs, raw colors, system-font reset or `all: unset`
-  styling. Separate the workbench controls through layout and a clear label.
-- Scope shortcuts to the workbench controls so they do not intercept interaction
-  inside the component, including composite controls and editable fields.
-- Use local fixtures and explicit mock submission handlers. Do not connect a
-  workbench to live Clerk/Convex data or mutations. If no safe data seam exists,
-  report that limitation and ask before adding one, as the upstream skill requires.
-- Use real reachable states and existing component APIs; widgets have no
-  controlled state prop. Keep scratch routes development-only and out of PRs and
-  deployed builds. Leave them available locally until the user asks for removal.
-
-## Tech stack
-
-- **Monorepo:** Turborepo, Bun
-- **Frontend:** Next.js 16 (App Router), TypeScript, TailwindCSS v4, shadcn/ui, lucide-react icons
-- **Backend & DB:** Convex (realtime database, server functions, HTTP actions)
-- **Auth:** Clerk (syncs to Convex)
-
-## Running locally
-
-- `bun run dev` — Starts the dashboard, widgets, and Convex dev server together in the Turborepo terminal UI
-- `bun run build` — Builds all packages and apps
-- `bun run registry:emit` — Emits ignored Registry Item staging from canonical Widget source
-- `bun run check-registry` — Builds and validates Registry Items in temporary output
-- `bun run registry:build` — Builds the shadcn registry (outputs to apps/registry/public/r/\*\*); run from repo root or from apps/registry
-- `bun run lint` — Lints the entire monorepo
-- `bun run format` — Formats the codebase with Prettier
-- `bun run check-types` — Runs type checking across the repo
-- `bun run test` — Runs local unit tests
-- `bun run check-design` — Tests and runs the site and widget design drift guards
-- `bun run check-env` — Checks local dashboard environment variables
-
-**Do NOT run:** `bun run dev` (assume already running)
-
-Only use `bun` or `bunx` for installing dependencies
-
-## Monorepo structure
-
-```
-├── apps
-│   ├── registry
-│   │   ├── public
-│   │   │   └── r
-│   │   │   ├── emoji-feedback.json
-│   │   │   ├── feedback-system.json
-│   │   │   ├── like-dislike.json
-│   │   │   ├── registry.json
-│   │   │   └── star-rating.json
-│   │   ├── .generated
-│   │   │   └── sentimeter
-│   │   │       ├── feedback-system
-│   │   │       │   ├── compound
-│   │   │       │   ├── core
-│   │   │       │   ├── index.ts
-│   │   │       │   └── types.ts
-│   │   │       ├── emoji-feedback.tsx
-│   │   │       ├── like-dislike.tsx
-│   │   │       └── star-rating.tsx
-│   │   ├── scripts
-│   │   │   ├── registry-adapter.ts +
-│   │   │   ├── registry-cli.ts +
-│   │   │   ├── registry-plan.ts +
-│   │   │   ├── registry-adapter.test.ts +
-│   │   │   └── registry-plan.test.ts +
-│   │   ├── src
-│   │   │   └── index.ts +
-│   │   ├── .gitignore *
-│   │   ├── components.json *
-│   │   ├── package.json *
-│   │   ├── registry.json *
-│   │   ├── README.md *
-│   │   ├── tsconfig.json *
-│   │   ├── worker-configuration.d.ts
-│   │   └── wrangler.json
-│   └── web
-│       ├── app
-│       │   ├── fonts
-│       │   │   ├── GeistMonoVF.woff *
-│       │   │   └── GeistVF.woff *
-│       │   ├── components
-│       │   │   └── convex-clerk-provider.tsx +
-│       │   ├── dashboard
-│       │   │   ├── _components
-│       │   │   │   ├── panel.tsx +
-│       │   │   │   ├── project-client.tsx +
-│       │   │   │   ├── projects-client.tsx +
-│       │   │   │   └── sync-user-gate.tsx +
-│       │   │   ├── projects
-│       │   │   │   └── [projectId]
-│       │   │   │       └── page.tsx +
-│       │   │   ├── error.tsx +
-│       │   │   ├── layout.tsx +
-│       │   │   └── page.tsx +
-│       │   ├── sign-in
-│       │   │   └── [[...sign-in]]
-│       │   │       └── page.tsx +
-│       │   ├── sign-up
-│       │   │   └── [[...sign-up]]
-│       │   │       └── page.tsx +
-│       │   ├── widgets
-│       │   │   └── page.tsx +
-│       │   ├── favicon.ico *
-│       │   ├── layout.tsx * +
-│       │   └── page.tsx * +
-│       ├── public
-│       │   ├── file-text.svg *
-│       │   ├── globe.svg *
-│       │   ├── next.svg *
-│       │   ├── turborepo-dark.svg *
-│       │   ├── turborepo-light.svg *
-│       │   ├── vercel.svg *
-│       │   └── window.svg *
-│       ├── convex
-│       │   ├── _generated
-│       │   │   ├── api.d.ts +
-│       │   │   ├── api.js +
-│       │   │   ├── dataModel.d.ts +
-│       │   │   ├── server.d.ts +
-│       │   │   └── server.js +
-│       │   ├── lib
-│       │   │   ├── auth.ts +
-│       │   │   └── nanoid.ts +
-│       │   ├── README.md
-│       │   ├── auth.config.ts +
-│       │   ├── feedback.ts +
-│       │   ├── http.ts +
-│       │   ├── httpActions.ts +
-│       │   ├── projects.ts +
-│       │   ├── schema.ts +
-│       │   ├── tsconfig.json
-│       │   └── users.ts +
-│       ├── .gitignore *
-│       ├── README.md *
-│       ├── components.json *
-│       ├── eslint.config.js * +
-│       ├── next.config.js * +
-│       ├── package.json *
-│       ├── postcss.config.mjs *
-│       ├── tsconfig.json *
-│       └── proxy.ts +
-├── packages
-│   ├── eslint-config
-│   │   ├── README.md *
-│   │   ├── base.js * +
-│   │   ├── next.js * +
-│   │   ├── package.json *
-│   │   └── react-internal.js * +
-│   ├── typescript-config
-│   │   ├── base.json *
-│   │   ├── nextjs.json *
-│   │   ├── package.json *
-│   │   └── react-library.json *
-│   ├── ui
-│   │   ├── src
-│   │   │   ├── components
-│   │   │   │   ├── button.tsx * +
-│   │   │   │   ├── badge.tsx +
-│   │   │   │   ├── card.tsx +
-│   │   │   │   ├── chart.tsx +
-│   │   │   │   ├── input.tsx +
-│   │   │   │   ├── label.tsx +
-│   │   │   │   ├── progress.tsx +
-│   │   │   │   ├── select.tsx +
-│   │   │   │   ├── separator.tsx +
-│   │   │   │   ├── switch.tsx +
-│   │   │   │   ├── table.tsx +
-│   │   │   │   ├── tabs.tsx +
-│   │   │   │   └── textarea.tsx +
-│   │   │   ├── lib
-│   │   │   │   └── utils.ts * +
-│   │   │   └── styles
-│   │   │       └── globals.css *
-│   │   ├── components.json *
-│   │   ├── package.json *
-│   │   └── tsconfig.json *
-│   └── widgets
-│       ├── src
-│       │   ├── compound
-│       │   │   ├── feedback-context.tsx +
-│       │   │   ├── feedback-description.tsx +
-│       │   │   ├── feedback-footer.tsx +
-│       │   │   ├── feedback-input.tsx +
-│       │   │   ├── feedback-rating.tsx +
-│       │   │   ├── feedback-title.tsx +
-│       │   │   ├── feedback-widget.tsx +
-│       │   │   └── index.ts +
-│       │   ├── core
-│       │   │   ├── errors.ts +
-│       │   │   └── use-widget-machine.ts +
-│       │   ├── feedback-system.ts +
-│       │   ├── feedback-system.test.tsx +
-│       │   ├── index.ts * +
-│       │   ├── emoji-feedback.tsx +
-│       │   ├── like-dislike.tsx +
-│       │   ├── star-rating.tsx +
-│       │   └── types.ts +
-│       ├── package.json *
-│       ├── tsconfig.json *
-│       └── eslint.config.mjs
-├── .gitignore *
-├── .npmrc *
-├── README.md *
-├── bun.lock *
-├── package.json *
-├── turbo.json *
-└── AGENTS.md
+```text
+apps/
+  web/                     Next.js 16 site, docs, design system, waitlist
+    app/(site)/            Public routes: /, /components, /design-system, /privacy, /llms.txt
+    app/(hosted)/          Unreleased: /dashboard, /sign-in, /sign-up, /widgets lab
+    components/            Shared site components (landing, docs, providers)
+    lib/                   Widget catalog, Markdown/llms renderers, hosted-mode config
+    convex/                Convex backend: waitlist (production) + hosted analytics
+    scripts/run-tests.ts   Test runner (isolates suites that mock modules)
+  registry/                Cloudflare Worker serving registry JSON
+    registry.json          Registry manifest: installed files and dependencies
+    scripts/               Adapter that emits packages/widgets into registry items
+    site.config.ts         Canonical site, registry, and repository URLs
+packages/
+  widgets/src/             Canonical widget source (the only place to edit widgets)
+  ui/src/                  Vendored shadcn primitives, globals.css, foundations.css
+  eslint-config/           Shared ESLint configs
+  typescript-config/       Shared tsconfig bases
+scripts/                   Repo checks: docs links, env, site/widget design guards
+docs/                      Architecture, ADRs, runbook, research
 ```
 
-(\* denotes selected files)
-(+ denotes code-map available)
+Generated output, never hand-edited: `apps/registry/.generated/`,
+`apps/registry/public/r/`, and `apps/registry/worker-configuration.d.ts` are
+ignored; `apps/web/convex/_generated/` is tracked but written by Convex.
+
+## Commands
+
+Run from the repository root.
+
+| Command                  | Does                                                           |
+| ------------------------ | -------------------------------------------------------------- |
+| `bun run dev`            | Public site on :3000, no environment needed                    |
+| `bun run dev:hosted`     | Site plus `convex dev`; needs `HOSTED_ANALYTICS=live` and keys |
+| `bun run lint`           | ESLint across the monorepo                                     |
+| `bun run check-types`    | TypeScript across the monorepo                                 |
+| `bun run test`           | Unit and component tests                                       |
+| `bun run check-design`   | Site and widget design drift guards                            |
+| `bun run check-registry` | Temporary shadcn build plus host-fixture type check            |
+| `bun run registry:build` | Refresh public registry JSON                                   |
+| `bun run check-docs`     | Markdown link check                                            |
+| `bun run format`         | Prettier                                                       |
+| `bun run build`          | Build registry and site                                        |
+
+Do not start `dev` or `dev:hosted` yourself; assume the user runs the dev loop.
 
 ## Rules
 
-1. Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without having to explicitly ask.
-2. Do not ever create custom UI components or SVG icons unless explicitly asked to. Always install new/missing components from shadcn-ui.
-3. If a task requires an interactive CLI prompt, login flow, or manual browser authorization, stop before starting it, ask the user to run that step themselves, and continue once they confirm it is done.
+1. Edit widget behavior only in `packages/widgets/src`. Run
+   `bun run check-registry` after widget or manifest changes.
+2. Public widget copy, defaults, and examples live in
+   `apps/web/lib/widget-catalog.ts`. Installed files and dependencies come from
+   `apps/registry/registry.json`; don't duplicate them.
+3. Use shadcn primitives from `packages/ui` and `lucide-react` icons. Install a
+   missing shadcn component rather than hand-rolling a primitive or SVG.
+4. Widgets stay usable in a 288px container with 44×44px reaction targets,
+   keyboard-accessible, and theme-aware. Preserve the public widget API.
+5. Imports outside a file's own folder use the `@/` alias in `apps/web`.
+6. Convex files are camelCase (`httpActions.ts`) because module names become API
+   paths. Everything else is kebab-case. Tests sit next to code as `*.test.ts(x)`.
+7. Hosted routes must stay closed unless `HOSTED_ANALYTICS=live` is set with
+   Clerk and Convex keys (`apps/web/lib/hosted-config.ts`). Never connect local
+   work to live hosted data.
+8. If a step needs an interactive login, CLI prompt, or browser authorization,
+   stop and ask the user to run it.
+9. Write commits as `type(scope): summary` (feat, fix, refactor, docs, test,
+   build, ci, chore).
