@@ -13,35 +13,35 @@ const waitlistConfiguration = {
 };
 
 describe("hosted mode", () => {
-  test("keeps configured hosted analytics live in development", () => {
-    assert.equal(
-      resolveHostedMode({ ...hostedConfiguration, NODE_ENV: "development" }),
-      "live",
-    );
+  test("hosted routes stay closed without the explicit opt-in", () => {
+    for (const NODE_ENV of ["development", "production"] as const) {
+      assert.equal(
+        resolveHostedMode({ ...hostedConfiguration, NODE_ENV }),
+        "off",
+      );
+      assert.equal(
+        resolveHostedMode({
+          ...hostedConfiguration,
+          ...waitlistConfiguration,
+          NODE_ENV,
+        }),
+        "waitlist",
+      );
+    }
   });
 
-  test("production requires an explicit opt-in even with Clerk configured", () => {
-    assert.equal(
-      resolveHostedMode({ ...hostedConfiguration, NODE_ENV: "production" }),
-      "off",
-    );
-    assert.equal(
-      resolveHostedMode({
-        ...hostedConfiguration,
-        ...waitlistConfiguration,
-        NODE_ENV: "production",
-      }),
-      "waitlist",
-    );
-    assert.equal(
-      resolveHostedMode({
-        ...hostedConfiguration,
-        ...waitlistConfiguration,
-        NODE_ENV: "production",
-        HOSTED_ANALYTICS: "live",
-      }),
-      "live",
-    );
+  test("HOSTED_ANALYTICS=live opens hosted routes in any environment", () => {
+    for (const NODE_ENV of ["development", "production"] as const) {
+      assert.equal(
+        resolveHostedMode({
+          ...hostedConfiguration,
+          ...waitlistConfiguration,
+          NODE_ENV,
+          HOSTED_ANALYTICS: "live",
+        }),
+        "live",
+      );
+    }
   });
 
   test("live opt-in still needs all hosted configuration", () => {
