@@ -380,7 +380,7 @@ function validateAndRewriteImports(options: {
     output = `${output.slice(0, replacement.start)}${replacement.value}${output.slice(replacement.end)}`;
   }
 
-  if (output.includes("@workspace/") || output.includes("@repo/")) {
+  if (output.includes("@workspace/")) {
     throw new RegistryAdapterError(
       "bad_import",
       `${options.source} leaves a forbidden workspace import in generated output.`,

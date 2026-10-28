@@ -1,6 +1,11 @@
 {
   "name": "registry",
   "type": "module",
+  "private": true,
+  "exports": {
+    "./registry.json": "./registry.json",
+    "./site.config": "./site.config.ts"
+  },
   "scripts": {
     "dev:registry": "wrangler dev",
     "registry:emit": "bun run scripts/registry-cli.ts emit",
@@ -8,7 +13,7 @@
     "registry:build": "bun run scripts/registry-cli.ts build",
     "build": "bun run registry:build",
     "test": "bun test scripts",
-    "check-types": "tsc --noEmit",
+    "check-types": "bun run cf-typegen > /dev/null && tsc --noEmit",
     "lint": "eslint . --max-warnings 0",
     "deploy": "wrangler deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"
@@ -17,7 +22,7 @@
     "hono": "^4.12.8"
   },
   "devDependencies": {
-    "@repo/eslint-config": "*",
+    "@workspace/eslint-config": "workspace:*",
     "@types/node": "^22.15.3",
     "eslint": "^9.39.1",
     "globals": "^16.5.0",

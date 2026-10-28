@@ -1,6 +1,9 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL, widgetDocs } from "./_lib/widget-catalog";
-import { systemChapters, chapterHref } from "./design-system/_lib/catalog";
+import { SITE_URL, widgetDocs } from "@/lib/widget-catalog";
+import {
+  systemChapters,
+  chapterHref,
+} from "./(site)/design-system/_lib/catalog";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [

@@ -747,7 +747,7 @@ function assertExactList(
 }
 
 function assertNoForbiddenImports(content: string, label: string): void {
-  if (content.includes("@repo/") || content.includes("@workspace/")) {
+  if (content.includes("@workspace/")) {
     failOutput(`${label} contains a forbidden workspace import`);
   }
 }

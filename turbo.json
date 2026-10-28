@@ -19,12 +19,7 @@
         "NEXT_PUBLIC_CONVEX_URL",
         "NEXT_PUBLIC_CONVEX_SITE_URL"
       ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        ".env*",
-        "$TURBO_ROOT$/apps/registry/site.config.ts",
-        "$TURBO_ROOT$/apps/registry/registry.json"
-      ],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "registry#build": {
@@ -38,26 +33,13 @@
     "check-types": {
       "dependsOn": ["^check-types"]
     },
-    "web#check-types": {
+    "registry#check-types": {
       "dependsOn": ["^check-types"],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "$TURBO_ROOT$/apps/registry/site.config.ts",
-        "$TURBO_ROOT$/apps/registry/registry.json"
-      ]
+      "outputs": ["worker-configuration.d.ts"]
     },
     "test": {
       "dependsOn": ["^test"],
       "passThroughEnv": ["SENTIMETER_POLISH_FIXTURES_DIR"]
-    },
-    "web#test": {
-      "dependsOn": ["^test"],
-      "passThroughEnv": ["SENTIMETER_POLISH_FIXTURES_DIR"],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "$TURBO_ROOT$/apps/registry/site.config.ts",
-        "$TURBO_ROOT$/apps/registry/registry.json"
-      ]
     },
     "dev": {
       "cache": false,

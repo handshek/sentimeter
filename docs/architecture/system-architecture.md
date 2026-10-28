@@ -34,7 +34,7 @@ Widget behavior.
 ### Widgets (`packages/widgets`)
 
 The widgets package is the sole canonical source for Widget behavior. The
-site imports its workspace form through `@repo/widgets`, while the registry
+site imports its workspace form through `@workspace/widgets`, while the registry
 emitter produces host-local open code from the same source. Submission chooses
 a custom `submit` handler, or local completion when no handler is supplied.
 Published widgets contain no project-key or hosted-endpoint integration. Local
@@ -123,9 +123,9 @@ the public output.
 - Data model: `apps/web/convex/schema.ts`
 - Feedback rules: `apps/web/convex/lib/feedbackDomain.ts`
 - Canonical Widget behavior: `packages/widgets/src/`
-- Public Widget Catalog and examples: `apps/web/app/_lib/widget-catalog.ts`
+- Public Widget Catalog and examples: `apps/web/lib/widget-catalog.ts`
 - Installed files and dependencies: `apps/registry/registry.json`
 - Public hosts and legal contact: `apps/registry/site.config.ts`
-- Agent documentation renderer: `apps/web/app/_lib/widget-markdown.ts`
+- Agent documentation renderer: `apps/web/lib/widget-markdown.ts`
 - Private Registry Item staging: `apps/registry/.generated/sentimeter/`
 - Generated registry output: `apps/registry/public/r/`

@@ -18,9 +18,9 @@ checks.
 ## Where Changes Belong
 
 - Widget behavior: `packages/widgets/src`. Do not edit registry staging or JSON.
-- Public catalog, install metadata, and examples: `apps/web/app/_lib/widget-catalog.ts`.
+- Public catalog, install metadata, and examples: `apps/web/lib/widget-catalog.ts`.
   Installed paths and dependencies come from `apps/registry/registry.json`.
-- Agent-readable docs: `apps/web/app/_lib/widget-markdown.ts`, derived from that catalog.
+- Agent-readable docs: `apps/web/lib/widget-markdown.ts`, derived from that catalog.
 - Shared UI primitives: use shadcn components in `packages/ui`.
 
 Keep installed widgets local, theme-aware, keyboard-accessible, and usable in a
@@ -33,7 +33,6 @@ the registry footprint in an issue first; this launch focuses on three widgets.
 
 ```sh
 bun run test
-bun run check-tests
 bun run check-types
 bun run lint
 bun run build

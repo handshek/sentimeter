@@ -50,11 +50,11 @@ imports the production component and feeds its actual data boundary.
 
 Sentimeter already has substantial preview coverage:
 
-| Existing surface                                                                                                                                                              | Additional value from this workflow                                                  |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| [Public widget demo](../../apps/web/app/components/_components/widget-demo.tsx) exposes configuration and manual interaction.                                                 | Name reachable states and link to a scenario through `__state`.                      |
-| [Submission specimen](../../apps/web/app/design-system/_components/widget-specimens.tsx) demonstrates pending, failure, retry and success; pending lasts 1.1 seconds.         | Hold pending indefinitely and keep confirmation visible for inspection.              |
-| [Hosted tester](../../apps/web/app/widgets/_components/widgets-playground-client.tsx) has mock success/error, finite delay and disabled controls, alongside real submissions. | Build a focused local workbench without hosted credentials or real submission paths. |
+| Existing surface                                                                                                                                                                           | Additional value from this workflow                                                  |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| [Public widget demo](../../apps/web/components/docs/widget-demo.tsx) exposes configuration and manual interaction.                                                                         | Name reachable states and link to a scenario through `__state`.                      |
+| [Submission specimen](../../apps/web/app/%28site%29/design-system/_components/widget-specimens.tsx) demonstrates pending, failure, retry and success; pending lasts 1.1 seconds.           | Hold pending indefinitely and keep confirmation visible for inspection.              |
+| [Hosted tester](../../apps/web/app/%28hosted%29/widgets/_components/widgets-playground-client.tsx) has mock success/error, finite delay and disabled controls, alongside real submissions. | Build a focused local workbench without hosted credentials or real submission paths. |
 
 This is an assessment of the workflow's fit, not evidence of a measured quality
 improvement. No workbench or application UI is created by installing the skill.

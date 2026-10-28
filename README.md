@@ -126,7 +126,7 @@ own handler or complete locally.
 - `apps/registry`: adapter and Cloudflare Worker serving the shadcn registry.
 - `apps/web`: public registry/docs, production waitlist, and unreleased hosted
   analytics for development.
-- `apps/web/app/_lib/widget-catalog.ts`: public descriptions and examples;
+- `apps/web/lib/widget-catalog.ts`: public descriptions and examples;
   registry manifest owns installed paths and dependencies.
 
 Generated `.generated` and `public/r` trees are ignored build output. Do not edit
@@ -142,7 +142,6 @@ regenerate the registry, and refresh these examples.
 
 ```sh
 bun run test
-bun run check-tests
 bun run check-types
 bun run lint
 bun run build

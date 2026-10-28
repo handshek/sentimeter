@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent } from "@workspace/ui/components/card";
-import { HeaderSection } from "./_components/landing/header-section";
-import { FooterSection } from "./_components/landing/footer-section";
-import { hostedMode } from "./_lib/hosted-config";
+import { HeaderSection } from "@/components/landing/header-section";
+import { FooterSection } from "@/components/landing/footer-section";
+import { hostedMode } from "@/lib/hosted-config";
 
 export default function NotFound() {
   const mode = hostedMode();

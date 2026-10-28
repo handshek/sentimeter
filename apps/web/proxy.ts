@@ -4,7 +4,7 @@ import {
   type NextRequest,
   type NextFetchEvent,
 } from "next/server";
-import { hostedMode, hostedRedirect } from "./app/_lib/hosted-config";
+import { hostedMode, hostedRedirect } from "./lib/hosted-config";
 
 const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",

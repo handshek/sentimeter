@@ -56,7 +56,6 @@ for the registry release. Follow the [runbook](ops/runbook.md) for launch setup.
 - `bun run lint` - lint the monorepo.
 - `bun run check-types` - type-check the monorepo.
 - `bun run test` - run local unit tests.
-- `bun run check-tests` - check web test-script coverage.
 - `bun run check-design` - run site and widget design guards.
 - `bun run build` - build the registry and public site.
 - `bun run registry:emit` - materialize ignored Registry Item staging.

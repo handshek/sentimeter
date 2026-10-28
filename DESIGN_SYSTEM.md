@@ -13,18 +13,18 @@ update the specimens and this guide when that contract changes.
 
 ## Scope and source ownership
 
-| Source                                                          | Owns                                                                                               |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| [globals.css](packages/ui/src/styles/globals.css)               | Shadcn semantic color pairs, light/dark themes, radius, Tailwind mappings, and reduced motion      |
-| [foundations.css](packages/ui/src/styles/foundations.css)       | Shared typography, page measures, spacing, surface, elevation, and motion roles                    |
-| [Root layout](apps/web/app/layout.tsx)                          | Local Geist Sans/Mono loading and the app-wide theme context                                       |
-| [Installed shadcn primitives](packages/ui/src/components)       | Buttons, labels, fields, selects, tabs, tables, overlays, and other interaction foundations        |
-| [Design-system reference](apps/web/app/design-system)           | Live foundations, states, and composition examples; shared chapter navigation and specimen framing |
-| [Landing compositions](apps/web/app/_components/landing)        | Marketing applications of the same foundations                                                     |
-| [Documentation adapter](apps/web/app/components/docs.css)       | Fumadocs semantic mapping and reading/navigation layout                                            |
-| [Widget recipes](packages/widgets/src/design-system.ts)         | Scoped widget anatomy, size, and theme recipe                                                      |
-| [Widget compound parts](packages/widgets/src/compound/index.ts) | Shared interaction anatomy used by all widget families                                             |
-| [Registry adapter](apps/registry/scripts/registry-adapter.ts)   | Emission of canonical widget source into installable registry items                                |
+| Source                                                               | Owns                                                                                               |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| [globals.css](packages/ui/src/styles/globals.css)                    | Shadcn semantic color pairs, light/dark themes, radius, Tailwind mappings, and reduced motion      |
+| [foundations.css](packages/ui/src/styles/foundations.css)            | Shared typography, page measures, spacing, surface, elevation, and motion roles                    |
+| [Root layout](apps/web/app/layout.tsx)                               | Local Geist Sans/Mono loading and the app-wide theme context                                       |
+| [Installed shadcn primitives](packages/ui/src/components)            | Buttons, labels, fields, selects, tabs, tables, overlays, and other interaction foundations        |
+| [Design-system reference](apps/web/app/%28site%29/design-system)     | Live foundations, states, and composition examples; shared chapter navigation and specimen framing |
+| [Landing compositions](apps/web/components/landing)                  | Marketing applications of the same foundations                                                     |
+| [Documentation adapter](apps/web/app/%28site%29/components/docs.css) | Fumadocs semantic mapping and reading/navigation layout                                            |
+| [Widget recipes](packages/widgets/src/design-system.ts)              | Scoped widget anatomy, size, and theme recipe                                                      |
+| [Widget compound parts](packages/widgets/src/compound/index.ts)      | Shared interaction anatomy used by all widget families                                             |
+| [Registry adapter](apps/registry/scripts/registry-adapter.ts)        | Emission of canonical widget source into installable registry items                                |
 
 The website and documentation use these foundations directly. Dashboard layout,
 project views, panels, synchronization/error states, hosted-provider messages,
@@ -167,7 +167,7 @@ page itself must not overflow. Check 320 px as well as comfortable desktop width
 | Empty state   | Explain why the region is empty and offer one useful next action; preserve the surrounding context                                                        |
 | Error state   | Explain the failed operation near its region, retain useful input/context, offer retry, and announce the result accessibly                                |
 
-The [pattern specimens](apps/web/app/design-system/_components/pattern-specimens.tsx)
+The [pattern specimens](apps/web/app/%28site%29/design-system/_components/pattern-specimens.tsx)
 exercise these relationships with working local state. Their data is explicitly
 sample data. Reuse the hierarchy and behavior of a recipe; do not copy a whole
 page of utility values into each new screen.
@@ -308,7 +308,7 @@ Tailwind `dark` variant.
 ### Usage and overrides
 
 ```tsx
-import { EmojiFeedback } from "@repo/widgets";
+import { EmojiFeedback } from "@workspace/widgets";
 
 <EmojiFeedback
   title="How was your experience?"
@@ -441,7 +441,7 @@ a new website surface should use the shared foundations and installed primitives
 | `widget/raw-shape`     | Independent radius/shadow values in parts             | Shared widget recipe variables                                      |
 
 The site guard is deliberately scoped to the migrated React sources under
-`app/design-system`, `app/_components/landing`, and `app/components/_components`.
+`app/(site)/design-system`, `components/landing`, and `components/docs`.
 It inspects presentation attributes, recognized style properties, class helpers,
 and named class declarations; explanatory prose and code-example strings are not
 presentation. It is a static drift detector, not a data-flow analyzer. It does

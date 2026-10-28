@@ -9,7 +9,6 @@ bun run check-env
 bun run check-docs
 bun run check-registry
 bun run check-design
-bun run check-tests
 bun run lint
 bun run check-types
 bun run test

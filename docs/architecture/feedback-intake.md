@@ -7,7 +7,7 @@ locally; they include no hosted submitter.
 
 ## Entry Points
 
-- Tester submitter: `apps/web/app/widgets/_components/widgets-playground-client.tsx`
+- Tester submitter: `apps/web/app/(hosted)/widgets/_components/widgets-playground-behavior.ts`
 - Tester endpoint configuration: `NEXT_PUBLIC_CONVEX_SITE_URL`
 - HTTP action routing: `apps/web/convex/http.ts`
 - HTTP action implementation: `apps/web/convex/httpActions.ts`

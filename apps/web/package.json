@@ -10,15 +10,15 @@
     "start": "next start",
     "lint": "eslint --max-warnings 0",
     "check-types": "next typegen && tsc --noEmit",
-    "test": "bun test convex/lib app/_lib/widget-catalog.test.ts app/_lib/hosted-config.test.ts app/_lib/waitlist-request.test.ts app/components/_components/public-actions.test.tsx app/dashboard/_components/feedback-feed-summary.test.ts app/dashboard/_components/project-accessibility.test.ts app/dashboard/_components/project-settings-state.test.ts app/dashboard/_components/project-view-query.test.ts app/widgets/_components/widgets-playground-behavior.test.ts && bun test app/dashboard/_components/project-client.test.tsx && bun test app/dashboard/_components/dashboard-layout.test.tsx && bun test app/components/convex-clerk-provider.test.tsx && bun test convex/waitlist.test.ts"
+    "test": "bun scripts/run-tests.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.0.4",
     "@convex-dev/rate-limiter": "^0.3.2",
-    "@repo/widgets": "*",
     "@tailwindcss/postcss": "^4.2.1",
     "@vercel/analytics": "^2.0.1",
     "@workspace/ui": "workspace:*",
+    "@workspace/widgets": "workspace:*",
     "convex": "^1.32.0",
     "fumadocs-core": "16.10.5",
     "fumadocs-ui": "16.10.5",
@@ -31,14 +31,15 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "recharts": "^3.8.0",
+    "registry": "workspace:*",
     "shadcn": "^4.0.2",
     "sonner": "^2.0.7",
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {
     "@happy-dom/global-registrator": "^20.11.6",
-    "@repo/eslint-config": "*",
-    "@repo/typescript-config": "*",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
     "@testing-library/react": "^16.3.2",
     "@types/bun": "^1.4.2",
     "@types/node": "^22.15.3",

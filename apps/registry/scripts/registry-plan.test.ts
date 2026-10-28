@@ -69,7 +69,7 @@ describe("Registry Item plan", () => {
 
     await writeFile(
       path.join(sourceRoot, "entry.ts"),
-      'import "@repo/private";\n',
+      'import "@workspace/private";\n',
       "utf8",
     );
     await assert.rejects(

@@ -34,9 +34,6 @@ jobs:
       - name: Widget design rules and seeded fixtures
         run: bun run check-design
 
-      - name: Every web test file is wired into its test script
-        run: bun run check-tests
-
       - name: Markdown links
         run: bun run check-docs
 

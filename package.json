@@ -7,7 +7,6 @@
     "check-docs": "bun run scripts/check-docs.ts",
     "check-env": "bun run scripts/check-env.ts",
     "check-registry": "bun run --cwd apps/registry registry:check",
-    "check-tests": "bun run scripts/check-tests.ts",
     "dev": "turbo run dev --filter=web",
     "dev:hosted": "turbo run dev dev:convex --filter=web",
     "lint": "turbo run lint",

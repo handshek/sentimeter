@@ -1,6 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ["@workspace/ui"],
+  async redirects() {
+    return [
+      // The design system used to live under the component docs.
+      {
+        source: "/components/design-system",
+        destination: "/design-system",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {
