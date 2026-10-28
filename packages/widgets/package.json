@@ -11,18 +11,18 @@
     "test": "bun test src"
   },
   "devDependencies": {
-    "@happy-dom/global-registrator": "^20.11.6",
+    "@happy-dom/global-registrator": "^20.14.6",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "@testing-library/react": "^16.3.3",
-    "@types/node": "^22.15.3",
+    "@types/node": "^22.20.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "eslint": "^9.39.1",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "dependencies": {
-    "lucide-react": "^0.468.0",
+    "lucide-react": "^0.577.0",
     "@workspace/ui": "workspace:*",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
