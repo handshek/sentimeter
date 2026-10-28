@@ -119,7 +119,7 @@ the public output.
 ## Source Of Truth
 
 - Product vocabulary: `CONTEXT.md`
-- UI constraints: `DESIGN_PHILOSOPHY.md`
+- UI constraints: `DESIGN_SYSTEM.md`
 - Data model: `apps/web/convex/schema.ts`
 - Feedback rules: `apps/web/convex/lib/feedbackDomain.ts`
 - Canonical Widget behavior: `packages/widgets/src/`

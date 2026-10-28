@@ -10,7 +10,7 @@ updated or deleted when behavior changes.
 - [Changelog](../CHANGELOG.md) - public release history.
 - [Onboarding](onboarding.md) - practical walkthrough for working in the repo.
 - [Context](../CONTEXT.md) - product and system language for larger changes.
-- [Design philosophy](../DESIGN_PHILOSOPHY.md) - UI principles and constraints.
+- [Design system](../DESIGN_SYSTEM.md) - UI principles, foundations, and the widget contract.
 
 ## Architecture
 

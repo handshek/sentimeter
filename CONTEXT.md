@@ -5,7 +5,7 @@ an architecture decision log. Use it before domain-level refactors, architecture
 work, or renaming product concepts.
 
 For operating rules, read `AGENTS.md`. For visual design rules, read
-`DESIGN_PHILOSOPHY.md`.
+`DESIGN_SYSTEM.md`.
 
 ## Product shape
 

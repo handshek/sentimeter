@@ -12,7 +12,7 @@
 ## First Read
 
 1. Read `CONTEXT.md` for domain language.
-2. Read `DESIGN_PHILOSOPHY.md` before UI work.
+2. Read `DESIGN_SYSTEM.md` before UI work.
 3. Read `apps/web/convex/schema.ts` to understand stored data.
 4. Read `apps/registry/registry.json` before changing Registry Item shape.
 5. Read `packages/widgets/src/feedback-system.ts`, `types.ts`, and

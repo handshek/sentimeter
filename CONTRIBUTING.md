@@ -1,7 +1,7 @@
 # Contributing to Sentimeter
 
 Small, reviewable contributions are welcome. Start with [CONTEXT.md](CONTEXT.md)
-and read [DESIGN_PHILOSOPHY.md](DESIGN_PHILOSOPHY.md) before UI changes.
+and read [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) before UI changes.
 Follow [AGENTS.md](AGENTS.md) for repository operating rules.
 
 ## Run the Public Site
