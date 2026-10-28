@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
-    "@types/node": "^22.15.3",
+    "@types/node": "^26.6.5",
     "eslint": "^9.39.1",
     "globals": "^16.5.0",
     "shadcn": "3.5.1-canary.0",
