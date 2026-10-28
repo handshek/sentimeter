@@ -30,6 +30,7 @@ const router = {
   forward: mock(() => {}),
   refresh: mock(() => {}),
   prefetch: mock(async () => {}),
+  bfcacheId: "test",
 };
 const searchParams = new URLSearchParams();
 const location = "/layout-verification/" + "long-location-".repeat(12);

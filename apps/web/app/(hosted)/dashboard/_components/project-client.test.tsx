@@ -22,19 +22,17 @@ const router = {
   forward: mock(() => {}),
   refresh: mock(() => {}),
   prefetch: mock(async () => {}),
+  bfcacheId: "test",
 };
 const originalConfirm = window.confirm;
 const confirmNavigation = mock(() => false);
 const searchParams = new URLSearchParams();
 let analyticsResult:
-  | FunctionReturnType<typeof api.feedback.getAnalytics>
-  | undefined;
+  FunctionReturnType<typeof api.feedback.getAnalytics> | undefined;
 let volumeResult:
-  | FunctionReturnType<typeof api.feedback.getVolumeSeries>
-  | undefined;
+  FunctionReturnType<typeof api.feedback.getVolumeSeries> | undefined;
 let feedbackResult:
-  | FunctionReturnType<typeof api.feedback.getFeedback>
-  | undefined;
+  FunctionReturnType<typeof api.feedback.getFeedback> | undefined;
 const queryCalls = mock((name: string, args: unknown) => ({ name, args }));
 let deleteResult: Promise<unknown>;
 const deleteProject = mock(() => deleteResult);

@@ -6,9 +6,7 @@ export type WidgetState = "idle" | "selected" | "submitting" | "done";
 export type WidgetLayout = "stacked" | "inline";
 
 export type WidgetSubmitErrorCode =
-  | "rate_limited"
-  | "network_error"
-  | "unknown";
+  "rate_limited" | "network_error" | "unknown";
 
 export class WidgetSubmitError extends Error {
   readonly code: WidgetSubmitErrorCode;
