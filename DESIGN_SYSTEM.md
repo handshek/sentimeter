@@ -11,6 +11,32 @@ palettes, layout rules, components, and complete product patterns. This file is
 the implementation contract for contributors. Runtime values live in source;
 update the specimens and this guide when that contract changes.
 
+## Principles
+
+Sentimeter should feel like a quiet developer tool: precise, shadcn-native, and
+easy to scan. The product sells trust in an install flow, so visual choices
+should reduce doubt rather than decorate the page.
+
+- **Shadcn first.** Use the primitives in `packages/ui`; install missing shadcn
+  components instead of creating custom primitives. Use `lucide-react` rather
+  than custom SVG icons. Keep widget examples close to how they look after
+  installation in a host shadcn app.
+- **Calm, operational UI.** Prefer dense, structured views over marketing-heavy
+  cards. Use semantic tokens (`bg-background`, `bg-card`, `text-foreground`,
+  `text-muted-foreground`, `border-border`, `bg-muted`) and keep accent color
+  for meaning: success, warning, destructive, selection, or the primary action.
+  Avoid decorative gradients and single-hue palettes.
+- **Install confidence.** The first viewport makes the actual widget and install
+  command obvious. Registry docs show exact `shadcn add` commands and the files
+  they install.
+- **Lightweight feedback.** Widgets feel fast and small: no heavy animation,
+  layout shift, or multi-step flow unless asked for. States read clearly (idle,
+  selected, submitting, done, error recovery), and text input is optional
+  context, never a wall in front of the reaction.
+- **Accessible and responsive.** Controls have keyboard focus, disabled states,
+  and useful labels. Text fits on mobile and desktop. Ratings, controls, charts,
+  and panels keep stable dimensions so updates don't shift the layout.
+
 ## Scope and source ownership
 
 | Source                                                               | Owns                                                                                               |

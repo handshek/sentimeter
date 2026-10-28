@@ -1,5 +1,9 @@
 # State-machine skill assessment
 
+> **Update, 2026-10-28:** the repository no longer tracks third-party agent
+> skills (see the [structure audit](repo-structure-audit.md)). Install this skill
+> locally with the `skills` CLI if you want the workbench.
+
 Assessed 13 October 2026 for Sentimeter. Adopt the single, explicitly invoked
 `state-machine` skill from Jakub Krehel's collection. It provides a temporary
 workbench for inspecting an existing component's states; it does not introduce
@@ -15,11 +19,11 @@ The actual skill was inspected in the upstream Git repository.
 
 - Upstream commit: `4c66b1fa86e9ab70187b43d7da9b6fdb29f2ef63`.
 - Source: [skills/state-machine](https://github.com/jakubkrehel/skills/tree/4c66b1fa86e9ab70187b43d7da9b6fdb29f2ef63/skills/state-machine).
-- Local copy: [SKILL.md](../../.agents/skills/state-machine/SKILL.md),
-  [switcher.md](../../.agents/skills/state-machine/switcher.md) and
-  [Codex invocation policy](../../.agents/skills/state-machine/agents/openai.yaml).
+- Upstream files: [SKILL.md](https://github.com/jakubkrehel/skills/blob/4c66b1fa86e9ab70187b43d7da9b6fdb29f2ef63/skills/state-machine/SKILL.md),
+  [switcher.md](https://github.com/jakubkrehel/skills/blob/4c66b1fa86e9ab70187b43d7da9b6fdb29f2ef63/skills/state-machine/switcher.md) and
+  [Codex invocation policy](https://github.com/jakubkrehel/skills/blob/4c66b1fa86e9ab70187b43d7da9b6fdb29f2ef63/skills/state-machine/agents/openai.yaml).
 - License: [MIT, copyright 2026 Jakub Krehel](#upstream-license-notice).
-- Installed with Vercel's official `skills` CLI 1.7.1; [skills-lock.json](../../skills-lock.json)
+- Installed with Vercel's official `skills` CLI 1.7.1; `skills-lock.json`
   records the source, exact revision, path and content hash. Upstream files are
   unchanged, including `disable-model-invocation: true` and
   `allow_implicit_invocation: false`.

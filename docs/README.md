@@ -7,10 +7,14 @@ updated or deleted when behavior changes.
 ## Start Here
 
 - [Project README](../README.md) - registry launch overview, setup, and commands.
+- [Contributing](../CONTRIBUTING.md) - local setup, where changes belong, and
+  adding a widget.
+- [Agent instructions](../AGENTS.md) - repository map, commands, and rules for
+  coding agents.
 - [Changelog](../CHANGELOG.md) - public release history.
 - [Onboarding](onboarding.md) - practical walkthrough for working in the repo.
 - [Context](../CONTEXT.md) - product and system language for larger changes.
-- [Design philosophy](../DESIGN_PHILOSOPHY.md) - UI principles and constraints.
+- [Design system](../DESIGN_SYSTEM.md) - UI principles, foundations, and the widget contract.
 
 ## Architecture
 
@@ -21,10 +25,10 @@ updated or deleted when behavior changes.
 - [Registry subdomain decision](adr/0001-registry-on-own-subdomain.md) - the
   stable install URL and its Cloudflare Worker routing.
 
-## Operations
+## Operations (maintainers)
 
-- [Runbook](ops/runbook.md) - checks, deployment setup, domain changes, and
-  first-response steps for common failures.
+- [Runbook](ops/runbook.md) - deployment setup, domain changes, and
+  first-response steps for common failures. Contributors don't need it.
 
 ## Research
 

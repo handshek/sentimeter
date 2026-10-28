@@ -3,7 +3,8 @@
 ## Repository Shape
 
 - `apps/web` - public widget catalog, docs, production waitlist, and unreleased
-  hosted analytics for development.
+  hosted analytics. Public routes live in `app/(site)`, hosted ones in
+  `app/(hosted)`; shared code is in `components/` and `lib/`.
 - `apps/registry` - Cloudflare Worker plus the private Registry Item Adapter and
   generated JSON.
 - `packages/widgets` - canonical reusable open-code Widget implementations.
@@ -12,11 +13,12 @@
 ## First Read
 
 1. Read `CONTEXT.md` for domain language.
-2. Read `DESIGN_PHILOSOPHY.md` before UI work.
-3. Read `apps/web/convex/schema.ts` to understand stored data.
-4. Read `apps/registry/registry.json` before changing Registry Item shape.
-5. Read `packages/widgets/src/feedback-system.ts`, `types.ts`, and
+2. Read `DESIGN_SYSTEM.md` before UI work.
+3. Read `apps/registry/registry.json` before changing Registry Item shape.
+4. Read `packages/widgets/src/feedback-system.ts`, `types.ts`, and
    `core/errors.ts` before changing Widget behavior.
+5. For hosted analytics or waitlist work, read `apps/web/convex/schema.ts` for
+   stored data.
 
 ## Local Commands
 
@@ -69,8 +71,8 @@ already running unless the user says otherwise.
 ## Change Heuristics
 
 - Feedback-intake changes should usually touch `apps/web/convex/lib` tests.
-- Widget-behavior changes should usually touch `packages/widgets/src/core`
-  tests.
+- Widget-behavior changes should usually touch the behavior tests in
+  `packages/widgets/src/*.test.tsx`.
 - Widget-source or Registry Item manifest changes require
   `bun run check-registry`; run `bun run registry:build` when public JSON should
   be refreshed.

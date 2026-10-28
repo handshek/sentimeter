@@ -1,5 +1,8 @@
 # Sentimeter Runbook
 
+For maintainers who deploy the site, registry Worker, and Convex. Contributors
+only need [CONTRIBUTING.md](../../CONTRIBUTING.md).
+
 ## Quick checks
 
 Run these from the repo root:

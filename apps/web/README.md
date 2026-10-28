@@ -15,4 +15,4 @@ described in [onboarding](../../docs/onboarding.md). Hosted providers are scoped
 those routes.
 
 See the [project README](../../README.md), [contribution guide](../../CONTRIBUTING.md),
-and [design philosophy](../../DESIGN_PHILOSOPHY.md).
+and [design system](../../DESIGN_SYSTEM.md).
