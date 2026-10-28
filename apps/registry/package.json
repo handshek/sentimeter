@@ -13,7 +13,7 @@
     "registry:build": "bun run scripts/registry-cli.ts build",
     "build": "bun run registry:build",
     "test": "bun test scripts",
-    "check-types": "tsc --noEmit",
+    "check-types": "bun run cf-typegen > /dev/null && tsc --noEmit",
     "lint": "eslint . --max-warnings 0",
     "deploy": "wrangler deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"
