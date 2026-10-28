@@ -18,8 +18,12 @@ export const namespaceConfig = JSON.stringify(
 export const packageManagers = ["bun", "pnpm", "npm", "yarn"] as const;
 export type PackageManager = (typeof packageManagers)[number];
 
+// The launch widgets. Adding one also needs packages/widgets/src and the
+// registry manifest; see CONTRIBUTING.md.
+export type WidgetSlug = "emoji-feedback" | "like-dislike" | "star-rating";
+
 export type WidgetInstallMetadata = {
-  slug: "emoji-feedback" | "like-dislike" | "star-rating";
+  slug: WidgetSlug;
   name: string;
   tabLabel: string;
   registryName: string;
@@ -84,7 +88,7 @@ export type WidgetDocRow = {
 };
 
 export type WidgetDocConfig = {
-  slug: "emoji-feedback" | "like-dislike" | "star-rating";
+  slug: WidgetSlug;
   name: string;
   description: string;
   registryName: string;
