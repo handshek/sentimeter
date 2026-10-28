@@ -1,0 +1,10 @@
+# Generated
+bun.lock
+apps/web/convex/_generated
+apps/registry/.generated
+apps/registry/public
+apps/registry/worker-configuration.d.ts
+
+# Vendored shadcn primitives: keep them identical to upstream
+packages/ui/src/components
+packages/ui/src/lib
