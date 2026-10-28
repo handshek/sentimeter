@@ -93,7 +93,7 @@ skills are tracked; contributor process stays low-friction.
 ## Roadmap (one PR per phase, in this order)
 
 **PR 1: Clean clone and one-command local dev** (findings 1–8)
-- `bun run dev` runs the site only (no Convex). Add `dev:hosted`, which adds Convex and needs `HOSTED_ANALYTICS=local` in `apps/web/.env.local`.
+- `bun run dev` runs the site only (no Convex). Add `dev:hosted`, which adds Convex and needs `HOSTED_ANALYTICS=live` in `apps/web/.env.local`.
 - Change `resolveHostedMode` so hosted routes are reachable only when that flag is set *and* the keys exist. Production keeps `waitlist`/`off`. Update `hosted-config.test.ts`.
 - `.env.example`:
   - Group variables into "site (none required)", "waitlist" and "hosted (local only)".
