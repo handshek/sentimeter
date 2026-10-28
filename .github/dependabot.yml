@@ -5,6 +5,10 @@ updates:
     schedule:
       interval: monthly
     open-pull-requests-limit: 5
+    ignore:
+      # 0.4+ changes the component API and needs `convex codegen` against a
+      # logged-in deployment; upgrade it by hand with that regeneration.
+      - dependency-name: "@convex-dev/rate-limiter"
     groups:
       minor-and-patch:
         update-types: ["minor", "patch"]
