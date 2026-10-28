@@ -82,5 +82,7 @@ Do not start `dev` or `dev:hosted` yourself; assume the user runs the dev loop.
    work to live hosted data.
 8. If a step needs an interactive login, CLI prompt, or browser authorization,
    stop and ask the user to run it.
-9. Write commits as `type(scope): summary` (feat, fix, refactor, docs, test,
-   build, ci, chore).
+9. Only Sentimeter-specific agent skills are committed, under `.agents/skills/`.
+   Keep general-purpose skills in your own global skill library.
+10. Write commits as `type(scope): summary` (feat, fix, refactor, docs, test,
+    build, ci, chore).
