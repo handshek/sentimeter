@@ -12,10 +12,6 @@ node_modules
 .env.test.local
 .env.production.local
 
-# TestSprite
-.testsprite/
-testsprite_tests/tmp/
-
 # Testing
 coverage
 
@@ -41,6 +37,16 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
-.notes
+
+# Local tooling caches and scratch work
 .npm-cache
 graphify-out
+.notes
+.design-system
+.wrangler
+apps/registry/.tmp
+
+# Local design files (edited in Pencil, not published)
+/design
+/*.pen
+
