@@ -1,6 +1,11 @@
 {
   "name": "registry",
   "type": "module",
+  "private": true,
+  "exports": {
+    "./registry.json": "./registry.json",
+    "./site.config": "./site.config.ts"
+  },
   "scripts": {
     "dev:registry": "wrangler dev",
     "registry:emit": "bun run scripts/registry-cli.ts emit",

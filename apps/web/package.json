@@ -15,10 +15,10 @@
   "dependencies": {
     "@clerk/nextjs": "^7.0.4",
     "@convex-dev/rate-limiter": "^0.3.2",
-    "@workspace/widgets": "workspace:*",
     "@tailwindcss/postcss": "^4.2.1",
     "@vercel/analytics": "^2.0.1",
     "@workspace/ui": "workspace:*",
+    "@workspace/widgets": "workspace:*",
     "convex": "^1.32.0",
     "fumadocs-core": "16.10.5",
     "fumadocs-ui": "16.10.5",
@@ -31,6 +31,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "recharts": "^3.8.0",
+    "registry": "workspace:*",
     "shadcn": "^4.0.2",
     "sonner": "^2.0.7",
     "tailwindcss": "^4.2.1"

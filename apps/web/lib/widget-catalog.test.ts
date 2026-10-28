@@ -6,7 +6,7 @@ import {
   widgetDocs,
 } from "./widget-catalog";
 import { getWidgetMarkdown } from "./widget-markdown";
-import { REGISTRY_URL } from "../../registry/site.config";
+import { REGISTRY_URL } from "registry/site.config";
 
 test("every launch widget has a complete, compatible registry install", () => {
   expect(widgetDocs.map((widget) => widget.slug)).toEqual([

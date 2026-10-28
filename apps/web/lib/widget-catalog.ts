@@ -1,12 +1,12 @@
-import registry from "../../registry/registry.json";
+import registry from "registry/registry.json";
 import type { WidgetLayout, WidgetSize } from "@workspace/widgets";
-import { REGISTRY_URL } from "../../registry/site.config";
+import { REGISTRY_URL } from "registry/site.config";
 
 export {
   SITE_URL,
   REPOSITORY_URL,
   LEGAL_CONTACT_EMAIL,
-} from "../../registry/site.config";
+} from "registry/site.config";
 export const REGISTRY_BASE_URL = `${REGISTRY_URL}/r`;
 export const namespaceConfig = JSON.stringify(
   {
