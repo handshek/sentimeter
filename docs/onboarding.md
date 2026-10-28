@@ -17,7 +17,8 @@
 3. Read `apps/registry/registry.json` before changing Registry Item shape.
 4. Read `packages/widgets/src/feedback-system.ts`, `types.ts`, and
    `core/errors.ts` before changing Widget behavior.
-5. For hosted work only, read `apps/web/convex/schema.ts` for stored data.
+5. For hosted analytics or waitlist work, read `apps/web/convex/schema.ts` for
+   stored data.
 
 ## Local Commands
 

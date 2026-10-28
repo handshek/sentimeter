@@ -48,7 +48,7 @@ Then touch these places, in order:
 3. `apps/registry/registry.json` - add the matching manifest entry, then run
    `bun run check-registry`.
 4. `apps/web/lib/widget-catalog.ts` - add the slug to `WidgetSlug` and a
-   `widgetDocs` entry; the docs page, Markdown endpoint, and `llms.txt` follow.
+   `widgetDefinitions` entry; the docs page, Markdown endpoint, and `llms.txt` follow.
 5. Previews: `components/docs/widget-demo.tsx`,
    `components/landing/widget-specimen.tsx`, and the design-system widget
    specimens in `apps/web`.
