@@ -33,6 +33,10 @@
     "check-types": {
       "dependsOn": ["^check-types"]
     },
+    "registry#check-types": {
+      "dependsOn": ["^check-types"],
+      "outputs": ["worker-configuration.d.ts"]
+    },
     "test": {
       "dependsOn": ["^test"],
       "passThroughEnv": ["SENTIMETER_POLISH_FIXTURES_DIR"]
