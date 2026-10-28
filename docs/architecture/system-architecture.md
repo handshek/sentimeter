@@ -15,8 +15,8 @@ Markdown endpoints and `/llms.txt` are statically generated from the same catalo
 
 In live mode, Clerk is scoped to sign-in/sign-up and hosted routes; Convex
 clients are created only inside the dashboard or configured `/widgets` tester.
-Development enables live mode when Clerk and Convex are configured. Production
-requires the explicit `HOSTED_ANALYTICS=live` override for that behavior.
+Live mode requires the explicit `HOSTED_ANALYTICS=live` opt-in plus Clerk and
+Convex configuration in every environment; production leaves it unset.
 
 Otherwise, production shows the waitlist when `NEXT_PUBLIC_CONVEX_URL` and
 `WAITLIST_SECRET` are set, or the same coming-soon page without a form. Sign-in and dashboard project

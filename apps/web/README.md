@@ -6,7 +6,7 @@ From the repository root:
 
 ```sh
 bun install
-bun run --cwd apps/web dev
+bun run dev
 ```
 
 The public site needs no Clerk or Convex environment variables. The development-only

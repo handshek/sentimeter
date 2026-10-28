@@ -22,10 +22,11 @@ export function hasHostedConfiguration(
   );
 }
 
+// Hosted analytics is unreleased. Its routes open only when a developer sets
+// HOSTED_ANALYTICS=live alongside the Clerk and Convex keys, in any environment.
 export function resolveHostedMode(environment: HostedEnvironment): HostedMode {
   if (
-    (environment.NODE_ENV !== "production" ||
-      environment.HOSTED_ANALYTICS === "live") &&
+    environment.HOSTED_ANALYTICS === "live" &&
     hasHostedConfiguration(environment)
   ) {
     return "live";

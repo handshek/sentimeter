@@ -1,25 +1,25 @@
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, normalize } from "node:path";
 
 const repoRoot = process.cwd();
-const ignoredDirs = new Set([".git", ".next", "node_modules"]);
 const markdownLinkPattern = /!?\[[^\]]*\]\(([^)]+)\)/g;
 
-function walkMarkdownFiles(dir: string, files: string[] = []) {
-  for (const entry of readdirSync(dir)) {
-    if (ignoredDirs.has(entry) || entry.endsWith("_tests")) continue;
-
-    const path = join(dir, entry);
-    const stat = statSync(path);
-    if (stat.isDirectory()) {
-      walkMarkdownFiles(path, files);
-    } else if (entry.endsWith(".md") && !path.includes("/.agents/skills/")) {
-      files.push(path);
-    } else if (entry === "SKILL.md" && path.includes("/.agents/skills/")) {
-      files.push(path);
-    }
-  }
-  return files;
+// Only Markdown that Git would publish: tracked files plus new, non-ignored ones.
+// Local scratch folders and caches stay out of the check.
+function listMarkdownFiles() {
+  return execFileSync(
+    "git",
+    ["ls-files", "-z", "--cached", "--others", "--exclude-standard", "*.md"],
+    { cwd: repoRoot, encoding: "utf8" },
+  )
+    .split("\0")
+    .filter(Boolean)
+    .filter(
+      (path) => !path.includes(".agents/skills/") || path.endsWith("/SKILL.md"),
+    )
+    .map((path) => join(repoRoot, path))
+    .filter((path) => existsSync(path));
 }
 
 function stripLinkTarget(rawTarget: string) {
@@ -38,7 +38,7 @@ function isExternalTarget(target: string) {
 
 const failures: string[] = [];
 
-for (const file of walkMarkdownFiles(repoRoot)) {
+for (const file of listMarkdownFiles()) {
   const text = readFileSync(file, "utf8");
   const fileDir = dirname(file);
 

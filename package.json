@@ -9,6 +9,7 @@
     "check-registry": "bun run --cwd apps/registry registry:check",
     "check-tests": "bun run scripts/check-tests.ts",
     "dev": "turbo run dev --filter=web",
+    "dev:hosted": "turbo run dev dev:convex --filter=web",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",

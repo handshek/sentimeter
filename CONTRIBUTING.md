@@ -8,7 +8,7 @@ Follow [AGENTS.md](AGENTS.md) for repository operating rules.
 
 ```sh
 bun install
-bun run --cwd apps/web dev
+bun run dev
 ```
 
 No Clerk or Convex configuration is required for the homepage, catalog, or docs.

@@ -30,6 +30,10 @@ updated or deleted when behavior changes.
 
 - [UI consistency skills assessment](research/ui-consistency-skills-assessment.md) -
   assessment of arla6ka/skills against Sentimeter's existing UI, dated 2026-10-03.
+- [State machine skill assessment](research/state-machine-skill-assessment.md) -
+  evaluation of the opt-in component state workbench skill.
+- [Repository structure audit](research/repo-structure-audit.md) - layout,
+  setup and contributor-process gaps measured against shadcn/ui, dated 2026-10-28.
 
 ## Maintenance Rules
 
@@ -38,4 +42,4 @@ updated or deleted when behavior changes.
 - Keep architecture decisions under `docs/adr/`.
 - Keep architecture notes under `docs/architecture/`.
 - Keep incident response and deployment notes under `docs/ops/`.
-- Keep dated investigations under `docs/research/` if they are added later.
+- Keep dated investigations under `docs/research/`.
