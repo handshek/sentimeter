@@ -308,7 +308,7 @@ Tailwind `dark` variant.
 ### Usage and overrides
 
 ```tsx
-import { EmojiFeedback } from "@repo/widgets";
+import { EmojiFeedback } from "@workspace/widgets";
 
 <EmojiFeedback
   title="How was your experience?"

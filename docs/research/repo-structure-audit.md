@@ -114,7 +114,7 @@ skills are tracked; contributor process stays low-friction.
   - Dev-only workbench routes, such as PR #27's `/states`.
   - URLs don't change.
 - Move providers into `app/_components/providers/`. Merge the duplicate `design-system` folders. Delete the empty `app/lib/`.
-- Rename packages to one scope, `@sentimeter/{widgets,ui,eslint-config,typescript-config}`. These are internal only; nothing is published.
+- Rename packages to one scope, `@workspace/{widgets,ui,eslint-config,typescript-config}`, matching shadcn's monorepo templates. `@sentimeter/*` is reserved for the public registry namespace (`@sentimeter/emoji-feedback`).
 - Give `packages/ui` `lint` and `check-types` scripts and an eslint config.
 - Run a codemod that turns relative imports in `apps/web` into `@/…`.
 - Make `apps/registry` a declared workspace dependency of `web` with an `exports` entry for `registry.json` and `site.config`. Drop the turbo input hacks.

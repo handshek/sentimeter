@@ -34,7 +34,7 @@ Widget behavior.
 ### Widgets (`packages/widgets`)
 
 The widgets package is the sole canonical source for Widget behavior. The
-site imports its workspace form through `@repo/widgets`, while the registry
+site imports its workspace form through `@workspace/widgets`, while the registry
 emitter produces host-local open code from the same source. Submission chooses
 a custom `submit` handler, or local completion when no handler is supplied.
 Published widgets contain no project-key or hosted-endpoint integration. Local

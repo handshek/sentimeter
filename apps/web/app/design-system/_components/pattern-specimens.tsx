@@ -10,7 +10,7 @@ import {
   Inbox,
   RotateCcw,
 } from "lucide-react";
-import { EmojiFeedback, LikeDislike } from "@repo/widgets";
+import { EmojiFeedback, LikeDislike } from "@workspace/widgets";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";

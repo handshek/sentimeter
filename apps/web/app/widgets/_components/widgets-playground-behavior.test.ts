@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { afterEach, describe, test } from "node:test";
 import { copyText } from "../../_lib/clipboard";
-import { WidgetSubmitError } from "@repo/widgets";
+import { WidgetSubmitError } from "@workspace/widgets";
 import {
   createWidgetRigState,
   getProjectDashboardHref,

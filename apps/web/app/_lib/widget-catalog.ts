@@ -1,5 +1,5 @@
 import registry from "../../../registry/registry.json";
-import type { WidgetLayout, WidgetSize } from "@repo/widgets";
+import type { WidgetLayout, WidgetSize } from "@workspace/widgets";
 import { REGISTRY_URL } from "../../../registry/site.config";
 
 export {

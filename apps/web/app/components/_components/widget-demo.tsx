@@ -6,7 +6,7 @@ import {
   LikeDislike,
   StarRating,
   type WidgetState,
-} from "@repo/widgets";
+} from "@workspace/widgets";
 import { Button } from "@workspace/ui/components/button";
 import { RotateCcw } from "lucide-react";
 import type {

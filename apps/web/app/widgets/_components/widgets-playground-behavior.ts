@@ -2,7 +2,7 @@ import {
   WidgetSubmitError,
   type WidgetPayload,
   type WidgetState,
-} from "@repo/widgets";
+} from "@workspace/widgets";
 
 export async function submitToConvexSite(
   payload: WidgetPayload,

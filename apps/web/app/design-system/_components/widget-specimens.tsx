@@ -7,7 +7,7 @@ import {
   LikeDislike,
   StarRating,
   type WidgetSize,
-} from "@repo/widgets";
+} from "@workspace/widgets";
 import { Button } from "@workspace/ui/components/button";
 import { Label } from "@workspace/ui/components/label";
 import {

@@ -59,7 +59,7 @@ import {
   type WidgetState,
   type WidgetSubmit,
   type WidgetSize,
-} from "@repo/widgets";
+} from "@workspace/widgets";
 import {
   ArrowLeft,
   Bug,
