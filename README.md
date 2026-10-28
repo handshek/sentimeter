@@ -101,7 +101,7 @@ Use the Bun version declared in `package.json` and Node.js 20.9 or later.
 git clone https://github.com/handshek/sentimeter.git
 cd sentimeter
 bun install
-bun run --cwd apps/web dev
+bun run dev
 ```
 
 Open [localhost:3000](http://localhost:3000). The homepage, catalog, previews,
@@ -115,9 +115,9 @@ available for development only. The production `/dashboard` page offers a
 waitlist when its Convex URL and secret are configured. Sign-in and project
 routes redirect there; `/widgets` redirects to the catalog.
 
-To develop the hosted dashboard, configure Clerk and Convex using
-[apps/web/.env.example](apps/web/.env.example) and the
-[onboarding guide](docs/onboarding.md). Installed widgets submit through your
+Maintainers developing the hosted dashboard set `HOSTED_ANALYTICS=live` with
+Clerk and Convex keys (see [apps/web/.env.example](apps/web/.env.example) and the
+[onboarding guide](docs/onboarding.md)), then run `bun run dev:hosted`. Installed widgets submit through your
 own handler or complete locally.
 
 ## Architecture

@@ -20,7 +20,7 @@
 
 ## Local Commands
 
-For human contributors, `bun install` followed by `bun run --cwd apps/web dev`
+For human contributors, `bun install` followed by `bun run dev`
 starts the public site without hosted setup. Use Node.js 20.9+ and the repo's Bun
 version. No `.env.local` is needed to work on the homepage, catalog, previews,
 Markdown, or `llms.txt`.
@@ -33,11 +33,13 @@ Markdown, or `llms.txt`.
    and `NEXT_PUBLIC_CONVEX_URL`; the site URL configures HTTP intake tooling.
 3. Set `CLERK_JWT_ISSUER_DOMAIN` in Convex to your Clerk Frontend API origin and
    configure the Clerk JWT template named `convex`.
-4. Run `bun run check-env`. Human contributors can start the full development
-   loop with `bun run dev`; perform any login or project-selection prompt yourself.
+4. Add `HOSTED_ANALYTICS=live` to `apps/web/.env.local`. Hosted routes stay
+   closed without it, even when the keys are present.
+5. Run `bun run check-env`, then `bun run dev:hosted` to start Next.js and
+   `convex dev` together; perform any login or project-selection prompt yourself.
 
-Clerk and Convex providers do not mount on public registry pages. In development,
-the dashboard, sign-in, and Advanced tester work when configured. Without hosted
+Clerk and Convex providers do not mount on public registry pages. With the opt-in,
+the dashboard, sign-in, and Advanced tester work. Without hosted
 configuration, `/dashboard` shows the coming-soon page without an email form.
 Sign-in, sign-up and dashboard project subpaths redirect there; `/widgets`
 redirects to `/components`.
@@ -45,8 +47,7 @@ redirects to `/components`.
 Production defaults to the waitlist when `NEXT_PUBLIC_CONVEX_URL` and
 `WAITLIST_SECRET` are set, or to the same coming-soon page without a form otherwise. `WAITLIST_SECRET`
 must match in the web app and Convex deployment. It is optional for development
-hosted analytics and `check-env`. `HOSTED_ANALYTICS=live` explicitly enables a
-future hosted launch when Clerk and Convex are also configured. Leave it unset
+hosted analytics and `check-env`. Leave `HOSTED_ANALYTICS` unset in production
 for the registry release. Follow the [runbook](ops/runbook.md) for launch setup.
 
 ### Checks
@@ -63,7 +64,7 @@ for the registry release. Follow the [runbook](ops/runbook.md) for launch setup.
 - `bun run registry:build` - atomically refresh public shadcn registry JSON.
 - `bun run check-docs` - validate local Markdown links.
 
-Do not run `bun run dev` from agent sessions; assume the development loop is
+Do not run `bun run dev` or `bun run dev:hosted` from agent sessions; assume the development loop is
 already running unless the user says otherwise.
 
 ## Change Heuristics
