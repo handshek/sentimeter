@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
-import { geistSans, geistMono } from "./_lib/fonts";
+import { geistSans, geistMono } from "@/lib/fonts";
 import "@workspace/ui/globals.css";
-import { ToasterProvider } from "./components/toaster-provider";
+import { ToasterProvider } from "@/components/providers/toaster-provider";
 import { NavigationGuardProvider } from "nextjs-nav-guard";
-import { SITE_URL } from "./_lib/widget-catalog";
-import { ThemeProvider } from "./_components/theme-provider";
+import { SITE_URL } from "@/lib/widget-catalog";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { inspectSiteDesign } from "./check-site-design";
 
-const path = "apps/web/app/_components/landing/example.tsx";
+const path = "apps/web/components/landing/example.tsx";
 const rules = (source: string, file = path) =>
   inspectSiteDesign(file, source).map((finding) => finding.rule);
 
@@ -97,14 +97,19 @@ describe("site design guard", () => {
   test("covers migrated surfaces without imposing a partial migration on older routes", () => {
     const source = '<p className="text-[17px]" />';
     expect(
-      rules(source, "apps/web/app/design-system/_components/example.tsx"),
+      rules(
+        source,
+        "apps/web/app/(site)/design-system/_components/example.tsx",
+      ),
     ).toEqual(["site/raw-type"]);
+    expect(rules(source, "apps/web/components/docs/example.tsx")).toEqual([
+      "site/raw-type",
+    ]);
+    expect(rules(source, "apps/web/app/(hosted)/dashboard/page.tsx")).toEqual(
+      [],
+    );
     expect(
-      rules(source, "apps/web/app/components/_components/example.tsx"),
-    ).toEqual(["site/raw-type"]);
-    expect(rules(source, "apps/web/app/dashboard/page.tsx")).toEqual([]);
-    expect(
-      rules(source, "apps/web/app/design-system/example.test.tsx"),
+      rules(source, "apps/web/app/(site)/design-system/example.test.tsx"),
     ).toEqual([]);
   });
 

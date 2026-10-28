@@ -27,6 +27,7 @@ const packageJson = JSON.parse(
 ) as { scripts?: { test?: string } };
 const testTargets = (packageJson.scripts?.test ?? "")
   .split(/\s+/)
+  .map((part) => part.replace(/^'|'$/g, ""))
   .filter((part) => part && !part.startsWith("-") && part !== "bun")
   .filter((part) => part !== "test" && part !== "&&");
 

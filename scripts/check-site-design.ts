@@ -4,9 +4,9 @@ import { fileURLToPath } from "node:url";
 import ts from "typescript";
 
 export const siteDesignRoots = [
-  "apps/web/app/design-system",
-  "apps/web/app/_components/landing",
-  "apps/web/app/components/_components",
+  "apps/web/app/(site)/design-system",
+  "apps/web/components/landing",
+  "apps/web/components/docs",
 ] as const;
 
 type SiteDesignRule =

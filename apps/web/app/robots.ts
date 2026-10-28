@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL } from "./_lib/widget-catalog";
+import { SITE_URL } from "@/lib/widget-catalog";
 
 export default function robots(): MetadataRoute.Robots {
   return {
