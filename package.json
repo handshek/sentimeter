@@ -7,12 +7,12 @@
     "check-docs": "bun run scripts/check-docs.ts",
     "check-env": "bun run scripts/check-env.ts",
     "check-registry": "bun run --cwd apps/registry registry:check",
-    "check-types": "turbo run check-types",
+    "check-types": "tsc --noEmit && turbo run check-types",
     "dev": "turbo run dev --filter=web",
     "dev:hosted": "turbo run dev dev:convex --filter=web",
     "format": "git ls-files -z | xargs -0 prettier --write --ignore-unknown --log-level warn",
     "format:check": "git ls-files -z | xargs -0 prettier --check --ignore-unknown --log-level warn",
-    "lint": "turbo run lint",
+    "lint": "eslint scripts --max-warnings 0 && turbo run lint",
     "prepare": "husky",
     "registry:build": "bun run --cwd apps/registry registry:build",
     "registry:emit": "bun run --cwd apps/registry registry:emit",
@@ -26,7 +26,11 @@
     "lint-staged": "^15",
     "prettier": "^3.9.10",
     "turbo": "^2.11.10",
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "@workspace/eslint-config": "workspace:*",
+    "@types/bun": "^1.4.4",
+    "eslint": "^9.39.1",
+    "globals": "^17.13.0"
   },
   "engines": {
     "node": ">=20.9"
