@@ -13,7 +13,8 @@ type DesignRule =
   | "widget/raw-color"
   | "widget/palette-color"
   | "widget/raw-control"
-  | "widget/raw-shape";
+  | "widget/raw-shape"
+  | "widget/motion";
 
 export type WidgetDesignFinding = {
   file: string;
@@ -46,10 +47,7 @@ export function inspectWidgetDesign(
   source: string,
 ): WidgetDesignFinding[] {
   const normalizedFile = file.replaceAll("\\", "/");
-  if (
-    normalizedFile === "packages/widgets/src/design-system.ts" ||
-    isTestFile(normalizedFile)
-  ) {
+  if (isTestFile(normalizedFile)) {
     return [];
   }
 
@@ -72,7 +70,97 @@ export function inspectWidgetDesign(
     });
   }
 
+  const recipe = normalizedFile === "packages/widgets/src/design-system.ts";
+
+  function inspectMotion(node: ts.Node, value: string) {
+    const tokens = value.split(/\s+/);
+    const layoutTransition = tokens.some(
+      (token) =>
+        /(?:^|:)transition-all!?$/.test(token) ||
+        [...token.matchAll(/transition-\[([^\]]+)\]/g)].some((match) =>
+          /(?:^|[,_])(?:min-|max-)?(?:height|width)(?:$|[,_])/.test(
+            match[1] ?? "",
+          ),
+        ),
+    );
+    const zoom = tokens.some((token) =>
+      /(?:^|:)(?:zoom(?:-|$)|\[zoom:)/.test(token),
+    );
+    function parts(token: string) {
+      const segments: string[] = [];
+      let depth = 0;
+      let start = 0;
+      for (let index = 0; index < token.length; index++) {
+        const char = token[index];
+        if (char === "[" || char === "(") depth++;
+        else if (char === "]" || char === ")") depth--;
+        else if (char === ":" && depth === 0) {
+          segments.push(token.slice(start, index));
+          start = index + 1;
+        }
+      }
+      return {
+        variants: segments,
+        utility: token.slice(start).replace(/^!|!$/g, ""),
+      };
+    }
+    const classes = tokens.map(parts);
+    const unreducedEntrance = classes.some(({ variants, utility }) => {
+      if (!variants.includes("starting") || variants.includes("motion-reduce"))
+        return false;
+      const property = utility.match(
+        /^-?(translate(?:-[xyz])?|scale(?:-[xyz])?)-/,
+      )?.[1];
+      if (!property) return false;
+      const family = property.startsWith("scale") ? "scale" : "translate";
+      return !classes.some(
+        (counterpart) =>
+          counterpart.variants.includes("motion-reduce") &&
+          counterpart.variants.includes("starting") &&
+          counterpart.variants.every(
+            (variant) =>
+              variant === "motion-reduce" || variants.includes(variant),
+          ) &&
+          (counterpart.utility === `${family}-none` ||
+            counterpart.utility ===
+              `${property}-${family === "scale" ? "100" : "0"}`),
+      );
+    });
+    if (layoutTransition || zoom || unreducedEntrance)
+      report(
+        node,
+        "widget/motion",
+        "Avoid layout transitions and zoom; starting transforms need a motion-reduce counterpart.",
+      );
+  }
+
+  const motionScopes = new Set<ts.Node>();
+
   function inspectLiteral(node: ts.Node, value: string) {
+    let scope = node;
+    for (let parent = node.parent; parent; parent = parent.parent) {
+      if (
+        ts.isJsxAttribute(parent) ||
+        ts.isPropertyAssignment(parent) ||
+        ts.isVariableDeclaration(parent)
+      ) {
+        scope = parent;
+        break;
+      }
+      if (ts.isSourceFile(parent)) break;
+    }
+    if (!motionScopes.has(scope)) {
+      motionScopes.add(scope);
+      const values: string[] = [];
+      const collect = (child: ts.Node) => {
+        if (ts.isStringLiteralLike(child) || ts.isTemplateLiteralToken(child))
+          values.push(child.text);
+        ts.forEachChild(child, collect);
+      };
+      collect(scope);
+      inspectMotion(node, values.join(" "));
+    }
+    if (recipe) return;
     if (rawColor.test(value)) {
       report(
         node,
@@ -106,7 +194,7 @@ export function inspectWidgetDesign(
       const primitive = Object.hasOwn(primitiveControls, tag)
         ? primitiveControls[tag]
         : undefined;
-      if (primitive) {
+      if (primitive && !recipe) {
         report(
           node,
           "widget/raw-control",
@@ -121,7 +209,10 @@ export function inspectWidgetDesign(
 
     if (ts.isPropertyAssignment(node)) {
       const name = node.name.getText(parsed).replaceAll(/["']/g, "");
-      if (name === "borderRadius" || name === "boxShadow") {
+      if (name === "zoom") {
+        report(node, "widget/motion", "Avoid zoom in installed widgets.");
+      }
+      if (!recipe && (name === "borderRadius" || name === "boxShadow")) {
         const value = node.initializer;
         if (
           ts.isNumericLiteral(value) ||
