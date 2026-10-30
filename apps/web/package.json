@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "eslint --max-warnings 0",
     "check-types": "next typegen && tsc --noEmit",
-    "test": "bun scripts/run-tests.ts"
+    "test": "bun test"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.20",

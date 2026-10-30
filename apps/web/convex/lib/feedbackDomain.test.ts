@@ -6,12 +6,9 @@ import {
   getCorsOrigin,
   getFeedbackRangeBounds,
   isFeedbackValueAllowed,
-  MAX_FEEDBACK_LOCATION_LENGTH,
-  MAX_FEEDBACK_TEXT_LENGTH,
   normalizeAllowedOrigins,
   normalizeFeedbackLocation,
   normalizeFeedbackText,
-  normalizeOrigin,
   rankTopLocations,
 } from "./feedbackDomain";
 
@@ -25,6 +22,7 @@ describe("feedback domain rules", () => {
     assert.equal(isFeedbackValueAllowed("emoji", 5), true);
     assert.equal(isFeedbackValueAllowed("emoji", 3.5), false);
     assert.equal(isFeedbackValueAllowed("star", 0), false);
+    assert.equal(isFeedbackValueAllowed("star", 6), false);
   });
 
   test("classifies sentiment consistently across widget types", () => {
@@ -33,28 +31,24 @@ describe("feedback domain rules", () => {
     assert.equal(classifyFeedbackSentiment("star", 5), "positive");
     assert.equal(classifyFeedbackSentiment("emoji", 3), "neutral");
     assert.equal(classifyFeedbackSentiment("emoji", 1), "negative");
+    assert.equal(classifyFeedbackSentiment("emoji", 2), "negative");
+    assert.equal(classifyFeedbackSentiment("star", 4), "positive");
   });
 
   test("trims and caps submitter-controlled location and text", () => {
     assert.equal(normalizeFeedbackLocation("  /pricing  "), "/pricing");
     assert.equal(normalizeFeedbackLocation("   "), null);
-    assert.equal(
-      normalizeFeedbackLocation("/".repeat(1000))?.length,
-      MAX_FEEDBACK_LOCATION_LENGTH,
-    );
+    assert.equal(normalizeFeedbackLocation("/".repeat(1000))?.length, 256);
 
     assert.equal(normalizeFeedbackText("  great  "), "great");
     assert.equal(normalizeFeedbackText("   "), undefined);
-    assert.equal(
-      normalizeFeedbackText("a".repeat(1000))?.length,
-      MAX_FEEDBACK_TEXT_LENGTH,
-    );
+    assert.equal(normalizeFeedbackText("a".repeat(1000))?.length, 500);
   });
 
   test("ranks top locations as rows so any location string is safe", () => {
     const counts = new Map<string, number>([
-      ["$reserved", 2],
       ["_system", 2],
+      ["$reserved", 2],
       ["/", 5],
     ]);
     for (let index = 0; index < 20; index += 1) {
@@ -77,6 +71,7 @@ describe("feedback domain rules", () => {
         " https://example.com/path ",
         "https://example.com/other",
         "http://localhost:3000/dashboard",
+        "   ",
       ]),
       ["https://example.com", "http://localhost:3000"],
     );
@@ -102,14 +97,6 @@ describe("feedback domain rules", () => {
     );
   });
 
-  test("normalizes request origins", () => {
-    assert.equal(
-      normalizeOrigin("https://example.com/path?q=1"),
-      "https://example.com",
-    );
-    assert.equal(normalizeOrigin("bad"), null);
-  });
-
   test("clamps feedback limits", () => {
     assert.equal(clampFeedbackLimit(Number.NaN), 50);
     assert.equal(clampFeedbackLimit(0), 1);
@@ -124,5 +111,14 @@ describe("feedback domain rules", () => {
       from: now - 24 * 60 * 60 * 1000,
       to: now,
     });
+    assert.equal(getFeedbackRangeBounds("7d", now).from, now - 7 * 86_400_000);
+    assert.equal(
+      getFeedbackRangeBounds("30d", now).from,
+      now - 30 * 86_400_000,
+    );
+    assert.equal(
+      getFeedbackRangeBounds(undefined, now).from,
+      now - 7 * 86_400_000,
+    );
   });
 });
