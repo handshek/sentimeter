@@ -1,25 +1,13 @@
-import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, normalize } from "node:path";
+
+import { listRepoFiles } from "./guard-utils";
 
 const repoRoot = process.cwd();
 const markdownLinkPattern = /!?\[[^\]]*\]\(([^)]+)\)/g;
 
-// Only Markdown that Git would publish: tracked files plus new, non-ignored ones.
-// Local scratch folders and caches stay out of the check.
 function listMarkdownFiles() {
-  return execFileSync(
-    "git",
-    ["ls-files", "-z", "--cached", "--others", "--exclude-standard", "*.md"],
-    { cwd: repoRoot, encoding: "utf8" },
-  )
-    .split("\0")
-    .filter(Boolean)
-    .filter(
-      (path) => !path.includes(".agents/skills/") || path.endsWith("/SKILL.md"),
-    )
-    .map((path) => join(repoRoot, path))
-    .filter((path) => existsSync(path));
+  return listRepoFiles(repoRoot, ["*.md"]).map((file) => join(repoRoot, file));
 }
 
 function stripLinkTarget(rawTarget: string) {
