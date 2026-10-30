@@ -57,6 +57,7 @@ mock.module("next/navigation", () => ({
 }));
 
 mock.module("convex/react", () => ({
+  ConvexReactClient: class {},
   useConvexAuth: () => ({ isLoading: false, isAuthenticated: true }),
   useMutation: () => syncUser,
   useQuery: (query: Parameters<typeof getFunctionName>[0], args: unknown) => {

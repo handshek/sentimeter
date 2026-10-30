@@ -61,6 +61,7 @@ mock.module("next/navigation", () => ({
 }));
 
 mock.module("convex/react", () => ({
+  ConvexReactClient: class {},
   useConvexAuth: () => ({ isLoading: false, isAuthenticated: true }),
   useQuery: (query: Parameters<typeof getFunctionName>[0], args: unknown) => {
     queryCalls(getFunctionName(query), args);
