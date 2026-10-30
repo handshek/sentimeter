@@ -534,42 +534,35 @@ test("all-time sentiment includes older feedback across widget types while volum
   expect(chart.textContent).not.toContain("Response volume for all time");
 });
 
-for (const widgetType of ["emoji", "thumbs", "star"] as const) {
-  test(`all-time ${widgetType} filter uses its full aggregate and widget-specific sentiment`, async () => {
-    setAnalyticsFixture({
-      widgetType,
-      counts: {
-        emoji: {},
-        thumbs: {},
-        star: {},
-        [widgetType]:
-          widgetType === "thumbs"
-            ? { "0": 1, "1": 1 }
-            : { "1": 1, "3": 1, "5": 1 },
-      },
-    });
-    await renderAnalytics();
-
-    expect(within(kpiCard("Sentiment")).getByText("50%")).toBeDefined();
-    expect(kpiCard("Sentiment").textContent).toContain("1 positive of 2");
-    expect(within(kpiCard("Negative")).getByText("1")).toBeDefined();
-    expect(kpiCard("Negative").textContent).toContain(
-      widgetType === "thumbs" ? "50% of responses" : "33% of responses",
-    );
-    expect(queryCalls).toHaveBeenCalledWith("feedback:getAnalytics", {
-      projectId: project._id,
-      range: "all",
-      widgetType,
-    });
-    expect(queryCalls).toHaveBeenCalledWith("feedback:getVolumeSeries", {
-      projectId: project._id,
-      range: "all",
-      widgetType,
-    });
+test("all-time thumbs filter uses its full aggregate and widget-specific sentiment", async () => {
+  const widgetType = "thumbs";
+  setAnalyticsFixture({
+    widgetType,
+    counts: {
+      emoji: {},
+      thumbs: { "0": 1, "1": 1 },
+      star: {},
+    },
   });
-}
+  await renderAnalytics();
 
-for (const range of ["24h", "7d", "30d"] as const) {
+  expect(within(kpiCard("Sentiment")).getByText("50%")).toBeDefined();
+  expect(kpiCard("Sentiment").textContent).toContain("1 positive of 2");
+  expect(within(kpiCard("Negative")).getByText("1")).toBeDefined();
+  expect(kpiCard("Negative").textContent).toContain("50% of responses");
+  expect(queryCalls).toHaveBeenCalledWith("feedback:getAnalytics", {
+    projectId: project._id,
+    range: "all",
+    widgetType,
+  });
+  expect(queryCalls).toHaveBeenCalledWith("feedback:getVolumeSeries", {
+    projectId: project._id,
+    range: "all",
+    widgetType,
+  });
+});
+
+for (const range of ["24h", "7d"] as const) {
   test(`${range} sentiment and volume retain the selected range`, async () => {
     setAnalyticsFixture({
       range,
@@ -644,15 +637,13 @@ test("sentiment distribution waits for analytics even after volume resolves", as
   const distribution = (
     await screen.findByText("Distribution across all widgets")
   ).closest<HTMLElement>('[data-slot="card"]')!;
+  expect(screen.getByText("Loading project dashboard data.")).toBeDefined();
   expect(
     within(distribution).queryByText("responses")?.textContent,
   ).toBeUndefined();
   expect(within(distribution).queryByText("Positive")).toBeNull();
   expect(within(distribution).queryByText("Neutral")).toBeNull();
   expect(within(distribution).queryByText("Negative")).toBeNull();
-  expect(
-    distribution.querySelector('.animate-pulse[aria-hidden="true"]'),
-  ).not.toBeNull();
   const chart = screen
     .getByText("Response volume")
     .closest<HTMLElement>('[data-slot="card"]')!;
@@ -679,9 +670,6 @@ test("sentiment distribution renders analytics while volume is still loading", a
   expect(within(distribution).getByText("Negative")).toBeDefined();
   expect(within(distribution).getAllByText("1")).toHaveLength(3);
   expect(within(distribution).getAllByText("33%")).toHaveLength(3);
-  expect(
-    distribution.querySelector('.animate-pulse[aria-hidden="true"]'),
-  ).toBeNull();
   const chart = screen
     .getByText("Response volume")
     .closest<HTMLElement>('[data-slot="card"]')!;

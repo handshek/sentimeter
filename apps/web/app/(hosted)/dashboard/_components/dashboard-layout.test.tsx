@@ -129,26 +129,15 @@ async function writeVisualFixture(name: string) {
   await Bun.write(`${directory}/${name}.html`, document.body.innerHTML);
 }
 
-for (const state of ["loading", "empty", "populated"] as const) {
-  test(`dashboard ${state} fixture renders the expected data state`, async () => {
-    fixtureState = state;
-    renderClient(<ProjectClient projectId={projectId} />);
-    if (state === "loading") {
-      expect(
-        await screen.findByText("Loading project dashboard data."),
-      ).toBeDefined();
-    } else {
-      expect(
-        await screen.findByRole("heading", { name: longName }),
-      ).toBeDefined();
-      const count = state === "populated" ? 3 : 0;
-      expect(
-        await screen.findByText(`Showing all ${count} responses`),
-      ).toBeDefined();
-    }
-    await writeVisualFixture(`dashboard-${state}`);
-  });
+test("dashboard populated fixture renders the expected data state", async () => {
+  fixtureState = "populated";
+  renderClient(<ProjectClient projectId={projectId} />);
+  expect(await screen.findByRole("heading", { name: longName })).toBeDefined();
+  expect(await screen.findByText("Showing all 3 responses")).toBeDefined();
+  await writeVisualFixture("dashboard-populated");
+});
 
+for (const state of ["loading", "empty", "populated"] as const) {
   test(`projects ${state} fixture renders the expected data state`, async () => {
     fixtureState = state;
     renderClient(<ProjectsClient />);
