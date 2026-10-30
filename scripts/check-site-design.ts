@@ -10,7 +10,7 @@ import {
 } from "./guard-utils";
 
 export const siteDesignRoots = [
-  "apps/web/app/(site)/design-system",
+  "apps/web/app/(site)",
   "apps/web/components/landing",
   "apps/web/components/docs",
 ] as const;
