@@ -1,10 +1,16 @@
-import { readFileSync, readdirSync } from "node:fs";
-import { dirname, join, relative, resolve } from "node:path";
+import { readFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
+import {
+  listRepoFiles,
+  rawColor,
+  paletteColor,
+  solidColor,
+} from "./guard-utils";
 
 export const siteDesignRoots = [
-  "apps/web/app/(site)/design-system",
+  "apps/web/app/(site)",
   "apps/web/components/landing",
   "apps/web/components/docs",
 ] as const;
@@ -23,12 +29,6 @@ export type SiteDesignFinding = {
   message: string;
 };
 
-const rawColor =
-  /#[\da-f]{8}\b|#[\da-f]{6}\b|#[\da-f]{4}\b|#[\da-f]{3}\b|\b(?:rgba?|hsla?|oklch|oklab|lab|lch)\s*\(/i;
-const paletteColor =
-  /(?:^|[\s:!])(?:bg|text|border(?:-[trblxyse])?|divide|ring(?:-offset)?|outline|fill|stroke|accent|caret|decoration|placeholder|from|via|to|shadow)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|[1-9]00|950)(?=$|[\s/!])/;
-const solidColor =
-  /(?:^|[\s:!])(?:bg|text|border(?:-[trblxyse])?|divide|ring(?:-offset)?|outline|fill|stroke|accent|caret|decoration|placeholder|from|via|to)-(?:black|white)(?=$|[\s/!])/;
 const arbitraryType = /(?:^|[\s:!])text-\[((?:length:)?[^\]]+)\]/g;
 const arbitraryFamily = /(?:^|[\s:!])font-\[([^\]]+)\]/g;
 // Sized primitives own their heights (36 px with a 44 px hit area). A local
@@ -229,22 +229,11 @@ export function inspectSiteDesign(
 }
 
 export function checkSiteDesign(repoRoot: string): SiteDesignFinding[] {
-  const findings: SiteDesignFinding[] = [];
-  function walk(directory: string) {
-    for (const entry of readdirSync(directory, { withFileTypes: true })) {
-      const path = join(directory, entry.name);
-      if (entry.isDirectory()) walk(path);
-      else if (/\.[cm]?[jt]sx?$/.test(entry.name))
-        findings.push(
-          ...inspectSiteDesign(
-            relative(repoRoot, path),
-            readFileSync(path, "utf8"),
-          ),
-        );
-    }
-  }
-  for (const root of siteDesignRoots) walk(join(repoRoot, root));
-  return findings;
+  return listRepoFiles(repoRoot, [...siteDesignRoots])
+    .filter((file) => /\.[cm]?[jt]sx?$/.test(file))
+    .flatMap((file) =>
+      inspectSiteDesign(file, readFileSync(join(repoRoot, file), "utf8")),
+    );
 }
 
 if (import.meta.main) {

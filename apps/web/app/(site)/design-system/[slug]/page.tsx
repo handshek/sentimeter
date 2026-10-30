@@ -2,17 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { ComponentSpecimens } from "../_components/component-specimens";
+import { ComponentSpecimens } from "@/app/(site)/design-system/_components/component-specimens";
 import {
   ColorSpecimens,
   LayoutSpecimens,
-} from "../_components/foundation-specimens";
-import { IconMotionSpecimens } from "../_components/icon-motion-specimens";
-import { PatternSpecimens } from "../_components/pattern-specimens";
-import { SystemHeading } from "../_components/system-section";
-import { TypographySpecimens } from "../_components/typography-specimens";
-import { WidgetSpecimens } from "../_components/widget-specimens";
-import { chapterHref, systemChapters } from "../_lib/catalog";
+} from "@/app/(site)/design-system/_components/foundation-specimens";
+import { IconMotionSpecimens } from "@/app/(site)/design-system/_components/icon-motion-specimens";
+import { PatternSpecimens } from "@/app/(site)/design-system/_components/pattern-specimens";
+import { SystemHeading } from "@/app/(site)/design-system/_components/system-section";
+import { TypographySpecimens } from "@/app/(site)/design-system/_components/typography-specimens";
+import { WidgetSpecimens } from "@/app/(site)/design-system/_components/widget-specimens";
+import {
+  chapterHref,
+  systemChapters,
+} from "@/app/(site)/design-system/_lib/catalog";
 
 const specimens = {
   typography: TypographySpecimens,

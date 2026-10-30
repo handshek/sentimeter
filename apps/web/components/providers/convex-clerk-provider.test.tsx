@@ -10,14 +10,14 @@ class TestClient {
 }
 let active: TestClient;
 
-mock.module("convex/react", () => ({
+await mock.module("convex/react", () => ({
   ConvexReactClient: TestClient,
   useConvexAuth: () => ({}),
   useMutation: () => undefined,
   useQuery: () => undefined,
 }));
-mock.module("@clerk/nextjs", () => ({ useAuth: () => ({}) }));
-mock.module("convex/react-clerk", () => ({
+await mock.module("@clerk/nextjs", () => ({ useAuth: () => ({}) }));
+await mock.module("convex/react-clerk", () => ({
   ConvexProviderWithClerk: ({
     client,
     children,

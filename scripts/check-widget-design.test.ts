@@ -46,6 +46,57 @@ describe("widget design guard", () => {
     expect(rules(source)).toEqual(["widget/raw-shape"]);
   });
 
+  test.each([
+    "transition-all",
+    "hover:transition-all",
+    "transition-[height,opacity]",
+    "transition-[transform,width]",
+    "transition-[max-height]",
+    "zoom-in-95",
+    "starting:translate-y-2",
+    "starting:scale-95 motion-reduce:opacity-100",
+    "starting:translate-x-2 motion-reduce:translate-y-0",
+    "starting:translate-x-2 starting:scale-95 motion-reduce:transform-none",
+    "starting:translate-y-2 motion-reduce:hover:translate-y-0",
+    "starting:translate-y-2 motion-reduce:translate-none",
+    "starting:translate-y-2 motion-reduce:translate-y-0",
+  ])(
+    "rejects unsafe motion in host source and canonical recipes: %s",
+    (classes) => {
+      const source = `<Card className="${classes}" />`;
+      expect(rules(source)).toEqual(["widget/motion"]);
+      expect(rules(source, "packages/widgets/src/design-system.ts")).toEqual([
+        "widget/motion",
+      ]);
+    },
+  );
+
+  test("rejects the zoom style property", () => {
+    expect(rules("<Card style={{ zoom: 1.1 }} />")).toEqual(["widget/motion"]);
+  });
+
+  test.each([
+    "transition-[transform,opacity,clip-path]",
+    "starting:translate-y-2 motion-reduce:starting:translate-y-0",
+    "starting:scale-95 starting:motion-reduce:scale-100",
+    "starting:translate-x-2 starting:scale-95 motion-reduce:starting:translate-none motion-reduce:starting:scale-none",
+  ])("accepts reduced entrances and explicit transitions: %s", (classes) => {
+    expect(rules(`<Card className="${classes}" />`)).toEqual([]);
+  });
+
+  test("accepts reduced entrances composed through cn and template spans", () => {
+    expect(
+      rules(
+        '<Card className={cn("starting:translate-y-2", "motion-reduce:starting:translate-y-0")} />',
+      ),
+    ).toEqual([]);
+    expect(
+      rules(
+        "const classes = `starting:scale-95 ${extra} motion-reduce:starting:scale-100`;",
+      ),
+    ).toEqual([]);
+  });
+
   test("accepts semantic recipes, scoped variables and ordinary layout", () => {
     expect(
       rules(`

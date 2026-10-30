@@ -14,7 +14,10 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 import { cn } from "@workspace/ui/lib/utils";
-import { chapterHref, systemChapters } from "../_lib/catalog";
+import {
+  chapterHref,
+  systemChapters,
+} from "@/app/(site)/design-system/_lib/catalog";
 
 const groups = [...new Set(systemChapters.map((chapter) => chapter.group))];
 

@@ -129,7 +129,7 @@ own handler or complete locally.
 - `apps/web/lib/widget-catalog.ts`: public descriptions and examples;
   registry manifest owns installed paths and dependencies.
 
-Generated `.generated` and `public/r` trees are ignored build output. Do not edit
+Generated `.generated` and `apps/registry/public/r/` trees are ignored build output. Do not edit
 them. See [system architecture](docs/architecture/system-architecture.md) and
 [project documentation](docs/README.md) for details.
 

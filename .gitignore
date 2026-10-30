@@ -47,6 +47,10 @@ graphify-out
 apps/registry/.tmp
 
 # Local design files (edited in Pencil, not published)
-/design
+/design/
 /*.pen
 
+/.agents/skills/
+/skills-lock.json
+/docs/qa/
+testsprite_tests/tmp/

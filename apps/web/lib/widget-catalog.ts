@@ -18,8 +18,7 @@ export const namespaceConfig = JSON.stringify(
 export const packageManagers = ["bun", "pnpm", "npm", "yarn"] as const;
 export type PackageManager = (typeof packageManagers)[number];
 
-// The launch widgets. Adding one also needs packages/widgets/src and the
-// registry manifest; see CONTRIBUTING.md.
+// See CONTRIBUTING.md.
 export type WidgetSlug = "emoji-feedback" | "like-dislike" | "star-rating";
 
 export type WidgetInstallMetadata = {
@@ -334,11 +333,11 @@ const sharedProps: WidgetDocRow[] = [
   },
 ];
 
-const widgetDefinitions: Omit<
-  WidgetDocConfig,
-  "installMetadata" | "installSnippet" | "usageSnippet"
->[] = [
-  {
+const widgetDefinitions: Record<
+  WidgetSlug,
+  Omit<WidgetDocConfig, "installMetadata" | "installSnippet" | "usageSnippet">
+> = {
+  "emoji-feedback": {
     slug: "emoji-feedback",
     name: "Emoji Feedback",
     description:
@@ -367,7 +366,7 @@ const widgetDefinitions: Omit<
       },
     ],
   },
-  {
+  "like-dislike": {
     slug: "like-dislike",
     name: "Like / Dislike",
     description:
@@ -396,7 +395,7 @@ const widgetDefinitions: Omit<
       },
     ],
   },
-  {
+  "star-rating": {
     slug: "star-rating",
     name: "Star Rating",
     description:
@@ -425,16 +424,16 @@ const widgetDefinitions: Omit<
       },
     ],
   },
-];
+};
 
-export const widgetDocs: WidgetDocConfig[] = widgetDefinitions.map(
-  (widget) => ({
-    ...widget,
-    installSnippet: getInstallCommands(widget.registryName).bun,
-    usageSnippet: getUsageSnippet(widget),
-    installMetadata: getInstallMetadata(widget),
-  }),
-);
+export const widgetDocs: WidgetDocConfig[] = Object.values(
+  widgetDefinitions,
+).map((widget) => ({
+  ...widget,
+  installSnippet: getInstallCommands(widget.registryName).bun,
+  usageSnippet: getUsageSnippet(widget),
+  installMetadata: getInstallMetadata(widget),
+}));
 
 export function getWidgetDoc(slug: string) {
   return widgetDocs.find((widget) => widget.slug === slug);

@@ -53,14 +53,14 @@ const project = {
   createdAt: 1,
 };
 
-mock.module("next/navigation", () => ({
+await mock.module("next/navigation", () => ({
   useRouter: () => useContext(AppRouterContext)!,
   usePathname: () => "/dashboard/projects/project-test",
   useParams: () => ({ projectId: project._id }),
   useSearchParams: () => searchParams,
 }));
 
-mock.module("convex/react", () => ({
+await mock.module("convex/react", () => ({
   ConvexReactClient: class {},
   useConvexAuth: () => ({ isLoading: false, isAuthenticated: true }),
   useQuery: (query: Parameters<typeof getFunctionName>[0], args: unknown) => {

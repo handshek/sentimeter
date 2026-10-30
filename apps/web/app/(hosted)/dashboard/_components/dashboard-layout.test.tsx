@@ -49,14 +49,14 @@ const feedback: FunctionReturnType<typeof api.feedback.getFeedback> = [
   text: "Local visual fixture response; no network submission.",
 }));
 
-mock.module("next/navigation", () => ({
+await mock.module("next/navigation", () => ({
   useRouter: () => useContext(AppRouterContext)!,
   usePathname: () => `/dashboard/projects/${projectId}`,
   useParams: () => ({ projectId }),
   useSearchParams: () => searchParams,
 }));
 
-mock.module("convex/react", () => ({
+await mock.module("convex/react", () => ({
   ConvexReactClient: class {},
   useConvexAuth: () => ({ isLoading: false, isAuthenticated: true }),
   useMutation: () => syncUser,
