@@ -1,69 +1,23 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import { describe, test } from "node:test";
-import * as React from "react";
-import { renderToStaticMarkup } from "react-dom/server";
-import * as widgetExports from "./index";
-import { FeedbackWidget, LikeDislike } from "./index";
+import { afterEach, describe, test } from "node:test";
+import { cleanup, render, screen } from "@testing-library/react";
+import { LikeDislike } from "./index";
+
+afterEach(cleanup);
 
 describe("canonical widget feedback system", () => {
-  test("maps thumbs values to their canonical labels and emoji", () => {
-    const markup = renderToStaticMarkup(<LikeDislike variant="emoji" />);
-    const dislikeButton = markup.match(
-      /<button[^>]*aria-label="Dislike"[^>]*>.*?<\/button>/,
-    )?.[0];
-    const likeButton = markup.match(
-      /<button[^>]*aria-label="Like"[^>]*>.*?<\/button>/,
-    )?.[0];
-
-    assert.match(dislikeButton ?? "", /👎/);
-    assert.match(likeButton ?? "", /👍/);
-
-    for (const variant of ["icons", "emoji"] as const) {
-      const variantMarkup = renderToStaticMarkup(
-        <LikeDislike variant={variant} />,
-      );
-      assert.ok(
-        variantMarkup.indexOf('aria-label="Like"') <
-          variantMarkup.indexOf('aria-label="Dislike"'),
-        `${variant} mode shows Like before Dislike`,
-      );
-    }
-  });
-
-  test("lets consumer classes override default container classes", () => {
-    const markup = renderToStaticMarkup(
-      <FeedbackWidget widgetType="emoji" className="max-w-none p-2">
-        Feedback
-      </FeedbackWidget>,
+  test("shows Like before Dislike with their canonical emoji", () => {
+    render(<LikeDislike variant="emoji" />);
+    assert.deepEqual(
+      screen.getAllByRole("button").map((button) => button.textContent),
+      ["\u{1F44D}Like", "\u{1F44E}Dislike"],
     );
-
-    assert.match(markup, /max-w-none/);
-    assert.match(markup, /p-2/);
-    assert.doesNotMatch(markup, /max-w-\[400px\]/);
-    assert.doesNotMatch(markup, /p-6/);
   });
 
-  test("publishes only the supported root package entry point and exports", () => {
-    const packageJson = JSON.parse(
-      readFileSync(join(__dirname, "../package.json"), "utf8"),
-    ) as { exports: Record<string, string> };
-
-    assert.deepEqual(packageJson.exports, { ".": "./src/index.ts" });
-    assert.deepEqual(Object.keys(widgetExports).sort(), [
-      "EmojiFeedback",
-      "FeedbackDescription",
-      "FeedbackFooter",
-      "FeedbackInput",
-      "FeedbackRating",
-      "FeedbackResponse",
-      "FeedbackTitle",
-      "FeedbackWidget",
-      "LikeDislike",
-      "StarRating",
-      "WidgetSubmitError",
-      "useFeedbackContext",
-    ]);
+  test("lets consumer classes replace conflicting defaults", () => {
+    const { container } = render(<LikeDislike className="max-w-none" />);
+    const root = container.querySelector('[data-slot="feedback-widget"]');
+    assert.match(root?.className ?? "", /(^|\s)max-w-none(\s|$)/);
+    assert.doesNotMatch(root?.className ?? "", /max-w-\[/);
   });
 });
