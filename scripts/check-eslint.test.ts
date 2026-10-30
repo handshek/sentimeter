@@ -84,3 +84,29 @@ describe("widget observer guard", () => {
     ).toEqual([]);
   });
 });
+
+describe("web primitive guard", () => {
+  test.each(["button", "input", "textarea", "select", "label", "svg"])(
+    "rejects raw %s",
+    async (tag) => {
+      expect(
+        (
+          await restrictedSyntax(
+            `<${tag} />`,
+            "apps/web",
+            "components/guard-seed.tsx",
+          )
+        ).map((message) => message.message),
+      ).toEqual(["Use shared shadcn controls and lucide-react icons."]);
+    },
+  );
+  test("allows shared controls and icons", async () => {
+    expect(
+      await restrictedSyntax(
+        "const view = <><Button /><Input /><Textarea /><Select /><Label /><Search /></>;",
+        "apps/web",
+        "components/guard-seed.tsx",
+      ),
+    ).toEqual([]);
+  });
+});
