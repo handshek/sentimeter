@@ -60,6 +60,11 @@ Run from the repository root.
 | `bun run format`         | Prettier on tracked files (`format:check` in CI)               |
 | `bun run build`          | Build registry and site                                        |
 
+| `bun run check-env` | Validate hosted development environment |
+| `bun run format:check` | Check formatting without writing |
+| `bun run prepare` | Install Git hooks |
+| `bun run registry:emit` | Emit registry staging |
+
 Do not start `dev` or `dev:hosted` yourself; assume the user runs the dev loop.
 
 ## Rules
@@ -74,7 +79,7 @@ Do not start `dev` or `dev:hosted` yourself; assume the user runs the dev loop.
 4. Widgets stay usable in a 288px container with 44×44px reaction targets,
    keyboard-accessible, and theme-aware. Preserve the public widget API.
 5. Imports outside a file's own folder use the `@/` alias in `apps/web`.
-6. Convex files are camelCase (`httpActions.ts`) because module names become API
+6. Convex files are camelCase (`apps/web/convex/httpActions.ts`) because module names become API
    paths. Everything else is kebab-case. Tests sit next to code as `*.test.ts(x)`.
 7. Hosted routes must stay closed unless `HOSTED_ANALYTICS=live` is set with
    Clerk and Convex keys (`apps/web/lib/hosted-config.ts`). Never connect local

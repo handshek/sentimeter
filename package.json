@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "check-design": "bun test scripts/check-widget-design.test.ts scripts/check-site-design.test.ts && bun run scripts/check-widget-design.ts && bun run scripts/check-site-design.ts",
+    "check-design": "bun test scripts/check-widget-design.test.ts scripts/check-site-design.test.ts scripts/check-docs.test.ts && bun run scripts/check-widget-design.ts && bun run scripts/check-site-design.ts",
     "check-docs": "bun run scripts/check-docs.ts",
     "check-env": "bun run scripts/check-env.ts",
     "check-registry": "bun run --cwd apps/registry registry:check",
