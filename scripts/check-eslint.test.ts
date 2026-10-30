@@ -43,3 +43,44 @@ describe("typed promise guard", () => {
     ]);
   });
 });
+
+async function restrictedSyntax(
+  source: string,
+  workspace = "packages/widgets",
+  filePath = "src/guard-seed.tsx",
+) {
+  const eslint = new ESLint({
+    cwd: resolve(import.meta.dir, "..", workspace),
+    overrideConfig: {
+      languageOptions: { parserOptions: { projectService: false } },
+      rules: { "@typescript-eslint/no-floating-promises": "off" },
+    },
+  });
+  const results = await eslint.lintText(source, { filePath });
+  return results
+    .flatMap((result) => result.messages)
+    .filter((message) => message.ruleId === "no-restricted-syntax");
+}
+
+describe("widget observer guard", () => {
+  test.each([
+    "onCancel()",
+    "onSelect?.(1)",
+    "props.onReset()",
+    "props.onCancel?.()",
+    'props["onCancel"]()',
+  ])("rejects direct callbacks: %s", async (source) => {
+    expect(
+      (await restrictedSyntax(source)).map((message) => message.message),
+    ).toEqual([
+      "Route host observers through notify so their failures stay isolated.",
+    ]);
+  });
+  test("allows notify and DOM handler props", async () => {
+    expect(
+      await restrictedSyntax(
+        "notify(onCancel); const view = <Button onClick={cancel} />; function notify(callback) { callback?.(); }",
+      ),
+    ).toEqual([]);
+  });
+});
