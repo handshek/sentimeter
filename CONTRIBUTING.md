@@ -57,8 +57,8 @@ Then touch these places, in order:
 
 Use [Conventional Commits](https://www.conventionalcommits.org):
 `type(scope): summary`, with types `feat`, `fix`, `refactor`, `docs`, `test`,
-`build`, `ci`, or `chore`. Small commits are easier to review. A pre-commit hook
-formats staged files with Prettier; nothing else runs at commit time.
+`build`, `ci`, `chore`, `perf`, or `style`. Small commits are easier to review. A pre-commit hook
+formats staged files with Prettier; a commit-msg hook checks the subject format.
 
 ## Before a Pull Request
 
