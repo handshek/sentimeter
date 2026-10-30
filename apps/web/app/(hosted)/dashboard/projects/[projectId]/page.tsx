@@ -1,4 +1,4 @@
-import { ProjectClient } from "../../_components/project-client";
+import { ProjectClient } from "@/app/(hosted)/dashboard/_components/project-client";
 
 export default async function ProjectPage({
   params,

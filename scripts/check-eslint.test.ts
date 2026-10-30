@@ -48,6 +48,7 @@ async function restrictedSyntax(
   source: string,
   workspace = "packages/widgets",
   filePath = "src/guard-seed.tsx",
+  rule = "no-restricted-syntax",
 ) {
   const eslint = new ESLint({
     cwd: resolve(import.meta.dir, "..", workspace),
@@ -59,7 +60,7 @@ async function restrictedSyntax(
   const results = await eslint.lintText(source, { filePath });
   return results
     .flatMap((result) => result.messages)
-    .filter((message) => message.ruleId === "no-restricted-syntax");
+    .filter((message) => message.ruleId === rule);
 }
 
 describe("widget observer guard", () => {
@@ -106,6 +107,54 @@ describe("web primitive guard", () => {
         "const view = <><Button /><Input /><Textarea /><Select /><Label /><Search /></>;",
         "apps/web",
         "components/guard-seed.tsx",
+      ),
+    ).toEqual([]);
+  });
+});
+
+describe("web import guard", () => {
+  test.each([
+    'import { value } from "../other";',
+    'export { value } from "../../other";',
+    'import value from "./../other";',
+    'import value from "..";',
+  ])("rejects parent imports: %s", async (source) => {
+    const findings = await restrictedSyntax(
+      source,
+      "apps/web",
+      "lib/guard-seed.ts",
+      "no-restricted-imports",
+    );
+    expect(findings).toHaveLength(1);
+    expect(findings[0]?.message).toContain(
+      "Use @/ imports outside the current folder.",
+    );
+  });
+  test.each(["lib/guard-seed.ts", "components/guard-seed.tsx"])(
+    "rejects dynamic parent imports in %s",
+    async (file) => {
+      expect(
+        (await restrictedSyntax('import("../other")', "apps/web", file)).map(
+          (message) => message.message,
+        ),
+      ).toEqual(["Use @/ imports outside the current folder."]);
+    },
+  );
+  test("allows own-folder and alias imports and exempts Convex", async () => {
+    expect(
+      await restrictedSyntax(
+        'import "./own"; import "@/lib/other";',
+        "apps/web",
+        "lib/guard-seed.ts",
+        "no-restricted-imports",
+      ),
+    ).toEqual([]);
+    expect(
+      await restrictedSyntax(
+        'import "../_generated/api";',
+        "apps/web",
+        "convex/lib/guardSeed.ts",
+        "no-restricted-imports",
       ),
     ).toEqual([]);
   });
