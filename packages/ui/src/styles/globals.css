@@ -6,7 +6,6 @@
 @source "../../../../packages/widgets/src/**/*.{ts,tsx}";
 @source "../**/*.{ts,tsx}";
 
-/* From shadcn-base.css */
 @theme inline {
   @keyframes accordion-down {
     from {

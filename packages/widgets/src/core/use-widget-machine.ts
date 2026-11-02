@@ -122,7 +122,6 @@ export function useWidgetMachine({
     ],
   );
 
-  // Clears a choice that has not been submitted. Returns whether it reset.
   const reset = React.useCallback(() => {
     if (disabled || stateRef.current !== "selected") return false;
     setSubmitError(null);

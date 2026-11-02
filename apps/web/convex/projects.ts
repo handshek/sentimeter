@@ -72,7 +72,6 @@ export const deleteProject = mutation({
     const user = await getUserByClerkIdOrThrow(ctx, identity.subject);
     await assertProjectOwner(ctx, args.projectId, user._id);
 
-    // Cascade delete feedback
     while (true) {
       const batch = await ctx.db
         .query("feedback")
@@ -84,7 +83,6 @@ export const deleteProject = mutation({
       await Promise.all(batch.map((doc) => ctx.db.delete(doc._id)));
     }
 
-    // Cascade delete api keys
     while (true) {
       const batch = await ctx.db
         .query("apiKeys")

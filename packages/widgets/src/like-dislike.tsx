@@ -40,7 +40,7 @@ export type LikeDislikeProps = {
   thankYouMessage?: React.ReactNode;
   doneDurationMs?: number;
   autoHide?: boolean;
-  /** Lucide thumbs vs Unicode 👎 / 👍 */
+  /** Lucide thumbs vs Unicode 👍 / 👎 */
   variant?: "icons" | "emoji";
   size?: WidgetSize;
   closeButton?: boolean;

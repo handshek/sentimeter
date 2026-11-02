@@ -14,8 +14,6 @@ import { notify, useWidgetMachine } from "../core/use-widget-machine";
 
 export type WidgetSize = "sm" | "default" | "md" | "lg";
 
-/* ── Context value ─────────────────────────────────────────── */
-
 export type FeedbackContextValue = {
   state: WidgetState;
   selectedValue: number | null;
@@ -47,8 +45,6 @@ export function useFeedbackContext(): FeedbackContextValue {
   }
   return ctx;
 }
-
-/* ── Provider props ────────────────────────────────────────── */
 
 export type FeedbackProviderProps = {
   location?: string;

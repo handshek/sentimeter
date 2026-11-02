@@ -31,7 +31,7 @@ const solidColor =
   /(?:^|[\s:!])(?:bg|text|border(?:-[trblxyse])?|divide|ring(?:-offset)?|outline|fill|stroke|accent|caret|decoration|placeholder|from|via|to)-(?:black|white)(?=$|[\s/!])/;
 const arbitraryType = /(?:^|[\s:!])text-\[((?:length:)?[^\]]+)\]/g;
 const arbitraryFamily = /(?:^|[\s:!])font-\[([^\]]+)\]/g;
-// Sized primitives own their heights (40 px with a 44 px hit area). A local
+// Sized primitives own their heights (36 px with a 44 px hit area). A local
 // height override is how `data-[size=default]:h-9` once beat `h-11`.
 const sizedPrimitives = new Set([
   "Button",

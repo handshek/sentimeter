@@ -5,13 +5,11 @@ export type FeedbackStyle = CSSProperties & {
   [token: `--feedback-${string}`]: string | number | undefined;
 };
 
-// One hairline edge drawn as a ring, a contact shadow, and a soft ambient
-// shadow.
 const surfaceShadow =
   "0 0 0 1px var(--feedback-edge), 0 1px 2px var(--feedback-shadow-color), 0 8px 24px var(--feedback-shadow-color)";
 
 // The widget reads the host's shadcn theme. Colors map to its semantic
-// variables; shape and spacing follow its radius.
+// variables and corners follow its radius. Spacing is fixed.
 export const feedbackTheme = {
   className:
     "[--feedback-surface:var(--card)] [--feedback-foreground:var(--card-foreground)] [--feedback-muted:var(--muted-foreground)] [--feedback-border:var(--border)] [--feedback-edge:color-mix(in_oklab,var(--foreground)_8%,transparent)] [--feedback-shadow-color:oklch(0_0_0/5%)] [--feedback-well:color-mix(in_oklab,var(--muted)_50%,var(--card))] [--feedback-input:var(--card)] [--feedback-hover:color-mix(in_oklab,var(--foreground)_4%,transparent)] [--feedback-selected:color-mix(in_oklab,var(--accent),var(--foreground)_6%)] [--feedback-selected-foreground:var(--foreground)] [--feedback-star:var(--primary)] [--feedback-primary:var(--primary)] [--feedback-primary-foreground:var(--primary-foreground)] [--feedback-ring:var(--ring)] [--feedback-field-ring:var(--ring)] [--feedback-field-glow:color-mix(in_oklab,var(--ring)_25%,transparent)] [--feedback-success:var(--success,oklch(0.55_0.14_155))] [--feedback-error:var(--destructive)] dark:[--feedback-shadow-color:oklch(0_0_0/40%)] dark:[--feedback-input:var(--background)] dark:[--feedback-success:var(--success,oklch(0.77_0.13_155))]",
@@ -74,7 +72,8 @@ export const feedbackLayouts = {
 // The parent owns section spacing. Parts own only their internal spacing.
 export const feedbackStyles = {
   root: "group/feedback relative w-full max-w-[var(--feedback-max-width)] rounded-[var(--feedback-radius)] bg-[var(--feedback-surface)] font-[family-name:var(--feedback-font)] text-sm leading-5 text-[var(--feedback-foreground)] shadow-(--feedback-shadow)",
-  // Only the card queries its own width; the inline bar sizes to its content.
+  // Only the card queries its own width. The inline bar sizes to its content
+  // until its footer opens.
   rootStacked: "@container/feedback",
   rootInline:
     "w-fit rounded-[calc(var(--feedback-radius)*2)] has-[[data-slot=feedback-footer]]:w-full has-[[data-slot=feedback-footer]]:rounded-[var(--feedback-radius)]",
@@ -115,7 +114,7 @@ export const feedbackStyles = {
   filledGlyph: "grayscale-0 [&_svg]:fill-current",
   field: "flex min-w-0 flex-col",
   inlineField: "px-2 pb-2 group-data-[state=done]/feedback:hidden",
-  // The Quiet card draws the field as an outline only.
+  // The inline bar draws the field as an outline only.
   inlineInput:
     "rounded-[var(--feedback-control-radius)] border-[var(--feedback-input-edge,var(--input))] bg-transparent shadow-none dark:bg-transparent",
   label: "sr-only",
