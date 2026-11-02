@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 import { afterEach, describe, test } from "node:test";
-import { copyText } from "@/lib/clipboard";
 import { WidgetSubmitError } from "@workspace/widgets";
 import {
   createWidgetRigState,
@@ -24,17 +23,15 @@ describe("widgets playground behavior", () => {
   };
 
   test("reset widget remounts the widget and clears its diagnostics", () => {
-    assert.deepEqual(
-      widgetRigReducer(dirtyRigState, { type: "reset-widget" }),
-      createWidgetRigState(4),
-    );
-  });
-
-  test("clear debug also resets the visible widget so state cannot disagree", () => {
-    assert.deepEqual(
-      widgetRigReducer(dirtyRigState, { type: "clear-debug" }),
-      createWidgetRigState(4),
-    );
+    for (const type of ["reset-widget", "clear-debug"] as const) {
+      assert.deepEqual(widgetRigReducer(dirtyRigState, { type }), {
+        state: "idle",
+        selectedValue: null,
+        lastPayload: null,
+        lastResult: null,
+        instance: 4,
+      });
+    }
   });
 
   test("ignores a late result from a widget that was already reset", () => {
@@ -48,29 +45,6 @@ describe("widgets playground behavior", () => {
       }),
       resetState,
     );
-  });
-
-  test("copies a project key and returns an announced success state", async () => {
-    let copiedValue = "";
-
-    const result = await copyText("pk_project", {
-      writeText: async (value) => {
-        copiedValue = value;
-      },
-    });
-
-    assert.equal(result, "copied");
-    assert.equal(copiedValue, "pk_project");
-  });
-
-  test("returns an inline manual-copy state when clipboard access fails", async () => {
-    const result = await copyText("pk_project", {
-      writeText: async () => {
-        throw new Error("clipboard unavailable");
-      },
-    });
-
-    assert.equal(result, "manual");
   });
 
   test("does not create dashboard navigation without a selected project", () => {

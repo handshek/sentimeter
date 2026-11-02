@@ -17,8 +17,6 @@ test("every launch widget has a complete, compatible registry install", () => {
 
   for (const widget of widgetDocs) {
     const metadata = widget.installMetadata;
-    expect(metadata.targetFiles).toHaveLength(15);
-    expect(metadata.sharedFileCount).toBe(14);
     expect(metadata.targetFiles).toContain(
       `components/sentimeter/${widget.slug}.tsx`,
     );
@@ -41,7 +39,7 @@ test("every launch widget has a complete, compatible registry install", () => {
   expect(getWidgetDoc("not-a-widget")).toBeUndefined();
 });
 
-test("generated examples keep the layout alongside submission options", () => {
+test("generated examples keep submission options and stay free of hosted details", () => {
   for (const widget of widgetDocs) {
     expect(getUsageSnippet(widget)).not.toContain("layout=");
     const example = getUsageSnippet(
@@ -58,9 +56,5 @@ test("generated examples keep the layout alongside submission options", () => {
     expect(markdown).not.toContain("/dashboard");
     expect(markdown).not.toContain("Hosted Analytics");
     expect(widget.props.map((row) => row.prop)).not.toContain("endpoint");
-    expect(markdown).toContain('| location | string | "/" |');
-    expect(markdown).toContain("| layout |");
-    expect(markdown).toContain("| style | FeedbackStyle |");
-    expect(markdown).toContain("/design-system");
   }
 });

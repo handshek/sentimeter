@@ -25,7 +25,6 @@ apps/
     components/            Shared site components (landing, docs, providers)
     lib/                   Widget catalog, Markdown/llms renderers, hosted-mode config
     convex/                Convex backend: waitlist (production) + hosted analytics
-    scripts/run-tests.ts   Test runner (isolates suites that mock modules)
   registry/                Cloudflare Worker serving registry JSON
     registry.json          Registry manifest: installed files and dependencies
     scripts/               Adapter that emits packages/widgets into registry items

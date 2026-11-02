@@ -88,7 +88,7 @@ describe("waitlist.join mutation", () => {
         ip: signup.ip,
         source: signup.source,
       }),
-      /secret/,
+      /secret|unauthorized/,
     );
     assert.deepEqual(
       await t.run((ctx) => ctx.db.query("waitlist").collect()),

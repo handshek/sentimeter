@@ -30,6 +30,32 @@ describe("hosted mode", () => {
     }
   });
 
+  test("only exact opt-in and non-blank keys open hosted routes", () => {
+    for (const HOSTED_ANALYTICS of ["true", "1", "LIVE", " live"]) {
+      assert.equal(
+        resolveHostedMode({ ...hostedConfiguration, HOSTED_ANALYTICS }),
+        "off",
+      );
+    }
+    for (const key of Object.keys(hostedConfiguration)) {
+      assert.equal(
+        resolveHostedMode({
+          ...hostedConfiguration,
+          HOSTED_ANALYTICS: "live",
+          [key]: "   ",
+        }),
+        "off",
+      );
+    }
+    assert.equal(
+      resolveHostedMode({
+        ...waitlistConfiguration,
+        NEXT_PUBLIC_CONVEX_URL: "  ",
+      }),
+      "off",
+    );
+  });
+
   test("HOSTED_ANALYTICS=live opens hosted routes in any environment", () => {
     for (const NODE_ENV of ["development", "production"] as const) {
       assert.equal(

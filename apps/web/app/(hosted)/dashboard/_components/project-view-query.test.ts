@@ -23,6 +23,22 @@ describe("project dashboard view query", () => {
     });
   });
 
+  test("restores each enum value", () => {
+    const options = {
+      range: ["24h", "7d", "30d", "all"],
+      widget: ["all", "emoji", "thumbs", "star"],
+      sentiment: ["all", "positive", "neutral", "negative"],
+      chart: ["stacked", "grouped", "area", "line"],
+    };
+    for (const [key, values] of Object.entries(options))
+      for (const value of values) {
+        const view = parseProjectViewQuery(
+          new URLSearchParams(`${key}=${value}`),
+        );
+        assert.equal(view[key as "range"], value);
+      }
+  });
+
   test("falls back safely when enum values are invalid", () => {
     const view = parseProjectViewQuery(
       new URLSearchParams("range=year&widget=nps&sentiment=mixed&q=&chart=pie"),
