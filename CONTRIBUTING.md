@@ -42,23 +42,23 @@ Open an issue first; the registry footprint is part of the public contract.
 Then touch these places, in order:
 
 1. `packages/widgets/src/<slug>.tsx` - the wrapper, built from the compound
-   parts in `src/compound`. Export it from `src/index.ts` and add behavior tests.
+   parts in `packages/widgets/src/compound`. Export it from `packages/widgets/src/index.ts` and add behavior tests.
 2. `apps/registry/scripts/registry-plan.ts` - add the source mapping, the item
    name to the `item` union, and the registry item.
 3. `apps/registry/registry.json` - add the matching manifest entry, then run
    `bun run check-registry`.
 4. `apps/web/lib/widget-catalog.ts` - add the slug to `WidgetSlug` and a
    `widgetDefinitions` entry; the docs page, Markdown endpoint, and `llms.txt` follow.
-5. Previews: `components/docs/widget-demo.tsx`,
-   `components/landing/widget-specimen.tsx`, and the design-system widget
+5. Previews: `apps/web/components/docs/widget-demo.tsx`,
+   `apps/web/components/landing/widget-specimen.tsx`, and the design-system widget
    specimens in `apps/web`.
 
 ## Commits
 
 Use [Conventional Commits](https://www.conventionalcommits.org):
 `type(scope): summary`, with types `feat`, `fix`, `refactor`, `docs`, `test`,
-`build`, `ci`, or `chore`. Small commits are easier to review. A pre-commit hook
-formats staged files with Prettier; nothing else runs at commit time.
+`build`, `ci`, `chore`, `perf`, or `style`. Small commits are easier to review. A pre-commit hook
+formats staged files with Prettier; a commit-msg hook checks the subject format.
 
 ## Before a Pull Request
 

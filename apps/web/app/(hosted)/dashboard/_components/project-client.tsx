@@ -29,6 +29,7 @@ import { Badge } from "@workspace/ui/components/badge";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { Separator } from "@workspace/ui/components/separator";
 import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
 import {
   Table,
   TableBody,
@@ -1937,9 +1938,9 @@ function ProjectInner({ projectId: propProjectId }: { projectId: string }) {
               </SelectContent>
             </Select>
             <div className="relative w-full min-w-0 sm:w-auto">
-              <label htmlFor="feedback-search" className="sr-only">
+              <Label htmlFor="feedback-search" className="sr-only">
                 Search feedback by message or location
-              </label>
+              </Label>
               <Search
                 className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                 aria-hidden="true"

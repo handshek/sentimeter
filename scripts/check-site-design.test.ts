@@ -93,8 +93,11 @@ describe("site design guard", () => {
     ).toEqual([]);
   });
 
-  test("covers migrated surfaces without imposing a partial migration on older routes", () => {
+  test("covers public routes and leaves hosted routes out of scope", () => {
     const source = '<p className="text-[17px]" />';
+    expect(rules(source, "apps/web/app/(site)/privacy/page.tsx")).toEqual([
+      "site/raw-type",
+    ]);
     expect(
       rules(
         source,

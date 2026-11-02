@@ -233,12 +233,15 @@ visible box keep `min-h-11` as their target.
 Decorative icons have `aria-hidden`; icon-only actions have an accessible name.
 Native emoji remains a deliberate widget option with platform-dependent rendering.
 
-Motion communicates a state change. Use `--ds-duration-fast` (120 ms) for color
-and control feedback, `--ds-duration-normal` (180 ms) for a small disclosure, and
-`--ds-ease` for their shared easing. Avoid decorative motion in operational UI.
-The global reduced-motion rule removes interpolation while preserving every
-state cue. The motion specimen also has a local reduction toggle so this can be
-inspected without changing operating-system settings.
+Motion communicates a state change. Animate only transform, opacity, and
+clip-path; never animate layout-driven text. Use one strong ease-out through
+`--ds-ease`, with `--ds-duration-fast` (120 ms) for control feedback and
+`--ds-duration-normal` (180 ms) for a small disclosure. Keep each state's
+transform function list identical. Every entrance has a reduced-motion path.
+Avoid decorative motion in operational UI. The site has a global reduced-motion
+rule; installed widgets must provide their own reduced-motion classes because
+host apps do not receive that stylesheet. The motion specimen also has a local
+reduction toggle for inspection without changing operating-system settings.
 
 Use visible focus (`focus-visible:ds-focus` for suitable links/custom composition
 boundaries, or the primitive's own focus treatment), semantic heading order,
