@@ -70,6 +70,22 @@ export function inspectWidgetDesign(
     });
   }
 
+  const paintOnlyProperties = new Set([
+    "transform",
+    "translate",
+    "scale",
+    "rotate",
+    "opacity",
+    "clip-path",
+    "filter",
+    "color",
+    "background-color",
+    "border-color",
+    "outline-color",
+    "box-shadow",
+    "fill",
+    "stroke",
+  ]);
   const recipe = normalizedFile === "packages/widgets/src/design-system.ts";
 
   function inspectMotion(node: ts.Node, value: string) {
@@ -78,9 +94,9 @@ export function inspectWidgetDesign(
       (token) =>
         /(?:^|:)transition-all!?$/.test(token) ||
         [...token.matchAll(/transition-\[([^\]]+)\]/g)].some((match) =>
-          /(?:^|[,_])(?:min-|max-)?(?:height|width)(?:$|[,_])/.test(
-            match[1] ?? "",
-          ),
+          (match[1] ?? "")
+            .split(/[,_]/)
+            .some((property) => !paintOnlyProperties.has(property)),
         ),
     );
     const zoom = tokens.some((token) =>
