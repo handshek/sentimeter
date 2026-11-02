@@ -129,6 +129,7 @@ export function inspectWidgetDesign(
       )?.[1];
       if (!property) return false;
       const family = property.startsWith("scale") ? "scale" : "translate";
+      const identity = family === "scale" ? "100" : "0";
       return !classes.some(
         (counterpart) =>
           counterpart.variants.includes("motion-reduce") &&
@@ -137,9 +138,11 @@ export function inspectWidgetDesign(
             (variant) =>
               variant === "motion-reduce" || variants.includes(variant),
           ) &&
-          (counterpart.utility === `${family}-none` ||
-            counterpart.utility ===
-              `${property}-${family === "scale" ? "100" : "0"}`),
+          [
+            `${family}-none`,
+            `${family}-${identity}`,
+            `${property}-${identity}`,
+          ].includes(counterpart.utility),
       );
     });
     if (layoutTransition || zoom || unreducedEntrance)

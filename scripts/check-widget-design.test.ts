@@ -83,6 +83,7 @@ describe("widget design guard", () => {
     "starting:translate-y-2 motion-reduce:starting:translate-y-0",
     "starting:scale-95 starting:motion-reduce:scale-100",
     "starting:translate-x-2 starting:scale-95 motion-reduce:starting:translate-none motion-reduce:starting:scale-none",
+    "starting:scale-x-95 motion-reduce:starting:scale-100",
   ])("accepts reduced entrances and explicit transitions: %s", (classes) => {
     expect(rules(`<Card className="${classes}" />`)).toEqual([]);
   });
