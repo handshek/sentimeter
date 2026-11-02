@@ -28,6 +28,6 @@
     "globals": "^17.13.0",
     "shadcn": "4.22.1",
     "typescript": "5.9.2",
-    "wrangler": "^4.152.0"
+    "wrangler": "^4.156.2"
   }
 }
