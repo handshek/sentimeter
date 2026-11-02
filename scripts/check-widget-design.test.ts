@@ -96,7 +96,7 @@ describe("widget design guard", () => {
       rules(source, "packages/widgets/src/feedback-widget.test.tsx"),
     ).toEqual([]);
     expect(
-      rules(source, "packages/widgets/src/nested/design-system.tsx"),
-    ).not.toEqual([]);
+      rules(source, "packages/widgets/src/nested/design-system.ts"),
+    ).toEqual(["widget/raw-color", "widget/raw-shape"]);
   });
 });

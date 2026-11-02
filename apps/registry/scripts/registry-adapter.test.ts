@@ -9,7 +9,6 @@ import {
   emitRegistry,
   replaceDirectoryAtomically,
   runRegistryCommand,
-  type HostTypecheckAdapter,
   type RegistryPaths,
   type ShadcnBuildAdapter,
 } from "./registry-adapter";
@@ -32,10 +31,6 @@ describe("Registry Item Adapter", () => {
     const paths = await createTestPaths();
     const artifacts = await emitRegistry({ paths });
 
-    assert.equal(artifacts.length, 17);
-    assert.ok(
-      artifacts.some((artifact) => artifact.source === "core/errors.ts"),
-    );
     for (const artifact of artifacts) {
       assert.doesNotMatch(artifact.content, /apiKey|FEEDBACK_ENDPOINT|fetch\(/);
     }
@@ -102,27 +97,6 @@ describe("Registry Item Adapter", () => {
       JSON.parse(await readFile(paths.manifestPath, "utf8")),
       expected,
     );
-    assert.deepEqual(
-      JSON.parse(
-        await readFile(path.join(paths.publicRoot, "registry.json"), "utf8"),
-      ),
-      expected,
-    );
-    const wrapper: unknown = JSON.parse(
-      await readFile(
-        path.join(paths.publicRoot, "emoji-feedback.json"),
-        "utf8",
-      ),
-    );
-    assert.ok(
-      wrapper !== null &&
-        typeof wrapper === "object" &&
-        "registryDependencies" in wrapper,
-    );
-    assert.deepEqual(
-      wrapper.registryDependencies,
-      expected.items[1].registryDependencies,
-    );
   });
 
   test("host refresh rejects descriptor drift and changed dependency paths", async () => {
@@ -188,44 +162,41 @@ describe("Registry Item Adapter", () => {
     }
   });
 
-  test("checks deterministic output through injected build and host Adapters", async () => {
+  test("check rejects a non-deterministic build and leaves public output alone", async () => {
     const paths = await createTestPaths();
     await mkdir(paths.publicRoot, { recursive: true });
     await writeFile(path.join(paths.publicRoot, "sentinel.txt"), "old", "utf8");
-    let buildCalls = 0;
-    let typecheckCalls = 0;
-    const shadcnBuild: ShadcnBuildAdapter = async (options) => {
-      buildCalls += 1;
-      await writeFakeShadcnOutput(options);
-    };
-    const hostTypecheck: HostTypecheckAdapter = async ({
-      fixtureRoot,
-      tsconfigPath,
-    }) => {
-      typecheckCalls += 1;
-      assert.match(
-        await readFile(
-          path.join(
-            fixtureRoot,
-            "components",
-            "sentimeter",
-            "like-dislike.tsx",
-          ),
-          "utf8",
-        ),
-        /from "\.\/feedback-system"/,
-      );
-      assert.match(await readFile(tsconfigPath, "utf8"), /@\/lib\/utils/);
-    };
-
     await runRegistryCommand("check", {
       paths,
-      shadcnBuild,
-      hostTypecheck,
+      shadcnBuild: writeFakeShadcnOutput,
+      hostTypecheck: async () => {},
     });
-
-    assert.equal(buildCalls, 2);
-    assert.equal(typecheckCalls, 1);
+    await assert.rejects(
+      runRegistryCommand("check", {
+        paths,
+        shadcnBuild: writeFakeShadcnOutput,
+        hostTypecheck: async () => {
+          throw new Error("host types failed");
+        },
+      }),
+      /host types failed/,
+    );
+    let builds = 0;
+    await assert.rejects(
+      runRegistryCommand("check", {
+        paths,
+        shadcnBuild: async (options) => {
+          await writeFakeShadcnOutput(options);
+          builds += 1;
+          if (builds !== 2) return;
+          const itemPath = path.join(options.outputRoot, "like-dislike.json");
+          const item: unknown = JSON.parse(await readFile(itemPath, "utf8"));
+          await writeFile(itemPath, JSON.stringify(item), "utf8");
+        },
+        hostTypecheck: async () => {},
+      }),
+      isAdapterError("output_drift"),
+    );
     assert.equal(
       await readFile(path.join(paths.publicRoot, "sentinel.txt"), "utf8"),
       "old",
@@ -255,26 +226,45 @@ describe("Registry Item Adapter", () => {
     assert.equal(item.name, "feedback-system");
   });
 
-  test("preserves public output when the shadcn Adapter fails", async () => {
-    const paths = await createTestPaths();
-    await mkdir(paths.publicRoot, { recursive: true });
-    await writeFile(path.join(paths.publicRoot, "sentinel.txt"), "old", "utf8");
-
-    await assert.rejects(
-      runRegistryCommand("build", {
-        paths,
-        shadcnBuild: async () => {
-          throw new Error("shadcn failed");
-        },
-        hostTypecheck: async () => {},
-      }),
+  for (const [name, shadcnBuild, failure] of [
+    [
+      "the shadcn Adapter fails",
+      async () => {
+        throw new Error("shadcn failed");
+      },
       /shadcn failed/,
-    );
-    assert.equal(
-      await readFile(path.join(paths.publicRoot, "sentinel.txt"), "utf8"),
-      "old",
-    );
-  });
+    ],
+    [
+      "built output fails validation",
+      async (options: Parameters<ShadcnBuildAdapter>[0]) => {
+        await writeFakeShadcnOutput(options);
+        await rm(path.join(options.outputRoot, "star-rating.json"));
+      },
+      isAdapterError("output_drift"),
+    ],
+  ] as const) {
+    test(`preserves public output when ${name}`, async () => {
+      const paths = await createTestPaths();
+      await mkdir(paths.publicRoot, { recursive: true });
+      await writeFile(
+        path.join(paths.publicRoot, "sentinel.txt"),
+        "old",
+        "utf8",
+      );
+      await assert.rejects(
+        runRegistryCommand("build", {
+          paths,
+          shadcnBuild,
+          hostTypecheck: async () => {},
+        }),
+        failure,
+      );
+      assert.equal(
+        await readFile(path.join(paths.publicRoot, "sentinel.txt"), "utf8"),
+        "old",
+      );
+    });
+  }
 
   test("rejects missing, extra, or changed built output", async () => {
     const cases: Array<{

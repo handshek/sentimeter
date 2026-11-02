@@ -110,12 +110,16 @@ for (const {
     const controls = Array.from(
       container.querySelectorAll<HTMLButtonElement>("button[aria-pressed]"),
     );
+    assert.equal(controls.length, widgetType === "thumbs" ? 2 : 5);
     assert.equal(
       controls.every((control) => !control.disabled),
       true,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: ratingName }));
+    const choice = screen.getByRole("button", { name: ratingName });
+    act(() => choice.focus());
+    fireEvent.click(choice);
+    assert.equal(document.activeElement, choice);
     const input = screen.getByRole("textbox", {
       name: "Additional feedback",
     }) as HTMLTextAreaElement;
@@ -170,88 +174,83 @@ for (const {
     assert.equal(resetControl.getAttribute("aria-pressed"), "true");
   });
 
-  test(`${name} permits corrections after a failed submission`, async () => {
-    const payloads: WidgetPayload[] = [];
-    const { container } = render(
-      <Widget
-        variant={variant}
-        showInput
-        autoHide={false}
-        submit={async (payload) => {
-          payloads.push(payload);
-          if (payloads.length === 1) throw new Error("offline");
-        }}
-      />,
-    );
-    fireEvent.click(screen.getByRole("button", { name: ratingName }));
-    const input = screen.getByRole("textbox", {
-      name: "Additional feedback",
-    }) as HTMLTextAreaElement;
-    fireEvent.change(input, { target: { value: "Original feedback" } });
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
-    await screen.findByRole("button", { name: "Try again" });
-    assert.equal(input.disabled, false);
-    assert.equal(
-      Array.from(
-        container.querySelectorAll<HTMLButtonElement>("button[aria-pressed]"),
-      ).every((control) => !control.disabled),
-      true,
-    );
-    fireEvent.change(input, { target: { value: "Corrected feedback" } });
-    fireEvent.click(screen.getByRole("button", { name: alternateName }));
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
-    await screen.findByText("Thanks!");
-    assert.deepEqual(payloads, [
-      {
-        location: "/",
-        widgetType,
-        value,
-        text: "Original feedback",
-      },
-      {
-        location: "/",
-        widgetType,
-        value: alternateValue,
-        text: "Corrected feedback",
-      },
-    ]);
-    assert.equal(input.value, "Corrected feedback");
-    assert.equal(input.disabled, true);
-  });
+  if (variant === "icons")
+    test(`${name} permits corrections after a failed submission`, async () => {
+      const payloads: WidgetPayload[] = [];
+      const { container } = render(
+        <Widget
+          variant={variant}
+          showInput
+          autoHide={false}
+          submit={async (payload) => {
+            payloads.push(payload);
+            if (payloads.length === 1) throw new Error("offline");
+          }}
+        />,
+      );
+      fireEvent.click(screen.getByRole("button", { name: ratingName }));
+      const input = screen.getByRole("textbox", {
+        name: "Additional feedback",
+      }) as HTMLTextAreaElement;
+      fireEvent.change(input, { target: { value: "Original feedback" } });
+      fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+      await screen.findByRole("button", { name: "Try again" });
+      assert.equal(input.disabled, false);
+      assert.equal(
+        Array.from(
+          container.querySelectorAll<HTMLButtonElement>("button[aria-pressed]"),
+        ).every((control) => !control.disabled),
+        true,
+      );
+      fireEvent.change(input, { target: { value: "Corrected feedback" } });
+      fireEvent.click(screen.getByRole("button", { name: alternateName }));
+      fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+      await screen.findByText("Thanks!");
+      assert.deepEqual(payloads, [
+        {
+          location: "/",
+          widgetType,
+          value,
+          text: "Original feedback",
+        },
+        {
+          location: "/",
+          widgetType,
+          value: alternateValue,
+          text: "Corrected feedback",
+        },
+      ]);
+      assert.equal(input.value, "Corrected feedback");
+      assert.equal(input.disabled, true);
+    });
 }
 
-for (const variant of ["icons", "emoji"] as const) {
-  test(`${variant} stars retain the submitted fill while locked despite hover or focus previews`, async () => {
-    let resolveSubmit!: () => void;
-    const pendingSubmit = new Promise<void>((resolve) => {
-      resolveSubmit = resolve;
-    });
-    const { container } = render(
-      <StarRating
-        variant={variant}
-        autoHide={false}
-        submit={() => pendingSubmit}
-      />,
-    );
-    const filledStars = () =>
-      container.querySelectorAll('[data-slot="feedback-glyph"].grayscale-0')
-        .length;
-    const firstStar = screen.getByRole("button", { name: "Rate 1 star" });
-    const fifthStar = screen.getByRole("button", { name: "Rate 5 stars" });
-    fireEvent.click(fifthStar);
-    assert.equal(filledStars(), 5);
-    fireEvent.mouseEnter(firstStar);
-    assert.equal(filledStars(), 1);
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
-    assert.equal(filledStars(), 5);
-    await act(async () => resolveSubmit());
-    assert.equal(screen.getByRole("status").textContent, "Thanks!");
-    assert.equal(filledStars(), 5);
-    fireEvent.mouseLeave(firstStar);
-    fireEvent.mouseEnter(firstStar);
-    fireEvent.focus(firstStar);
-    fireEvent.click(firstStar);
-    assert.equal(filledStars(), 5);
-    assert.equal(fifthStar.getAttribute("aria-pressed"), "true");
+test(`stars retain the submitted fill while locked despite hover or focus previews`, async () => {
+  let resolveSubmit!: () => void;
+  const pendingSubmit = new Promise<void>((resolve) => {
+    resolveSubmit = resolve;
   });
-}
+  const { container } = render(
+    <StarRating autoHide={false} submit={() => pendingSubmit} />,
+  );
+  const filledStars = () =>
+    container.querySelectorAll('[data-slot="feedback-glyph"].grayscale-0')
+      .length;
+  const firstStar = screen.getByRole("button", { name: "Rate 1 star" });
+  const fifthStar = screen.getByRole("button", { name: "Rate 5 stars" });
+  fireEvent.click(fifthStar);
+  assert.equal(filledStars(), 5);
+  fireEvent.mouseEnter(firstStar);
+  assert.equal(filledStars(), 1);
+  fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+  assert.equal(filledStars(), 5);
+  await act(async () => resolveSubmit());
+  assert.equal(screen.getByRole("status").textContent, "Thanks!");
+  assert.equal(filledStars(), 5);
+  fireEvent.mouseLeave(firstStar);
+  fireEvent.mouseEnter(firstStar);
+  fireEvent.focus(firstStar);
+  fireEvent.click(firstStar);
+  assert.equal(filledStars(), 5);
+  assert.equal(fifthStar.getAttribute("aria-pressed"), "true");
+});

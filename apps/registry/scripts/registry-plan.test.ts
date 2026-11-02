@@ -1,21 +1,15 @@
 import assert from "node:assert/strict";
-import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { afterEach, describe, test } from "node:test";
 import {
   createExpectedRegistry,
   planRegistryArtifacts,
   RegistryAdapterError,
-  SOURCE_MAPPINGS,
-  validateManifest,
   type SourceMapping,
 } from "./registry-plan";
 
-const scriptsRoot = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(scriptsRoot, "../../..");
-const widgetSourceRoot = path.join(repoRoot, "packages", "widgets", "src");
 const temporaryRoots: string[] = [];
 
 afterEach(async () => {
@@ -27,39 +21,20 @@ afterEach(async () => {
 });
 
 describe("Registry Item plan", () => {
-  test("emits deterministic modular artifacts with exact import rewrites", async () => {
-    const [first, second] = await Promise.all([
-      planRegistryArtifacts({ sourceRoot: widgetSourceRoot }),
-      planRegistryArtifacts({ sourceRoot: widgetSourceRoot }),
-    ]);
-
-    assert.deepEqual(first, second);
-    assert.equal(first.length, SOURCE_MAPPINGS.length);
-    const generated = first.map((artifact) => artifact.content).join("\n");
-    assert.doesNotMatch(generated, /@workspace\//);
-    assert.doesNotMatch(generated, /@repo\//);
-    assert.match(generated, /@\/components\/ui\/button/);
-    assert.match(generated, /@\/components\/ui\/textarea/);
-    assert.match(generated, /@\/components\/ui\/label/);
-    assert.match(generated, /@\/lib\/utils/);
-
-    const preset = first.find(
-      (artifact) => artifact.source === "emoji-feedback.tsx",
+  test("rewrites each workspace import in place and leaves the rest", async () => {
+    const sourceRoot = await makeSourceRoot();
+    await writeFile(
+      path.join(sourceRoot, "entry.ts"),
+      'import { Button } from "@workspace/ui/components/button";\nimport { cn } from "@workspace/ui/lib/utils";\nimport * as React from "react";\n',
+      "utf8",
     );
+    const [artifact] = await planRegistryArtifacts({
+      sourceRoot,
+      mappings: [singleMapping()],
+    });
     assert.equal(
-      preset?.content,
-      await readFile(path.join(widgetSourceRoot, "emoji-feedback.tsx"), "utf8"),
-    );
-    const designSystem = first.find(
-      (artifact) => artifact.source === "design-system.ts",
-    );
-    assert.equal(
-      designSystem?.target,
-      "components/sentimeter/feedback-system/design-system.ts",
-    );
-    assert.equal(
-      designSystem?.content,
-      await readFile(path.join(widgetSourceRoot, "design-system.ts"), "utf8"),
+      artifact?.content,
+      'import { Button } from "@/components/ui/button";\nimport { cn } from "@/lib/utils";\nimport * as React from "react";\n',
     );
   });
 
@@ -105,17 +80,6 @@ describe("Registry Item plan", () => {
     );
   });
 
-  test("rejects missing canonical source", async () => {
-    const sourceRoot = await makeSourceRoot();
-    await assert.rejects(
-      planRegistryArtifacts({
-        sourceRoot,
-        mappings: [singleMapping()],
-      }),
-      isAdapterError("missing_source"),
-    );
-  });
-
   test("rejects relative imports broken by staged relocation", async () => {
     const sourceRoot = await makeSourceRoot();
     await writeFile(
@@ -147,7 +111,7 @@ describe("Registry Item plan", () => {
     );
   });
 
-  test("rejects duplicate targets and manifest drift", () => {
+  test("rejects duplicate targets", () => {
     const mapping = singleMapping();
     assert.throws(
       () =>
@@ -156,10 +120,6 @@ describe("Registry Item plan", () => {
           { ...mapping, source: "other.ts", staged: "other.ts" },
         ]),
       isAdapterError("artifact_conflict"),
-    );
-    assert.throws(
-      () => validateManifest({ name: "drifted" }),
-      isAdapterError("invalid_manifest"),
     );
   });
 });

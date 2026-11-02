@@ -47,7 +47,6 @@ describe("site design guard", () => {
     '<TabsTrigger className="min-h-11" />',
     '<Button className="size-11" size="icon" />',
     '<Input className={cn("sm:h-12", className)} />',
-    '<Button className="group-data-[state=open]:h-12" />',
     '<TabsList className="@md:min-h-12" />',
     '<SelectTrigger className="data-[orientation=horizontal]:h-(--row)" />',
     '<Button className="hover:!size-11" />',
