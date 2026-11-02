@@ -68,10 +68,10 @@ describe("documentation guard", () => {
     ]);
   });
 
-  test("checks the command after bun flags", () => {
-    expect(messages("`bun run --filter=web missing`")).toEqual([
-      "Unknown bun script: missing",
-    ]);
+  test("leaves workspace-filtered commands to bun", () => {
+    expect(
+      messages("`bun run --filter=web start` `bun run --filter web start`"),
+    ).toEqual([]);
   });
 
   test("finds the nearest manifest and honors an explicit cwd", () => {

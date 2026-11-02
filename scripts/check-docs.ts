@@ -136,8 +136,9 @@ export function inspectDocs(
         if (arg === "--cwd" || arg.startsWith("--cwd=")) {
           const cwd = arg === "--cwd" ? args[++index] : arg.slice(6);
           commandDir = resolve(repoRoot, cwd ?? "");
-        } else if (arg === "--filter") {
-          index++;
+        } else if (arg === "--filter" || arg.startsWith("--filter=")) {
+          target = undefined;
+          break;
         } else if (arg === "--" || !arg.startsWith("-")) {
           target = arg === "--" ? args[index + 1] : arg;
           break;
