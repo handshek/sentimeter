@@ -10,7 +10,7 @@
     "./typed": "./typed.js"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
+    "@eslint/js": "^9.39.5",
     "@next/eslint-plugin-next": "^16.4.3",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.1",
@@ -19,7 +19,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-turbo": "^2.11.10",
     "globals": "^17.13.0",
-    "typescript": "^5.9.2",
-    "typescript-eslint": "^8.72.0"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.1"
   }
 }
