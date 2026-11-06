@@ -14,7 +14,7 @@ export default function PrivacyPage() {
   const mode = hostedMode();
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <HeaderSection hostedMode={mode} />
+      <HeaderSection />
       <main className="ds-container ds-section">
         <div className="ds-reading mx-auto space-y-10">
           <header className="space-y-3">

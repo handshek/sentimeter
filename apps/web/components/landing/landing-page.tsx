@@ -20,7 +20,7 @@ export function LandingPage({ hostedMode }: { hostedMode: HostedMode }) {
       >
         Skip to content
       </a>
-      <HeaderSection hostedMode={hostedMode} />
+      <HeaderSection />
       <main id="main" className="flex-1 [&_section[id]]:scroll-mt-24">
         <HeroSection />
         <ShowcaseSection />

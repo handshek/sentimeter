@@ -27,7 +27,7 @@ export default function DesignSystemLayout({
       >
         Skip to design system content
       </a>
-      <HeaderSection hostedMode={mode} />
+      <HeaderSection />
       <div className="ds-container grid items-start gap-8 py-8 lg:grid-cols-[208px_minmax(0,1fr)] lg:gap-14 lg:py-14">
         <aside className="min-w-0 lg:sticky lg:top-28">
           <SystemNavigation />

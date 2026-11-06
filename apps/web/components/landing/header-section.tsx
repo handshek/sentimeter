@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { Activity, ArrowUpRight, Github, Menu, X } from "lucide-react";
+import type { ReactNode } from "react";
+import { Activity, Github, Menu, Search, X } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
+import { cn } from "@workspace/ui/lib/utils";
 import {
   Sheet,
   SheetClose,
@@ -11,37 +13,64 @@ import {
   SheetTrigger,
 } from "@workspace/ui/components/sheet";
 import { REPOSITORY_URL } from "@/lib/widget-catalog";
-import type { HostedMode } from "@/lib/hosted-config";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-export function HeaderSection({ hostedMode }: { hostedMode: HostedMode }) {
-  const links = [
-    { href: "/#widgets", label: "Widgets" },
-    { href: "/components/getting-started", label: "Documentation" },
-    { href: "/design-system", label: "Design system" },
-    ...(hostedMode !== "off"
-      ? [
-          {
-            href: "/dashboard",
-            label: hostedMode === "live" ? "Analytics" : "Analytics (soon)",
-          },
-        ]
-      : []),
-  ];
+export const siteLinks = [
+  { href: "/components", label: "Components" },
+  { href: "/components/getting-started", label: "Docs" },
+] as const;
 
+export const searchTriggerClassName =
+  "hidden h-9 w-56 items-center gap-2 rounded-md border border-border bg-muted/40 px-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:inline-flex";
+
+export function SearchTriggerContent() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
-      <div className="ds-container flex min-h-20 items-center justify-between gap-6">
+    <>
+      <Search aria-hidden="true" className="size-4" />
+      Search
+      <kbd className="ml-auto rounded border border-border bg-background px-1.5 font-sans text-xs">
+        ⌘K
+      </kbd>
+    </>
+  );
+}
+
+// Search lives in the docs shell; elsewhere the trigger opens it there.
+function SearchLink() {
+  return (
+    <Link href="/components#search" className={searchTriggerClassName}>
+      <SearchTriggerContent />
+    </Link>
+  );
+}
+
+export function HeaderSection({
+  className,
+  search = <SearchLink />,
+  menu = <MobileMenu />,
+}: {
+  className?: string;
+  search?: ReactNode;
+  menu?: ReactNode;
+}) {
+  return (
+    <header
+      className={cn(
+        "sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm",
+        className,
+      )}
+    >
+      <div className="mx-auto flex h-14 w-full max-w-[1440px] items-center gap-6 px-4 md:px-6">
         <Link
           href="/"
           aria-label="Sentimeter home"
-          className="inline-flex min-h-11 shrink-0 items-center gap-2.5 rounded-md font-semibold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+          className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-md font-semibold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
         >
           <Activity aria-hidden="true" className="size-5 text-brand" />
-          <span className="text-lg">Sentimeter</span>
+          Sentimeter
         </Link>
-        <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
-          {links.map((link) => (
+        <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
+          {siteLinks.map((link) => (
             <Button
               key={link.href}
               asChild
@@ -52,94 +81,83 @@ export function HeaderSection({ hostedMode }: { hostedMode: HostedMode }) {
             </Button>
           ))}
         </nav>
-        <div className="flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-1">
+          {search}
           <Button
             asChild
             variant="ghost"
             size="icon"
-            className="hidden sm:inline-flex"
+            className="hidden md:inline-flex"
           >
             <a href={REPOSITORY_URL} aria-label="Sentimeter on GitHub">
               <Github aria-hidden="true" className="size-4" />
             </a>
           </Button>
           <ThemeToggle />
-          <Button
-            asChild
-            variant="outline"
-            className="ml-2 hidden lg:inline-flex"
-          >
-            <Link href="/components">
-              Browse widgets{" "}
-              <ArrowUpRight aria-hidden="true" className="size-4" />
-            </Link>
-          </Button>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="lg:hidden"
-                aria-label="Open navigation"
-              >
-                <Menu aria-hidden="true" className="size-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent showCloseButton={false} className="gap-6 p-6">
-              <SheetHeader className="p-0 pr-10">
-                <SheetTitle className="ds-title">Sentimeter</SheetTitle>
-                <SheetDescription>
-                  Feedback components, made to feel at home.
-                </SheetDescription>
-              </SheetHeader>
-              <SheetClose asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-3 right-3"
-                  aria-label="Close navigation"
-                >
-                  <X aria-hidden="true" className="size-5" />
-                </Button>
-              </SheetClose>
-              <nav aria-label="Mobile" className="flex flex-col gap-2">
-                {links.map((link) => (
-                  <SheetClose asChild key={link.href}>
-                    <Button
-                      asChild
-                      variant="ghost"
-                      size="lg"
-                      className="justify-start px-3"
-                    >
-                      <Link href={link.href}>{link.label}</Link>
-                    </Button>
-                  </SheetClose>
-                ))}
-                <SheetClose asChild>
-                  <Button
-                    asChild
-                    variant="ghost"
-                    size="lg"
-                    className="justify-start px-3"
-                  >
-                    <a href={REPOSITORY_URL}>
-                      <Github aria-hidden="true" className="size-4" /> GitHub
-                    </a>
-                  </Button>
-                </SheetClose>
-              </nav>
-              <SheetClose asChild>
-                <Button asChild>
-                  <Link href="/components">
-                    Browse widgets{" "}
-                    <ArrowUpRight aria-hidden="true" className="size-4" />
-                  </Link>
-                </Button>
-              </SheetClose>
-            </SheetContent>
-          </Sheet>
+          {menu}
         </div>
       </div>
     </header>
+  );
+}
+
+function MobileMenu() {
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden"
+          aria-label="Open navigation"
+        >
+          <Menu aria-hidden="true" className="size-5" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent showCloseButton={false} className="gap-6 p-6">
+        <SheetHeader className="p-0 pr-10">
+          <SheetTitle className="ds-title">Sentimeter</SheetTitle>
+          <SheetDescription>
+            Feedback components for shadcn apps.
+          </SheetDescription>
+        </SheetHeader>
+        <SheetClose asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-3 right-3"
+            aria-label="Close navigation"
+          >
+            <X aria-hidden="true" className="size-5" />
+          </Button>
+        </SheetClose>
+        <nav aria-label="Mobile" className="flex flex-col gap-2">
+          {siteLinks.map((link) => (
+            <SheetClose asChild key={link.href}>
+              <Button
+                asChild
+                variant="ghost"
+                size="lg"
+                className="justify-start px-3"
+              >
+                <Link href={link.href}>{link.label}</Link>
+              </Button>
+            </SheetClose>
+          ))}
+          <SheetClose asChild>
+            <Button
+              asChild
+              variant="ghost"
+              size="lg"
+              className="justify-start px-3"
+            >
+              <a href={REPOSITORY_URL}>
+                <Github aria-hidden="true" className="size-4" /> GitHub
+              </a>
+            </Button>
+          </SheetClose>
+        </nav>
+      </SheetContent>
+    </Sheet>
   );
 }

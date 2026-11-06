@@ -16,7 +16,7 @@ import { WaitlistForm } from "./waitlist-form";
 export function ComingSoon({ mode }: { mode: Exclude<HostedMode, "live"> }) {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
-      <HeaderSection hostedMode={mode} />
+      <HeaderSection />
       <main
         id="main"
         className="ds-container ds-section grid flex-1 items-start gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]"
