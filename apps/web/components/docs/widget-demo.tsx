@@ -65,9 +65,12 @@ function WidgetDemoInstance({
     <div
       role="group"
       aria-label={`${widget.name} example`}
-      className="ds-inset relative flex min-h-64 w-full min-w-0 items-center justify-center px-3 pt-14 pb-8 sm:px-8"
+      className="ds-inset @container relative flex min-h-64 w-full min-w-0 items-center justify-center pt-14 pb-8"
     >
-      <div ref={container} className="flex w-full min-w-0 justify-center">
+      <div
+        ref={container}
+        className="flex w-full min-w-0 justify-center @sm:px-3 @lg:px-8"
+      >
         <Widget
           key={instance}
           layout={options.layout}
