@@ -34,7 +34,7 @@ type WidgetInstallCommandProps = {
 
 const managerKey = "sentimeter:package-manager";
 const managerListeners = new Set<() => void>();
-let sessionManager: PackageManager = "bun";
+let unsavedManager: PackageManager | null = null;
 
 function subscribeManager(listener: () => void) {
   managerListeners.add(listener);
@@ -46,23 +46,23 @@ function subscribeManager(listener: () => void) {
 }
 
 function readManager(): PackageManager {
+  if (unsavedManager) return unsavedManager;
   try {
     const stored = localStorage.getItem(managerKey);
-    return (
-      packageManagers.find((manager) => manager === stored) ?? sessionManager
-    );
+    return packageManagers.find((manager) => manager === stored) ?? "bun";
   } catch {
-    return sessionManager;
+    return "bun";
   }
 }
 
 // Every install command on every page follows the reader's last choice.
 function chooseManager(manager: PackageManager) {
-  sessionManager = manager;
   try {
     localStorage.setItem(managerKey, manager);
+    unsavedManager = null;
   } catch {
     // Without storage, the choice still holds until the page reloads.
+    unsavedManager = manager;
   }
   managerListeners.forEach((listener) => listener());
 }
