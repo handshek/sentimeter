@@ -1,15 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import {
-  EmojiFeedback,
-  LikeDislike,
-  StarRating,
-  type WidgetState,
-} from "@workspace/widgets";
+import { EmojiFeedback, LikeDislike, StarRating } from "@workspace/widgets";
 import { Button } from "@workspace/ui/components/button";
 import { RotateCcw } from "lucide-react";
 import type { WidgetDemoOptions, WidgetDocConfig } from "@/lib/widget-catalog";
+import { useWidgetReplay } from "@/lib/use-widget-replay";
 
 const widgets = { emoji: EmojiFeedback, thumbs: LikeDislike, star: StarRating };
 
@@ -31,25 +26,8 @@ export function WidgetDemo(props: WidgetDemoProps) {
 }
 
 function WidgetDemoInstance({ widget, options }: WidgetDemoProps) {
-  const [instance, setInstance] = useState(0);
-  const [state, setState] = useState<WidgetState>("idle");
-  const container = useRef<HTMLDivElement>(null);
-  const focusAfterReset = useRef(false);
+  const { key, state, containerRef, onStateChange, replay } = useWidgetReplay();
   const Widget = widgets[widget.preview];
-
-  useEffect(() => {
-    if (!focusAfterReset.current) return;
-    container.current
-      ?.querySelector<HTMLButtonElement>("button[aria-pressed]")
-      ?.focus();
-    focusAfterReset.current = false;
-  }, [instance]);
-
-  function reset() {
-    focusAfterReset.current = true;
-    setState("idle");
-    setInstance((value) => value + 1);
-  }
 
   return (
     <div
@@ -58,24 +36,24 @@ function WidgetDemoInstance({ widget, options }: WidgetDemoProps) {
       className="w-full min-w-0 space-y-2"
     >
       <div
-        ref={container}
+        ref={containerRef}
         className="flex min-h-36 w-full items-center justify-center"
       >
         <Widget
-          key={instance}
+          key={key}
           layout={options?.layout ?? "stacked"}
           variant={options?.variant ?? widget.defaultVariant}
           size={options?.size ?? "default"}
           showInput={options?.showInput ?? false}
           autoHide={false}
-          onStateChange={setState}
+          onStateChange={onStateChange}
         />
       </div>
       <div className="flex justify-center">
         <Button
           type="button"
           variant="ghost"
-          onClick={reset}
+          onClick={replay}
           disabled={state === "submitting"}
         >
           <RotateCcw className="size-4" aria-hidden="true" />

@@ -1,15 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import {
   EmojiFeedback,
   LikeDislike,
   StarRating,
   type WidgetLayout,
-  type WidgetState,
 } from "@workspace/widgets";
 import { Button } from "@workspace/ui/components/button";
 import { RotateCcw } from "lucide-react";
+import { useWidgetReplay } from "@/lib/use-widget-replay";
 
 const specimenContent = {
   emoji: {
@@ -38,19 +37,8 @@ export function WidgetSpecimen({
   showInput?: boolean;
   layout?: WidgetLayout;
 }) {
-  const [instance, setInstance] = useState(0);
-  const [state, setState] = useState<WidgetState>("idle");
-  const container = useRef<HTMLDivElement>(null);
-  const restoreFocus = useRef(false);
+  const { key, state, containerRef, onStateChange, replay } = useWidgetReplay();
   const { Widget, title, description } = specimenContent[family];
-
-  useEffect(() => {
-    if (!restoreFocus.current) return;
-    container.current
-      ?.querySelector<HTMLButtonElement>("button[aria-pressed]")
-      ?.focus();
-    restoreFocus.current = false;
-  }, [instance]);
 
   return (
     <div
@@ -58,16 +46,16 @@ export function WidgetSpecimen({
       role="group"
       aria-label={`${family} feedback example`}
     >
-      <div ref={container} className="flex justify-center">
+      <div ref={containerRef} className="flex justify-center">
         <Widget
-          key={instance}
+          key={key}
           title={title}
           description={description}
           layout={layout}
           showInput={showInput}
           autoHide={false}
           thankYouMessage="Thanks for sharing."
-          onStateChange={setState}
+          onStateChange={onStateChange}
           className={layout === "inline" ? undefined : "w-full"}
         />
       </div>
@@ -77,11 +65,7 @@ export function WidgetSpecimen({
           variant="ghost"
           className="text-muted-foreground"
           disabled={state === "submitting"}
-          onClick={() => {
-            restoreFocus.current = true;
-            setState("idle");
-            setInstance((value) => value + 1);
-          }}
+          onClick={replay}
         >
           <RotateCcw aria-hidden="true" className="size-3.5" />
           {state === "done" ? "Try again" : "Reset example"}
