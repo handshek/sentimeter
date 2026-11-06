@@ -3,6 +3,8 @@ import { RootProvider } from "fumadocs-ui/provider/next";
 import { DocsLayout } from "fumadocs-ui/layouts/notebook";
 import { docsTree } from "@/lib/docs-navigation";
 import { DocsHeader } from "@/components/docs/docs-header";
+import { FooterSection } from "@/components/landing/footer-section";
+import { hostedMode } from "@/lib/hosted-config";
 import "./docs.css";
 
 export default function ComponentsLayout({
@@ -30,6 +32,7 @@ export default function ComponentsLayout({
         >
           {children}
         </DocsLayout>
+        <FooterSection hostedMode={hostedMode()} />
       </div>
     </RootProvider>
   );
