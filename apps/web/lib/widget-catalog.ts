@@ -114,19 +114,23 @@ export type WidgetDemoOptions = {
 };
 
 export function getUsageSnippet(
-  widget: Pick<WidgetDocConfig, "slug" | "componentName" | "defaultVariant">,
+  widget: Pick<
+    WidgetDocConfig,
+    "slug" | "componentName" | "defaultVariant" | "example"
+  >,
   options?: Partial<WidgetDemoOptions>,
   submission: "local" | "custom" = "local",
 ) {
-  const variant = options?.variant ?? widget.defaultVariant;
-  const size = options?.size ?? "default";
-  const layout = options?.layout ?? "stacked";
+  const { variant, size, layout, showInput } = {
+    ...widget.example,
+    ...options,
+  };
   const props = [
     "autoHide={false}",
     ...(layout !== "stacked" ? [`layout="${layout}"`] : []),
     ...(variant !== widget.defaultVariant ? [`variant="${variant}"`] : []),
     ...(size !== "default" ? [`size="${size}"`] : []),
-    ...(options?.showInput ? ["showInput"] : []),
+    ...(showInput ? ["showInput"] : []),
     ...(submission === "custom" ? ["submit={saveFeedback}"] : []),
   ].join("\n      ");
   const customSubmit =

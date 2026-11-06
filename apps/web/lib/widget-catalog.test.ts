@@ -40,8 +40,22 @@ test("every launch widget has a complete, compatible registry install", () => {
 });
 
 test("generated examples keep submission options and stay free of hosted details", () => {
+  expect(
+    Object.fromEntries(
+      widgetDocs.map((widget) => [
+        widget.slug,
+        getUsageSnippet(widget).includes('layout="inline"'),
+      ]),
+    ),
+  ).toEqual({
+    "emoji-feedback": false,
+    "like-dislike": true,
+    "star-rating": false,
+  });
+  expect(getWidgetMarkdown(getWidgetDoc("like-dislike")!)).toContain(
+    'layout="inline"',
+  );
   for (const widget of widgetDocs) {
-    expect(getUsageSnippet(widget)).not.toContain("layout=");
     const example = getUsageSnippet(
       widget,
       { layout: "inline", showInput: true, size: "lg" },
