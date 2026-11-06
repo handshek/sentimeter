@@ -24,10 +24,11 @@ function DocsSearchButton() {
     <Button
       type="button"
       variant="ghost"
+      size="icon"
       className={searchTriggerClassName}
       onClick={() => setOpenSearch(true)}
     >
-      <SearchTriggerContent />
+      <SearchTriggerContent shortcut />
     </Button>
   );
 }

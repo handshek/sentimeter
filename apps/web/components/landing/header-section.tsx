@@ -21,16 +21,18 @@ export const siteLinks = [
 ] as const;
 
 export const searchTriggerClassName =
-  "hidden h-9 w-56 items-center gap-2 rounded-md border border-border bg-muted/40 px-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:inline-flex";
+  "text-muted-foreground md:w-56 md:justify-start md:border md:border-border md:bg-muted/40 md:px-2.5 md:font-normal";
 
-export function SearchTriggerContent() {
+export function SearchTriggerContent({ shortcut }: { shortcut?: boolean }) {
   return (
     <>
       <Search aria-hidden="true" className="size-4" />
-      Search
-      <kbd className="ml-auto rounded border border-border bg-background px-1.5 font-sans text-xs">
-        ⌘K
-      </kbd>
+      <span className="max-md:sr-only">Search</span>
+      {shortcut ? (
+        <kbd className="ml-auto hidden rounded border border-border bg-background px-1.5 font-sans text-xs md:inline">
+          ⌘K
+        </kbd>
+      ) : null}
     </>
   );
 }
@@ -38,9 +40,16 @@ export function SearchTriggerContent() {
 // Search lives in the docs shell; elsewhere the trigger opens it there.
 function SearchLink() {
   return (
-    <Link href="/components#search" className={searchTriggerClassName}>
-      <SearchTriggerContent />
-    </Link>
+    <Button
+      asChild
+      variant="ghost"
+      size="icon"
+      className={searchTriggerClassName}
+    >
+      <Link href="/components#search">
+        <SearchTriggerContent />
+      </Link>
+    </Button>
   );
 }
 
