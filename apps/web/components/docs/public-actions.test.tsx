@@ -160,3 +160,20 @@ test("a new package manager choice still applies when storage rejects writes", (
     Object.defineProperty(globalThis, "localStorage", original);
   }
 });
+
+test("a copy result for the previous text clears when the text changes", async () => {
+  Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    value: {
+      async writeText() {},
+    },
+  });
+  const view = render(<CopyButton text="old-key" label="Copy key" />);
+  fireEvent.click(screen.getByRole("button", { name: "Copy key" }));
+  await screen.findByRole("button", { name: "Copied" });
+
+  view.rerender(<CopyButton text="new-key" label="Copy key" />);
+
+  expect(screen.getByRole("button", { name: "Copy key" })).toBeTruthy();
+  expect(screen.getByRole("status").textContent).toBe("");
+});

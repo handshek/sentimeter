@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { cn } from "@workspace/ui/lib/utils";
-import { copyText, type CopyTextResult } from "@/lib/clipboard";
+import { useCopyFeedback } from "@/lib/use-copy-feedback";
 
 export function CopyButton({
   text,
@@ -16,32 +15,9 @@ export function CopyButton({
   label?: string;
   className?: string;
 }) {
-  const [result, setResult] = useState<CopyTextResult | null>(null);
-  const [pending, setPending] = useState(false);
-  const mounted = useRef(true);
-  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { status, copy } = useCopyFeedback(text);
 
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-      if (resetTimer.current) clearTimeout(resetTimer.current);
-    };
-  }, []);
-
-  async function copy() {
-    setPending(true);
-    const next = await copyText(text, navigator.clipboard);
-    if (!mounted.current) return;
-    setPending(false);
-    setResult(next);
-    if (resetTimer.current) clearTimeout(resetTimer.current);
-    if (next === "copied") {
-      resetTimer.current = setTimeout(() => setResult(null), 1400);
-    }
-  }
-
-  const copied = result === "copied";
+  const copied = status === "copied";
 
   return (
     <div className="min-w-0">
@@ -49,7 +25,7 @@ export function CopyButton({
         type="button"
         variant="ghost"
         onClick={() => void copy()}
-        disabled={pending}
+        disabled={status === "copying"}
         className={cn("", className)}
       >
         {copied ? (
@@ -62,7 +38,7 @@ export function CopyButton({
       <span role="status" aria-live="polite" className="sr-only">
         {copied ? `${label.replace(/^Copy /, "")} copied to clipboard.` : ""}
       </span>
-      {result === "manual" ? (
+      {status === "manual" ? (
         <div role="alert" className="mt-2 space-y-2 text-sm">
           <p>Clipboard unavailable. Select and copy the text below.</p>
           <Textarea

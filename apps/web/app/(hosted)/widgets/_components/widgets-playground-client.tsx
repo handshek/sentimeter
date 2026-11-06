@@ -74,7 +74,7 @@ import {
   WidgetInstallCommand,
   type WidgetInstallMetadata,
 } from "@/components/docs/widget-install-command";
-import { copyText, type CopyTextResult } from "@/lib/clipboard";
+import { useCopyFeedback } from "@/lib/use-copy-feedback";
 import {
   createWidgetRigState,
   getProjectDashboardHref,
@@ -674,41 +674,8 @@ export function WidgetsPlaygroundClient({
   const activeApiKey = selectedProject?.activeApiKey?.key ?? "";
   const selectedProjectDashboardHref =
     getProjectDashboardHref(selectedProjectId);
-  const [projectKeyCopyState, setProjectKeyCopyState] = React.useState<
-    "idle" | CopyTextResult
-  >("idle");
-  const projectKeyCopyResetTimerRef = React.useRef<number | null>(null);
-
-  const clearProjectKeyCopyResetTimer = React.useCallback(() => {
-    if (projectKeyCopyResetTimerRef.current === null) return;
-    window.clearTimeout(projectKeyCopyResetTimerRef.current);
-    projectKeyCopyResetTimerRef.current = null;
-  }, []);
-
-  React.useEffect(
-    () => clearProjectKeyCopyResetTimer,
-    [clearProjectKeyCopyResetTimer],
-  );
-
-  React.useEffect(() => {
-    clearProjectKeyCopyResetTimer();
-    setProjectKeyCopyState("idle");
-  }, [activeApiKey, clearProjectKeyCopyResetTimer]);
-
-  async function copyProjectKey() {
-    if (!activeApiKey) return;
-
-    const result = await copyText(activeApiKey, navigator.clipboard);
-    setProjectKeyCopyState(result);
-
-    if (result === "copied") {
-      clearProjectKeyCopyResetTimer();
-      projectKeyCopyResetTimerRef.current = window.setTimeout(
-        () => setProjectKeyCopyState("idle"),
-        1400,
-      );
-    }
-  }
+  const { status: projectKeyCopyState, copy: copyProjectKey } =
+    useCopyFeedback(activeApiKey);
 
   const [apiKey, setApiKey] = React.useState("demo-api-key");
   const [location, setLocation] = React.useState("/widgets");
