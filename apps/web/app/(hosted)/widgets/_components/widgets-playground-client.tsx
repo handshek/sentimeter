@@ -88,7 +88,7 @@ type WidgetSlug = WidgetInstallMetadata["slug"];
 
 const DEFAULT_WIDGET_SLUG: WidgetSlug = "emoji-feedback";
 
-type WidgetCommon = {
+export type WidgetCommon = {
   location: string;
   disabled: boolean;
   thankYouMessage: string;
@@ -205,7 +205,7 @@ function PlaygroundCard({
   );
 }
 
-function PopoverWidgetDemo({ common }: { common: WidgetCommon }) {
+export function PopoverWidgetDemo({ common }: { common: WidgetCommon }) {
   const [open, setOpen] = React.useState(false);
   const [state, setState] = React.useState<WidgetState>("idle");
   const closeTimerRef = React.useRef<number | null>(null);
