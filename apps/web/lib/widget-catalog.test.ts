@@ -26,6 +26,12 @@ test("every launch widget has a complete, compatible registry install", () => {
     expect(metadata.targetFiles).toContain(
       "components/sentimeter/feedback-system/design-system.ts",
     );
+    expect(metadata.widgetFiles).toEqual([
+      `components/sentimeter/${widget.slug}.tsx`,
+    ]);
+    expect(metadata.sharedFolder).toBe(
+      "components/sentimeter/feedback-system/",
+    );
     expect(metadata.shadcnDependencies).toEqual([
       "button",
       "textarea",

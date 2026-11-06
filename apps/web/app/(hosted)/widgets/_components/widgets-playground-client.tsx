@@ -914,7 +914,6 @@ export function WidgetsPlaygroundClient({
                       <WidgetInstallCommand
                         key={activeInstallMetadata.registryName}
                         registryName={activeInstallMetadata.registryName}
-                        defaultManager="bun"
                         metadata={activeInstallMetadata}
                       />
                       <Button

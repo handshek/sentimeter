@@ -2,7 +2,8 @@ import { afterEach, expect, test } from "bun:test";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { CopyButton } from "./copy-button";
 import { WidgetDemo } from "./widget-demo";
-import { widgetDocs } from "@/lib/widget-catalog";
+import { WidgetInstallCommand } from "./widget-install-command";
+import { REGISTRY_BASE_URL, widgetDocs } from "@/lib/widget-catalog";
 
 const originalClipboard = Object.getOwnPropertyDescriptor(
   navigator,
@@ -103,4 +104,34 @@ test("copy failure offers the exact text and never claims success; retry announc
     "copied to clipboard",
   );
   expect(screen.queryByRole("alert")).toBeNull();
+});
+
+test("a package manager chosen once is used by every install command, including later pages", () => {
+  localStorage.clear();
+  try {
+    render(
+      <>
+        <WidgetInstallCommand registryName="emoji-feedback" />
+        <WidgetInstallCommand registryName="star-rating" />
+      </>,
+    );
+    fireEvent.mouseDown(screen.getAllByRole("tab", { name: "pnpm" })[0]!, {
+      button: 0,
+    });
+    expect(
+      screen.getByText(
+        `pnpm dlx shadcn@latest add "${REGISTRY_BASE_URL}/star-rating.json"`,
+      ),
+    ).toBeTruthy();
+
+    cleanup();
+    render(<WidgetInstallCommand registryName="like-dislike" />);
+    expect(
+      screen.getByText(
+        `pnpm dlx shadcn@latest add "${REGISTRY_BASE_URL}/like-dislike.json"`,
+      ),
+    ).toBeTruthy();
+  } finally {
+    localStorage.clear();
+  }
 });
