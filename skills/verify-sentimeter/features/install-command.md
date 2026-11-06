@@ -29,7 +29,7 @@ Preconditions:
 - **Switch manager.** `$SV click --role tab --name "pnpm"`. The snapshot shows `tab "pnpm" [selected]`, and a `tabpanel "pnpm"` whose code uses pnpm and the same registry URL.
 - **Copy.** `$SV click --role button --name "Copy Command"`, then `$SV wait --text "Command copied to clipboard."`. The snapshot shows `button "Copied"` and the status text.
 - **File list.** `$SV click --role button --name "View Exact File Paths"`. The button becomes `[expanded]` and `region "View Exact File Paths"` lists one `listitem` per path, starting with `components/sentimeter/star-rating.tsx`. The count must match the summary ("15 Sentimeter Files": 1 widget wrapper + 14 shared files for star rating on 2026-11-06) and the registry (`files.length` of the widget item plus `feedback-system.json`).
-- **Copy as Markdown.** `$SV click --role button --name "Copy as Markdown"`, then snapshot at once (it reverts after 1.4 s). It shows `button "Copied"` and a `status` reading "as Markdown copied to clipboard." The copied text is `getWidgetMarkdown`, the same as the Markdown route below.
+- **Copy as Markdown.** `$SV click --role button --name "Copy as Markdown"`, then snapshot at once (it reverts after 1.4 s). It shows `button "Copied"` and a `status` reading "Markdown copied to clipboard." The copied text is `getWidgetMarkdown`, the same as the Markdown route below.
 - **Markdown.** `curl -s -D - http://127.0.0.1:3107/components/star-rating/markdown` returns `200`, `text/markdown`, and a body starting with `# Star Rating`. `curl -s http://127.0.0.1:3107/llms.txt | head` starts with `# Sentimeter`.
 - **Proof.** Save the snapshots and the curl output under `install/`, then run `$SV net-check`.
 
@@ -38,5 +38,5 @@ Preconditions:
 - Commands always point at the production registry URL, even on the local site. That's correct; to test what that URL serves, use [registry](./registry.md).
 - `/components/<slug>.md` returns 404. The Markdown route is `/components/<slug>/markdown`.
 - Copying works in this headless Chrome. If "Copied" never appears, the copy failed; it isn't a timing problem. Check for `role="alert"` with a manual-copy fallback.
-- Known bug (2026-11-06): the "Copy as Markdown" status says "as Markdown copied to clipboard.", because `copy-button.tsx` builds it by removing "Copy " from the label. Don't record it as a pass on the wording.
+- Builds without PR #59 announce "as Markdown copied to clipboard." That is the old bug, not a new regression.
 - The landing hero and the docs page each have their own "Copy Command". On `/` there is only one, but scope by section if more are added.
