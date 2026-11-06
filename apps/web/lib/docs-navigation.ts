@@ -2,21 +2,12 @@ import type { Root } from "fumadocs-core/page-tree";
 import { widgetDocs } from "./widget-catalog";
 
 export const docsTree: Root = {
-  name: "Documentation",
+  name: "Docs",
   children: [
-    { type: "separator", name: "Getting Started" },
-    { type: "page", name: "Overview", url: "/components" },
-    {
-      type: "page",
-      name: "Installation & Integration",
-      url: "/components/getting-started",
-    },
-    {
-      type: "page",
-      name: "Design System",
-      url: "/design-system",
-    },
-    { type: "separator", name: "Feedback Widgets" },
+    { type: "separator", name: "Get started" },
+    { type: "page", name: "All components", url: "/components" },
+    { type: "page", name: "Docs", url: "/components/getting-started" },
+    { type: "separator", name: "Components" },
     ...widgetDocs.map((widget) => ({
       type: "page" as const,
       name: widget.name,
