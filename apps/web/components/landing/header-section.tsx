@@ -21,7 +21,7 @@ export const siteLinks = [
 ] as const;
 
 export const searchTriggerClassName =
-  "text-muted-foreground md:w-56 md:justify-start md:border md:border-border md:bg-muted/40 md:px-2.5 md:font-normal";
+  "text-muted-foreground md:w-56 md:justify-start md:gap-2 md:border md:border-border md:bg-muted/40 md:px-2.5 md:font-normal";
 
 export function SearchTriggerContent({ shortcut }: { shortcut?: boolean }) {
   return (
