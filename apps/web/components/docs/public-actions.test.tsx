@@ -37,7 +37,7 @@ test("local demo submits without a request and resets selection with keyboard fo
     fireEvent.click(reaction);
     expect(reaction.getAttribute("aria-pressed")).toBe("true");
     fireEvent.click(screen.getByRole("button", { name: "Submit" }));
-    fireEvent.click(await screen.findByRole("button", { name: "Try again" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Reset" }));
     const firstReaction = screen
       .getAllByRole("button")
       .find((button) => button.hasAttribute("aria-pressed"))!;

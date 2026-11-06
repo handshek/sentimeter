@@ -17,46 +17,40 @@ import {
 import {
   getUsageSnippet,
   REPOSITORY_URL,
+  localExampleNote,
   widgetDocs,
 } from "@/lib/widget-catalog";
 import { CodeBlock } from "@/components/docs/code-block";
-import { WidgetSpecimen } from "./widget-specimen";
+import { WidgetDemo } from "@/components/docs/widget-demo";
 import type { HostedMode } from "@/lib/hosted-config";
 
 const scenarios = [
   {
     number: "01",
-    family: "emoji" as const,
     slug: "emoji-feedback",
     eyebrow: "After onboarding · Feature discovery",
     title: "Make room for a feeling.",
     description:
       "Five reactions tell you how an experience landed. Add an optional comment when a little context would help.",
     name: "Emoji feedback",
-    detail: "Five-point sentiment · Emoji, icons, or your own glyphs",
   },
   {
     number: "02",
-    family: "thumbs" as const,
     slug: "like-dislike",
     eyebrow: "Documentation · AI responses",
     title: "Ask one useful question.",
     description:
       "A simple yes or no, right where someone needs it. A lightweight way to learn which answers actually help.",
     name: "Like / dislike",
-    layout: "inline" as const,
-    detail: "Binary feedback · Inline, out of the way until chosen",
   },
   {
     number: "03",
-    family: "star" as const,
     slug: "star-rating",
     eyebrow: "Support · Completed experiences",
     title: "Give the experience a measure.",
     description:
       "A familiar five-star scale for the moments that deserve a closer look. Keep the rating, invite the story behind it.",
     name: "Star rating",
-    detail: "Five-star rating · Hover and keyboard feedback",
   },
 ];
 
@@ -117,22 +111,16 @@ export function ShowcaseSection() {
                   </Button>
                 </div>
               </div>
-              <div className="ds-inset min-w-0 px-3 pt-6 pb-3 sm:px-6">
-                <div className="flex min-h-64 items-center">
-                  <WidgetSpecimen
-                    family={scenario.family}
-                    layout={"layout" in scenario ? scenario.layout : undefined}
-                  />
-                </div>
-                <p className="ds-caption border-t border-border px-4 py-3 text-center text-muted-foreground sm:px-0">
-                  {scenario.detail}
-                </p>
-              </div>
+              <WidgetDemo
+                widget={widgetDocs.find(
+                  (widget) => widget.slug === scenario.slug,
+                )!}
+              />
             </article>
           ))}
         </div>
         <p className="ds-caption mt-5 text-muted-foreground">
-          All examples run locally. No feedback is sent or stored.
+          {localExampleNote}
         </p>
       </div>
     </section>

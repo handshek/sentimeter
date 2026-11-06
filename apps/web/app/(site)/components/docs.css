@@ -140,10 +140,6 @@
   text-decoration-color: currentColor;
 }
 
-.docs-preview {
-  background: var(--muted);
-}
-
 .docs-props > [data-slot="table-container"] {
   overflow: visible;
 }

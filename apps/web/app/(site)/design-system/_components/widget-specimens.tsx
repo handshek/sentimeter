@@ -244,12 +244,10 @@ export function WidgetSpecimens() {
           </TabsList>
           {widgetDocs.map((widget) => (
             <TabsContent key={widget.slug} value={widget.slug} className="pt-6">
-              <div className="ds-inset px-3 py-6 sm:p-8">
-                <WidgetDemo
-                  widget={widget}
-                  options={{ variant, size, showInput }}
-                />
-              </div>
+              <WidgetDemo
+                widget={widget}
+                options={{ variant, size, showInput }}
+              />
               <Button asChild variant="link" className="mt-6 px-0">
                 <Link href={`/components/${widget.slug}`}>
                   Use {widget.name}

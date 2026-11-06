@@ -50,12 +50,7 @@ export default function DesignSystemOverview() {
                 Open code. Your product’s voice.
               </div>
             </div>
-            <div className="min-w-0 rounded-lg bg-muted/60 sm:p-4 xl:-mr-4">
-              <WidgetDemo
-                widget={widgetDocs[0]!}
-                options={{ showInput: true }}
-              />
-            </div>
+            <WidgetDemo widget={widgetDocs[0]!} options={{ showInput: true }} />
           </div>
         </div>
         <p className="ds-caption text-muted-foreground">
