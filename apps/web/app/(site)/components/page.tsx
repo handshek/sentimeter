@@ -22,7 +22,7 @@ export default function ComponentsPage() {
         </p>
         <h1 className="ds-page-title">Small asks. Useful answers.</h1>
         <p className="ds-lead max-w-prose text-muted-foreground">
-          Feedback widgets that belong in your product. Try the interaction,
+          Feedback components that belong in your product. Try the interaction,
           install the source, and make it yours.
         </p>
         <div className="flex flex-wrap items-center gap-4">

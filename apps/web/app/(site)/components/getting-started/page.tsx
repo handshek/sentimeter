@@ -29,7 +29,7 @@ export default function GettingStartedPage() {
         </p>
         <h1 className="ds-page-title">Your first feedback component.</h1>
         <p className="ds-lead text-muted-foreground">
-          Install a widget, try it locally, then save feedback using your own
+          Install a component, try it locally, then save feedback using your own
           backend. You own the source; no Sentimeter account is required.
         </p>
       </header>

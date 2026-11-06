@@ -53,7 +53,7 @@ export default function PrivacyPage() {
             </p>
           </section>
           <section className="space-y-3 ds-body text-muted-foreground">
-            <h2 className="ds-title text-foreground">Installed widgets</h2>
+            <h2 className="ds-title text-foreground">Installed components</h2>
             <p>
               Widgets complete locally by default. A developer can supply their
               own submit handler to save feedback. That developer controls the

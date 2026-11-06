@@ -106,7 +106,7 @@ export const designSystemSections = [
       "Composing foundations and components into landing pages, documentation, dashboards, forms, empty states, and error recovery.",
   },
   {
-    title: "Feedback widgets",
+    title: "Feedback components",
     url: "/design-system/widgets",
     content:
       "The widget inherits the host theme. Stacked and inline layouts, custom glyphs, tokens, Lucide icons, native emoji, and submission states.",

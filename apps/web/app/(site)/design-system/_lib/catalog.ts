@@ -48,7 +48,7 @@ export const systemChapters = [
   },
   {
     slug: "widgets",
-    title: "Feedback widgets",
+    title: "Feedback components",
     group: "In context",
     description:
       "Faces, stars, and thumbs in two layouts, with custom glyphs and dependable states.",
