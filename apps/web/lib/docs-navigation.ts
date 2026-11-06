@@ -33,7 +33,7 @@ export const gettingStartedSections = [
       "Prerequisites: React, TypeScript, Tailwind CSS and shadcn. Uses your local Button, Textarea, Label, theme tokens and utilities.",
   },
   {
-    title: "Install a Widget",
+    title: "Install a Component",
     url: "#install",
     depth: 2,
     content:
@@ -47,7 +47,7 @@ export const gettingStartedSections = [
       "Pass an asynchronous submit handler to validate and persist feedback. Without a handler, submission completes locally. Custom handlers can throw WidgetSubmitError with a user-facing message and retryAfterMs. Failed submissions remain retryable.",
   },
   {
-    title: "Keep the Widget Accessible",
+    title: "Keep the Component Accessible",
     url: "#accessibility",
     depth: 2,
     content:

@@ -21,7 +21,7 @@ export function HostedProviders({
           registry works without either service.
         </p>
         <Button asChild>
-          <Link href="/components">Browse Widgets</Link>
+          <Link href="/components">Browse components</Link>
         </Button>
       </main>
     );

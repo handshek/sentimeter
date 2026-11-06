@@ -27,7 +27,7 @@ export default function GettingStartedPage() {
         <p className="ds-eyebrow text-muted-foreground">
           Installation & integration
         </p>
-        <h1 className="ds-page-title">Your first feedback widget.</h1>
+        <h1 className="ds-page-title">Your first feedback component.</h1>
         <p className="ds-lead text-muted-foreground">
           Install a widget, try it locally, then save feedback using your own
           backend. You own the source; no Sentimeter account is required.
@@ -53,7 +53,7 @@ export default function GettingStartedPage() {
         </section>
         <section aria-labelledby="install" className="docs-section">
           <h2 id="install" className="ds-section-title">
-            2. Install a Widget
+            2. Install a Component
           </h2>
           <p className="ds-body text-muted-foreground">
             This installs Emoji Feedback. Choose{" "}
@@ -122,7 +122,7 @@ export default function GettingStartedPage() {
         </section>
         <section aria-labelledby="accessibility" className="docs-section">
           <h2 id="accessibility" className="ds-section-title">
-            Keep the Widget Accessible
+            Keep the Component Accessible
           </h2>
           <p className="ds-body text-muted-foreground">
             Keep the accessible reaction names, pressed states, keyboard focus,
@@ -133,7 +133,7 @@ export default function GettingStartedPage() {
             the viewport.
           </p>
           <Button asChild variant="outline">
-            <Link href="/components">Browse Widgets</Link>
+            <Link href="/components">Browse components</Link>
           </Button>
         </section>
         <section aria-labelledby="agents" className="docs-section">
