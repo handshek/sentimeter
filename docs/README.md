@@ -14,6 +14,8 @@ updated or deleted when behavior changes.
   coding agents.
 - [Changelog](../CHANGELOG.md) - public release history.
 - [Onboarding](onboarding.md) - practical walkthrough for working in the repo.
+- [Product direction](product-direction.md) - who Sentimeter is for, the order
+  of work, and the current UI consistency spec.
 - [Context](../CONTEXT.md) - product and system language for larger changes.
 - [Design system](../DESIGN_SYSTEM.md) - UI principles, foundations, and the widget contract.
 
