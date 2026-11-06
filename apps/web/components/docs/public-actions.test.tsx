@@ -136,3 +136,27 @@ test("a package manager chosen once is used by every install command, including 
     localStorage.clear();
   }
 });
+
+test("a new package manager choice still applies when storage rejects writes", () => {
+  const original = Object.getOwnPropertyDescriptor(globalThis, "localStorage")!;
+  Object.defineProperty(globalThis, "localStorage", {
+    configurable: true,
+    value: {
+      getItem: () => "yarn",
+      setItem: () => {
+        throw new Error("QuotaExceededError");
+      },
+    },
+  });
+  try {
+    render(<WidgetInstallCommand registryName="star-rating" />);
+    fireEvent.mouseDown(screen.getByRole("tab", { name: "pnpm" }), {
+      button: 0,
+    });
+    expect(screen.getByRole("tab", { selected: true }).textContent).toBe(
+      "pnpm",
+    );
+  } finally {
+    Object.defineProperty(globalThis, "localStorage", original);
+  }
+});
