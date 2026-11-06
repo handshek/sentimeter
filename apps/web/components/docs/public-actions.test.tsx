@@ -104,3 +104,16 @@ test("copy failure offers the exact text and never claims success; retry announc
   );
   expect(screen.queryByRole("alert")).toBeNull();
 });
+
+test("copy as Markdown announces what was copied", async () => {
+  Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    value: { async writeText() {} },
+  });
+  render(<CopyButton text="# Star Rating" label="Copy as Markdown" />);
+  fireEvent.click(screen.getByRole("button", { name: "Copy as Markdown" }));
+  await screen.findByRole("button", { name: "Copied" });
+  expect(screen.getByRole("status").textContent).toBe(
+    "Markdown copied to clipboard.",
+  );
+});
