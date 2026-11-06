@@ -96,11 +96,15 @@ export type WidgetDocConfig = {
   preview: "emoji" | "thumbs" | "star";
   componentName: "EmojiFeedback" | "LikeDislike" | "StarRating";
   defaultVariant: "emoji" | "icons";
+  example: WidgetDemoOptions;
   installSnippet: string;
   usageSnippet: string;
   props: WidgetDocRow[];
   installMetadata: WidgetInstallMetadata;
 };
+
+export const localExampleNote =
+  "Examples run locally. Nothing is sent or stored.";
 
 export type WidgetDemoOptions = {
   layout: WidgetLayout;
@@ -348,6 +352,12 @@ const widgetDefinitions: Record<
     preview: "emoji",
     componentName: "EmojiFeedback",
     defaultVariant: "emoji",
+    example: {
+      layout: "stacked",
+      variant: "emoji",
+      size: "default",
+      showInput: false,
+    },
     props: [
       ...sharedProps,
       {
@@ -377,6 +387,12 @@ const widgetDefinitions: Record<
     preview: "thumbs",
     componentName: "LikeDislike",
     defaultVariant: "icons",
+    example: {
+      layout: "inline",
+      variant: "icons",
+      size: "default",
+      showInput: false,
+    },
     props: [
       ...sharedProps,
       {
@@ -406,6 +422,12 @@ const widgetDefinitions: Record<
     preview: "star",
     componentName: "StarRating",
     defaultVariant: "icons",
+    example: {
+      layout: "stacked",
+      variant: "icons",
+      size: "default",
+      showInput: false,
+    },
     props: [
       ...sharedProps,
       {
