@@ -527,6 +527,45 @@ describe("rendered feedback widget", () => {
     assert.equal(payloads.length, 1);
   });
 
+  test("sends a choice selected and submitted in the same tick", async () => {
+    const payloads: WidgetPayload[] = [];
+
+    function QuickLike() {
+      const { select, submitSelected } = useFeedbackContext();
+      return (
+        <button
+          type="button"
+          onClick={() => {
+            select(1);
+            void submitSelected();
+          }}
+        >
+          Quick like
+        </button>
+      );
+    }
+
+    render(
+      <FeedbackWidget
+        widgetType="thumbs"
+        autoHide={false}
+        submit={async (payload) => {
+          payloads.push(payload);
+        }}
+      >
+        <QuickLike />
+      </FeedbackWidget>,
+    );
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Quick like" }));
+    });
+
+    assert.deepEqual(payloads, [
+      { location: "/", widgetType: "thumbs", value: 1 },
+    ]);
+  });
+
   test("keeps success visible when auto-hide is disabled and focuses its status", async () => {
     render(<LikeDislike autoHide={false} doneDurationMs={1} />);
 
