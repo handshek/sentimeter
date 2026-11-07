@@ -7,7 +7,7 @@ export function DirectoryCard({ entry }: { entry: DirectoryEntry }) {
   return (
     <Link
       href={entry.href}
-      className="group flex h-full min-w-0 flex-col rounded-2xl bg-muted p-1.5 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="group flex h-full min-w-0 flex-col rounded-2xl bg-muted p-1.5 hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <div className="h-52 overflow-hidden rounded-xl bg-background">
         <CardPreview id={entry.preview} />
