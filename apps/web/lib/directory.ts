@@ -48,7 +48,7 @@ const componentCopy: Record<
 > = {
   form: {
     description:
-      "“What happened?” plus one text box. Page and browser details attach on their own.",
+      "“What happened?” plus one text box, with page and browser details attached.",
     situation: "When something breaks",
   },
   emoji: {

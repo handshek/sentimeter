@@ -56,31 +56,29 @@ function Pill({ className }: { className?: string }) {
 }
 
 const previews: Record<PreviewId, { scale: string; node: ReactNode }> = {
-  form: { scale: "scale-[0.55]", node: <FeedbackForm /> },
+  form: { scale: "scale-[0.64]", node: <FeedbackForm /> },
   emoji: {
-    scale: "scale-[0.58]",
+    scale: "scale-[0.7]",
     node: <EmojiFeedback title="How was checkout?" />,
   },
   thumbs: {
-    scale: "scale-[0.72]",
+    scale: "scale-[0.85]",
     node: <LikeDislike layout="inline" title="Was this helpful?" />,
   },
   star: {
-    scale: "scale-[0.58]",
+    scale: "scale-[0.7]",
     node: <StarRating title="Rate your onboarding" />,
   },
   nps: {
-    scale: "scale-[0.58]",
+    scale: "scale-[0.68]",
     node: <NpsScore title="Recommend us to a friend?" />,
   },
   survey: {
-    scale: "scale-[0.5]",
-    node: (
-      <Survey options={[...twoReasons, { label: "Other", value: "other" }]} />
-    ),
+    scale: "scale-[0.64]",
+    node: <Survey description="" options={twoReasons} />,
   },
   "floating-feedback": {
-    scale: "scale-[0.56]",
+    scale: "scale-[0.66]",
     node: (
       <MiniApp>
         <p className="ds-title">Billing</p>
@@ -96,7 +94,7 @@ const previews: Record<PreviewId, { scale: string; node: ReactNode }> = {
     ),
   },
   "report-problem": {
-    scale: "scale-[0.56]",
+    scale: "scale-[0.66]",
     node: (
       <MiniApp>
         <div className="flex items-center justify-between">
@@ -123,7 +121,7 @@ const previews: Record<PreviewId, { scale: string; node: ReactNode }> = {
     ),
   },
   "error-feedback": {
-    scale: "scale-[0.58]",
+    scale: "scale-[0.7]",
     node: (
       <div className="flex w-80 flex-col items-center gap-2 text-center">
         <TriangleAlert
@@ -146,7 +144,7 @@ const previews: Record<PreviewId, { scale: string; node: ReactNode }> = {
     ),
   },
   "was-this-helpful": {
-    scale: "scale-[0.55]",
+    scale: "scale-[0.66]",
     node: (
       <div className="flex w-full flex-col gap-4 text-left">
         <p className="ds-label">Connect your backend</p>
@@ -156,7 +154,7 @@ const previews: Record<PreviewId, { scale: string; node: ReactNode }> = {
     ),
   },
   "after-task-rating": {
-    scale: "scale-[0.54]",
+    scale: "scale-[0.64]",
     node: (
       <div className="flex w-full flex-col gap-3 text-left">
         <p className="ds-label flex items-center gap-2">
@@ -168,7 +166,7 @@ const previews: Record<PreviewId, { scale: string; node: ReactNode }> = {
     ),
   },
   "cancel-flow-survey": {
-    scale: "scale-[0.5]",
+    scale: "scale-[0.6]",
     node: (
       <Survey
         title="Cancel your Pro plan?"
@@ -189,7 +187,8 @@ export function CardPreview({ id }: { id: PreviewId }) {
     <div
       aria-hidden="true"
       inert
-      className="pointer-events-none flex h-full w-full items-center justify-center overflow-hidden select-none"
+      // Stills show controls in their ready state, not disabled and washed out.
+      className="pointer-events-none flex h-full w-full items-center justify-center overflow-hidden select-none [&_button:disabled]:opacity-100"
     >
       <div
         className={cn("flex w-96 shrink-0 origin-center justify-center", scale)}

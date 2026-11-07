@@ -9,7 +9,7 @@ export function DirectoryCard({ entry }: { entry: DirectoryEntry }) {
       href={entry.href}
       className="group flex h-full min-w-0 flex-col rounded-2xl bg-muted p-1.5 hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
-      <div className="h-52 overflow-hidden rounded-xl bg-background">
+      <div className="h-44 overflow-hidden rounded-xl bg-background sm:h-56">
         <CardPreview id={entry.preview} />
       </div>
       <div className="flex flex-col gap-1 px-2.5 pt-3 pb-2">
@@ -26,7 +26,7 @@ export function DirectoryCard({ entry }: { entry: DirectoryEntry }) {
             {entry.kind}
           </span>
         </div>
-        <p className="ds-body-sm line-clamp-2 text-muted-foreground">
+        <p className="ds-body-sm text-pretty text-muted-foreground">
           {entry.description}
         </p>
       </div>
