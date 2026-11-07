@@ -176,4 +176,9 @@ test("a copy result for the previous text clears when the text changes", async (
 
   expect(screen.getByRole("button", { name: "Copy key" })).toBeTruthy();
   expect(screen.getByRole("status").textContent).toBe("");
+
+  view.rerender(<CopyButton text="old-key" label="Copy key" />);
+
+  expect(screen.getByRole("button", { name: "Copy key" })).toBeTruthy();
+  expect(screen.getByRole("status").textContent).toBe("");
 });
