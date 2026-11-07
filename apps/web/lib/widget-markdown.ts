@@ -33,7 +33,7 @@ Installed code uses your local shadcn components and theme tokens. No Sentimeter
 
 ${packageManagers.map((manager) => `### ${manager}\n\n${code("sh", commands[manager])}`).join("\n\n")}
 
-Installs ${metadata.targetFiles.length} Sentimeter files: ${metadata.widgetFileCount} widget wrapper + ${metadata.sharedFileCount} shared feedback-system files.
+Adds ${metadata.widgetFiles.map((path) => `\`${path}\``).join(", ")} and the shared \`${metadata.sharedFolder}\` folder (${metadata.targetFiles.length} files in total).
 shadcn dependencies: ${metadata.shadcnDependencies.join(", ")}.
 Package dependencies: ${metadata.packageDependencies.join(", ")}.
 

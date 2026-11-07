@@ -29,9 +29,43 @@ export type {
 
 type WidgetInstallCommandProps = {
   registryName: string;
-  defaultManager?: PackageManager;
   metadata?: WidgetInstallMetadata;
 };
+
+const managerKey = "sentimeter:package-manager";
+const managerListeners = new Set<() => void>();
+let unsavedManager: PackageManager | null = null;
+
+function subscribeManager(listener: () => void) {
+  managerListeners.add(listener);
+  window.addEventListener("storage", listener);
+  return () => {
+    managerListeners.delete(listener);
+    window.removeEventListener("storage", listener);
+  };
+}
+
+function readManager(): PackageManager {
+  if (unsavedManager) return unsavedManager;
+  try {
+    const stored = localStorage.getItem(managerKey);
+    return packageManagers.find((manager) => manager === stored) ?? "bun";
+  } catch {
+    return "bun";
+  }
+}
+
+// Every install command on every page follows the reader's last choice.
+function chooseManager(manager: PackageManager) {
+  try {
+    localStorage.setItem(managerKey, manager);
+    unsavedManager = null;
+  } catch {
+    // Without storage, the choice still holds until the page reloads.
+    unsavedManager = manager;
+  }
+  managerListeners.forEach((listener) => listener());
+}
 
 function formatDependency(name: string) {
   if (name === "button") return "Button";
@@ -42,10 +76,13 @@ function formatDependency(name: string) {
 
 export function WidgetInstallCommand({
   registryName,
-  defaultManager = "bun",
   metadata,
 }: WidgetInstallCommandProps) {
-  const [manager, setManager] = React.useState<PackageManager>(defaultManager);
+  const manager = React.useSyncExternalStore(
+    subscribeManager,
+    readManager,
+    () => "bun" as const,
+  );
   const commands = React.useMemo(
     () => getInstallCommands(registryName),
     [registryName],
@@ -57,7 +94,7 @@ export function WidgetInstallCommand({
       <div className="ds-inset min-w-0 overflow-hidden">
         <Tabs
           value={manager}
-          onValueChange={(value) => setManager(value as PackageManager)}
+          onValueChange={(value) => chooseManager(value as PackageManager)}
         >
           <div className="flex min-w-0 flex-wrap items-center gap-2 border-b border-border px-2 py-2 sm:px-3">
             <Terminal
@@ -105,20 +142,28 @@ export function WidgetInstallCommand({
 
       {metadata ? (
         <div className="px-1 py-1">
-          <div className="space-y-1">
-            <p className="ds-label">
-              {metadata.targetFiles.length} Sentimeter Files
-            </p>
-            <p className="ds-caption text-muted-foreground">
-              {metadata.widgetFileCount} widget wrapper +{" "}
-              {metadata.sharedFileCount} shared feedback-system files
-            </p>
-          </div>
+          <p className="ds-body-sm text-muted-foreground">
+            Adds{" "}
+            {metadata.widgetFiles.map((file) => (
+              <code
+                key={file}
+                className="ds-code text-foreground"
+                translate="no"
+              >
+                {file}
+              </code>
+            ))}{" "}
+            and the shared{" "}
+            <code className="ds-code text-foreground" translate="no">
+              {metadata.sharedFolder}
+            </code>{" "}
+            folder.
+          </p>
 
           <Accordion type="single" collapsible className="mt-1">
             <AccordionItem value="installed-files" className="border-0">
               <AccordionTrigger className="min-h-11 py-2 text-sm">
-                View Exact File Paths
+                View all {metadata.targetFiles.length} files
               </AccordionTrigger>
               <AccordionContent className="pb-2">
                 <ul className="space-y-1.5">

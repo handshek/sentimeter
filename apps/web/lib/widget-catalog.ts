@@ -27,8 +27,8 @@ export type WidgetInstallMetadata = {
   tabLabel: string;
   registryName: string;
   targetFiles: string[];
-  widgetFileCount: number;
-  sharedFileCount: number;
+  widgetFiles: string[];
+  sharedFolder: string;
   packageDependencies: string[];
   shadcnDependencies: string[];
 };
@@ -49,6 +49,16 @@ function getRegistryItem(name: string) {
   return item;
 }
 
+function commonFolder(paths: string[]) {
+  const [first, ...rest] = paths.map((path) => path.split("/").slice(0, -1));
+  let depth = first!.length;
+  for (const parts of rest) {
+    while (parts.slice(0, depth).join("/") !== first!.slice(0, depth).join("/"))
+      depth -= 1;
+  }
+  return `${first!.slice(0, depth).join("/")}/`;
+}
+
 function getInstallMetadata(
   widget: Pick<WidgetDocConfig, "slug" | "name" | "registryName" | "tabLabel">,
 ): WidgetInstallMetadata {
@@ -62,8 +72,8 @@ function getInstallMetadata(
     tabLabel: widget.tabLabel,
     registryName: item.name,
     targetFiles: [...new Set([...widgetFiles, ...sharedFiles])],
-    widgetFileCount: widgetFiles.length,
-    sharedFileCount: sharedFiles.length,
+    widgetFiles,
+    sharedFolder: commonFolder(sharedFiles),
     packageDependencies: [
       ...new Set([
         ...(shared.dependencies ?? []),
