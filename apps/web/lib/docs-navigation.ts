@@ -2,21 +2,12 @@ import type { Root } from "fumadocs-core/page-tree";
 import { widgetDocs } from "./widget-catalog";
 
 export const docsTree: Root = {
-  name: "Documentation",
+  name: "Docs",
   children: [
-    { type: "separator", name: "Getting Started" },
-    { type: "page", name: "Overview", url: "/components" },
-    {
-      type: "page",
-      name: "Installation & Integration",
-      url: "/components/getting-started",
-    },
-    {
-      type: "page",
-      name: "Design System",
-      url: "/design-system",
-    },
-    { type: "separator", name: "Feedback Widgets" },
+    { type: "separator", name: "Get started" },
+    { type: "page", name: "All components", url: "/components" },
+    { type: "page", name: "Docs", url: "/components/getting-started" },
+    { type: "separator", name: "Components" },
     ...widgetDocs.map((widget) => ({
       type: "page" as const,
       name: widget.name,
@@ -42,7 +33,7 @@ export const gettingStartedSections = [
       "Prerequisites: React, TypeScript, Tailwind CSS and shadcn. Uses your local Button, Textarea, Label, theme tokens and utilities.",
   },
   {
-    title: "Install a Widget",
+    title: "Install a Component",
     url: "#install",
     depth: 2,
     content:
@@ -56,7 +47,7 @@ export const gettingStartedSections = [
       "Pass an asynchronous submit handler to validate and persist feedback. Without a handler, submission completes locally. Custom handlers can throw WidgetSubmitError with a user-facing message and retryAfterMs. Failed submissions remain retryable.",
   },
   {
-    title: "Keep the Widget Accessible",
+    title: "Keep the Component Accessible",
     url: "#accessibility",
     depth: 2,
     content:
@@ -115,7 +106,7 @@ export const designSystemSections = [
       "Composing foundations and components into landing pages, documentation, dashboards, forms, empty states, and error recovery.",
   },
   {
-    title: "Feedback widgets",
+    title: "Feedback components",
     url: "/design-system/widgets",
     content:
       "The widget inherits the host theme. Stacked and inline layouts, custom glyphs, tokens, Lucide icons, native emoji, and submission states.",

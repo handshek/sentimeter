@@ -147,7 +147,7 @@ function ActionSpecimens() {
             Restore draft
           </Button>
           <Button variant="ghost" asChild>
-            <Link href="/components">Browse widgets</Link>
+            <Link href="/components">Browse components</Link>
           </Button>
           <Button
             variant="secondary"

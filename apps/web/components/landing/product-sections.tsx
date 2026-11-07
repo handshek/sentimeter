@@ -416,7 +416,7 @@ export function CtaSection() {
         <div>
           <Button asChild size="lg">
             <Link href="/components">
-              Find your feedback widget{" "}
+              Browse components{" "}
               <ArrowRight aria-hidden="true" className="size-4" />
             </Link>
           </Button>

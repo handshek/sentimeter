@@ -10,7 +10,7 @@ import {
 export const { GET } = createSearchAPI("simple", {
   indexes: [
     {
-      title: "Feedback Widgets",
+      title: "Components",
       url: "/components",
       content:
         "Open-source React feedback widgets for shadcn apps. Emoji, thumbs and stars. MIT licensed source you own.",
@@ -18,13 +18,13 @@ export const { GET } = createSearchAPI("simple", {
     ...gettingStartedSections.map((section) => ({
       title: section.title,
       url: `/components/getting-started${section.url}`,
-      breadcrumbs: ["Getting Started"],
+      breadcrumbs: ["Docs"],
       content: section.content,
     })),
     ...designSystemSections.map((section) => ({
       title: section.title,
       url: section.url,
-      breadcrumbs: ["Design System"],
+      breadcrumbs: ["Design system"],
       content: section.content,
     })),
     ...widgetDocs.map((widget) => ({

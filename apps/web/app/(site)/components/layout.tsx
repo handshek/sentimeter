@@ -2,7 +2,9 @@ import type { ReactNode } from "react";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import { DocsLayout } from "fumadocs-ui/layouts/notebook";
 import { docsTree } from "@/lib/docs-navigation";
-import { REPOSITORY_URL } from "@/lib/widget-catalog";
+import { DocsHeader } from "@/components/docs/docs-header";
+import { FooterSection } from "@/components/landing/footer-section";
+import { hostedMode } from "@/lib/hosted-config";
 import "./docs.css";
 
 export default function ComponentsLayout({
@@ -24,16 +26,13 @@ export default function ComponentsLayout({
         </a>
         <DocsLayout
           tree={docsTree}
-          nav={{ title: "Sentimeter", url: "/", mode: "top" }}
-          githubUrl={REPOSITORY_URL}
+          nav={{ mode: "top" }}
+          slots={{ header: DocsHeader }}
           sidebar={{ collapsible: false }}
-          links={[
-            { text: "Documentation", url: "/components", active: "nested-url" },
-            { text: "Design system", url: "/design-system" },
-          ]}
         >
           {children}
         </DocsLayout>
+        <FooterSection hostedMode={hostedMode()} />
       </div>
     </RootProvider>
   );

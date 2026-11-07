@@ -14,7 +14,7 @@ export default function ErrorPage({
 }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <HeaderSection hostedMode="off" />
+      <HeaderSection />
       <main className="ds-container ds-section">
         <Card className="ds-reading mx-auto">
           <CardContent className="space-y-6 p-(--ds-panel-inset)">
@@ -28,7 +28,7 @@ export default function ErrorPage({
             <div className="flex flex-wrap gap-3">
               <Button onClick={reset}>Try again</Button>
               <Button asChild variant="outline">
-                <Link href="/components">Browse widgets</Link>
+                <Link href="/components">Browse components</Link>
               </Button>
             </div>
           </CardContent>

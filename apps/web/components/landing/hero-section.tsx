@@ -34,7 +34,7 @@ export function HeroSection() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg">
               <Link href="/components">
-                Find your widget{" "}
+                Browse components{" "}
                 <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
             </Button>
@@ -103,7 +103,7 @@ export function HeroSection() {
           className="gap-3 px-0 text-muted-foreground hover:bg-transparent hover:text-foreground"
         >
           <Link href="#widgets">
-            Explore the collection{" "}
+            Explore the components{" "}
             <ArrowDown aria-hidden="true" className="size-4" />
           </Link>
         </Button>

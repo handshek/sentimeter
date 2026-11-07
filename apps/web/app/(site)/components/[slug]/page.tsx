@@ -47,7 +47,7 @@ export default async function WidgetDocsPage({
       tableOfContentPopover={{ enabled: false }}
     >
       <header className="docs-header">
-        <p className="ds-eyebrow text-muted-foreground">Feedback widgets</p>
+        <p className="ds-eyebrow text-muted-foreground">Components</p>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h1 className="ds-page-title">{widget.name}</h1>
           <CopyButton

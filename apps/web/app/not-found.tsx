@@ -9,7 +9,7 @@ export default function NotFound() {
   const mode = hostedMode();
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <HeaderSection hostedMode={mode} />
+      <HeaderSection />
       <main className="ds-container ds-section">
         <Card className="ds-reading mx-auto">
           <CardContent className="space-y-6 p-(--ds-panel-inset)">
@@ -20,7 +20,7 @@ export default function NotFound() {
               installable component.
             </p>
             <Button asChild>
-              <Link href="/components">Browse widgets</Link>
+              <Link href="/components">Browse components</Link>
             </Button>
           </CardContent>
         </Card>

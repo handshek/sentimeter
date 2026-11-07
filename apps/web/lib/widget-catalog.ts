@@ -341,7 +341,7 @@ const widgetDefinitions: Record<
     slug: "emoji-feedback",
     name: "Emoji Feedback",
     description:
-      "Emoji-based feedback widget with a 5-point scale. Users tap a face that matches their mood.",
+      "Emoji-based feedback component with a 5-point scale. Users tap a face that matches their mood.",
     registryName: "emoji-feedback",
     tabLabel: "Emoji",
     icon: "emoji",
@@ -370,7 +370,7 @@ const widgetDefinitions: Record<
     slug: "like-dislike",
     name: "Like / Dislike",
     description:
-      "Thumbs up or thumbs down feedback widget. Simple binary sentiment.",
+      "Thumbs up or thumbs down feedback component. Simple binary sentiment.",
     registryName: "like-dislike",
     tabLabel: "Thumbs",
     icon: "thumbs",
@@ -399,7 +399,7 @@ const widgetDefinitions: Record<
     slug: "star-rating",
     name: "Star Rating",
     description:
-      "Five-star rating feedback widget. Hover to preview, click to lock.",
+      "Five-star rating feedback component. Hover to preview, click to lock.",
     registryName: "star-rating",
     tabLabel: "Stars",
     icon: "star",

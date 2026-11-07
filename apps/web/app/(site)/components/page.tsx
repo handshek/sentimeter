@@ -7,7 +7,7 @@ import { widgetDocs } from "@/lib/widget-catalog";
 import { WidgetDemo } from "@/components/docs/widget-demo";
 
 export const metadata: Metadata = {
-  title: "Feedback Widgets",
+  title: "Components",
   description:
     "Try Emoji Feedback, Like / Dislike, and Star Rating. Install accessible React source from the Sentimeter shadcn registry.",
   alternates: { canonical: "/components" },
@@ -22,14 +22,13 @@ export default function ComponentsPage() {
         </p>
         <h1 className="ds-page-title">Small asks. Useful answers.</h1>
         <p className="ds-lead max-w-prose text-muted-foreground">
-          Feedback widgets that belong in your product. Try the interaction,
+          Feedback components that belong in your product. Try the interaction,
           install the source, and make it yours.
         </p>
         <div className="flex flex-wrap items-center gap-4">
           <Button asChild variant="outline">
             <Link href="/components/getting-started">
-              Installation & Integration{" "}
-              <ArrowRight aria-hidden="true" className="size-4" />
+              Read the docs <ArrowRight aria-hidden="true" className="size-4" />
             </Link>
           </Button>
           <span className="ds-caption text-muted-foreground">

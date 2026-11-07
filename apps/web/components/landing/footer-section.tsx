@@ -8,8 +8,8 @@ export function FooterSection({ hostedMode }: { hostedMode: HostedMode }) {
     {
       name: "Build",
       links: [
-        { href: "/components", label: "Widget collection" },
-        { href: "/components/getting-started", label: "Documentation" },
+        { href: "/components", label: "Components" },
+        { href: "/components/getting-started", label: "Docs" },
         { href: "/design-system", label: "Design system" },
       ],
     },
