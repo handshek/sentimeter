@@ -60,7 +60,9 @@ export function CopyButton({
         {copied ? "Copied" : label}
       </Button>
       <span role="status" aria-live="polite" className="sr-only">
-        {copied ? `${label.replace(/^Copy /, "")} copied to clipboard.` : ""}
+        {copied
+          ? `${label.replace(/^Copy (?:as )?/, "")} copied to clipboard.`
+          : ""}
       </span>
       {result === "manual" ? (
         <div role="alert" className="mt-2 space-y-2 text-sm">
