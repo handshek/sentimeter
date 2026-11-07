@@ -166,7 +166,17 @@ export function FeedbackFormActions({
           thankYouDescription && feedbackStyles.formSuccess,
           feedbackStyles.focus,
         )}
-        style={actionStyle}
+        // A two-line thank-you keeps its own minimum; the measured button row
+        // only stops the card from shrinking.
+        style={
+          actionHeight
+            ? {
+                minHeight: thankYouDescription
+                  ? `max(7rem, ${actionHeight}px)`
+                  : actionHeight,
+              }
+            : undefined
+        }
       >
         <CheckCircle2
           className={feedbackStyles.statusIcon}
