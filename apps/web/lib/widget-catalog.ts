@@ -96,11 +96,15 @@ export type WidgetDocConfig = {
   preview: "emoji" | "thumbs" | "star";
   componentName: "EmojiFeedback" | "LikeDislike" | "StarRating";
   defaultVariant: "emoji" | "icons";
+  example: WidgetDemoOptions;
   installSnippet: string;
   usageSnippet: string;
   props: WidgetDocRow[];
   installMetadata: WidgetInstallMetadata;
 };
+
+export const localExampleNote =
+  "Examples run locally. Nothing is sent or stored.";
 
 export type WidgetDemoOptions = {
   layout: WidgetLayout;
@@ -110,19 +114,23 @@ export type WidgetDemoOptions = {
 };
 
 export function getUsageSnippet(
-  widget: Pick<WidgetDocConfig, "slug" | "componentName" | "defaultVariant">,
+  widget: Pick<
+    WidgetDocConfig,
+    "slug" | "componentName" | "defaultVariant" | "example"
+  >,
   options?: Partial<WidgetDemoOptions>,
   submission: "local" | "custom" = "local",
 ) {
-  const variant = options?.variant ?? widget.defaultVariant;
-  const size = options?.size ?? "default";
-  const layout = options?.layout ?? "stacked";
+  const { variant, size, layout, showInput } = {
+    ...widget.example,
+    ...options,
+  };
   const props = [
     "autoHide={false}",
     ...(layout !== "stacked" ? [`layout="${layout}"`] : []),
     ...(variant !== widget.defaultVariant ? [`variant="${variant}"`] : []),
     ...(size !== "default" ? [`size="${size}"`] : []),
-    ...(options?.showInput ? ["showInput"] : []),
+    ...(showInput ? ["showInput"] : []),
     ...(submission === "custom" ? ["submit={saveFeedback}"] : []),
   ].join("\n      ");
   const customSubmit =
@@ -348,6 +356,12 @@ const widgetDefinitions: Record<
     preview: "emoji",
     componentName: "EmojiFeedback",
     defaultVariant: "emoji",
+    example: {
+      layout: "stacked",
+      variant: "emoji",
+      size: "default",
+      showInput: false,
+    },
     props: [
       ...sharedProps,
       {
@@ -377,6 +391,12 @@ const widgetDefinitions: Record<
     preview: "thumbs",
     componentName: "LikeDislike",
     defaultVariant: "icons",
+    example: {
+      layout: "inline",
+      variant: "icons",
+      size: "default",
+      showInput: false,
+    },
     props: [
       ...sharedProps,
       {
@@ -406,6 +426,12 @@ const widgetDefinitions: Record<
     preview: "star",
     componentName: "StarRating",
     defaultVariant: "icons",
+    example: {
+      layout: "stacked",
+      variant: "icons",
+      size: "default",
+      showInput: false,
+    },
     props: [
       ...sharedProps,
       {

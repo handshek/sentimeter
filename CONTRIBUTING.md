@@ -48,10 +48,10 @@ Then touch these places, in order:
 3. `apps/registry/registry.json` - add the matching manifest entry, then run
    `bun run check-registry`.
 4. `apps/web/lib/widget-catalog.ts` - add the slug to `WidgetSlug` and a
-   `widgetDefinitions` entry; the docs page, Markdown endpoint, and `llms.txt` follow.
-5. Previews: `apps/web/components/docs/widget-demo.tsx`,
-   `apps/web/components/landing/widget-specimen.tsx`, and the design-system widget
-   specimens in `apps/web`.
+   `widgetDefinitions` entry with its `example`; the docs page, Markdown endpoint,
+   and `llms.txt` follow.
+5. Previews: add the component to `apps/web/components/docs/widget-demo.tsx`. Its
+   catalog `example` drives every live preview.
 
 ## Commits
 

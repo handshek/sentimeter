@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { DocsPage } from "fumadocs-ui/layouts/notebook/page";
 import { Button } from "@workspace/ui/components/button";
-import { widgetDocs } from "@/lib/widget-catalog";
+import { localExampleNote, widgetDocs } from "@/lib/widget-catalog";
 import { WidgetDemo } from "@/components/docs/widget-demo";
 
 export const metadata: Metadata = {
@@ -41,19 +41,10 @@ export default function ComponentsPage() {
           <section
             key={widget.slug}
             aria-labelledby={`title-${widget.slug}`}
-            className="ds-panel min-w-0 overflow-hidden"
+            className="ds-panel min-w-0 p-2"
           >
-            <div className="docs-preview border-b px-0 py-8 min-[360px]:px-3">
-              <WidgetDemo
-                widget={{
-                  slug: widget.slug,
-                  preview: widget.preview,
-                  defaultVariant: widget.defaultVariant,
-                  name: widget.name,
-                }}
-              />
-            </div>
-            <div className="space-y-3 p-6">
+            <WidgetDemo widget={widget} />
+            <div className="space-y-3 p-4">
               <h2 id={`title-${widget.slug}`} className="ds-title">
                 {widget.name}
               </h2>
@@ -71,7 +62,7 @@ export default function ComponentsPage() {
         ))}
       </div>
       <p className="ds-caption mt-5 text-muted-foreground">
-        All previews run locally. Nothing is sent or stored.
+        {localExampleNote}
       </p>
       <aside className="ds-inset mt-10 flex flex-wrap items-center justify-between gap-6 p-6">
         <div className="max-w-xl space-y-2">

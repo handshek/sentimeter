@@ -1,15 +1,9 @@
 import Link from "next/link";
-import {
-  ArrowDown,
-  ArrowRight,
-  Check,
-  CheckCircle2,
-  MousePointer2,
-} from "lucide-react";
+import { ArrowDown, ArrowRight, Check } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
-import { Badge } from "@workspace/ui/components/badge";
 import { WidgetInstallCommand } from "@/components/docs/widget-install-command";
-import { WidgetSpecimen } from "./widget-specimen";
+import { WidgetDemo } from "@/components/docs/widget-demo";
+import { widgetDocs } from "@/lib/widget-catalog";
 
 export function HeroSection() {
   return (
@@ -52,42 +46,7 @@ export function HeroSection() {
           </div>
         </div>
         <div className="min-w-0">
-          <div className="ds-panel">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-5 py-4">
-              <span className="ds-label text-muted-foreground">
-                A moment in your product
-              </span>
-              <Badge variant="secondary" className="h-6 px-2.5">
-                Live example
-              </Badge>
-            </div>
-            <div className="bg-muted/35 px-0 pt-8 pb-3 sm:px-8">
-              <div className="mx-auto mb-7 flex max-w-80 items-start gap-3 px-4 sm:px-0">
-                <CheckCircle2
-                  aria-hidden="true"
-                  className="mt-0.5 size-5 shrink-0 text-primary"
-                />
-                <div>
-                  <p className="ds-label text-foreground">
-                    Your workspace is ready
-                  </p>
-                  <p className="ds-caption mt-1 text-muted-foreground">
-                    The perfect moment to ask how it felt.
-                  </p>
-                </div>
-              </div>
-              <div className="min-h-64">
-                <WidgetSpecimen showInput />
-              </div>
-            </div>
-            <div className="ds-caption flex items-start gap-2 border-t border-border px-5 py-3 text-muted-foreground">
-              <MousePointer2
-                aria-hidden="true"
-                className="mt-0.5 size-3.5 shrink-0"
-              />
-              Try a reaction. This example runs locally and stores nothing.
-            </div>
-          </div>
+          <WidgetDemo widget={widgetDocs[0]!} />
           <div className="mt-4">
             <WidgetInstallCommand registryName="emoji-feedback" />
           </div>

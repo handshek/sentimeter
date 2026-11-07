@@ -14,23 +14,33 @@ import type { WidgetDemoOptions, WidgetDocConfig } from "@/lib/widget-catalog";
 const widgets = { emoji: EmojiFeedback, thumbs: LikeDislike, star: StarRating };
 
 type WidgetDemoProps = {
-  widget: Pick<WidgetDocConfig, "slug" | "preview" | "defaultVariant" | "name">;
+  widget: Pick<
+    WidgetDocConfig,
+    "slug" | "preview" | "defaultVariant" | "name" | "example"
+  >;
   options?: Partial<WidgetDemoOptions>;
 };
 
-export function WidgetDemo(props: WidgetDemoProps) {
-  const { widget, options } = props;
+/** The one frame every live example renders in. */
+export function WidgetDemo({ widget, options }: WidgetDemoProps) {
+  const resolved = { ...widget.example, ...options };
   const key = [
     widget.slug,
-    options?.layout ?? "stacked",
-    options?.variant ?? widget.defaultVariant,
-    options?.size ?? "default",
-    options?.showInput ?? false,
+    resolved.layout,
+    resolved.variant,
+    resolved.size,
+    resolved.showInput,
   ].join(":");
-  return <WidgetDemoInstance key={key} {...props} />;
+  return <WidgetDemoInstance key={key} widget={widget} options={resolved} />;
 }
 
-function WidgetDemoInstance({ widget, options }: WidgetDemoProps) {
+function WidgetDemoInstance({
+  widget,
+  options,
+}: {
+  widget: WidgetDemoProps["widget"];
+  options: WidgetDemoOptions;
+}) {
   const [instance, setInstance] = useState(0);
   const [state, setState] = useState<WidgetState>("idle");
   const container = useRef<HTMLDivElement>(null);
@@ -54,34 +64,33 @@ function WidgetDemoInstance({ widget, options }: WidgetDemoProps) {
   return (
     <div
       role="group"
-      aria-label={`${widget.name} local demo`}
-      className="w-full min-w-0 space-y-2"
+      aria-label={`${widget.name} example`}
+      className="ds-inset @container relative flex min-h-64 w-full min-w-0 items-center justify-center pt-14 pb-8"
     >
       <div
         ref={container}
-        className="flex min-h-36 w-full items-center justify-center"
+        className="flex w-full min-w-0 justify-center @sm:px-3 @lg:px-8"
       >
         <Widget
           key={instance}
-          layout={options?.layout ?? "stacked"}
-          variant={options?.variant ?? widget.defaultVariant}
-          size={options?.size ?? "default"}
-          showInput={options?.showInput ?? false}
+          layout={options.layout}
+          variant={options.variant}
+          size={options.size}
+          showInput={options.showInput}
           autoHide={false}
           onStateChange={setState}
         />
       </div>
-      <div className="flex justify-center">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={reset}
-          disabled={state === "submitting"}
-        >
-          <RotateCcw className="size-4" aria-hidden="true" />
-          {state === "done" ? "Try again" : "Reset"}
-        </Button>
-      </div>
+      <Button
+        type="button"
+        variant="ghost"
+        className="absolute top-2 right-2 text-muted-foreground"
+        onClick={reset}
+        disabled={state === "submitting"}
+      >
+        <RotateCcw className="size-3.5" aria-hidden="true" />
+        Reset
+      </Button>
     </div>
   );
 }

@@ -35,6 +35,7 @@ import {
 import {
   getCompoundSnippet,
   getUsageSnippet,
+  localExampleNote,
   type WidgetDemoOptions,
   type WidgetDocConfig,
 } from "@/lib/widget-catalog";
@@ -43,12 +44,7 @@ import { WidgetDemo } from "./widget-demo";
 import { CodeBlock } from "./code-block";
 
 export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
-  const defaults: WidgetDemoOptions = {
-    layout: "stacked",
-    variant: widget.defaultVariant,
-    size: "default",
-    showInput: false,
-  };
+  const defaults = widget.example;
   const [options, setOptions] = useState<WidgetDemoOptions>(defaults);
   function updateOptions(next: Partial<WidgetDemoOptions>) {
     setOptions((current) => ({ ...current, ...next }));
@@ -63,9 +59,7 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
             <TabsTrigger value="code">Code</TabsTrigger>
           </TabsList>
           <TabsContent value="preview" className="m-0">
-            <div className="docs-preview ds-panel px-3 py-8 sm:px-6 sm:py-10">
-              <WidgetDemo widget={widget} options={options} />
-            </div>
+            <WidgetDemo widget={widget} options={options} />
           </TabsContent>
           <TabsContent value="code" className="m-0">
             <CodeBlock
@@ -75,9 +69,7 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
           </TabsContent>
         </Tabs>
         <div className="px-1 pt-2">
-          <p className="ds-caption text-muted-foreground">
-            Runs locally—no account, project, or network request required.
-          </p>
+          <p className="ds-caption text-muted-foreground">{localExampleNote}</p>
           <Accordion type="single" collapsible>
             <AccordionItem value="customize" className="border-0">
               <AccordionTrigger className="min-h-11 py-2 text-sm">
