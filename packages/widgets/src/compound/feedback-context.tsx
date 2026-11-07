@@ -5,11 +5,11 @@ import type {
   WidgetCallbacks,
   WidgetLayout,
   WidgetFollowUp,
-  WidgetPayload,
+  RatingPayload,
   WidgetState,
   WidgetSubmit,
   WidgetSubmitError,
-  WidgetType,
+  RatingWidgetType,
 } from "../types";
 import {
   notify,
@@ -55,7 +55,7 @@ export function useFeedbackContext(): FeedbackContextValue {
 
 export type FeedbackProviderProps = {
   location?: string;
-  widgetType: WidgetType;
+  widgetType: RatingWidgetType;
   disabled?: boolean;
   size?: WidgetSize;
   layout?: WidgetLayout;
@@ -81,7 +81,7 @@ export function FeedbackProvider({
   onCancel,
   onReset,
 }: FeedbackProviderProps) {
-  const payloadBase = React.useMemo<Omit<WidgetPayload, "value">>(
+  const payloadBase = React.useMemo<Omit<RatingPayload, "value">>(
     () => ({ location, widgetType }),
     [location, widgetType],
   );

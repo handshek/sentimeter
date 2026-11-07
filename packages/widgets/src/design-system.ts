@@ -127,6 +127,9 @@ export const feedbackStyles = {
   label: "sr-only",
   input:
     "h-[var(--feedback-input-height)] min-h-0 field-sizing-fixed w-full resize-none rounded-[var(--feedback-inner-radius)] border-[var(--feedback-border)] bg-[var(--feedback-input)] px-3 py-2.5 text-base leading-5 text-[var(--feedback-foreground)] shadow-(--feedback-input-shadow) placeholder:text-[var(--feedback-muted)] focus-visible:border-[var(--feedback-field-ring)] focus-visible:ring-3 focus-visible:ring-[var(--feedback-field-glow)] md:text-sm dark:bg-[var(--feedback-input)] transition-none",
+  context:
+    "text-xs leading-4 text-[var(--feedback-muted)] [overflow-wrap:anywhere]",
+  formSuccess: "min-h-28 flex-col gap-2 text-center",
   footer: "flex min-w-0 flex-col gap-2",
   inlineFooter:
     "flex min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t border-[var(--feedback-border)] py-2.5 ps-4 pe-2.5",

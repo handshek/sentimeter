@@ -67,6 +67,45 @@ describe("Registry Item Adapter", () => {
     });
   });
 
+  test("installs FeedbackForm with context and submission helpers", async () => {
+    const paths = await createTestPaths();
+    await runRegistryCommand("check", {
+      paths,
+      shadcnBuild: writeFakeShadcnOutput,
+      hostTypecheck: async ({ fixtureRoot }) => {
+        const source = await readFile(
+          path.join(fixtureRoot, "components/sentimeter/feedback-form.tsx"),
+          "utf8",
+        );
+        assert.match(source, /export function FeedbackForm/);
+        assert.match(source, /from "\.\/feedback-system"/);
+        assert.doesNotMatch(source, /@workspace\//);
+        for (const helper of [
+          "core/browser-context.ts",
+          "core/use-feedback-submission.ts",
+          "compound/feedback-form-parts.tsx",
+        ]) {
+          assert.ok(
+            await readFile(
+              path.join(
+                fixtureRoot,
+                "components/sentimeter/feedback-system",
+                helper,
+              ),
+              "utf8",
+            ),
+          );
+        }
+        const example = await readFile(
+          path.join(fixtureRoot, "components/host-form-example.tsx"),
+          "utf8",
+        );
+        assert.match(example, /payload.widgetType === "form"/);
+        assert.match(example, /payload.context\?\.route/);
+      },
+    });
+  });
+
   test("preserves the previous directory when preparation fails", async () => {
     const root = await makeTemporaryRoot("sentimeter-atomic-");
     const target = path.join(root, "target");

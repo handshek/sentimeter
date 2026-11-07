@@ -28,14 +28,32 @@ export class WidgetSubmitError extends Error {
   }
 }
 
-export type WidgetType = "emoji" | "thumbs" | "star" | "nps";
+export type RatingWidgetType = "emoji" | "thumbs" | "star" | "nps";
+export type WidgetType = RatingWidgetType | "form";
 
-export type WidgetPayload = {
+export type FeedbackContext = {
+  url: string;
+  route: string;
+  browser: string;
+  os: string;
+  viewport: { width: number; height: number };
+};
+
+export type RatingPayload = {
   location: string;
-  widgetType: WidgetType;
+  widgetType: RatingWidgetType;
   value: number;
   text?: string;
 };
+
+export type FormPayload = {
+  location: string;
+  widgetType: "form";
+  text: string;
+  context?: FeedbackContext;
+};
+
+export type WidgetPayload = RatingPayload | FormPayload;
 
 export type WidgetSubmit = (payload: WidgetPayload) => Promise<void>;
 

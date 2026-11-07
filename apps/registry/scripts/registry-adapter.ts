@@ -447,6 +447,26 @@ export function HostExample() {
         );
       }
 
+      if (installedTargets.has("components/sentimeter/feedback-form.tsx")) {
+        await writeFile(
+          path.join(fixtureRoot, "components", "host-form-example.tsx"),
+          `import { FeedbackForm } from "./sentimeter/feedback-form";
+import type { WidgetPayload } from "./sentimeter/feedback-system";
+
+export function HostFormExample() {
+  return <FeedbackForm location="/billing" onDone={() => {}} submit={async (payload: WidgetPayload) => {
+    if (payload.widgetType === "form") {
+      const text: string = payload.text;
+      const route: string | undefined = payload.context?.route;
+      JSON.stringify({ text, route });
+    }
+  }} />;
+}
+`,
+          "utf8",
+        );
+      }
+
       const tsconfigPath = path.join(fixtureRoot, "tsconfig.json");
       const uiRoot = path.join(options.paths.repoRoot, "packages", "ui", "src");
       const widgetDependenciesRoot = path.join(

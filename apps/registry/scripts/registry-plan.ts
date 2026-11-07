@@ -14,7 +14,8 @@ export type SourceMapping = Readonly<{
     | "emoji-feedback"
     | "like-dislike"
     | "star-rating"
-    | "nps";
+    | "nps"
+    | "feedback-form";
 }>;
 
 export type PlannedArtifact = Readonly<{
@@ -54,6 +55,26 @@ export const SOURCE_MAPPINGS: readonly SourceMapping[] = [
     source: "core/use-widget-machine.ts",
     staged: "feedback-system/core/use-widget-machine.ts",
     target: "components/sentimeter/feedback-system/core/use-widget-machine.ts",
+    item: "feedback-system",
+  },
+  {
+    source: "core/use-feedback-submission.ts",
+    staged: "feedback-system/core/use-feedback-submission.ts",
+    target:
+      "components/sentimeter/feedback-system/core/use-feedback-submission.ts",
+    item: "feedback-system",
+  },
+  {
+    source: "core/browser-context.ts",
+    staged: "feedback-system/core/browser-context.ts",
+    target: "components/sentimeter/feedback-system/core/browser-context.ts",
+    item: "feedback-system",
+  },
+  {
+    source: "compound/feedback-form-parts.tsx",
+    staged: "feedback-system/compound/feedback-form-parts.tsx",
+    target:
+      "components/sentimeter/feedback-system/compound/feedback-form-parts.tsx",
     item: "feedback-system",
   },
   {
@@ -139,6 +160,12 @@ export const SOURCE_MAPPINGS: readonly SourceMapping[] = [
     staged: "nps-score.tsx",
     target: "components/sentimeter/nps-score.tsx",
     item: "nps",
+  },
+  {
+    source: "feedback-form.tsx",
+    staged: "feedback-form.tsx",
+    target: "components/sentimeter/feedback-form.tsx",
+    item: "feedback-form",
   },
 ] as const;
 
@@ -228,6 +255,14 @@ export function createExpectedRegistry(
         description: "A 0–10 recommendation scale with optional follow-up.",
         registryDependencies: [`${REGISTRY_BASE_URL}/feedback-system.json`],
         files: filesFor("nps"),
+      },
+      {
+        name: "feedback-form",
+        type: "registry:block",
+        title: "Feedback Form",
+        description: "Free-text feedback with page and browser context.",
+        registryDependencies: [`${REGISTRY_BASE_URL}/feedback-system.json`],
+        files: filesFor("feedback-form"),
       },
     ],
   } as const;

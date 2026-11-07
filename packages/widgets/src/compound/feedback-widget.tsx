@@ -6,7 +6,7 @@ import type {
   WidgetLayout,
   WidgetFollowUp,
   WidgetSubmit,
-  WidgetType,
+  RatingWidgetType,
 } from "../types";
 import { cn } from "@workspace/ui/lib/utils";
 import {
@@ -26,7 +26,7 @@ import {
 
 export type FeedbackWidgetProps = {
   location?: string;
-  widgetType: WidgetType;
+  widgetType: RatingWidgetType;
   disabled?: boolean;
   size?: WidgetSize;
   closeButton?: boolean;
