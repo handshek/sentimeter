@@ -4,6 +4,7 @@ export type {
   ThumbGlyphs,
   WidgetCallbacks,
   WidgetLayout,
+  WidgetFollowUp,
   WidgetPayload,
   WidgetState,
   WidgetSubmit,

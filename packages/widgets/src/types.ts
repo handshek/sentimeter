@@ -5,6 +5,8 @@ export type WidgetState = "idle" | "selected" | "submitting" | "done";
 /** `stacked` is the card; `inline` is a one-line bar that opens after a choice. */
 export type WidgetLayout = "stacked" | "inline";
 
+export type WidgetFollowUp = "negative" | "always" | "never";
+
 export type WidgetSubmitErrorCode =
   "rate_limited" | "network_error" | "unknown";
 
@@ -26,7 +28,7 @@ export class WidgetSubmitError extends Error {
   }
 }
 
-export type WidgetType = "emoji" | "thumbs" | "star";
+export type WidgetType = "emoji" | "thumbs" | "star" | "nps";
 
 export type WidgetPayload = {
   location: string;

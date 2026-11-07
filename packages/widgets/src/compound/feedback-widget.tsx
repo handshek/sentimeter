@@ -4,6 +4,7 @@ import * as React from "react";
 import type {
   WidgetCallbacks,
   WidgetLayout,
+  WidgetFollowUp,
   WidgetSubmit,
   WidgetType,
 } from "../types";
@@ -33,8 +34,7 @@ export type FeedbackWidgetProps = {
   /** `stacked` (default) is the card; `inline` is a one-line bar. */
   layout?: WidgetLayout;
   style?: FeedbackStyle;
-  doneDurationMs?: number;
-  autoHide?: boolean;
+  followUp?: WidgetFollowUp;
   submit?: WidgetSubmit;
   children: React.ReactNode;
 } & WidgetCallbacks;
@@ -131,8 +131,7 @@ export function FeedbackWidget({
   className,
   layout = "stacked",
   style,
-  doneDurationMs,
-  autoHide,
+  followUp,
   submit,
   children,
   ...callbacks
@@ -144,8 +143,7 @@ export function FeedbackWidget({
       disabled={disabled}
       size={size}
       layout={layout}
-      doneDurationMs={doneDurationMs}
-      autoHide={autoHide}
+      followUp={followUp}
       submit={submit}
       {...callbacks}
     >

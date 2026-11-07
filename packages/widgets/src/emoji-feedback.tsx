@@ -13,6 +13,7 @@ import {
   type FaceGlyphs,
   type WidgetCallbacks,
   type WidgetLayout,
+  type WidgetFollowUp,
   type WidgetSubmit,
   type WidgetSize,
   type FeedbackStyle,
@@ -21,8 +22,8 @@ import {
 const DEFAULTS = {
   location: "/",
   title: "Rate your experience",
-  showInput: false,
-  submitLabel: "Submit",
+  followUp: "negative",
+  submitLabel: "Send",
   thankYouMessage: "Thanks!",
   variant: "emoji" as const,
   size: "default" as const,
@@ -35,11 +36,9 @@ export type EmojiFeedbackProps = {
   style?: FeedbackStyle;
   title?: React.ReactNode;
   description?: React.ReactNode;
-  showInput?: boolean;
+  followUp?: WidgetFollowUp;
   submitLabel?: string;
   thankYouMessage?: React.ReactNode;
-  doneDurationMs?: number;
-  autoHide?: boolean;
   variant?: "emoji" | "icons";
   size?: WidgetSize;
   closeButton?: boolean;
@@ -60,11 +59,9 @@ export function EmojiFeedback({
   style,
   title = DEFAULTS.title,
   description,
-  showInput = DEFAULTS.showInput,
+  followUp = DEFAULTS.followUp,
   submitLabel,
   thankYouMessage = DEFAULTS.thankYouMessage,
-  doneDurationMs = 2000,
-  autoHide = true,
   variant = DEFAULTS.variant,
   size = DEFAULTS.size,
   closeButton = false,
@@ -81,11 +78,11 @@ export function EmojiFeedback({
   );
   const footer = (
     <FeedbackFooter
-      submitLabel={submitLabel ?? (inline ? "Send" : DEFAULTS.submitLabel)}
+      submitLabel={submitLabel ?? DEFAULTS.submitLabel}
       cancelLabel={cancelLabel}
       showCancel={showCancel}
       thankYouMessage={thankYouMessage}
-      hint={inline && showInput ? "Optional" : undefined}
+      hint={inline ? "Optional" : undefined}
     />
   );
 
@@ -98,8 +95,7 @@ export function EmojiFeedback({
       closeButton={closeButton}
       className={className}
       style={style}
-      doneDurationMs={doneDurationMs}
-      autoHide={autoHide}
+      followUp={followUp}
       submit={submit}
       layout={layout}
       {...callbacks}
@@ -110,7 +106,7 @@ export function EmojiFeedback({
             {title ? <FeedbackTitle>{title}</FeedbackTitle> : null}
             {rating}
           </div>
-          {showInput ? <FeedbackInput /> : null}
+          <FeedbackInput placeholder="What went wrong? (optional)" />
           {footer}
         </>
       ) : (
@@ -125,7 +121,7 @@ export function EmojiFeedback({
           ) : null}
           <FeedbackResponse>
             {rating}
-            {showInput ? <FeedbackInput /> : null}
+            <FeedbackInput placeholder="What went wrong? (optional)" />
           </FeedbackResponse>
           {footer}
         </>

@@ -99,8 +99,7 @@ for (const {
       <Widget
         key="original"
         variant={variant}
-        showInput
-        autoHide={false}
+        followUp="always"
         submit={(payload) => {
           payloads.push(payload);
           return pendingSubmit;
@@ -119,12 +118,11 @@ for (const {
     const choice = screen.getByRole("button", { name: ratingName });
     act(() => choice.focus());
     fireEvent.click(choice);
-    assert.equal(document.activeElement, choice);
     const input = screen.getByRole("textbox", {
       name: "Additional feedback",
     }) as HTMLTextAreaElement;
     fireEvent.change(input, { target: { value: "Original feedback" } });
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
     assert.equal(input.disabled, true);
     assert.equal(
       controls.every((control) => control.disabled),
@@ -133,7 +131,7 @@ for (const {
 
     await act(async () => resolveSubmit());
     assert.equal(screen.getByRole("status").textContent, "Thanks!");
-    assert.equal(input.disabled, true);
+    assert.equal(screen.queryByRole("textbox"), null);
     assert.equal(
       controls.every((control) => control.disabled),
       true,
@@ -146,7 +144,7 @@ for (const {
       "true",
     );
     assert.equal(input.value, "Original feedback");
-    assert.equal(screen.queryByRole("button", { name: "Submit" }), null);
+    assert.equal(screen.queryByRole("button", { name: "Send" }), null);
     assert.deepEqual(payloads, [
       {
         location: "/",
@@ -156,9 +154,7 @@ for (const {
       },
     ]);
 
-    rerender(
-      <Widget key="reset" variant={variant} showInput autoHide={false} />,
-    );
+    rerender(<Widget key="reset" variant={variant} followUp="always" />);
     assert.equal(screen.queryByRole("status"), null);
     assert.equal(screen.queryByRole("textbox"), null);
     const resetControl = screen.getByRole("button", {
@@ -180,8 +176,7 @@ for (const {
       const { container } = render(
         <Widget
           variant={variant}
-          showInput
-          autoHide={false}
+          followUp="always"
           submit={async (payload) => {
             payloads.push(payload);
             if (payloads.length === 1) throw new Error("offline");
@@ -193,7 +188,7 @@ for (const {
         name: "Additional feedback",
       }) as HTMLTextAreaElement;
       fireEvent.change(input, { target: { value: "Original feedback" } });
-      fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+      fireEvent.click(screen.getByRole("button", { name: "Send" }));
       await screen.findByRole("button", { name: "Try again" });
       assert.equal(input.disabled, false);
       assert.equal(
@@ -204,7 +199,7 @@ for (const {
       );
       fireEvent.change(input, { target: { value: "Corrected feedback" } });
       fireEvent.click(screen.getByRole("button", { name: alternateName }));
-      fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+      fireEvent.click(screen.getByRole("button", { name: "Send" }));
       await screen.findByText("Thanks!");
       assert.deepEqual(payloads, [
         {
@@ -220,8 +215,7 @@ for (const {
           text: "Corrected feedback",
         },
       ]);
-      assert.equal(input.value, "Corrected feedback");
-      assert.equal(input.disabled, true);
+      assert.equal(screen.queryByRole("textbox"), null);
     });
 }
 
@@ -231,7 +225,7 @@ test(`stars retain the submitted fill while locked despite hover or focus previe
     resolveSubmit = resolve;
   });
   const { container } = render(
-    <StarRating autoHide={false} submit={() => pendingSubmit} />,
+    <StarRating followUp="always" submit={() => pendingSubmit} />,
   );
   const filledStars = () =>
     container.querySelectorAll('[data-slot="feedback-glyph"].grayscale-0')
@@ -242,7 +236,7 @@ test(`stars retain the submitted fill while locked despite hover or focus previe
   assert.equal(filledStars(), 5);
   fireEvent.mouseEnter(firstStar);
   assert.equal(filledStars(), 1);
-  fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
   assert.equal(filledStars(), 5);
   await act(async () => resolveSubmit());
   assert.equal(screen.getByRole("status").textContent, "Thanks!");

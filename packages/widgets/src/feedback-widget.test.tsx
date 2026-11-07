@@ -74,8 +74,7 @@ describe("feedback widget lifecycle and theme", () => {
         const { container } = render(
           <widget.Component
             variant="icons"
-            showInput
-            autoHide={false}
+            followUp="always"
             submit={async (payload) => {
               payloads.push(payload);
               if (payloads.length === 1) await firstAttempt;
@@ -100,7 +99,7 @@ describe("feedback widget lifecycle and theme", () => {
         assert.equal(root.getAttribute("data-state"), "selected");
         assert.equal(payloads.length, 0, "selection does not submit feedback");
         assert.equal(selectedControl.getAttribute("aria-pressed"), "true");
-        fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+        fireEvent.click(screen.getByRole("button", { name: "Send" }));
 
         assert.equal(root.getAttribute("data-state"), "submitting");
         assert.equal(root.getAttribute("aria-busy"), "true");
@@ -125,18 +124,14 @@ describe("feedback widget lifecycle and theme", () => {
         assert.equal(payloads[1]?.text, "A clear, useful experience");
         assert.equal(selectedControl.disabled, true);
         assert.equal(selectedControl.getAttribute("aria-pressed"), "true");
+        assert.equal(screen.queryByRole("textbox"), null);
+        fireEvent.click(selectedControl);
         assert.equal(
-          screen.getByRole("textbox", { name: "Additional feedback" }),
-          input,
-          "success retains the submitted field in place",
+          payloads.length,
+          2,
+          "completed feedback cannot be resubmitted",
         );
-        assert.equal(input.readOnly, true);
-        assert.equal(input.value, "A clear, useful experience");
-        fireEvent.change(input, {
-          target: { value: "Changed after submission" },
-        });
-        assert.equal(input.value, "A clear, useful experience");
-        assert.equal(screen.queryByRole("button", { name: "Submit" }), null);
+        assert.equal(screen.queryByRole("button", { name: "Send" }), null);
         assert.equal(screen.queryByRole("button", { name: "Try again" }), null);
       });
     }
@@ -167,8 +162,8 @@ describe("feedback widget lifecycle and theme", () => {
   test("gives multiple widgets uniquely labelled text fields", () => {
     const { container } = render(
       <>
-        <LikeDislike showInput />
-        <LikeDislike showInput />
+        <LikeDislike followUp="always" />
+        <LikeDislike followUp="always" />
       </>,
     );
     const roots = container.querySelectorAll<HTMLElement>(
@@ -207,7 +202,6 @@ describe("rendered feedback widget", () => {
       render(
         <FeedbackWidget
           widgetType="thumbs"
-          autoHide={false}
           submit={async () => {
             attempts += 1;
             if (attempts === 1) await firstAttempt;
@@ -259,9 +253,13 @@ describe("rendered feedback widget", () => {
   }
 
   for (const [name, widget, controlCount] of [
-    ["emoji icons", <EmojiFeedback key="emoji" disabled />, 5],
-    ["thumb icons", <LikeDislike key="thumbs" disabled />, 2],
-    ["star icons", <StarRating key="stars" disabled />, 5],
+    [
+      "emoji icons",
+      <EmojiFeedback followUp="always" key="emoji" disabled />,
+      5,
+    ],
+    ["thumb icons", <LikeDislike followUp="always" key="thumbs" disabled />, 2],
+    ["star icons", <StarRating followUp="always" key="stars" disabled />, 5],
   ] as const) {
     test(`${name} exposes the disabled state`, () => {
       const { container } = render(widget);
@@ -284,6 +282,7 @@ describe("rendered feedback widget", () => {
 
     render(
       <LikeDislike
+        followUp="always"
         onSelect={() => events.push("select")}
         onStateChange={(state) => events.push(state)}
         onSubmitStart={(payload) => {
@@ -295,7 +294,7 @@ describe("rendered feedback widget", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Like" }));
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
 
     assert.ok(await screen.findByText("Thanks!"));
     assert.equal(networkCalled, false);
@@ -322,8 +321,7 @@ describe("rendered feedback widget", () => {
 
     render(
       <LikeDislike
-        showInput
-        autoHide={false}
+        followUp="always"
         submit={async (payload) => {
           attempts += 1;
           payloads.push(payload);
@@ -335,10 +333,10 @@ describe("rendered feedback widget", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Like" }));
     const input = screen.getByPlaceholderText(
-      "Share your thoughts",
+      "What went wrong? (optional)",
     ) as HTMLTextAreaElement;
     fireEvent.change(input, { target: { value: "Clear and useful" } });
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
 
     const errorStatus = (
       await screen.findByText("We couldn't send your feedback. Try again.")
@@ -364,8 +362,8 @@ describe("rendered feedback widget", () => {
     const failures: unknown[] = [];
     render(
       <LikeDislike
+        followUp="always"
         location="/pricing"
-        autoHide={false}
         submit={async (payload) => {
           payloads.push(payload);
           if (payloads.length === 1) throw error;
@@ -374,7 +372,7 @@ describe("rendered feedback widget", () => {
       />,
     );
     fireEvent.click(screen.getByRole("button", { name: "Like" }));
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
     assert.ok(await screen.findByText(error.message));
     assert.equal(failures[0], error);
     assert.deepEqual(payloads[0], {
@@ -388,7 +386,7 @@ describe("rendered feedback widget", () => {
   });
 
   test("names the text field and caps it at the default comment limit", () => {
-    render(<LikeDislike showInput />);
+    render(<LikeDislike followUp="always" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Like" }));
     const input = screen.getByRole("textbox", {
@@ -406,7 +404,7 @@ describe("rendered feedback widget", () => {
 
     render(
       <LikeDislike
-        autoHide={false}
+        followUp="always"
         submit={async () => {
           submits += 1;
         }}
@@ -418,7 +416,7 @@ describe("rendered feedback widget", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Like" }));
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
 
     assert.ok(await screen.findByText("Thanks!"));
     assert.equal(screen.queryByRole("button", { name: "Try again" }), null);
@@ -437,7 +435,7 @@ describe("rendered feedback widget", () => {
     try {
       render(
         <LikeDislike
-          autoHide={false}
+          followUp="always"
           submit={async () => {}}
           onSubmitSuccess={async () => {
             throw callbackError;
@@ -446,7 +444,7 @@ describe("rendered feedback widget", () => {
       );
 
       fireEvent.click(screen.getByRole("button", { name: "Like" }));
-      fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+      fireEvent.click(screen.getByRole("button", { name: "Send" }));
 
       assert.ok(await screen.findByText("Thanks!"));
       await new Promise((resolve) => setTimeout(resolve, 0));
@@ -464,7 +462,7 @@ describe("rendered feedback widget", () => {
 
     render(
       <LikeDislike
-        autoHide={false}
+        followUp="always"
         submit={async () => {
           attempts += 1;
           if (attempts === 1) throw new Error("offline");
@@ -479,7 +477,7 @@ describe("rendered feedback widget", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Like" }));
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
 
     fireEvent.click(await screen.findByRole("button", { name: "Try again" }));
 
@@ -509,7 +507,6 @@ describe("rendered feedback widget", () => {
     render(
       <FeedbackWidget
         widgetType="thumbs"
-        autoHide={false}
         submit={async (payload) => {
           payloads.push(payload);
         }}
@@ -527,11 +524,11 @@ describe("rendered feedback widget", () => {
     assert.equal(payloads.length, 1);
   });
 
-  test("keeps success visible when auto-hide is disabled and focuses its status", async () => {
-    render(<LikeDislike autoHide={false} doneDurationMs={1} />);
+  test("keeps success visible and focuses its status after explicit send", async () => {
+    render(<LikeDislike followUp="always" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Like" }));
-    const submitButton = screen.getByRole("button", { name: "Submit" });
+    const submitButton = screen.getByRole("button", { name: "Send" });
     submitButton.focus();
     fireEvent.click(submitButton);
 
@@ -546,24 +543,6 @@ describe("rendered feedback widget", () => {
     assert.ok(screen.getByText("Thanks!"));
   });
 
-  test("returns focus to a hidden anchor after automatic dismissal", async () => {
-    render(<LikeDislike doneDurationMs={20} />);
-
-    fireEvent.click(screen.getByRole("button", { name: "Like" }));
-    const submitButton = screen.getByRole("button", { name: "Submit" });
-    submitButton.focus();
-    fireEvent.click(submitButton);
-
-    assert.ok(await screen.findByText("Thanks!"));
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    });
-    assert.equal(screen.queryByText("Thanks!"), null);
-
-    const focusAnchor = screen.getByText("Feedback widget closed");
-    assert.equal(document.activeElement, focusAnchor);
-  });
-
   test("does not steal focus when the user moves elsewhere during submission", async () => {
     let resolveSubmit!: () => void;
     const pendingSubmit = new Promise<void>((resolve) => {
@@ -573,12 +552,12 @@ describe("rendered feedback widget", () => {
     render(
       <>
         <button type="button">Outside action</button>
-        <LikeDislike autoHide={false} submit={() => pendingSubmit} />
+        <LikeDislike followUp="always" submit={() => pendingSubmit} />
       </>,
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Like" }));
-    const submitButton = screen.getByRole("button", { name: "Submit" });
+    const submitButton = screen.getByRole("button", { name: "Send" });
     submitButton.focus();
     fireEvent.click(submitButton);
 
@@ -601,6 +580,7 @@ describe("rendered feedback widget", () => {
     let cancelled = 0;
     render(
       <LikeDislike
+        followUp="always"
         closeButton
         onCancel={() => {
           cancelled += 1;
@@ -644,6 +624,7 @@ describe("rendered feedback widget", () => {
     try {
       render(
         <LikeDislike
+          followUp="always"
           closeButton
           submit={async () => {
             submits += 1;
@@ -693,7 +674,7 @@ describe("cancel, custom glyphs, and inline layout", () => {
     render(
       <EmojiFeedback
         variant="icons"
-        showInput
+        followUp="always"
         onStateChange={(state) => states.push(state)}
         onReset={() => (resets += 1)}
         onCancel={() => (dismissed = true)}
@@ -712,7 +693,7 @@ describe("cancel, custom glyphs, and inline layout", () => {
     assert.equal(dismissed, false);
     assert.deepEqual(states, ["selected", "idle"]);
     assert.equal(screen.queryByRole("textbox"), null);
-    assert.equal(screen.queryByRole("button", { name: "Submit" }), null);
+    assert.equal(screen.queryByRole("button", { name: "Send" }), null);
     const choices = screen.getAllByRole("button", { pressed: false });
     assert.equal(document.activeElement, choices[0]);
 
@@ -725,16 +706,17 @@ describe("cancel, custom glyphs, and inline layout", () => {
   });
 
   test("hides Cancel when showCancel is false", () => {
-    render(<LikeDislike showCancel={false} />);
+    render(<LikeDislike followUp="always" showCancel={false} />);
     fireEvent.click(screen.getByRole("button", { name: "Like" }));
     assert.equal(screen.queryByRole("button", { name: "Cancel" }), null);
-    assert.ok(screen.getByRole("button", { name: "Submit" }));
+    assert.ok(screen.getByRole("button", { name: "Send" }));
   });
 
   test("renders custom face glyphs with their own names and values", async () => {
     const payloads: WidgetPayload[] = [];
     render(
       <EmojiFeedback
+        followUp="always"
         glyphs={[
           "🥶",
           { glyph: "😐", label: "Meh" },
@@ -754,13 +736,15 @@ describe("cancel, custom glyphs, and inline layout", () => {
     assert.ok(best.querySelector("img"));
 
     fireEvent.click(best);
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
     assert.ok(await screen.findByText("Thanks!"));
     assert.equal(payloads[0]?.value, 5);
   });
 
   test("repeats one custom star glyph and names it", () => {
-    render(<StarRating glyph={{ glyph: "❤️", label: "heart" }} />);
+    render(
+      <StarRating followUp="always" glyph={{ glyph: "❤️", label: "heart" }} />,
+    );
     assert.ok(screen.getByRole("button", { name: "Rate 1 heart" }));
     assert.ok(screen.getByRole("button", { name: "Rate 3 hearts" }));
     assert.equal(screen.getAllByText("❤️").length, 5);
@@ -770,6 +754,7 @@ describe("cancel, custom glyphs, and inline layout", () => {
     const payloads: WidgetPayload[] = [];
     render(
       <LikeDislike
+        followUp="always"
         glyphs={[
           { glyph: "🔥", label: "Love it" },
           { glyph: "🧊", label: "Not for me" },
@@ -780,7 +765,7 @@ describe("cancel, custom glyphs, and inline layout", () => {
       />,
     );
     fireEvent.click(screen.getByRole("button", { name: "Not for me" }));
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
     assert.ok(await screen.findByText("Thanks!"));
     assert.equal(payloads[0]?.value, 0);
   });
@@ -810,8 +795,7 @@ describe("cancel, custom glyphs, and inline layout", () => {
         title="Was this helpful?"
         description="Not shown inline"
         variant="icons"
-        showInput
-        autoHide={false}
+        followUp="always"
       />,
     );
 
@@ -836,13 +820,13 @@ describe("cancel, custom glyphs, and inline layout", () => {
   });
 
   test("stacked widgets group the rating and comment in one response well", () => {
-    render(<StarRating showInput />);
+    render(<StarRating followUp="always" />);
     fireEvent.click(screen.getByRole("button", { name: "Rate 4 stars" }));
     const well = document.querySelector('[data-slot="feedback-response"]');
     assert.ok(well?.querySelector('[data-slot="feedback-rating"]'));
     assert.ok(well?.querySelector("textarea"));
     cleanup();
-    render(<StarRating layout="inline" showInput />);
+    render(<StarRating layout="inline" followUp="always" />);
     assert.equal(
       document.querySelector('[data-slot="feedback-response"]'),
       null,
