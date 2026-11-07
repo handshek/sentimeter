@@ -49,3 +49,26 @@ test("a second copy keeps its confirmation for the full reset delay", async () =
 
   expect(screen.getByRole("button", { name: "Copied" })).toBeTruthy();
 });
+
+test("an older copy finishing last does not keep the confirmation forever", async () => {
+  const pending: Array<() => void> = [];
+  Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    value: {
+      writeText: () =>
+        new Promise<void>((resolve) => {
+          pending.push(resolve);
+        }),
+    },
+  });
+  render(<CopyKey />);
+  fireEvent.click(screen.getByRole("button", { name: "Copy key" }));
+  fireEvent.click(screen.getByRole("button", { name: "Copy key" }));
+
+  pending[1]!();
+  await screen.findByRole("button", { name: "Copied" });
+  pending[0]!();
+  await wait(100);
+
+  expect(screen.getByRole("button", { name: "Copy key" })).toBeTruthy();
+});
