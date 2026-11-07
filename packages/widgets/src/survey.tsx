@@ -63,6 +63,7 @@ export type SurveyProps = {
   options?: readonly SurveyOption[];
   /** Skip saves nothing; the host decides whether to dismiss or continue. */
   onSkip?: () => void;
+  skipLabel?: string;
 } & Pick<
   WidgetCallbacks,
   "onStateChange" | "onSubmitStart" | "onSubmitSuccess" | "onSubmitError"
@@ -81,6 +82,7 @@ export function Survey({
   submit,
   onDone,
   onSkip,
+  skipLabel,
   ...callbacks
 }: SurveyProps) {
   const machine = useFeedbackSubmission({ submit, ...callbacks });
@@ -138,6 +140,7 @@ export function Survey({
         errorId={errorId}
         thankYouMessage={thankYouMessage}
         onSkip={onSkip}
+        skipLabel={skipLabel}
         onSubmit={() => {
           if (pending || !selectedOption) return;
           void machine.submitPayload({
