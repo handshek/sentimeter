@@ -59,3 +59,23 @@ test("closing the widget closes the popover", () => {
       .getAttribute("aria-expanded"),
   ).toBe("false");
 });
+
+test("a submission that finishes after dismissal does not close a reopened popover", async () => {
+  let finishFirst = () => {};
+  const submit = () =>
+    new Promise<void>((resolve) => {
+      finishFirst = resolve;
+    });
+  render(<PopoverWidgetDemo common={{ ...common, submit }} />);
+  openPopover();
+  fireEvent.click(screen.getByRole("button", { name: "Rating 4 of 5" }));
+  fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+  fireEvent.click(
+    screen.getByRole("button", { name: "Dismiss feedback widget" }),
+  );
+
+  openPopover();
+  finishFirst();
+  await new Promise((resolve) => setTimeout(resolve, 80));
+  expect(screen.getByRole("dialog")).toBeTruthy();
+});
