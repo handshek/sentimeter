@@ -51,7 +51,9 @@ The public API may break freely before launch; launch is the first stable API.
 - **Emoji, Thumbs, Stars.** A negative pick (sad face, thumbs down, one or two
   stars) always asks "What went wrong?" with an optional text box. A positive
   pick submits and thanks the user at once. `showInput` loses its old meaning.
-- **NPS.** A 0–10 scale on the rating shape. Component only, no block.
+- **NPS.** A 0–10 scale on the rating shape, one segmented row that fits a
+  288px container (each segment stays 44px tall). A score of 0–6 asks "What
+  would make it better?"; 7–10 thanks at once. Component only, no block.
 - **FeedbackForm.** "What happened?" plus one text box. It attaches the page
   URL and route, browser, OS, and viewport. No category picker.
 - **Survey.** Pick one reason, then an optional note. For questions with known
@@ -93,10 +95,17 @@ uses.
 References studied: TuffUI (directory and card), shadcn/ui blocks (block
 toolbar), and Tailark Pro (neutral canvas, hairlines, restrained accent).
 
+### Install
+
+Install commands use the `@sentimeter/<name>` namespace (for example
+`npx shadcn add @sentimeter/emoji`). Until the namespace is listed in the
+shadcn registry index, docs keep the full registry URL as a fallback.
+
 ### Process
 
-Pen boards first for the new components, cards, homepage, and block page. Code
-starts only after the boards are approved.
+Pen boards were approved on 2026-11-07. They live in the git-ignored
+`design/sentimeter-launch.pen` with exports in `design/launch-exports/`. Code
+follows the boards.
 
 ### Not at launch
 
