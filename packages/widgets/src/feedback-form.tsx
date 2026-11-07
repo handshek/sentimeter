@@ -11,6 +11,7 @@ import {
   useFeedbackSubmission,
   type FeedbackContext,
   type FeedbackStyle,
+  type FormPayload,
   type WidgetCallbacks,
   type WidgetSubmit,
 } from "./feedback-system";
@@ -24,11 +25,11 @@ export type FeedbackFormProps = {
   disabled?: boolean;
   className?: string;
   style?: FeedbackStyle;
-  submit?: WidgetSubmit;
+  submit?: WidgetSubmit<FormPayload>;
   /** Fires two seconds after confirmation. Unmounting cancels the callback. */
   onDone?: () => void;
 } & Pick<
-  WidgetCallbacks,
+  WidgetCallbacks<FormPayload>,
   "onStateChange" | "onSubmitStart" | "onSubmitSuccess" | "onSubmitError"
 >;
 
