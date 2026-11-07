@@ -115,7 +115,7 @@ test("FeedbackForm docs describe its payload, context, and container callback", 
   const markdown = getWidgetMarkdown(form);
   expect(markdown).toContain('widgetType: "form"');
   expect(markdown).toContain("window.innerWidth/innerHeight in CSS pixels");
-  expect(markdown).toContain("including query string and hash");
+  expect(markdown).toContain("without its query string or hash");
   expect(markdown).toContain("Unmounting cancels the pending callback");
   expect(markdown).not.toContain('layout="inline"');
   expect(markdown).not.toContain("Negative means");
