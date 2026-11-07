@@ -25,14 +25,23 @@ export function CancelFlowSurvey({
   endsOn,
 }: CancelFlowSurveyProps) {
   const [open, setOpen] = React.useState(false);
+  const [busy, setBusy] = React.useState(false);
   const title = `Cancel your ${planName} plan?`;
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      // A running cancellation keeps the dialog open, so it cannot be
+      // started twice or overtaken by Keep my plan.
+      onOpenChange={(next) => {
+        if (!next && busy) return;
+        setOpen(next);
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant="outline">Cancel plan</Button>
       </DialogTrigger>
       <DialogContent
-        className="gap-0 bg-transparent p-0 ring-0 sm:max-w-sm"
+        className="max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto bg-transparent p-0 ring-0 sm:max-w-sm"
         showCloseButton={false}
         aria-describedby={undefined}
       >
@@ -51,6 +60,7 @@ export function CancelFlowSurvey({
             await submit?.(payload);
             await cancelPlan();
           }}
+          onStateChange={(state) => setBusy(state === "submitting")}
           onSkip={() => setOpen(false)}
           onDone={() => setOpen(false)}
         />
