@@ -20,7 +20,6 @@ export const widgetToc = [
   { title: "Preview", url: "#preview", depth: 2 },
   { title: "Installation", url: "#installation", depth: 2 },
   { title: "Usage", url: "#usage", depth: 2 },
-  { title: "Submission Behavior", url: "#submission", depth: 2 },
   { title: "Props", url: "#props", depth: 2 },
 ];
 

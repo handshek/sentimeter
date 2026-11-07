@@ -184,13 +184,16 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
           Usage
         </h2>
         <p className="ds-body text-muted-foreground">
-          The local example does not store feedback. Choose Your Backend to save
-          submissions. Examples follow your preview settings and keep success
-          visible with{" "}
-          <code className="rounded bg-muted px-1 py-0.5 text-sm">
-            {"autoHide={false}"}
-          </code>
-          .
+          The code follows your preview settings. Without a <code>submit</code>{" "}
+          handler, nothing is sent or stored; choose Your Backend to save
+          feedback.{" "}
+          <Link
+            href="/components/getting-started#submission"
+            className="docs-link"
+          >
+            Connect your backend
+          </Link>{" "}
+          covers errors and retries.
         </p>
         <Tabs defaultValue="local">
           <TabsList aria-label="Submission Example">
@@ -216,21 +219,10 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
             />
           </TabsContent>
         </Tabs>
-      </section>
-      <section aria-labelledby="submission" className="docs-section">
-        <h2 id="submission" className="ds-section-title">
-          Submission Behavior
-        </h2>
-        <p className="ds-body text-muted-foreground">
-          A custom <code>submit</code> handler saves feedback. Without one, the
-          widget completes locally without sending or persisting feedback.
-          Failed custom submissions remain retryable; <code>onSubmitError</code>{" "}
-          receives the original error.
-        </p>
         <Accordion type="single" collapsible>
           <AccordionItem value="compound">
             <AccordionTrigger className="min-h-11">
-              Compound Composition
+              Compose the parts yourself
             </AccordionTrigger>
             <AccordionContent>
               <CodeBlock
