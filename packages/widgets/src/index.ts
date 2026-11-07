@@ -52,3 +52,4 @@ export { ReportProblem } from "./blocks/report-problem";
 export { WasThisHelpful } from "./blocks/was-this-helpful";
 export { AfterTaskRating } from "./blocks/after-task-rating";
 export { CancelFlowSurvey } from "./blocks/cancel-flow-survey";
+export { default as ErrorFeedback } from "./blocks/error-feedback";

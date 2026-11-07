@@ -1,4 +1,5 @@
 import type { Root } from "fumadocs-core/page-tree";
+import { blockDocs } from "./block-catalog";
 import { widgetDocs } from "./widget-catalog";
 
 export const docsTree: Root = {
@@ -12,6 +13,12 @@ export const docsTree: Root = {
       type: "page" as const,
       name: widget.name,
       url: `/components/${widget.slug}`,
+    })),
+    { type: "separator", name: "Blocks" },
+    ...blockDocs.map((block) => ({
+      type: "page" as const,
+      name: block.name,
+      url: `/components/blocks/${block.slug}`,
     })),
   ],
 };
