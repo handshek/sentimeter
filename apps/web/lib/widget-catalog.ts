@@ -381,7 +381,7 @@ function propsForTitle(title: string) {
 }
 
 export const feedbackFormContextDescription =
-  "FeedbackForm collects the full page URL including query string and hash, the pathname as route, browser and OS family inferred from navigator.userAgent, and window.innerWidth/innerHeight in CSS pixels. Unknown browser or OS families use Unknown. The muted line previews the route, browser, OS, and viewport after mount; context is sampled again at each submit attempt. It collects no user-agent string, versions, console errors, screenshots, or categories. Without submit, nothing is sent or stored.";
+  "FeedbackForm collects the page URL without its query string or hash (origin and pathname), the pathname as route, browser and OS family inferred from navigator.userAgent, and window.innerWidth/innerHeight in CSS pixels. Unknown browser or OS families use Unknown. The muted line previews the route, browser, OS, and viewport after mount; context is sampled again at each submit attempt. It collects no user-agent string, versions, console errors, screenshots, or categories. Without submit, nothing is sent or stored.";
 
 export const feedbackFormCompletionDescription =
   "Send is disabled for empty or whitespace-only text. A successful submission replaces the field with Got it. Sorry about that. and We read every message. The thank-you stays mounted. onDone fires once about 2 seconds after it appears, so a host can close its popover, dialog, or sheet. Unmounting cancels the pending callback. A failed submission retains the text and offers Try again.";

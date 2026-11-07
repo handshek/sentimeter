@@ -28,7 +28,8 @@ export function collectFeedbackContext(): FeedbackContext | undefined {
               ? "Linux"
               : "Unknown";
   return {
-    url: window.location.href,
+    // Query strings and hashes can carry tokens, so only the page itself is sent.
+    url: window.location.origin + window.location.pathname,
     route: window.location.pathname,
     browser,
     os,

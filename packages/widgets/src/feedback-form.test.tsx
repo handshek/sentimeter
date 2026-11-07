@@ -47,7 +47,7 @@ test("form sends trimmed text with context collected at submit time", async () =
         location: "billing-report",
         text: "Save did nothing",
         context: {
-          url: "https://app.example/settings/billing?tab=plan#details",
+          url: "https://app.example/settings/billing",
           route: "/settings/billing",
           browser: "Chrome",
           os: "macOS",
