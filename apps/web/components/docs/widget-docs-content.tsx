@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { Play, Smartphone } from "lucide-react";
 import { cn } from "@workspace/ui/lib/utils";
 import Link from "next/link";
@@ -51,18 +51,38 @@ function Segmented<T extends string>({
   options: readonly (readonly [T, string])[];
   onChange: (value: T) => void;
 }) {
+  // Radio-group keyboard: one tab stop, arrow keys move and select.
+  function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    const step =
+      event.key === "ArrowRight" || event.key === "ArrowDown"
+        ? 1
+        : event.key === "ArrowLeft" || event.key === "ArrowUp"
+          ? -1
+          : 0;
+    if (!step) return;
+    event.preventDefault();
+    const index = options.findIndex(([option]) => option === value);
+    const next = options[(index + step + options.length) % options.length]!;
+    onChange(next[0]);
+    event.currentTarget
+      .querySelector<HTMLElement>(`[data-value="${next[0]}"]`)
+      ?.focus();
+  }
   return (
     <div
       role="radiogroup"
       aria-label={label}
       className="flex rounded-lg bg-muted p-0.5"
+      onKeyDown={onKeyDown}
     >
       {options.map(([option, text]) => (
         <Button
           key={option}
           type="button"
           role="radio"
+          data-value={option}
           aria-checked={value === option}
+          tabIndex={value === option ? 0 : -1}
           variant="ghost"
           className={cn(
             "text-muted-foreground",
@@ -83,6 +103,7 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
   const [options, setOptions] = useState<WidgetDemoOptions>(defaults);
   const [replay, setReplay] = useState(0);
   const [phone, setPhone] = useState(false);
+  const [tab, setTab] = useState("preview");
   function updateOptions(next: Partial<WidgetDemoOptions>) {
     setOptions((current) => ({ ...current, ...next }));
   }
@@ -91,7 +112,8 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
     <div className="docs-content">
       <section id="preview" aria-label="Live Preview" className="min-w-0">
         <Tabs
-          defaultValue="preview"
+          value={tab}
+          onValueChange={setTab}
           className="gap-0 overflow-hidden rounded-xl border"
         >
           <div className="flex flex-wrap items-center gap-2 border-b bg-card p-2">
@@ -126,7 +148,10 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
                 type="button"
                 variant="ghost"
                 className="text-muted-foreground"
-                onClick={() => setReplay((value) => value + 1)}
+                onClick={() => {
+                  setTab("preview");
+                  setReplay((value) => value + 1);
+                }}
               >
                 <Play aria-hidden="true" className="size-3.5" />
                 Replay
