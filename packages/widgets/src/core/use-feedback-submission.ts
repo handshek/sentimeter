@@ -25,16 +25,16 @@ export function notify<Args extends unknown[]>(
   }
 }
 
-export function useFeedbackSubmission({
+export function useFeedbackSubmission<P extends WidgetPayload>({
   submit,
   onStateChange,
   onSubmitStart,
   onSubmitSuccess,
   onSubmitError,
 }: Pick<
-  WidgetCallbacks,
+  WidgetCallbacks<P>,
   "onStateChange" | "onSubmitStart" | "onSubmitSuccess" | "onSubmitError"
-> & { submit?: WidgetSubmit }) {
+> & { submit?: WidgetSubmit<P> }) {
   const [state, setState] = React.useState<WidgetState>("idle");
   const [submitError, setSubmitError] =
     React.useState<WidgetSubmitError | null>(null);
@@ -50,7 +50,7 @@ export function useFeedbackSubmission({
   );
   const clearError = React.useCallback(() => setSubmitError(null), []);
   const submitPayload = React.useCallback(
-    async (payload: WidgetPayload) => {
+    async (payload: P) => {
       if (stateRef.current === "submitting" || stateRef.current === "done")
         return;
       const previousState = stateRef.current;

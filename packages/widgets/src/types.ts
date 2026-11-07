@@ -55,14 +55,17 @@ export type FormPayload = {
 
 export type WidgetPayload = RatingPayload | FormPayload;
 
-export type WidgetSubmit = (payload: WidgetPayload) => Promise<void>;
+/** Each widget passes its own payload shape, so hosts can read fields like `value` directly. */
+export type WidgetSubmit<P extends WidgetPayload = WidgetPayload> = (
+  payload: P,
+) => Promise<void>;
 
-export type WidgetCallbacks = {
+export type WidgetCallbacks<P extends WidgetPayload = WidgetPayload> = {
   onSelect?: (value: number) => void;
   onStateChange?: (state: WidgetState) => void;
-  onSubmitStart?: (payload: WidgetPayload) => void;
-  onSubmitSuccess?: (payload: WidgetPayload) => void;
-  onSubmitError?: (error: unknown, payload: WidgetPayload) => void;
+  onSubmitStart?: (payload: P) => void;
+  onSubmitSuccess?: (payload: P) => void;
+  onSubmitError?: (error: unknown, payload: P) => void;
   /** The close button dismissed the whole widget. */
   onCancel?: () => void;
   /** Cancel cleared the choice and returned the widget to idle. */

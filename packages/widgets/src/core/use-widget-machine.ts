@@ -16,12 +16,12 @@ type UseWidgetMachineArgs = {
   payloadBase: Omit<RatingPayload, "value">;
   followUp?: WidgetFollowUp;
   disabled?: boolean;
-  submit: WidgetSubmit;
+  submit: WidgetSubmit<RatingPayload>;
   onStateChange?: (state: WidgetState) => void;
   onSelect?: (value: number) => void;
-  onSubmitStart?: (payload: WidgetPayload) => void;
-  onSubmitSuccess?: (payload: WidgetPayload) => void;
-  onSubmitError?: (error: unknown, payload: WidgetPayload) => void;
+  onSubmitStart?: (payload: RatingPayload) => void;
+  onSubmitSuccess?: (payload: RatingPayload) => void;
+  onSubmitError?: (error: unknown, payload: RatingPayload) => void;
 };
 
 export function requiresFollowUp(
