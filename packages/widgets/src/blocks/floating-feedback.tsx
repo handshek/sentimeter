@@ -24,22 +24,6 @@ const corners = {
 
 const phoneQuery = "(max-width: 639px)";
 
-function subscribe(onChange: () => void) {
-  const query = window.matchMedia(phoneQuery);
-  query.addEventListener("change", onChange);
-  return () => query.removeEventListener("change", onChange);
-}
-
-// A bottom sheet keeps the text box above the phone keyboard; a popover
-// stays out of the way on larger screens.
-function useIsPhone() {
-  return React.useSyncExternalStore(
-    subscribe,
-    () => window.matchMedia(phoneQuery).matches,
-    () => false,
-  );
-}
-
 export type FloatingFeedbackProps = Pick<
   FeedbackFormProps,
   "submit" | "location"
@@ -55,7 +39,14 @@ export function FloatingFeedback({
   label = "Feedback",
 }: FloatingFeedbackProps) {
   const [open, setOpen] = React.useState(false);
-  const phone = useIsPhone();
+  // A bottom sheet keeps the text box above the phone keyboard; a popover
+  // stays out of the way on larger screens. The choice is made when the form
+  // opens, so rotating a phone mid-draft never swaps containers and loses it.
+  const [phone, setPhone] = React.useState(false);
+  const toggle = (next: boolean) => {
+    if (next) setPhone(window.matchMedia(phoneQuery).matches);
+    setOpen(next);
+  };
 
   const trigger = (
     <Button
@@ -70,14 +61,14 @@ export function FloatingFeedback({
     <FeedbackForm
       submit={submit}
       location={location}
-      onDone={() => setOpen(false)}
+      onDone={() => toggle(false)}
       className={phone ? "max-w-none bg-transparent shadow-none" : undefined}
     />
   );
 
   if (phone) {
     return (
-      <Sheet open={open} onOpenChange={setOpen}>
+      <Sheet open={open} onOpenChange={toggle}>
         <SheetTrigger asChild>{trigger}</SheetTrigger>
         <SheetContent
           side="bottom"
@@ -92,7 +83,7 @@ export function FloatingFeedback({
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={toggle}>
       <PopoverTrigger asChild>{trigger}</PopoverTrigger>
       <PopoverContent
         side="top"

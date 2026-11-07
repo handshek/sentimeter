@@ -14,6 +14,7 @@ import {
   type WidgetCallbacks,
   type WidgetLayout,
   type WidgetFollowUp,
+  type RatingPayload,
   type WidgetSubmit,
   type WidgetSize,
   type FeedbackStyle,
@@ -42,7 +43,7 @@ export type EmojiFeedbackProps = {
   variant?: "emoji" | "icons";
   size?: WidgetSize;
   closeButton?: boolean;
-  submit?: WidgetSubmit;
+  submit?: WidgetSubmit<RatingPayload>;
   /** `stacked` (default) is the card; `inline` is a one-line bar. */
   layout?: WidgetLayout;
   /** Five custom glyphs, worst to best. Replaces `variant`. */
@@ -50,7 +51,7 @@ export type EmojiFeedbackProps = {
   /** Shows Cancel, which clears an unsent choice. Defaults to true. */
   showCancel?: boolean;
   cancelLabel?: string;
-} & WidgetCallbacks;
+} & WidgetCallbacks<RatingPayload>;
 
 export function EmojiFeedback({
   location = DEFAULTS.location,
