@@ -137,7 +137,7 @@ export function Survey({
         submitLabel={submitLabel}
         errorId={errorId}
         thankYouMessage={thankYouMessage}
-        onSkip={onSkip ?? (() => {})}
+        onSkip={onSkip}
         onSubmit={() => {
           if (pending || !selectedOption) return;
           void machine.submitPayload({

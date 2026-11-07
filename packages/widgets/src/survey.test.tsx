@@ -96,6 +96,11 @@ test("changing a reason clears its note and updates the prompt", () => {
   );
 });
 
+test("Skip is hidden when the host gives it nothing to do", () => {
+  render(<Survey />);
+  assert.equal(screen.queryByRole("button", { name: "Skip" }), null);
+});
+
 test("Skip delegates to the host without submitting or completing", () => {
   let skips = 0;
   const payloads: WidgetPayload[] = [];
