@@ -20,22 +20,13 @@ const widgets = { emoji: EmojiFeedback, thumbs: LikeDislike, star: StarRating };
 type WidgetDemoProps = {
   widget: Pick<
     WidgetDocConfig,
-    "slug" | "preview" | "defaultVariant" | "name" | "example"
+    "slug" | "preview" | "defaultVariant" | "name" | "example" | "replayText"
   >;
   options?: Partial<WidgetDemoOptions>;
   /** Increment to restart the example and play its scripted flow. */
   replay?: number;
   /** Drops the frame when a surrounding toolbar box already draws one. */
   framed?: boolean;
-};
-
-const replayText: Record<WidgetDocConfig["preview"], string> = {
-  emoji: "Card got declined twice.",
-  thumbs: "The steps skipped the env vars.",
-  star: "Setup took longer than expected.",
-  nps: "Faster exports would help.",
-  form: "Save button does nothing on billing.",
-  survey: "CSV export kept timing out.",
 };
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -45,6 +36,7 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 async function playFlow(
   root: HTMLElement,
   preview: WidgetDocConfig["preview"],
+  text: string,
   cancelled: () => boolean,
 ) {
   await wait(450);
@@ -62,7 +54,6 @@ async function playFlow(
     "value",
   )?.set;
   if (field && setValue) {
-    const text = replayText[preview];
     for (let index = 1; index <= text.length; index++) {
       if (cancelled()) return;
       setValue.call(field, text.slice(0, index));
@@ -150,11 +141,16 @@ function WidgetDemoInstance({
     if (!replaying.current || !container.current) return;
     replaying.current = false;
     let cancelled = false;
-    void playFlow(container.current, widget.preview, () => cancelled);
+    void playFlow(
+      container.current,
+      widget.preview,
+      widget.replayText,
+      () => cancelled,
+    );
     return () => {
       cancelled = true;
     };
-  }, [instance, widget.preview]);
+  }, [instance, widget.preview, widget.replayText]);
 
   function reset() {
     focusAfterReset.current = true;
