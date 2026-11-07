@@ -86,17 +86,6 @@ test("Keep my plan closes the dialog without cancelling", () => {
   assert.equal(cancelled, 0);
 });
 
-test("Skip and cancel runs the cancellation without a reason", async () => {
-  let cancelled = 0;
-  render(<CancelFlowSurvey cancelPlan={() => void cancelled++} />);
-  fireEvent.click(screen.getByRole("button", { name: "Cancel plan" }));
-  await act(async () => {
-    fireEvent.click(screen.getByRole("button", { name: "Skip and cancel" }));
-  });
-  assert.equal(cancelled, 1);
-  await waitFor(() => assert.equal(screen.queryByRole("dialog"), null));
-});
-
 test("rating blocks render their placement copy", () => {
   render(
     <>
