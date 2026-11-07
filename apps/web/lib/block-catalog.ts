@@ -30,39 +30,39 @@ const blockDefinitions: Array<
     name: "Floating feedback button",
     slug: "floating-feedback",
     description:
-      "A fixed Feedback pill that opens a popover on desktop and a bottom sheet on phones.",
+      "A small pill bottom-right on every page that opens the Feedback Form.",
     situationGroup: "When something breaks",
   },
   {
     name: "Report a problem",
     slug: "report-problem",
-    description: "A header button that opens FeedbackForm in a dialog.",
+    description:
+      "A header or account-menu item that opens the Feedback Form in a dialog.",
     situationGroup: "When something breaks",
   },
   {
     name: "Error page",
     slug: "error-feedback",
     description:
-      "A Next.js error boundary with inline feedback and a Try again action.",
+      "A Next.js error page that asks what the user was doing when it broke.",
     situationGroup: "When something breaks",
   },
   {
     name: "Was this helpful?",
     slug: "was-this-helpful",
-    description: "Inline thumbs under a docs page, help article, or AI answer.",
+    description: "Thumbs under a docs page or an AI answer.",
     situationGroup: "After something works",
   },
   {
     name: "After-task rating",
     slug: "after-task-rating",
-    description: "An emoji rating after checkout or another completed task.",
+    description: "A rating that appears once checkout or onboarding finishes.",
     situationGroup: "After something works",
   },
   {
     name: "Cancel-flow survey",
     slug: "cancel-flow-survey",
-    description:
-      "A reason survey inside a cancel-subscription dialog with host-owned cancellation.",
+    description: "“Why are you leaving?” inside the cancel dialog.",
     situationGroup: "When someone leaves",
   },
 ];

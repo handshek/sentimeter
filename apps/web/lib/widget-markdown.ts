@@ -125,7 +125,7 @@ ${widgetDocs.map((widget) => `- [${widget.name}](${SITE_URL}/components/${widget
 
 A block installs a ready-made host file for one spot in your app and pulls in its feedback component. Block source is editable and uses your local shadcn theme. Feedback completes locally unless you pass a custom submit handler; the host owns subscription cancellation.
 
-${blockDocs.map((block) => `- [${block.name}](${SITE_URL}/blocks/${block.slug}/markdown): ${block.situationGroup}. ${block.description} Install: \`${block.installCommand}\`.`).join("\n")}
+${blockDocs.map((block) => `- [${block.name}](${SITE_URL}/components/blocks/${block.slug}/markdown): ${block.situationGroup}. ${block.description} Install: \`${block.installCommand}\`.`).join("\n")}
 
 ## shadcn Namespace and Agents
 

@@ -3,7 +3,7 @@ import { blockDocs, getBlockDoc, getBlockFiles } from "./block-catalog";
 import { getBlockMarkdown } from "./block-markdown";
 import { getAgentIndex } from "./widget-markdown";
 import { REGISTRY_URL, SITE_URL } from "registry/site.config";
-import { GET } from "@/app/(site)/blocks/[slug]/markdown/route";
+import { GET } from "@/app/(site)/components/blocks/[slug]/markdown/route";
 
 test("the six blocks expose URL installs and planned namespaced commands", () => {
   expect(blockDocs.map((block) => block.slug)).toEqual([
@@ -42,7 +42,9 @@ test("the six blocks expose URL installs and planned namespaced commands", () =>
 test("agent and Markdown documents describe every installable block", async () => {
   const index = getAgentIndex();
   for (const block of blockDocs) {
-    expect(index).toContain(`${SITE_URL}/blocks/${block.slug}/markdown`);
+    expect(index).toContain(
+      `${SITE_URL}/components/blocks/${block.slug}/markdown`,
+    );
     expect(index).toContain(block.installCommand);
     const response = await GET(new Request("https://example.com"), {
       params: Promise.resolve({ slug: block.slug }),
