@@ -5,6 +5,7 @@ import type {
   WidgetCallbacks,
   WidgetLayout,
   WidgetFollowUp,
+  RatingPayload,
   WidgetSubmit,
   RatingWidgetType,
 } from "../types";
@@ -35,9 +36,9 @@ export type FeedbackWidgetProps = {
   layout?: WidgetLayout;
   style?: FeedbackStyle;
   followUp?: WidgetFollowUp;
-  submit?: WidgetSubmit;
+  submit?: WidgetSubmit<RatingPayload>;
   children: React.ReactNode;
-} & WidgetCallbacks;
+} & WidgetCallbacks<RatingPayload>;
 
 function FeedbackWidgetInner({
   closeButton,
