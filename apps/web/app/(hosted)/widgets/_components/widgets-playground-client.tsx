@@ -207,6 +207,8 @@ function PlaygroundCard({
 
 export function PopoverWidgetDemo({ common }: { common: WidgetCommon }) {
   const [open, setOpen] = React.useState(false);
+  const [openCount, setOpenCount] = React.useState(0);
+  const latestOpenRef = React.useRef(0);
   const closeTimerRef = React.useRef<number | null>(null);
 
   const clearCloseTimer = React.useCallback(() => {
@@ -221,6 +223,10 @@ export function PopoverWidgetDemo({ common }: { common: WidgetCommon }) {
   // a fresh widget and only a finished one needs to close it.
   function setPopoverOpen(nextOpen: boolean) {
     clearCloseTimer();
+    if (nextOpen) {
+      latestOpenRef.current += 1;
+      setOpenCount(latestOpenRef.current);
+    }
     setOpen(nextOpen);
   }
 
@@ -265,7 +271,11 @@ export function PopoverWidgetDemo({ common }: { common: WidgetCommon }) {
               closeButton
               onCancel={() => setPopoverOpen(false)}
               onStateChange={(state) => {
-                if (state !== "done") return;
+                // A dismissed widget's submission can still finish after the
+                // popover reopens with a new one.
+                if (state !== "done" || openCount !== latestOpenRef.current)
+                  return;
+                clearCloseTimer();
                 closeTimerRef.current = window.setTimeout(
                   () => setPopoverOpen(false),
                   common.doneDurationMs,
