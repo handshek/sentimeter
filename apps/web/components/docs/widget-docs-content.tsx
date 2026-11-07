@@ -18,14 +18,6 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@workspace/ui/components/table";
-import {
   feedbackFormContextDescription,
   feedbackFormCompletionDescription,
   surveyOptionsDescription,
@@ -39,6 +31,7 @@ import {
 import { WidgetInstallCommand } from "./widget-install-command";
 import { WidgetDemo } from "./widget-demo";
 import { CodeBlock } from "./code-block";
+import { PropsTable } from "./props-table";
 
 function Segmented<T extends string>({
   label,
@@ -211,26 +204,26 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
           Usage
         </h2>
         <p className="ds-body text-muted-foreground">
-          The code follows your preview settings. Without a <code>submit</code>{" "}
-          handler, nothing is sent or stored; choose Your Backend to save
-          feedback.{" "}
+          The code matches the preview above. Without a <code>submit</code>{" "}
+          handler, nothing is sent or stored. To save feedback, open the Your
+          backend tab, or read{" "}
           <Link
             href="/components/getting-started#submission"
             className="docs-link"
           >
             Connect your backend
           </Link>{" "}
-          covers errors and retries.
+          for errors and retries.
         </p>
         <Tabs defaultValue="local">
           <TabsList aria-label="Submission Example">
-            <TabsTrigger value="local">Local Example</TabsTrigger>
-            <TabsTrigger value="custom">Your Backend</TabsTrigger>
+            <TabsTrigger value="local">Local example</TabsTrigger>
+            <TabsTrigger value="custom">Your backend</TabsTrigger>
           </TabsList>
           <TabsContent value="local">
             <CodeBlock
               code={getUsageSnippet(widget, options)}
-              label="Local Example"
+              label="Local example"
             />
           </TabsContent>
           <TabsContent value="custom" className="docs-section">
@@ -255,7 +248,7 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
             </p>
             <CodeBlock
               code={getUsageSnippet(widget, options, "custom")}
-              label="Your Backend"
+              label="Your backend"
             />
           </TabsContent>
         </Tabs>
@@ -292,39 +285,7 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
         <h2 id="props" className="ds-section-title">
           Props
         </h2>
-        <div
-          role="region"
-          aria-label={`${widget.name} Props`}
-          tabIndex={0}
-          className="docs-props ds-panel max-w-full overflow-x-auto focus-visible:outline-2 focus-visible:outline-ring"
-        >
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-36">Prop</TableHead>
-                <TableHead className="w-48">Type</TableHead>
-                <TableHead className="w-32">Default</TableHead>
-                <TableHead className="min-w-64">Description</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {widget.props.map((row) => (
-                <TableRow key={row.prop}>
-                  <TableCell className="ds-code">{row.prop}</TableCell>
-                  <TableCell className="ds-code whitespace-normal break-words text-muted-foreground">
-                    {row.type}
-                  </TableCell>
-                  <TableCell className="ds-code whitespace-normal break-words text-muted-foreground">
-                    {row.defaultValue}
-                  </TableCell>
-                  <TableCell className="ds-body min-w-64 whitespace-normal">
-                    {row.description}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <PropsTable name={widget.name} rows={widget.props} />
       </section>
     </div>
   );

@@ -9,7 +9,7 @@ import { copyText, type CopyTextResult } from "@/lib/clipboard";
 
 export function CopyButton({
   text,
-  label = "Copy Code",
+  label = "Copy code",
   className,
 }: {
   text: string;

@@ -47,13 +47,13 @@ Exact target paths:
 
 ${metadata.targetFiles.map((path) => `- \`${path}\``).join("\n")}
 
-## Local Example
+## Local example
 
 ${code("tsx", getUsageSnippet(widget))}
 
 This completes locally: nothing is sent or stored. The thank-you stays on screen until the host removes the component.
 
-## Your Backend
+## Your backend
 
 ${code("tsx", getUsageSnippet(widget, undefined, "custom"))}
 
@@ -106,7 +106,7 @@ Preserve accessible names, ${rating ? "aria-pressed, " : ""}visible keyboard foc
 export function getAgentIndex() {
   return `# Sentimeter
 
-> An open-source, shadcn-first registry of accessible React feedback widgets. Install source into your app and connect your own backend.
+> Open-source feedback components and blocks for React and shadcn/ui. Install the source with the shadcn CLI and connect your own backend.
 
 Requires React, TypeScript, Tailwind CSS, and a configured shadcn app. Public demos run locally without sending or storing feedback. Pass a custom submit handler to save feedback; without one, submission completes locally.
 

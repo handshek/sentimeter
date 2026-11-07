@@ -93,14 +93,14 @@ test("copy failure offers the exact text and never claims success; retry announc
   render(
     <CopyButton text="bunx shadcn@latest add @sentimeter/emoji-feedback" />,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Copy Code" }));
+  fireEvent.click(screen.getByRole("button", { name: "Copy code" }));
   await screen.findByRole("alert");
   expect(screen.queryByRole("button", { name: "Copied" })).toBeNull();
   expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe(
     "bunx shadcn@latest add @sentimeter/emoji-feedback",
   );
 
-  fireEvent.click(screen.getByRole("button", { name: "Copy Code" }));
+  fireEvent.click(screen.getByRole("button", { name: "Copy code" }));
   await screen.findByRole("button", { name: "Copied" });
   expect(screen.getByRole("status").textContent).toContain(
     "copied to clipboard",
