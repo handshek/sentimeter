@@ -196,3 +196,15 @@ test("Survey preview resets its reason and restores keyboard focus", async () =>
     screen.getByRole("button", { name: "Send" }).hasAttribute("disabled"),
   ).toBe(true);
 });
+
+test("Replay plays a negative pick, the typed reason, and the thank-you", async () => {
+  const widget = widgetDocs.find((doc) => doc.slug === "emoji-feedback")!;
+  const view = render(<WidgetDemo widget={widget} replay={0} />);
+  view.rerender(<WidgetDemo widget={widget} replay={1} />);
+  await screen.findByText("Thanks!", undefined, { timeout: 5000 });
+  expect(
+    screen
+      .getAllByRole("button")
+      .filter((button) => button.getAttribute("aria-pressed") === "true"),
+  ).toHaveLength(1);
+});
