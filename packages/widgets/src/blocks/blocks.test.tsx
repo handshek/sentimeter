@@ -99,3 +99,48 @@ test("rating blocks render their placement copy", () => {
   assert.ok(screen.getByText("Order placed"));
   assert.ok(screen.getByText("How was checkout?"));
 });
+
+test("a running cancellation keeps the dialog open", async () => {
+  render(<CancelFlowSurvey cancelPlan={() => new Promise(() => {})} />);
+  const trigger = screen.getByRole("button", { name: "Cancel plan" });
+  fireEvent.click(trigger);
+  fireEvent.click(screen.getByRole("radio", { name: "Too expensive" }));
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Cancel plan" }));
+  });
+  fireEvent.keyDown(document.activeElement ?? document.body, {
+    key: "Escape",
+  });
+  assert.equal(trigger.getAttribute("aria-expanded"), "true");
+});
+
+test("a draft survives the viewport crossing the phone breakpoint", () => {
+  let matches = false;
+  const listeners = new Set<() => void>();
+  const original = window.matchMedia;
+  window.matchMedia = ((query: string) => ({
+    get matches() {
+      return matches;
+    },
+    media: query,
+    addEventListener: (_: string, listener: () => void) =>
+      listeners.add(listener),
+    removeEventListener: (_: string, listener: () => void) =>
+      listeners.delete(listener),
+  })) as unknown as typeof window.matchMedia;
+  try {
+    render(<FloatingFeedback />);
+    fireEvent.click(screen.getByRole("button", { name: "Feedback" }));
+    type("Half-written report");
+    act(() => {
+      matches = true;
+      listeners.forEach((listener) => listener());
+    });
+    assert.equal(
+      (screen.getByRole("textbox") as HTMLTextAreaElement).value,
+      "Half-written report",
+    );
+  } finally {
+    window.matchMedia = original;
+  }
+});
