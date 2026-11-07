@@ -15,7 +15,8 @@ export type SourceMapping = Readonly<{
     | "like-dislike"
     | "star-rating"
     | "nps"
-    | "feedback-form";
+    | "feedback-form"
+    | "survey";
 }>;
 
 export type PlannedArtifact = Readonly<{
@@ -167,6 +168,12 @@ export const SOURCE_MAPPINGS: readonly SourceMapping[] = [
     target: "components/sentimeter/feedback-form.tsx",
     item: "feedback-form",
   },
+  {
+    source: "survey.tsx",
+    staged: "survey.tsx",
+    target: "components/sentimeter/survey.tsx",
+    item: "survey",
+  },
 ] as const;
 
 const IMPORT_REWRITES = new Map<string, string>([
@@ -263,6 +270,14 @@ export function createExpectedRegistry(
         description: "Free-text feedback with page and browser context.",
         registryDependencies: [`${REGISTRY_BASE_URL}/feedback-system.json`],
         files: filesFor("feedback-form"),
+      },
+      {
+        name: "survey",
+        type: "registry:block",
+        title: "Survey",
+        description: "Single-choice reasons with an optional follow-up note.",
+        registryDependencies: [`${REGISTRY_BASE_URL}/feedback-system.json`],
+        files: filesFor("survey"),
       },
     ],
   } as const;

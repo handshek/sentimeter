@@ -127,6 +127,13 @@ export const feedbackStyles = {
   label: "sr-only",
   input:
     "h-[var(--feedback-input-height)] min-h-0 field-sizing-fixed w-full resize-none rounded-[var(--feedback-inner-radius)] border-[var(--feedback-border)] bg-[var(--feedback-input)] px-3 py-2.5 text-base leading-5 text-[var(--feedback-foreground)] shadow-(--feedback-input-shadow) placeholder:text-[var(--feedback-muted)] focus-visible:border-[var(--feedback-field-ring)] focus-visible:ring-3 focus-visible:ring-[var(--feedback-field-glow)] md:text-sm dark:bg-[var(--feedback-input)] transition-none",
+  surveyOptions: "flex min-w-0 flex-col gap-1",
+  surveyOption:
+    "h-auto min-h-11 w-full min-w-0 justify-start gap-3 rounded-[var(--feedback-inner-radius)] px-3 py-2 text-left text-sm leading-5 font-normal whitespace-normal [overflow-wrap:anywhere] text-[var(--feedback-foreground)] hover:bg-[var(--feedback-hover)] disabled:opacity-60 after:hidden transition-[transform,opacity] motion-reduce:transition-none",
+  surveyRadio:
+    "size-4 shrink-0 rounded-full border border-[var(--feedback-border)] bg-[var(--feedback-input)]",
+  surveyRadioSelected:
+    "border-[var(--feedback-primary)] bg-[var(--feedback-primary)] after:mx-auto after:my-1 after:block after:size-1.5 after:rounded-full after:bg-[var(--feedback-primary-foreground)]",
   context:
     "text-xs leading-4 text-[var(--feedback-muted)] [overflow-wrap:anywhere]",
   formSuccess: "min-h-28 flex-col gap-2 text-center",

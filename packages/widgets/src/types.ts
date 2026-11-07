@@ -29,7 +29,7 @@ export class WidgetSubmitError extends Error {
 }
 
 export type RatingWidgetType = "emoji" | "thumbs" | "star" | "nps";
-export type WidgetType = RatingWidgetType | "form";
+export type WidgetType = RatingWidgetType | "form" | "survey";
 
 export type FeedbackContext = {
   url: string;
@@ -53,7 +53,14 @@ export type FormPayload = {
   context?: FeedbackContext;
 };
 
-export type WidgetPayload = RatingPayload | FormPayload;
+export type SurveyPayload = {
+  location: string;
+  widgetType: "survey";
+  value: string;
+  text?: string;
+};
+
+export type WidgetPayload = RatingPayload | FormPayload | SurveyPayload;
 
 export type WidgetSubmit = (payload: WidgetPayload) => Promise<void>;
 

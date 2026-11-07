@@ -254,3 +254,84 @@ export function FeedbackFormActions({
     </div>
   );
 }
+
+export function FeedbackRadioGroup({
+  options,
+  value,
+  selectOption,
+  disabled,
+  labelledBy,
+}: {
+  options: readonly { label: string; value: string }[];
+  value: string | null;
+  selectOption: (value: string) => void;
+  disabled: boolean;
+  labelledBy: string;
+}) {
+  return (
+    <div
+      role="radiogroup"
+      aria-labelledby={labelledBy}
+      className={feedbackStyles.surveyOptions}
+    >
+      {options.map((option, index) => (
+        <Button
+          key={option.value}
+          type="button"
+          variant="ghost"
+          role="radio"
+          aria-checked={value === option.value}
+          disabled={disabled}
+          tabIndex={
+            value === option.value || (value === null && index === 0) ? 0 : -1
+          }
+          className={cn(
+            feedbackStyles.surveyOption,
+            feedbackStyles.focus,
+            value === option.value && feedbackStyles.selected,
+            value === option.value && feedbackStyles.submittedChoice,
+          )}
+          onClick={() => selectOption(option.value)}
+          onKeyDown={(event) => {
+            if (disabled) return;
+            let next: number;
+            switch (event.key) {
+              case "ArrowDown":
+              case "ArrowRight":
+                next = (index + 1) % options.length;
+                break;
+              case "ArrowUp":
+              case "ArrowLeft":
+                next = (index - 1 + options.length) % options.length;
+                break;
+              case "Home":
+                next = 0;
+                break;
+              case "End":
+                next = options.length - 1;
+                break;
+              default:
+                return;
+            }
+            event.preventDefault();
+            const nextOption = options[next];
+            if (!nextOption) return;
+            selectOption(nextOption.value);
+            event.currentTarget.parentElement
+              ?.querySelectorAll<HTMLButtonElement>('[role="radio"]')
+              [next]?.focus();
+          }}
+        >
+          <span
+            aria-hidden="true"
+            className={cn(
+              feedbackStyles.surveyRadio,
+              value === option.value && feedbackStyles.surveyRadioSelected,
+            )}
+          />
+          <span className="min-w-0">{option.label}</span>
+        </Button>
+      ))}
+    </div>
+  );
+}

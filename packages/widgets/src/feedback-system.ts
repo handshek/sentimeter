@@ -1,6 +1,7 @@
 export type {
   FeedbackContext,
   FormPayload,
+  SurveyPayload,
   RatingPayload,
   RatingWidgetType,
   FaceGlyphs,
@@ -46,6 +47,7 @@ export { collectFeedbackContext } from "./core/browser-context";
 export { useFeedbackSubmission } from "./core/use-feedback-submission";
 export {
   FeedbackFormActions,
+  FeedbackRadioGroup,
   FeedbackFormCard,
   FeedbackTextField,
   useFeedbackDone,

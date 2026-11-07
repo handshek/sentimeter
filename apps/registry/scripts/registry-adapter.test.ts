@@ -106,6 +106,30 @@ describe("Registry Item Adapter", () => {
     });
   });
 
+  test("installs Survey with host options and a string reason payload", async () => {
+    const paths = await createTestPaths();
+    await runRegistryCommand("check", {
+      paths,
+      shadcnBuild: writeFakeShadcnOutput,
+      hostTypecheck: async ({ fixtureRoot }) => {
+        const source = await readFile(
+          path.join(fixtureRoot, "components/sentimeter/survey.tsx"),
+          "utf8",
+        );
+        assert.match(source, /export function Survey/);
+        assert.match(source, /from "\.\/feedback-system"/);
+        assert.doesNotMatch(source, /@workspace\//);
+        const example = await readFile(
+          path.join(fixtureRoot, "components/host-survey-example.tsx"),
+          "utf8",
+        );
+        assert.match(example, /<Survey options=\{options\}/);
+        assert.match(example, /payload.widgetType === "survey"/);
+        assert.match(example, /const reason: string = payload.value/);
+      },
+    });
+  });
+
   test("preserves the previous directory when preparation fails", async () => {
     const root = await makeTemporaryRoot("sentimeter-atomic-");
     const target = path.join(root, "target");
