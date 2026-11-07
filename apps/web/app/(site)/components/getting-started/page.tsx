@@ -13,10 +13,14 @@ import { DocsPage } from "fumadocs-ui/layouts/notebook/page";
 import { gettingStartedSections } from "@/lib/docs-navigation";
 
 export const metadata: Metadata = {
-  title: "Getting Started",
+  title: "Install a feedback component in shadcn/ui",
   description:
-    "Install accessible feedback widgets into your React app and connect your own backend. No Sentimeter account required.",
+    "Add an accessible feedback component to your React and shadcn/ui app with the shadcn CLI, then connect your own backend. No Sentimeter account required.",
   alternates: { canonical: "/components/getting-started" },
+  openGraph: {
+    title: "Install a feedback component in shadcn/ui · Sentimeter",
+    url: "/components/getting-started",
+  },
 };
 
 export default function GettingStartedPage() {
@@ -36,7 +40,7 @@ export default function GettingStartedPage() {
       <div className="docs-content">
         <section aria-labelledby="prerequisites" className="docs-section">
           <h2 id="prerequisites" className="ds-section-title">
-            1. Start With a shadcn App
+            1. Start with a shadcn app
           </h2>
           <p className="ds-body text-muted-foreground">
             You need React, TypeScript, Tailwind CSS, and a configured shadcn
@@ -53,7 +57,7 @@ export default function GettingStartedPage() {
         </section>
         <section aria-labelledby="install" className="docs-section">
           <h2 id="install" className="ds-section-title">
-            2. Install a Component
+            2. Install a component
           </h2>
           <p className="ds-body text-muted-foreground">
             This installs Emoji Feedback. Choose{" "}
@@ -89,7 +93,7 @@ export default function GettingStartedPage() {
         </section>
         <section aria-labelledby="submission" className="docs-section">
           <h2 id="submission" className="ds-section-title">
-            3. Connect Your Backend
+            3. Connect your backend
           </h2>
           <p className="ds-body text-muted-foreground">
             Pass an asynchronous <code>submit</code> handler. It receives{" "}
@@ -131,7 +135,7 @@ export default function GettingStartedPage() {
         </section>
         <section aria-labelledby="accessibility" className="docs-section">
           <h2 id="accessibility" className="ds-section-title">
-            Keep the Component Accessible
+            Keep it accessible
           </h2>
           <p className="ds-body text-muted-foreground">
             Keep the accessible reaction names, pressed states, keyboard focus,
@@ -150,7 +154,7 @@ export default function GettingStartedPage() {
         </section>
         <section aria-labelledby="agents" className="docs-section">
           <h2 id="agents" className="ds-section-title">
-            Using an Agent?
+            Using an AI agent
           </h2>
           <p className="ds-body text-muted-foreground">
             Start with{" "}

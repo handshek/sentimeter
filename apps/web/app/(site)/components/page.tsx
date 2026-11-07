@@ -6,10 +6,14 @@ import { Button } from "@workspace/ui/components/button";
 import { DirectoryGroups } from "@/components/landing/directory-groups";
 
 export const metadata: Metadata = {
-  title: "Components",
+  title: "Feedback components and blocks for shadcn/ui",
   description:
     "Feedback components and ready-made blocks for shadcn apps: a feedback form, ratings, NPS, a survey, and blocks for error pages, menus, and cancel flows.",
   alternates: { canonical: "/components" },
+  openGraph: {
+    title: "Feedback components and blocks · Sentimeter",
+    url: "/components",
+  },
 };
 
 export default function ComponentsPage() {

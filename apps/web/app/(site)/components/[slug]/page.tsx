@@ -15,8 +15,13 @@ export async function generateMetadata({
   const widget = getWidgetDoc((await params).slug);
   if (!widget) notFound();
   return {
-    title: widget.name,
+    title: `${widget.name} component for React and shadcn/ui`,
     description: widget.description,
+    openGraph: {
+      title: `${widget.name} · Sentimeter`,
+      description: widget.description,
+      url: `/components/${widget.slug}`,
+    },
     alternates: {
       canonical: `/components/${widget.slug}`,
       types: { "text/markdown": `/components/${widget.slug}/markdown` },
