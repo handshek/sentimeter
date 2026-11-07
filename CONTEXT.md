@@ -53,8 +53,8 @@ confirmation stays on screen. NPS is a recommendation score from 0–10.
 
 A stacked free-text widget, installed as `feedback-form`. It asks "What happened?"
 and requires non-empty text. Its `form` payload carries trimmed `text` and
-optional `context`, without a rating value. Context contains the full page URL
-including query and hash, the pathname as route, browser and OS families inferred
+optional `context`, without a rating value. Context contains the page URL as
+origin plus pathname (no query or hash), the pathname as route, browser and OS families inferred
 from the user agent, and viewport width/height in CSS pixels. It samples context
 after mount for the muted preview and again at each submit attempt. It collects
 no raw user-agent string, versions, console errors, screenshots, or categories.
