@@ -47,3 +47,8 @@ export { NpsScore } from "./nps-score";
 export { FeedbackForm, type FeedbackFormProps } from "./feedback-form";
 
 export { Survey, type SurveyProps, type SurveyOption } from "./survey";
+export { FloatingFeedback } from "./blocks/floating-feedback";
+export { ReportProblem } from "./blocks/report-problem";
+export { WasThisHelpful } from "./blocks/was-this-helpful";
+export { AfterTaskRating } from "./blocks/after-task-rating";
+export { CancelFlowSurvey } from "./blocks/cancel-flow-survey";

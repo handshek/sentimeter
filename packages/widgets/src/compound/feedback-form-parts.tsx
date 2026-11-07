@@ -126,6 +126,7 @@ export function FeedbackFormActions({
   submitLabel,
   onSubmit,
   onSkip,
+  skipLabel = "Skip",
   errorId,
   thankYouMessage,
   thankYouDescription,
@@ -137,6 +138,7 @@ export function FeedbackFormActions({
   submitLabel: string;
   onSubmit: () => void;
   onSkip?: () => void;
+  skipLabel?: string;
   errorId: string;
   thankYouMessage: React.ReactNode;
   thankYouDescription?: React.ReactNode;
@@ -224,7 +226,7 @@ export function FeedbackFormActions({
               feedbackStyles.focus,
             )}
           >
-            Skip
+            {skipLabel}
           </Button>
         ) : null}
         <Button

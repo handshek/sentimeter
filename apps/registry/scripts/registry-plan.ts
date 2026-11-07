@@ -16,7 +16,13 @@ export type SourceMapping = Readonly<{
     | "star-rating"
     | "nps"
     | "feedback-form"
-    | "survey";
+    | "survey"
+    | "floating-feedback"
+    | "report-problem"
+    | "error-feedback"
+    | "was-this-helpful"
+    | "after-task-rating"
+    | "cancel-flow-survey";
 }>;
 
 export type PlannedArtifact = Readonly<{
@@ -174,12 +180,51 @@ export const SOURCE_MAPPINGS: readonly SourceMapping[] = [
     target: "components/sentimeter/survey.tsx",
     item: "survey",
   },
+  {
+    source: "blocks/floating-feedback.tsx",
+    staged: "blocks/floating-feedback.tsx",
+    target: "components/sentimeter/blocks/floating-feedback.tsx",
+    item: "floating-feedback",
+  },
+  {
+    source: "blocks/report-problem.tsx",
+    staged: "blocks/report-problem.tsx",
+    target: "components/sentimeter/blocks/report-problem.tsx",
+    item: "report-problem",
+  },
+  {
+    source: "blocks/error-feedback.tsx",
+    staged: "blocks/error-feedback.tsx",
+    target: "app/error.tsx",
+    item: "error-feedback",
+  },
+  {
+    source: "blocks/was-this-helpful.tsx",
+    staged: "blocks/was-this-helpful.tsx",
+    target: "components/sentimeter/blocks/was-this-helpful.tsx",
+    item: "was-this-helpful",
+  },
+  {
+    source: "blocks/after-task-rating.tsx",
+    staged: "blocks/after-task-rating.tsx",
+    target: "components/sentimeter/blocks/after-task-rating.tsx",
+    item: "after-task-rating",
+  },
+  {
+    source: "blocks/cancel-flow-survey.tsx",
+    staged: "blocks/cancel-flow-survey.tsx",
+    target: "components/sentimeter/blocks/cancel-flow-survey.tsx",
+    item: "cancel-flow-survey",
+  },
 ] as const;
 
 const IMPORT_REWRITES = new Map<string, string>([
   ["@workspace/ui/components/button", "@/components/ui/button"],
   ["@workspace/ui/components/textarea", "@/components/ui/textarea"],
   ["@workspace/ui/components/label", "@/components/ui/label"],
+  ["@workspace/ui/components/popover", "@/components/ui/popover"],
+  ["@workspace/ui/components/sheet", "@/components/ui/sheet"],
+  ["@workspace/ui/components/dialog", "@/components/ui/dialog"],
   ["@workspace/ui/lib/utils", "@/lib/utils"],
 ]);
 
@@ -279,6 +324,78 @@ export function createExpectedRegistry(
         registryDependencies: [`${REGISTRY_BASE_URL}/feedback-system.json`],
         files: filesFor("survey"),
       },
+      {
+        name: "floating-feedback",
+        type: "registry:block",
+        title: "Floating feedback button",
+        description:
+          "A floating Feedback pill with a desktop popover and mobile bottom sheet.",
+        dependencies: ["lucide-react"],
+        registryDependencies: [
+          `${REGISTRY_BASE_URL}/feedback-form.json`,
+          "button",
+          "popover",
+          "sheet",
+        ],
+        files: filesFor("floating-feedback"),
+      },
+      {
+        name: "report-problem",
+        type: "registry:block",
+        title: "Report a problem",
+        description: "A header button that opens a feedback form in a dialog.",
+        dependencies: ["lucide-react"],
+        registryDependencies: [
+          `${REGISTRY_BASE_URL}/feedback-form.json`,
+          "button",
+          "dialog",
+        ],
+        files: filesFor("report-problem"),
+      },
+      {
+        name: "error-feedback",
+        type: "registry:block",
+        title: "Error page",
+        description:
+          "A Next.js error boundary with inline feedback and a retry action.",
+        dependencies: ["lucide-react"],
+        registryDependencies: [
+          `${REGISTRY_BASE_URL}/feedback-form.json`,
+          "button",
+        ],
+        files: filesFor("error-feedback"),
+      },
+      {
+        name: "was-this-helpful",
+        type: "registry:block",
+        title: "Was this helpful?",
+        description:
+          "Inline thumbs feedback below docs, help articles, or AI answers.",
+        registryDependencies: [`${REGISTRY_BASE_URL}/like-dislike.json`],
+        files: filesFor("was-this-helpful"),
+      },
+      {
+        name: "after-task-rating",
+        type: "registry:block",
+        title: "After-task rating",
+        description: "A checkout success message followed by an emoji rating.",
+        dependencies: ["lucide-react"],
+        registryDependencies: [`${REGISTRY_BASE_URL}/emoji-feedback.json`],
+        files: filesFor("after-task-rating"),
+      },
+      {
+        name: "cancel-flow-survey",
+        type: "registry:block",
+        title: "Cancel-flow survey",
+        description:
+          "A cancellation dialog with reasons and a host-owned cancel action.",
+        registryDependencies: [
+          `${REGISTRY_BASE_URL}/survey.json`,
+          "button",
+          "dialog",
+        ],
+        files: filesFor("cancel-flow-survey"),
+      },
     ],
   } as const;
 }
@@ -290,6 +407,10 @@ export async function planRegistryArtifacts(options: {
   const mappings = options.mappings ?? SOURCE_MAPPINGS;
   validateMappings(mappings);
   const mappedSources = new Set(mappings.map((mapping) => mapping.source));
+  const targetBySource = new Map(
+    mappings.map((mapping) => [mapping.source, mapping.target]),
+  );
+  const mappedTargets = new Set(mappings.map((mapping) => mapping.target));
   const declaredDependencies = getDeclaredDependencies(mappings);
 
   const artifacts = await Promise.all(
@@ -314,6 +435,9 @@ export async function planRegistryArtifacts(options: {
           content,
           source: mapping.source,
           mappedSources,
+          target: mapping.target,
+          targetBySource,
+          mappedTargets,
           declaredDependencies:
             declaredDependencies.get(mapping.item) ?? HOST_EXTERNAL_IMPORTS,
         }),
@@ -392,6 +516,9 @@ function validateAndRewriteImports(options: {
   content: string;
   source: string;
   mappedSources: ReadonlySet<string>;
+  target: string;
+  targetBySource: ReadonlyMap<string, string>;
+  mappedTargets: ReadonlySet<string>;
   declaredDependencies: ReadonlySet<string>;
 }): string {
   const sourceFile = ts.createSourceFile(
@@ -421,17 +548,31 @@ function validateAndRewriteImports(options: {
     }
 
     if (specifier.startsWith(".")) {
-      if (
-        !resolveMappedRelativeImport(
-          options.source,
-          specifier,
-          options.mappedSources,
-        )
-      ) {
+      const importedSource = resolveMappedRelativeImport(
+        options.source,
+        specifier,
+        options.mappedSources,
+      );
+      if (!importedSource) {
         throw new RegistryAdapterError(
           "relative_import_not_mapped",
           `${options.source} imports ${specifier}, which is outside the explicit Registry Item map.`,
         );
+      }
+      const importedTarget = options.targetBySource.get(importedSource);
+      if (
+        importedTarget &&
+        resolveMappedRelativeImport(
+          options.target,
+          specifier,
+          options.mappedTargets,
+        ) !== importedTarget
+      ) {
+        replacements.push({
+          start: moduleSpecifier.getStart(sourceFile) + 1,
+          end: moduleSpecifier.getEnd() - 1,
+          value: `@/${importedTarget.replace(/\.tsx?$/, "").replace(/\/index$/, "")}`,
+        });
       }
       continue;
     }

@@ -160,9 +160,12 @@ describe("Registry Item Adapter", () => {
           ? item
           : {
               ...item,
-              registryDependencies: [
-                "https://previous-registry.test/r/feedback-system.json",
-              ],
+              registryDependencies: item.registryDependencies.map(
+                (dependency) =>
+                  dependency.startsWith("https://")
+                    ? `https://previous-registry.test${new URL(dependency).pathname}`
+                    : dependency,
+              ),
             },
       ),
     };

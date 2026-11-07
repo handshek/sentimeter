@@ -82,6 +82,16 @@ seconds later. Unmounting cancels that pending callback. Failed submissions reta
 the reason and note for retry. The host owns subscription cancellation and any
 container around the widget.
 
+### Block
+
+A ready-made file for one spot in a host app, installed as a `registry:block`
+that pulls in the widget it uses. Launch blocks: `floating-feedback` (pill with
+a popover on desktop and a bottom sheet on phones), `report-problem` (dialog),
+`error-feedback` (a Next.js `app/error.tsx`), `was-this-helpful`,
+`after-task-rating`, and `cancel-flow-survey`. Block source lives in
+`packages/widgets/src/blocks`. Containers close themselves through the widget's
+`onDone`; the host keeps any real action, such as cancelling a plan.
+
 ### Registry Item
 
 The shadcn registry JSON and generated source tree that install a Widget into a

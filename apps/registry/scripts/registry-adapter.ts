@@ -210,15 +210,21 @@ function resolveManifestUrls(
             const expectedItem = expected.items.find(
               (candidate) => candidate.name === item.name,
             );
+            const actualDependencies = item.registryDependencies;
             if (
               !expectedItem ||
-              expectedItem.name === "feedback-system" ||
-              !Array.isArray(item.registryDependencies) ||
-              item.registryDependencies.length !== 1 ||
-              !isAbsoluteUrlAtPath(
-                item.registryDependencies[0],
-                "/r/feedback-system.json",
-              )
+              !Array.isArray(actualDependencies) ||
+              actualDependencies.length !==
+                expectedItem.registryDependencies.length ||
+              !expectedItem.registryDependencies.every((dependency, index) => {
+                const actualDependency = actualDependencies[index];
+                return dependency.startsWith("https://")
+                  ? isAbsoluteUrlAtPath(
+                      actualDependency,
+                      new URL(dependency).pathname,
+                    )
+                  : actualDependency === dependency;
+              })
             ) {
               return item;
             }
@@ -549,6 +555,16 @@ export function HostSurveyExample() {
                     "lucide-react.d.ts",
                   ),
                 ],
+                "@/*": ["./*"],
+                "@/components/ui/popover": [
+                  path.join(uiRoot, "components", "popover.tsx"),
+                ],
+                "@/components/ui/sheet": [
+                  path.join(uiRoot, "components", "sheet.tsx"),
+                ],
+                "@/components/ui/dialog": [
+                  path.join(uiRoot, "components", "dialog.tsx"),
+                ],
                 "@/components/ui/button": [
                   path.join(uiRoot, "components", "button.tsx"),
                 ],
@@ -564,7 +580,11 @@ export function HostSurveyExample() {
                 ],
               },
             },
-            include: ["components/**/*.ts", "components/**/*.tsx"],
+            include: [
+              "components/**/*.ts",
+              "components/**/*.tsx",
+              "app/**/*.tsx",
+            ],
           },
           null,
           2,

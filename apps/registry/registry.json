@@ -193,6 +193,114 @@
           "target": "components/sentimeter/survey.tsx"
         }
       ]
+    },
+    {
+      "name": "floating-feedback",
+      "type": "registry:block",
+      "title": "Floating feedback button",
+      "description": "A floating Feedback pill with a desktop popover and mobile bottom sheet.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "https://registry.handshek.workers.dev/r/feedback-form.json",
+        "button",
+        "popover",
+        "sheet"
+      ],
+      "files": [
+        {
+          "path": ".generated/sentimeter/blocks/floating-feedback.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/blocks/floating-feedback.tsx"
+        }
+      ]
+    },
+    {
+      "name": "report-problem",
+      "type": "registry:block",
+      "title": "Report a problem",
+      "description": "A header button that opens a feedback form in a dialog.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "https://registry.handshek.workers.dev/r/feedback-form.json",
+        "button",
+        "dialog"
+      ],
+      "files": [
+        {
+          "path": ".generated/sentimeter/blocks/report-problem.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/blocks/report-problem.tsx"
+        }
+      ]
+    },
+    {
+      "name": "error-feedback",
+      "type": "registry:block",
+      "title": "Error page",
+      "description": "A Next.js error boundary with inline feedback and a retry action.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "https://registry.handshek.workers.dev/r/feedback-form.json",
+        "button"
+      ],
+      "files": [
+        {
+          "path": ".generated/sentimeter/blocks/error-feedback.tsx",
+          "type": "registry:component",
+          "target": "app/error.tsx"
+        }
+      ]
+    },
+    {
+      "name": "was-this-helpful",
+      "type": "registry:block",
+      "title": "Was this helpful?",
+      "description": "Inline thumbs feedback below docs, help articles, or AI answers.",
+      "registryDependencies": [
+        "https://registry.handshek.workers.dev/r/like-dislike.json"
+      ],
+      "files": [
+        {
+          "path": ".generated/sentimeter/blocks/was-this-helpful.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/blocks/was-this-helpful.tsx"
+        }
+      ]
+    },
+    {
+      "name": "after-task-rating",
+      "type": "registry:block",
+      "title": "After-task rating",
+      "description": "A checkout success message followed by an emoji rating.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "https://registry.handshek.workers.dev/r/emoji-feedback.json"
+      ],
+      "files": [
+        {
+          "path": ".generated/sentimeter/blocks/after-task-rating.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/blocks/after-task-rating.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cancel-flow-survey",
+      "type": "registry:block",
+      "title": "Cancel-flow survey",
+      "description": "A cancellation dialog with reasons and a host-owned cancel action.",
+      "registryDependencies": [
+        "https://registry.handshek.workers.dev/r/survey.json",
+        "button",
+        "dialog"
+      ],
+      "files": [
+        {
+          "path": ".generated/sentimeter/blocks/cancel-flow-survey.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/blocks/cancel-flow-survey.tsx"
+        }
+      ]
     }
   ]
 }

@@ -38,6 +38,42 @@ describe("Registry Item plan", () => {
     );
   });
 
+  test("rewrites imports when a block installs outside its source folder", async () => {
+    const sourceRoot = await makeSourceRoot();
+    await mkdir(path.join(sourceRoot, "blocks"));
+    await writeFile(
+      path.join(sourceRoot, "blocks/error-feedback.tsx"),
+      'import { FeedbackForm } from "../feedback-form";\nimport { Button } from "@workspace/ui/components/button";\n',
+      "utf8",
+    );
+    await writeFile(
+      path.join(sourceRoot, "feedback-form.tsx"),
+      "export function FeedbackForm() {}\n",
+      "utf8",
+    );
+    const artifacts = await planRegistryArtifacts({
+      sourceRoot,
+      mappings: [
+        {
+          source: "blocks/error-feedback.tsx",
+          staged: "blocks/error-feedback.tsx",
+          target: "app/error.tsx",
+          item: "error-feedback",
+        },
+        {
+          source: "feedback-form.tsx",
+          staged: "feedback-form.tsx",
+          target: "components/sentimeter/feedback-form.tsx",
+          item: "feedback-form",
+        },
+      ],
+    });
+    assert.equal(
+      artifacts[0]?.content,
+      'import { FeedbackForm } from "@/components/sentimeter/feedback-form";\nimport { Button } from "@/components/ui/button";\n',
+    );
+  });
+
   test("rejects forbidden workspace and undeclared external imports", async () => {
     const sourceRoot = await makeSourceRoot();
     const mapping = singleMapping();
