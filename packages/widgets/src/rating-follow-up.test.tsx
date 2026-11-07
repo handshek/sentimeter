@@ -372,3 +372,18 @@ test("NPS arrow keys and endpoints focus scores for keyboard activation", async 
   await screen.findByText("Thanks!");
   assert.deepEqual(payloads, [{ location: "/", widgetType: "nps", value: 10 }]);
 });
+
+test("a rating submit handler reads the score straight from its payload", async () => {
+  const scores: number[] = [];
+  render(
+    <NpsScore
+      submit={async (payload) => {
+        scores.push(payload.value);
+      }}
+    />,
+  );
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Score 9 of 10" }));
+  });
+  assert.deepEqual(scores, [9]);
+});

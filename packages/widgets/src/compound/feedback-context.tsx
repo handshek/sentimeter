@@ -60,9 +60,9 @@ export type FeedbackProviderProps = {
   size?: WidgetSize;
   layout?: WidgetLayout;
   followUp?: WidgetFollowUp;
-  submit?: WidgetSubmit;
+  submit?: WidgetSubmit<RatingPayload>;
   children: React.ReactNode;
-} & WidgetCallbacks;
+} & WidgetCallbacks<RatingPayload>;
 
 export function FeedbackProvider({
   location = "/",
