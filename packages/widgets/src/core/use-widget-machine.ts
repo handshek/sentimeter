@@ -39,6 +39,14 @@ export function notify<Args extends unknown[]>(
   }
 }
 
+// Only a chosen response carries a value, and only a failed send of it
+// carries an error, so neither can outlive the state that owns it.
+type Machine =
+  | { state: "idle" }
+  | { state: "selected"; value: number; error: WidgetSubmitError | null }
+  | { state: "submitting"; value: number }
+  | { state: "done"; value: number };
+
 export function useWidgetMachine({
   payloadBase,
   disabled,
@@ -49,21 +57,18 @@ export function useWidgetMachine({
   onSubmitSuccess,
   onSubmitError,
 }: UseWidgetMachineArgs) {
-  const [state, setState] = React.useState<WidgetState>("idle");
-  const [selectedValue, setSelectedValue] = React.useState<number | null>(null);
+  const [machine, setMachine] = React.useState<Machine>({ state: "idle" });
   const [hidden, setHidden] = React.useState(false);
-  const [submitError, setSubmitError] =
-    React.useState<WidgetSubmitError | null>(null);
 
-  // Mirrors `state` synchronously so repeated calls in one tick, before React
-  // re-renders, cannot submit the same response twice.
-  const stateRef = React.useRef<WidgetState>("idle");
+  // Mirrors `machine` synchronously so repeated calls in one tick, before
+  // React re-renders, cannot submit the same response twice.
+  const machineRef = React.useRef<Machine>(machine);
 
-  const setStateSafe = React.useCallback(
-    (next: WidgetState) => {
-      stateRef.current = next;
-      setState(next);
-      notify(onStateChange, next);
+  const transition = React.useCallback(
+    (next: Machine) => {
+      machineRef.current = next;
+      setMachine(next);
+      notify(onStateChange, next.state);
     },
     [onStateChange],
   );
@@ -71,44 +76,43 @@ export function useWidgetMachine({
   const select = React.useCallback(
     (value: number) => {
       if (disabled) return;
-      if (stateRef.current === "submitting" || stateRef.current === "done") {
-        return;
-      }
-      setSubmitError(null);
-      setSelectedValue(value);
+      const { state } = machineRef.current;
+      if (state === "submitting" || state === "done") return;
       notify(onSelect, value);
-      setStateSafe("selected");
+      transition({ state: "selected", value, error: null });
     },
-    [disabled, onSelect, setStateSafe],
+    [disabled, onSelect, transition],
   );
 
   const submitSelected = React.useCallback(
     async (text?: string) => {
       if (disabled) return;
-      if (stateRef.current !== "selected") return;
-      if (selectedValue == null) return;
+      const current = machineRef.current;
+      if (current.state !== "selected") return;
 
+      const { value } = current;
       const payload: WidgetPayload = {
         ...payloadBase,
-        value: selectedValue,
+        value,
         ...(text ? { text } : {}),
       };
-      setSubmitError(null);
-      setStateSafe("submitting");
+      transition({ state: "submitting", value });
       notify(onSubmitStart, payload);
 
       try {
         await submit(payload);
       } catch (error) {
         notify(onSubmitError, error, payload);
-        setSubmitError(normalizeSubmitError(error));
-        setStateSafe("selected");
+        transition({
+          state: "selected",
+          value,
+          error: normalizeSubmitError(error),
+        });
         return;
       }
 
-      setSubmitError(null);
       notify(onSubmitSuccess, payload);
-      setStateSafe("done");
+      transition({ state: "done", value });
     },
     [
       disabled,
@@ -116,27 +120,24 @@ export function useWidgetMachine({
       onSubmitStart,
       onSubmitSuccess,
       payloadBase,
-      selectedValue,
-      setStateSafe,
       submit,
+      transition,
     ],
   );
 
   const reset = React.useCallback(() => {
-    if (disabled || stateRef.current !== "selected") return false;
-    setSubmitError(null);
-    setSelectedValue(null);
-    setStateSafe("idle");
+    if (disabled || machineRef.current.state !== "selected") return false;
+    transition({ state: "idle" });
     return true;
-  }, [disabled, setStateSafe]);
+  }, [disabled, transition]);
 
   const hide = React.useCallback(() => setHidden(true), []);
 
   return {
     hidden,
-    state,
-    selectedValue,
-    submitError,
+    state: machine.state,
+    selectedValue: machine.state === "idle" ? null : machine.value,
+    submitError: machine.state === "selected" ? machine.error : null,
     select,
     submitSelected,
     reset,
