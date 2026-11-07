@@ -34,7 +34,7 @@ Keep installed widgets local, theme-aware, keyboard-accessible, and usable in a
 288px container with 44×44px reaction targets. A custom `submit` handler saves
 feedback; without it, the widget completes locally. Preserve that behavior and
 the public API. Discuss new widget types or changes to
-the registry footprint in an issue first; this launch focuses on three widgets.
+the registry footprint in an issue first; this launch includes four rating widgets.
 
 ## Adding a Widget
 

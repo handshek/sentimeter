@@ -49,6 +49,7 @@ import {
   EmojiFeedback,
   LikeDislike,
   StarRating,
+  NpsScore,
   FeedbackWidget,
   FeedbackTitle,
   FeedbackDescription,
@@ -98,7 +99,7 @@ type WidgetCommon = {
   submitMode: SubmitMode;
   title: string;
   description: string;
-  showInput: boolean;
+  followUp: "negative" | "always" | "never";
   size: WidgetSize;
 };
 
@@ -270,12 +271,11 @@ function PopoverWidgetDemo({ common }: { common: WidgetCommon }) {
               disabled={common.disabled}
               title={common.title}
               description={common.description}
-              showInput={common.showInput}
+              followUp={common.followUp}
               submitLabel={common.submitLabel}
               thankYouMessage={common.thankYouMessage}
               size={common.size}
               submit={common.submit}
-              doneDurationMs={common.doneDurationMs}
               closeButton
               onCancel={() => {
                 clearCloseTimer();
@@ -365,11 +365,10 @@ function WidgetRig({
     location: common.location,
     disabled: common.disabled,
     thankYouMessage: common.thankYouMessage,
-    doneDurationMs: common.doneDurationMs,
     submitLabel: common.submitLabel,
     title: common.title,
     description: common.description,
-    showInput: common.showInput,
+    followUp: common.followUp,
     size: common.size,
     submit: wrappedSubmit,
     onSelect: (value: number) =>
@@ -576,7 +575,6 @@ function ShowcaseWidget({
   onStateChange: (state: WidgetState) => void;
 }) {
   const commonProps = {
-    autoHide: false,
     location: "/widgets",
     onStateChange,
   } as const;
@@ -588,6 +586,10 @@ function ShowcaseWidget({
 
   if (slug === "star-rating") {
     return <StarRating key={key} {...commonProps} />;
+  }
+
+  if (slug === "nps") {
+    return <NpsScore key={key} {...commonProps} />;
   }
 
   return <EmojiFeedback key={key} {...commonProps} />;
@@ -733,7 +735,8 @@ export function WidgetsPlaygroundClient({
   const [description, setDescription] = React.useState(
     "This helps us improve our product.",
   );
-  const [showInput, setShowInput] = React.useState(false);
+  const [followUp, setFollowUp] =
+    React.useState<WidgetCommon["followUp"]>("negative");
   const [widgetSize, setWidgetSize] = React.useState<WidgetSize>("default");
 
   React.useEffect(() => {
@@ -769,7 +772,7 @@ export function WidgetsPlaygroundClient({
       submitMode,
       title,
       description,
-      showInput,
+      followUp,
       size: widgetSize,
     }),
     [
@@ -781,7 +784,7 @@ export function WidgetsPlaygroundClient({
       thankYouMessage,
       title,
       description,
-      showInput,
+      followUp,
       widgetSize,
     ],
   );
@@ -1193,7 +1196,7 @@ export function WidgetsPlaygroundClient({
                       <Field
                         id="global-thankYou"
                         label="Thank you message"
-                        description="Displayed briefly after a successful submit"
+                        description="Displayed after a successful submit"
                       >
                         <Input
                           id="global-thankYou"
@@ -1204,8 +1207,8 @@ export function WidgetsPlaygroundClient({
 
                       <Field
                         id="global-doneDuration"
-                        label="Done duration"
-                        description="How long to show the thank-you before hiding (ms)"
+                        label="Popover close delay"
+                        description="Host-owned delay before closing the popover after thank-you (ms)"
                       >
                         <Input
                           id="global-doneDuration"
@@ -1242,24 +1245,38 @@ export function WidgetsPlaygroundClient({
                         />
                       </Field>
 
-                      <div className="flex items-center justify-between rounded-md border border-border/70 bg-background/40 px-3 py-2">
-                        <div>
-                          <Label
-                            htmlFor="global-showInput"
-                            className="text-sm font-medium"
+                      <Field
+                        id="global-followUp"
+                        label="Follow-up"
+                        description="When to ask for optional written feedback"
+                      >
+                        <Select
+                          value={followUp}
+                          onValueChange={(value) => {
+                            if (
+                              value === "negative" ||
+                              value === "always" ||
+                              value === "never"
+                            ) {
+                              setFollowUp(value);
+                            }
+                          }}
+                        >
+                          <SelectTrigger
+                            id="global-followUp"
+                            className="w-full"
                           >
-                            {showInput ? "Input visible" : "Input hidden"}
-                          </Label>
-                          <div className="text-[12px] text-muted-foreground">
-                            Shows the text area to collect qualitative feedback
-                          </div>
-                        </div>
-                        <Switch
-                          id="global-showInput"
-                          checked={showInput}
-                          onCheckedChange={setShowInput}
-                        />
-                      </div>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent position="popper">
+                            <SelectItem value="negative">
+                              Negative ratings
+                            </SelectItem>
+                            <SelectItem value="always">Every rating</SelectItem>
+                            <SelectItem value="never">Never</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </Field>
 
                       <div className="flex items-center justify-between rounded-md border border-border/70 bg-background/40 px-3 py-2">
                         <div>
@@ -1353,7 +1370,6 @@ export function WidgetsPlaygroundClient({
                               widgetType="emoji"
                               disabled={common.disabled}
                               submit={common.submit}
-                              doneDurationMs={common.doneDurationMs}
                               closeButton
                             >
                               <FeedbackTitle>
@@ -1386,7 +1402,6 @@ export function WidgetsPlaygroundClient({
                               widgetType="star"
                               disabled={common.disabled}
                               submit={common.submit}
-                              doneDurationMs={common.doneDurationMs}
                             >
                               <FeedbackTitle>Quick rating</FeedbackTitle>
                               <FeedbackRating variant="stars" />

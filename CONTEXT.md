@@ -39,10 +39,15 @@ Sentimeter uses three runtime surfaces:
 ### Widget
 
 An installable React feedback surface. Current widget types are `emoji`,
-`thumbs`, and `star`. Widgets must work as open code inside the developer's
+`thumbs`, `star`, and `nps`. Widgets must work as open code inside the developer's
 shadcn project, not as opaque iframes or remote embeds. `packages/widgets` is
 the sole canonical source for Widget behavior; workspace imports and Registry
 Items are two forms of that behavior.
+
+Negative picks open an optional comment before submission: emoji and stars 1–2,
+thumbs down (0), and NPS 0–6. Other picks submit immediately. Hosts can set
+`followUp` to `always` or `never` to change when the comment appears. Successful
+confirmation stays on screen. NPS is a recommendation score from 0–10.
 
 ### Registry Item
 

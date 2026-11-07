@@ -190,7 +190,7 @@ export function HowItWorksSection({ hostedMode }: { hostedMode: HostedMode }) {
           <CodeBlock
             code={getUsageSnippet(
               widgetDocs[0]!,
-              { showInput: true },
+              { followUp: "always" },
               "custom",
             )}
             label="feedback.tsx"

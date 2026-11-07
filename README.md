@@ -30,7 +30,7 @@ Docs include Bun, pnpm, npm, and Yarn commands, live previews, and exact files.
 import { EmojiFeedback } from "@/components/sentimeter/emoji-feedback";
 
 export function FeedbackExample() {
-  return <EmojiFeedback autoHide={false} />;
+  return <EmojiFeedback />;
 }
 ```
 
@@ -61,7 +61,7 @@ The widget inherits your app’s colors, font, and radius. Pick the stacked card
 or the inline bar, and swap in your own glyphs:
 
 ```tsx
-<EmojiFeedback layout="inline" showInput autoHide={false} />
+<EmojiFeedback layout="inline" followUp="always" />
 <StarRating glyph={{ glyph: "❤️", label: "heart" }} />
 ```
 

@@ -9,7 +9,7 @@ import { WidgetDemo } from "@/components/docs/widget-demo";
 export const metadata: Metadata = {
   title: "Components",
   description:
-    "Try Emoji Feedback, Like / Dislike, and Star Rating. Install accessible React source from the Sentimeter shadcn registry.",
+    "Try Emoji Feedback, Like / Dislike, Star Rating, and NPS. Install accessible React source from the Sentimeter shadcn registry.",
   alternates: { canonical: "/components" },
 };
 

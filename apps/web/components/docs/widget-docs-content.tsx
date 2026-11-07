@@ -17,7 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-import { Switch } from "@workspace/ui/components/switch";
 import {
   Tabs,
   TabsContent,
@@ -96,25 +95,27 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="preview-variant">Variant</Label>
-                    <Select
-                      value={options.variant}
-                      onValueChange={(variant) =>
-                        updateOptions({
-                          variant: variant as WidgetDemoOptions["variant"],
-                        })
-                      }
-                    >
-                      <SelectTrigger id="preview-variant" className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="emoji">Emoji</SelectItem>
-                        <SelectItem value="icons">Icons</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {widget.defaultVariant !== null ? (
+                    <div className="space-y-2">
+                      <Label htmlFor="preview-variant">Variant</Label>
+                      <Select
+                        value={options.variant}
+                        onValueChange={(variant) =>
+                          updateOptions({
+                            variant: variant as WidgetDemoOptions["variant"],
+                          })
+                        }
+                      >
+                        <SelectTrigger id="preview-variant" className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="emoji">Emoji</SelectItem>
+                          <SelectItem value="icons">Icons</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ) : null}
                   <div className="space-y-2">
                     <Label htmlFor="preview-size">Size</Label>
                     <Select
@@ -146,17 +147,30 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
                   </Link>{" "}
                   for typography, tokens, and composition rules.
                 </p>
-                <div className="flex min-h-11 items-center gap-3">
-                  <Switch
-                    id="preview-input"
-                    checked={options.showInput}
-                    onCheckedChange={(showInput) =>
-                      updateOptions({ showInput })
-                    }
-                  />
-                  <Label htmlFor="preview-input" className="cursor-pointer">
-                    Optional Text Input
-                  </Label>
+                <div className="max-w-xs space-y-2">
+                  <Label htmlFor="preview-follow-up">Ask for a comment</Label>
+                  <Select
+                    value={options.followUp}
+                    onValueChange={(followUp) => {
+                      if (
+                        followUp === "negative" ||
+                        followUp === "always" ||
+                        followUp === "never"
+                      )
+                        updateOptions({ followUp });
+                    }}
+                  >
+                    <SelectTrigger id="preview-follow-up" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="negative">
+                        After a negative pick
+                      </SelectItem>
+                      <SelectItem value="always">After every pick</SelectItem>
+                      <SelectItem value="never">Never</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <Button
                   type="button"
