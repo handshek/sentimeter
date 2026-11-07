@@ -98,7 +98,7 @@ export function FloatingFeedback({
         side="top"
         align={corner === "bottom-left" ? "start" : "end"}
         sideOffset={12}
-        className="w-auto border-0 bg-transparent p-0 shadow-none"
+        className="w-[min(23rem,calc(100vw-2rem))] border-0 bg-transparent p-0 shadow-none"
       >
         {form}
       </PopoverContent>
