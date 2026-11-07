@@ -447,14 +447,23 @@ every choice; `followUp="never"` submits every choice immediately. The compound
 compositions choose their own disclosure policy.
 
 Confirmation stays mounted until the host removes the widget or its close
-button dismisses it. Widgets do not start an auto-hide timer. Overlay closing
-belongs to a later FeedbackForm slice.
+button dismisses it. Widgets do not start an auto-hide timer. FeedbackForm exposes `onDone` two seconds after confirmation so a host can
+close its container; unmounting cancels the callback.
 
 NPS uses one segmented row with eleven values from 0 through 10 and the legend
 "Not likely" / "Very likely". Segments divide the available width evenly and
 stay 44px tall, including inside a 288px container. It uses the host primary
 color for selection and keeps the keyboard-focus ring separate. Arrow keys
 move focus within the row; Enter or Space chooses the focused value.
+
+### Free-text feedback
+
+FeedbackForm uses the stacked card recipe with one required text field, a muted
+context line, and Send. Empty or whitespace-only text cannot submit. Pending
+submission disables the field and Send; failures keep the text for retry. Its
+confirmation replaces the field with "Got it. Sorry about that." and "We read
+every message." and stays until the host removes it. The field's hidden label
+matches its question. The context line wraps at narrow widths.
 
 ## Governance and verification
 

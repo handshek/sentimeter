@@ -37,6 +37,21 @@
           "target": "components/sentimeter/feedback-system/core/use-widget-machine.ts"
         },
         {
+          "path": ".generated/sentimeter/feedback-system/core/use-feedback-submission.ts",
+          "type": "registry:component",
+          "target": "components/sentimeter/feedback-system/core/use-feedback-submission.ts"
+        },
+        {
+          "path": ".generated/sentimeter/feedback-system/core/browser-context.ts",
+          "type": "registry:component",
+          "target": "components/sentimeter/feedback-system/core/browser-context.ts"
+        },
+        {
+          "path": ".generated/sentimeter/feedback-system/compound/feedback-form-parts.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/feedback-system/compound/feedback-form-parts.tsx"
+        },
+        {
           "path": ".generated/sentimeter/feedback-system/compound/feedback-context.tsx",
           "type": "registry:component",
           "target": "components/sentimeter/feedback-system/compound/feedback-context.tsx"
@@ -144,6 +159,22 @@
           "path": ".generated/sentimeter/nps-score.tsx",
           "type": "registry:component",
           "target": "components/sentimeter/nps-score.tsx"
+        }
+      ]
+    },
+    {
+      "name": "feedback-form",
+      "type": "registry:block",
+      "title": "Feedback Form",
+      "description": "Free-text feedback with page and browser context.",
+      "registryDependencies": [
+        "https://registry.handshek.workers.dev/r/feedback-system.json"
+      ],
+      "files": [
+        {
+          "path": ".generated/sentimeter/feedback-form.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/feedback-form.tsx"
         }
       ]
     }

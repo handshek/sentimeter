@@ -3,28 +3,30 @@
 import * as React from "react";
 import type {
   WidgetPayload,
+  RatingPayload,
+  RatingWidgetType,
   WidgetFollowUp,
   WidgetState,
   WidgetSubmit,
-  WidgetSubmitError,
 } from "../types";
-import { normalizeSubmitError } from "./errors";
+import { notify, useFeedbackSubmission } from "./use-feedback-submission";
+export { notify } from "./use-feedback-submission";
 
 type UseWidgetMachineArgs = {
-  payloadBase: Omit<WidgetPayload, "value">;
+  payloadBase: Omit<RatingPayload, "value">;
   followUp?: WidgetFollowUp;
   disabled?: boolean;
-  submit: WidgetSubmit;
+  submit: WidgetSubmit<RatingPayload>;
   onStateChange?: (state: WidgetState) => void;
   onSelect?: (value: number) => void;
-  onSubmitStart?: (payload: WidgetPayload) => void;
-  onSubmitSuccess?: (payload: WidgetPayload) => void;
-  onSubmitError?: (error: unknown, payload: WidgetPayload) => void;
+  onSubmitStart?: (payload: RatingPayload) => void;
+  onSubmitSuccess?: (payload: RatingPayload) => void;
+  onSubmitError?: (error: unknown, payload: RatingPayload) => void;
 };
 
 export function requiresFollowUp(
   followUp: WidgetFollowUp | undefined,
-  widgetType: WidgetPayload["widgetType"],
+  widgetType: RatingWidgetType,
   value: number,
 ) {
   if (followUp === undefined || followUp === "always") return true;
@@ -40,25 +42,6 @@ export function requiresFollowUp(
   }
 }
 
-// Host callbacks are observers: a throwing callback must not change what the
-// widget shows or whether feedback is sent again. Async callbacks are not
-// awaited, so callback order stays the same, but their rejections are logged.
-function reportCallbackError(error: unknown) {
-  console.error("Sentimeter widget callback threw:", error);
-}
-
-export function notify<Args extends unknown[]>(
-  callback: ((...args: Args) => void) | undefined,
-  ...args: Args
-) {
-  try {
-    const result: unknown = callback?.(...args);
-    if (result instanceof Promise) result.catch(reportCallbackError);
-  } catch (error) {
-    reportCallbackError(error);
-  }
-}
-
 export function useWidgetMachine({
   payloadBase,
   followUp,
@@ -70,25 +53,23 @@ export function useWidgetMachine({
   onSubmitSuccess,
   onSubmitError,
 }: UseWidgetMachineArgs) {
-  const [state, setState] = React.useState<WidgetState>("idle");
+  const {
+    state,
+    stateRef,
+    submitError,
+    setStateSafe,
+    clearError,
+    submitPayload,
+  } = useFeedbackSubmission({
+    submit,
+    onStateChange,
+    onSubmitStart,
+    onSubmitSuccess,
+    onSubmitError,
+  });
   const [selectedValue, setSelectedValue] = React.useState<number | null>(null);
   const [hidden, setHidden] = React.useState(false);
-  const [submitError, setSubmitError] =
-    React.useState<WidgetSubmitError | null>(null);
-
-  // Mirrors `state` synchronously so repeated calls in one tick, before React
-  // re-renders, cannot submit the same response twice.
-  const stateRef = React.useRef<WidgetState>("idle");
   const selectedValueRef = React.useRef<number | null>(null);
-
-  const setStateSafe = React.useCallback(
-    (next: WidgetState) => {
-      stateRef.current = next;
-      setState(next);
-      notify(onStateChange, next);
-    },
-    [onStateChange],
-  );
 
   const submitValue = React.useCallback(
     async (value: number, text?: string) => {
@@ -100,32 +81,9 @@ export function useWidgetMachine({
         value,
         ...(text ? { text } : {}),
       };
-      setSubmitError(null);
-      setStateSafe("submitting");
-      notify(onSubmitStart, payload);
-
-      try {
-        await submit(payload);
-      } catch (error) {
-        notify(onSubmitError, error, payload);
-        setSubmitError(normalizeSubmitError(error));
-        setStateSafe("selected");
-        return;
-      }
-
-      setSubmitError(null);
-      notify(onSubmitSuccess, payload);
-      setStateSafe("done");
+      await submitPayload(payload);
     },
-    [
-      disabled,
-      onSubmitError,
-      onSubmitStart,
-      onSubmitSuccess,
-      payloadBase,
-      setStateSafe,
-      submit,
-    ],
+    [disabled, payloadBase, stateRef, submitPayload],
   );
 
   const select = React.useCallback(
@@ -134,7 +92,7 @@ export function useWidgetMachine({
       if (stateRef.current === "submitting" || stateRef.current === "done") {
         return false;
       }
-      setSubmitError(null);
+      clearError();
       selectedValueRef.current = value;
       setSelectedValue(value);
       notify(onSelect, value);
@@ -145,12 +103,14 @@ export function useWidgetMachine({
       return true;
     },
     [
+      clearError,
       disabled,
       followUp,
       onSelect,
       payloadBase.widgetType,
       setStateSafe,
       submitValue,
+      stateRef,
     ],
   );
 
@@ -164,12 +124,12 @@ export function useWidgetMachine({
 
   const reset = React.useCallback(() => {
     if (disabled || stateRef.current !== "selected") return false;
-    setSubmitError(null);
+    clearError();
     selectedValueRef.current = null;
     setSelectedValue(null);
     setStateSafe("idle");
     return true;
-  }, [disabled, setStateSafe]);
+  }, [clearError, disabled, setStateSafe, stateRef]);
 
   const hide = React.useCallback(() => setHidden(true), []);
 

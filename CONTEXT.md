@@ -39,7 +39,7 @@ Sentimeter uses three runtime surfaces:
 ### Widget
 
 An installable React feedback surface. Current widget types are `emoji`,
-`thumbs`, `star`, and `nps`. Widgets must work as open code inside the developer's
+`thumbs`, `star`, `nps`, and `form`. Widgets must work as open code inside the developer's
 shadcn project, not as opaque iframes or remote embeds. `packages/widgets` is
 the sole canonical source for Widget behavior; workspace imports and Registry
 Items are two forms of that behavior.
@@ -48,6 +48,22 @@ Negative picks open an optional comment before submission: emoji and stars 1–2
 thumbs down (0), and NPS 0–6. Other picks submit immediately. Hosts can set
 `followUp` to `always` or `never` to change when the comment appears. Successful
 confirmation stays on screen. NPS is a recommendation score from 0–10.
+
+### Feedback Form
+
+A stacked free-text widget, installed as `feedback-form`. It asks "What happened?"
+and requires non-empty text. Its `form` payload carries trimmed `text` and
+optional `context`, without a rating value. Context contains the page URL as
+origin plus pathname (no query or hash), the pathname as route, browser and OS families inferred
+from the user agent, and viewport width/height in CSS pixels. It samples context
+after mount for the muted preview and again at each submit attempt. It collects
+no raw user-agent string, versions, console errors, screenshots, or categories.
+Without `submit`, the form sends and stores nothing.
+
+Success shows "Got it. Sorry about that." and "We read every message." persistently.
+`onDone` fires once about two seconds after confirmation appears, allowing a host
+container to close itself. Unmounting cancels the pending callback. The form owns
+no popover, dialog, sheet, or floating trigger.
 
 ### Registry Item
 
@@ -78,8 +94,9 @@ specimens.
 
 ### Custom Submit
 
-A host-supplied async `submit` handler that receives `widgetType`, `value`,
-optional `text`, and `location`. The host decides how to save the feedback. The
+A host-supplied async `submit` handler that receives `widgetType` and `location`,
+with numeric `value` and optional `text` for ratings, or required `text` and optional
+`context` for a form. The host decides how to save the feedback. The
 widget shows confirmation when the handler resolves and retains the response
 for retry when it throws. `WidgetSubmitError` carries a useful message and an
 optional retry delay.

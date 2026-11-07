@@ -1,4 +1,8 @@
 export type {
+  FeedbackContext,
+  FormPayload,
+  RatingPayload,
+  RatingWidgetType,
   FaceGlyphs,
   FeedbackGlyph,
   ThumbGlyphs,
@@ -38,3 +42,5 @@ export { LikeDislike } from "./like-dislike";
 export { StarRating } from "./star-rating";
 
 export { NpsScore } from "./nps-score";
+
+export { FeedbackForm, type FeedbackFormProps } from "./feedback-form";

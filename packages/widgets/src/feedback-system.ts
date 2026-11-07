@@ -1,4 +1,8 @@
 export type {
+  FeedbackContext,
+  FormPayload,
+  RatingPayload,
+  RatingWidgetType,
   FaceGlyphs,
   FeedbackGlyph,
   ThumbGlyphs,
@@ -37,3 +41,12 @@ export type {
   FeedbackInputProps,
   FeedbackFooterProps,
 } from "./compound";
+
+export { collectFeedbackContext } from "./core/browser-context";
+export { useFeedbackSubmission } from "./core/use-feedback-submission";
+export {
+  FeedbackFormActions,
+  FeedbackFormCard,
+  FeedbackTextField,
+  useFeedbackDone,
+} from "./compound/feedback-form-parts";

@@ -738,7 +738,7 @@ describe("cancel, custom glyphs, and inline layout", () => {
     fireEvent.click(best);
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
     assert.ok(await screen.findByText("Thanks!"));
-    assert.equal(payloads[0]?.value, 5);
+    assert.equal(payloads[0]?.widgetType === "emoji" && payloads[0].value, 5);
   });
 
   test("repeats one custom star glyph and names it", () => {
@@ -767,7 +767,7 @@ describe("cancel, custom glyphs, and inline layout", () => {
     fireEvent.click(screen.getByRole("button", { name: "Not for me" }));
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
     assert.ok(await screen.findByText("Thanks!"));
-    assert.equal(payloads[0]?.value, 0);
+    assert.equal(payloads[0]?.widgetType === "thumbs" && payloads[0].value, 0);
   });
 
   test("falls back to the built-in set and warns when the glyph count is wrong", () => {

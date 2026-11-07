@@ -5,8 +5,9 @@ import type {
   WidgetCallbacks,
   WidgetLayout,
   WidgetFollowUp,
+  RatingPayload,
   WidgetSubmit,
-  WidgetType,
+  RatingWidgetType,
 } from "../types";
 import { cn } from "@workspace/ui/lib/utils";
 import {
@@ -26,7 +27,7 @@ import {
 
 export type FeedbackWidgetProps = {
   location?: string;
-  widgetType: WidgetType;
+  widgetType: RatingWidgetType;
   disabled?: boolean;
   size?: WidgetSize;
   closeButton?: boolean;
@@ -35,9 +36,9 @@ export type FeedbackWidgetProps = {
   layout?: WidgetLayout;
   style?: FeedbackStyle;
   followUp?: WidgetFollowUp;
-  submit?: WidgetSubmit;
+  submit?: WidgetSubmit<RatingPayload>;
   children: React.ReactNode;
-} & WidgetCallbacks;
+} & WidgetCallbacks<RatingPayload>;
 
 function FeedbackWidgetInner({
   closeButton,

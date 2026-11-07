@@ -14,6 +14,7 @@ import {
   type WidgetCallbacks,
   type WidgetLayout,
   type WidgetFollowUp,
+  type RatingPayload,
   type WidgetSubmit,
   type WidgetSize,
   type FeedbackStyle,
@@ -43,7 +44,7 @@ export type StarRatingProps = {
   variant?: "icons" | "emoji";
   size?: WidgetSize;
   closeButton?: boolean;
-  submit?: WidgetSubmit;
+  submit?: WidgetSubmit<RatingPayload>;
   /** `stacked` (default) is the card; `inline` is a one-line bar. */
   layout?: WidgetLayout;
   /** One custom glyph, repeated five times. Replaces `variant`. */
@@ -51,7 +52,7 @@ export type StarRatingProps = {
   /** Shows Cancel, which clears an unsent choice. Defaults to true. */
   showCancel?: boolean;
   cancelLabel?: string;
-} & WidgetCallbacks;
+} & WidgetCallbacks<RatingPayload>;
 
 export function StarRating({
   location = DEFAULTS.location,

@@ -13,6 +13,7 @@ import {
   type WidgetCallbacks,
   type WidgetLayout,
   type WidgetFollowUp,
+  type RatingPayload,
   type WidgetSubmit,
   type WidgetSize,
   type FeedbackStyle,
@@ -39,13 +40,13 @@ export type NpsScoreProps = {
   thankYouMessage?: React.ReactNode;
   size?: WidgetSize;
   closeButton?: boolean;
-  submit?: WidgetSubmit;
+  submit?: WidgetSubmit<RatingPayload>;
   /** `stacked` (default) is the card; `inline` is a one-line bar. */
   layout?: WidgetLayout;
   /** Shows Cancel, which clears an unsent choice. Defaults to true. */
   showCancel?: boolean;
   cancelLabel?: string;
-} & WidgetCallbacks;
+} & WidgetCallbacks<RatingPayload>;
 
 export function NpsScore({
   location = DEFAULTS.location,
