@@ -1,14 +1,8 @@
 import { HeaderSection } from "./header-section";
 import { FooterSection } from "./footer-section";
 import { HeroSection } from "./hero-section";
-import {
-  ShowcaseSection,
-  HowItWorksSection,
-  SystemSection,
-  FaqSection,
-  CtaSection,
-  HostedAnalyticsTeaser,
-} from "./product-sections";
+import { DirectoryGroups } from "./directory-groups";
+import { WaitlistSection } from "./waitlist-section";
 import type { HostedMode } from "@/lib/hosted-config";
 
 export function LandingPage({ hostedMode }: { hostedMode: HostedMode }) {
@@ -23,12 +17,10 @@ export function LandingPage({ hostedMode }: { hostedMode: HostedMode }) {
       <HeaderSection />
       <main id="main" className="flex-1 [&_section[id]]:scroll-mt-24">
         <HeroSection />
-        <ShowcaseSection />
-        <HowItWorksSection hostedMode={hostedMode} />
-        <SystemSection />
-        <FaqSection />
-        {hostedMode === "waitlist" && <HostedAnalyticsTeaser />}
-        <CtaSection />
+        <div className="ds-container flex flex-col gap-16 py-16 sm:py-20">
+          <DirectoryGroups />
+          {hostedMode === "waitlist" && <WaitlistSection />}
+        </div>
       </main>
       <FooterSection hostedMode={hostedMode} />
     </div>
