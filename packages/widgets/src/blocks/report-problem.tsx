@@ -33,7 +33,7 @@ export function ReportProblem({
         </Button>
       </DialogTrigger>
       <DialogContent
-        className="gap-0 bg-transparent p-0 ring-0 sm:max-w-sm"
+        className="max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto bg-transparent p-0 ring-0 sm:max-w-sm"
         aria-describedby={undefined}
       >
         <DialogTitle className="sr-only">{label}</DialogTitle>
