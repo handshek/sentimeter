@@ -35,6 +35,7 @@ packages/
   eslint-config/           Shared ESLint configs
   typescript-config/       Shared tsconfig bases
 scripts/                   Repo checks: docs links, env, site/widget design guards
+skills/verify-sentimeter/  Project skill: drive the built site and registry, capture proof
 docs/                      Architecture, ADRs, runbook, research
 ```
 
@@ -65,6 +66,11 @@ Run from the repository root.
 | `bun run registry:emit`  | Emit registry staging                                          |
 
 Do not start `dev` or `dev:hosted` yourself; assume the user runs the dev loop.
+
+To prove a user-facing change in the real site, follow
+[skills/verify-sentimeter/SKILL.md](skills/verify-sentimeter/SKILL.md). It
+serves its own production build on :3107 and never touches the dev loop.
+Keep project verification skills in `skills/`, not in an editor's skill folder.
 
 ## Rules
 
