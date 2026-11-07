@@ -22,7 +22,6 @@ export type DirectoryEntry = {
   name: string;
   href: string;
   description: string;
-  meta: string;
   kind: "Component" | "Block";
   situation: Situation;
   preview: PreviewId;
@@ -45,50 +44,35 @@ export const situations: { title: Situation; lead: string }[] = [
 
 const componentCopy: Record<
   string,
-  Pick<DirectoryEntry, "description" | "meta" | "situation">
+  Pick<DirectoryEntry, "description" | "situation">
 > = {
   form: {
     description:
       "“What happened?” plus one text box. Page and browser details attach on their own.",
-    meta: "popover · sheet",
     situation: "When something breaks",
   },
   emoji: {
     description:
       "Five faces. A sad pick asks what went wrong; a happy pick says thanks.",
-    meta: "stacked · inline",
     situation: "After something works",
   },
   thumbs: {
     description: "Yes or no. A thumbs down asks what went wrong.",
-    meta: "stacked · inline",
     situation: "After something works",
   },
   star: {
     description: "One to five stars. One or two stars ask what went wrong.",
-    meta: "stacked · inline",
     situation: "After something works",
   },
   nps: {
     description:
       "How likely to recommend. Low scores ask what would make it better.",
-    meta: "0–10",
     situation: "After something works",
   },
   survey: {
     description: "Pick one reason, then add an optional note.",
-    meta: "reasons + note",
     situation: "When someone leaves",
   },
-};
-
-const blockMeta: Record<string, string> = {
-  "floating-feedback": "1 file",
-  "report-problem": "1 file",
-  "error-feedback": "error.tsx",
-  "was-this-helpful": "1 file",
-  "after-task-rating": "1 file",
-  "cancel-flow-survey": "1 file",
 };
 
 export const directory: DirectoryEntry[] = [
@@ -107,7 +91,6 @@ export const directory: DirectoryEntry[] = [
     name: block.name,
     href: `/components/blocks/${block.slug}`,
     description: block.description,
-    meta: blockMeta[block.slug] ?? "1 file",
     kind: "Block" as const,
     situation: block.situationGroup,
     preview: block.slug,

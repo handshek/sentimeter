@@ -56,31 +56,31 @@ function Pill({ className }: { className?: string }) {
 }
 
 const previews: Record<PreviewId, { scale: string; node: ReactNode }> = {
-  form: { scale: "scale-[0.58]", node: <FeedbackForm /> },
+  form: { scale: "scale-[0.55]", node: <FeedbackForm /> },
   emoji: {
-    scale: "scale-[0.6]",
+    scale: "scale-[0.58]",
     node: <EmojiFeedback title="How was checkout?" />,
   },
   thumbs: {
-    scale: "scale-[0.75]",
+    scale: "scale-[0.72]",
     node: <LikeDislike layout="inline" title="Was this helpful?" />,
   },
   star: {
-    scale: "scale-[0.6]",
+    scale: "scale-[0.58]",
     node: <StarRating title="Rate your onboarding" />,
   },
   nps: {
-    scale: "scale-[0.6]",
+    scale: "scale-[0.58]",
     node: <NpsScore title="Recommend us to a friend?" />,
   },
   survey: {
-    scale: "scale-[0.55]",
+    scale: "scale-[0.5]",
     node: (
       <Survey options={[...twoReasons, { label: "Other", value: "other" }]} />
     ),
   },
   "floating-feedback": {
-    scale: "scale-[0.62]",
+    scale: "scale-[0.56]",
     node: (
       <MiniApp>
         <p className="ds-title">Billing</p>
@@ -96,7 +96,7 @@ const previews: Record<PreviewId, { scale: string; node: ReactNode }> = {
     ),
   },
   "report-problem": {
-    scale: "scale-[0.62]",
+    scale: "scale-[0.56]",
     node: (
       <MiniApp>
         <div className="flex items-center justify-between">
@@ -123,7 +123,7 @@ const previews: Record<PreviewId, { scale: string; node: ReactNode }> = {
     ),
   },
   "error-feedback": {
-    scale: "scale-[0.6]",
+    scale: "scale-[0.58]",
     node: (
       <div className="flex w-80 flex-col items-center gap-2 text-center">
         <TriangleAlert
@@ -156,7 +156,7 @@ const previews: Record<PreviewId, { scale: string; node: ReactNode }> = {
     ),
   },
   "after-task-rating": {
-    scale: "scale-[0.58]",
+    scale: "scale-[0.54]",
     node: (
       <div className="flex w-full flex-col gap-3 text-left">
         <p className="ds-label flex items-center gap-2">
@@ -168,18 +168,16 @@ const previews: Record<PreviewId, { scale: string; node: ReactNode }> = {
     ),
   },
   "cancel-flow-survey": {
-    scale: "scale-[0.52]",
+    scale: "scale-[0.5]",
     node: (
-      <div className="w-full rounded-2xl bg-foreground/10 p-6">
-        <Survey
-          title="Cancel your Pro plan?"
-          description="You’ll keep Pro until 30 Nov."
-          options={twoReasons}
-          submitLabel="Cancel plan"
-          skipLabel="Keep my plan"
-          onSkip={() => {}}
-        />
-      </div>
+      <Survey
+        title="Cancel your Pro plan?"
+        description="You’ll keep Pro until 30 Nov."
+        options={twoReasons}
+        submitLabel="Cancel plan"
+        skipLabel="Keep my plan"
+        onSkip={() => {}}
+      />
     ),
   },
 };
