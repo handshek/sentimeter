@@ -40,10 +40,9 @@ export function useCopyFeedback(text: string, resetAfterMs = 1400) {
     const copyId = ++copyCount.current;
     setLast({ text, status: "copying", copyId });
     const result = await copyText(text, navigator.clipboard);
-    if (!mounted.current) return;
+    if (!mounted.current || copyId !== copyCount.current) return;
     settle(copyId, result);
     if (result === "copied") {
-      if (resetTimer.current) clearTimeout(resetTimer.current);
       resetTimer.current = setTimeout(
         () => settle(copyId, "idle"),
         resetAfterMs,
