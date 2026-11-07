@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   EmojiFeedback,
+  FeedbackForm,
   LikeDislike,
   NpsScore,
   StarRating,
@@ -46,12 +47,17 @@ function WidgetDemoInstance({
   const [state, setState] = useState<WidgetState>("idle");
   const container = useRef<HTMLDivElement>(null);
   const focusAfterReset = useRef(false);
-  const Widget = widget.preview === "nps" ? NpsScore : widgets[widget.preview];
+  const Widget =
+    widget.preview === "form"
+      ? null
+      : widget.preview === "nps"
+        ? NpsScore
+        : widgets[widget.preview];
 
   useEffect(() => {
     if (!focusAfterReset.current) return;
     container.current
-      ?.querySelector<HTMLButtonElement>("button[aria-pressed]")
+      ?.querySelector<HTMLElement>("button[aria-pressed], textarea")
       ?.focus();
     focusAfterReset.current = false;
   }, [instance]);
@@ -72,14 +78,18 @@ function WidgetDemoInstance({
         ref={container}
         className="flex w-full min-w-0 justify-center @sm:px-3 @lg:px-8"
       >
-        <Widget
-          key={instance}
-          layout={options.layout}
-          {...(widget.preview === "nps" ? {} : { variant: options.variant })}
-          size={options.size}
-          followUp={options.followUp}
-          onStateChange={setState}
-        />
+        {Widget ? (
+          <Widget
+            key={instance}
+            layout={options.layout}
+            {...(widget.preview === "nps" ? {} : { variant: options.variant })}
+            size={options.size}
+            followUp={options.followUp}
+            onStateChange={setState}
+          />
+        ) : (
+          <FeedbackForm key={instance} onStateChange={setState} />
+        )}
       </div>
       <Button
         type="button"

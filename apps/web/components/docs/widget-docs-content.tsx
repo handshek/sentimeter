@@ -32,6 +32,8 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import {
+  feedbackFormContextDescription,
+  feedbackFormCompletionDescription,
   getCompoundSnippet,
   getUsageSnippet,
   localExampleNote,
@@ -43,6 +45,7 @@ import { WidgetDemo } from "./widget-demo";
 import { CodeBlock } from "./code-block";
 
 export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
+  const rating = widget.preview !== "form";
   const defaults = widget.example;
   const [options, setOptions] = useState<WidgetDemoOptions>(defaults);
   function updateOptions(next: Partial<WidgetDemoOptions>) {
@@ -69,119 +72,124 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
         </Tabs>
         <div className="px-1 pt-2">
           <p className="ds-caption text-muted-foreground">{localExampleNote}</p>
-          <Accordion type="single" collapsible>
-            <AccordionItem value="customize" className="border-0">
-              <AccordionTrigger className="min-h-11 py-2 text-sm">
-                Customize Preview
-              </AccordionTrigger>
-              <AccordionContent className="space-y-4 pt-2">
-                <div className="grid max-w-xl grid-cols-2 gap-4 sm:grid-cols-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="preview-layout">Layout</Label>
-                    <Select
-                      value={options.layout}
-                      onValueChange={(layout) =>
-                        updateOptions({
-                          layout: layout as WidgetDemoOptions["layout"],
-                        })
-                      }
-                    >
-                      <SelectTrigger id="preview-layout" className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="stacked">Stacked</SelectItem>
-                        <SelectItem value="inline">Inline</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  {widget.defaultVariant !== null ? (
+          {rating ? (
+            <Accordion type="single" collapsible>
+              <AccordionItem value="customize" className="border-0">
+                <AccordionTrigger className="min-h-11 py-2 text-sm">
+                  Customize Preview
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-2">
+                  <div className="grid max-w-xl grid-cols-2 gap-4 sm:grid-cols-3">
                     <div className="space-y-2">
-                      <Label htmlFor="preview-variant">Variant</Label>
+                      <Label htmlFor="preview-layout">Layout</Label>
                       <Select
-                        value={options.variant}
-                        onValueChange={(variant) =>
+                        value={options.layout}
+                        onValueChange={(layout) =>
                           updateOptions({
-                            variant: variant as WidgetDemoOptions["variant"],
+                            layout: layout as WidgetDemoOptions["layout"],
                           })
                         }
                       >
-                        <SelectTrigger id="preview-variant" className="w-full">
+                        <SelectTrigger id="preview-layout" className="w-full">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="emoji">Emoji</SelectItem>
-                          <SelectItem value="icons">Icons</SelectItem>
+                          <SelectItem value="stacked">Stacked</SelectItem>
+                          <SelectItem value="inline">Inline</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                  ) : null}
-                  <div className="space-y-2">
-                    <Label htmlFor="preview-size">Size</Label>
+                    {widget.defaultVariant !== null ? (
+                      <div className="space-y-2">
+                        <Label htmlFor="preview-variant">Variant</Label>
+                        <Select
+                          value={options.variant}
+                          onValueChange={(variant) =>
+                            updateOptions({
+                              variant: variant as WidgetDemoOptions["variant"],
+                            })
+                          }
+                        >
+                          <SelectTrigger
+                            id="preview-variant"
+                            className="w-full"
+                          >
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="emoji">Emoji</SelectItem>
+                            <SelectItem value="icons">Icons</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ) : null}
+                    <div className="space-y-2">
+                      <Label htmlFor="preview-size">Size</Label>
+                      <Select
+                        value={options.size}
+                        onValueChange={(size) =>
+                          updateOptions({
+                            size: size as WidgetDemoOptions["size"],
+                          })
+                        }
+                      >
+                        <SelectTrigger id="preview-size" className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {["sm", "default", "md", "lg"].map((size) => (
+                            <SelectItem key={size} value={size}>
+                              {size}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <p className="ds-body text-muted-foreground">
+                    Presets and layouts share the same parts, states, and glyph
+                    options. Explore the{" "}
+                    <Link href="/design-system/widgets" className="docs-link">
+                      design system
+                    </Link>{" "}
+                    for typography, tokens, and composition rules.
+                  </p>
+                  <div className="max-w-xs space-y-2">
+                    <Label htmlFor="preview-follow-up">Ask for a comment</Label>
                     <Select
-                      value={options.size}
-                      onValueChange={(size) =>
-                        updateOptions({
-                          size: size as WidgetDemoOptions["size"],
-                        })
-                      }
+                      value={options.followUp}
+                      onValueChange={(followUp) => {
+                        if (
+                          followUp === "negative" ||
+                          followUp === "always" ||
+                          followUp === "never"
+                        )
+                          updateOptions({ followUp });
+                      }}
                     >
-                      <SelectTrigger id="preview-size" className="w-full">
+                      <SelectTrigger id="preview-follow-up" className="w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {["sm", "default", "md", "lg"].map((size) => (
-                          <SelectItem key={size} value={size}>
-                            {size}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="negative">
+                          After a negative pick
+                        </SelectItem>
+                        <SelectItem value="always">After every pick</SelectItem>
+                        <SelectItem value="never">Never</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
-                <p className="ds-body text-muted-foreground">
-                  Presets and layouts share the same parts, states, and glyph
-                  options. Explore the{" "}
-                  <Link href="/design-system/widgets" className="docs-link">
-                    design system
-                  </Link>{" "}
-                  for typography, tokens, and composition rules.
-                </p>
-                <div className="max-w-xs space-y-2">
-                  <Label htmlFor="preview-follow-up">Ask for a comment</Label>
-                  <Select
-                    value={options.followUp}
-                    onValueChange={(followUp) => {
-                      if (
-                        followUp === "negative" ||
-                        followUp === "always" ||
-                        followUp === "never"
-                      )
-                        updateOptions({ followUp });
-                    }}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setOptions(defaults)}
                   >
-                    <SelectTrigger id="preview-follow-up" className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="negative">
-                        After a negative pick
-                      </SelectItem>
-                      <SelectItem value="always">After every pick</SelectItem>
-                      <SelectItem value="never">Never</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setOptions(defaults)}
-                >
-                  Restore Defaults
-                </Button>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+                    Restore Defaults
+                  </Button>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          ) : null}
         </div>
       </section>
       <section aria-labelledby="installation" className="docs-section min-w-0">
@@ -224,8 +232,16 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
             <p className="ds-body text-muted-foreground">
               Implement <code>/api/feedback</code> in your app. Validate the
               payload and persist it before returning success. The payload
-              includes <code>location</code>, <code>widgetType</code>,{" "}
-              <code>value</code>, and optional <code>text</code>.
+              includes <code>location</code> and <code>widgetType</code>,{" "}
+              {rating ? (
+                <>
+                  <code>value</code> and optional <code>text</code>.
+                </>
+              ) : (
+                <>
+                  <code>text</code> and <code>context</code>.
+                </>
+              )}
             </p>
             <CodeBlock
               code={getUsageSnippet(widget, options, "custom")}
@@ -233,19 +249,30 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
             />
           </TabsContent>
         </Tabs>
-        <Accordion type="single" collapsible>
-          <AccordionItem value="compound">
-            <AccordionTrigger className="min-h-11">
-              Compose the parts yourself
-            </AccordionTrigger>
-            <AccordionContent>
-              <CodeBlock
-                code={getCompoundSnippet(widget)}
-                label="Compound Example"
-              />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        {rating ? (
+          <Accordion type="single" collapsible>
+            <AccordionItem value="compound">
+              <AccordionTrigger className="min-h-11">
+                Compose the parts yourself
+              </AccordionTrigger>
+              <AccordionContent>
+                <CodeBlock
+                  code={getCompoundSnippet(widget)}
+                  label="Compound Example"
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        ) : (
+          <div className="space-y-4">
+            <p className="ds-body text-muted-foreground">
+              {feedbackFormContextDescription}
+            </p>
+            <p className="ds-body text-muted-foreground">
+              {feedbackFormCompletionDescription}
+            </p>
+          </div>
+        )}
       </section>
       <section aria-labelledby="props" className="docs-section min-w-0">
         <h2 id="props" className="ds-section-title">

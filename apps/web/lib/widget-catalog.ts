@@ -24,7 +24,7 @@ export type PackageManager = (typeof packageManagers)[number];
 
 // See CONTRIBUTING.md.
 export type WidgetSlug =
-  "emoji-feedback" | "like-dislike" | "star-rating" | "nps";
+  "emoji-feedback" | "like-dislike" | "star-rating" | "nps" | "feedback-form";
 
 export type WidgetInstallMetadata = {
   slug: WidgetSlug;
@@ -108,8 +108,13 @@ export type WidgetDocConfig = {
   registryName: string;
   tabLabel: string;
   icon: "emoji" | "thumbs" | "star" | "nps";
-  preview: "emoji" | "thumbs" | "star" | "nps";
-  componentName: "EmojiFeedback" | "LikeDislike" | "StarRating" | "NpsScore";
+  preview: "emoji" | "thumbs" | "star" | "nps" | "form";
+  componentName:
+    | "EmojiFeedback"
+    | "LikeDislike"
+    | "StarRating"
+    | "NpsScore"
+    | "FeedbackForm";
   defaultVariant: "emoji" | "icons" | null;
   example: WidgetDemoOptions;
   installSnippet: string;
@@ -140,13 +145,14 @@ export function getUsageSnippet(
     ...widget.example,
     ...options,
   };
+  const rating = widget.componentName !== "FeedbackForm";
   const props = [
-    ...(layout !== "stacked" ? [`layout="${layout}"`] : []),
+    ...(rating && layout !== "stacked" ? [`layout="${layout}"`] : []),
     ...(widget.defaultVariant !== null && variant !== widget.defaultVariant
       ? [`variant="${variant}"`]
       : []),
-    ...(size !== "default" ? [`size="${size}"`] : []),
-    ...(followUp !== "negative" ? [`followUp="${followUp}"`] : []),
+    ...(rating && size !== "default" ? [`size="${size}"`] : []),
+    ...(rating && followUp !== "negative" ? [`followUp="${followUp}"`] : []),
     ...(submission === "custom" ? ["submit={saveFeedback}"] : []),
   ].join("\n      ");
   const customSubmit =
@@ -183,6 +189,7 @@ export function FeedbackExample() {
 }
 
 export function getCompoundSnippet(widget: WidgetDocConfig) {
+  if (widget.preview === "form") return getUsageSnippet(widget);
   const ratingVariant = widget.preview === "star" ? "stars" : widget.preview;
   const styleProp = widget.preview === "emoji" ? "emojiStyle" : "ratingStyle";
   const ratingStyle =
@@ -373,6 +380,26 @@ function propsForTitle(title: string) {
   );
 }
 
+export const feedbackFormContextDescription =
+  "FeedbackForm collects the full page URL including query string and hash, the pathname as route, browser and OS family inferred from navigator.userAgent, and window.innerWidth/innerHeight in CSS pixels. Unknown browser or OS families use Unknown. The muted line previews the route, browser, OS, and viewport after mount; context is sampled again at each submit attempt. It collects no user-agent string, versions, console errors, screenshots, or categories. Without submit, nothing is sent or stored.";
+
+export const feedbackFormCompletionDescription =
+  "Send is disabled for empty or whitespace-only text. A successful submission replaces the field with Got it. Sorry about that. and We read every message. The thank-you stays mounted. onDone fires once about 2 seconds after it appears, so a host can close its popover, dialog, or sheet. Unmounting cancels the pending callback. A failed submission retains the text and offers Try again.";
+
+const formProps = sharedProps.filter((row) =>
+  [
+    "location",
+    "disabled",
+    "className",
+    "style",
+    "submitLabel",
+    "onStateChange",
+    "onSubmitStart",
+    "onSubmitSuccess",
+    "onSubmitError",
+  ].includes(row.prop),
+);
+
 const widgetDefinitions: Record<
   WidgetSlug,
   Omit<WidgetDocConfig, "installMetadata" | "installSnippet" | "usageSnippet">
@@ -500,6 +527,60 @@ const widgetDefinitions: Record<
       followUp: "negative",
     },
     props: propsForTitle("How likely are you to recommend us?"),
+  },
+  "feedback-form": {
+    slug: "feedback-form",
+    name: "Feedback Form",
+    description:
+      "One text box for what went wrong, with page and device context attached.",
+    registryName: "feedback-form",
+    tabLabel: "Form",
+    icon: "emoji",
+    preview: "form",
+    componentName: "FeedbackForm",
+    defaultVariant: null,
+    example: {
+      layout: "stacked",
+      variant: "icons",
+      size: "default",
+      followUp: "negative",
+    },
+    props: [
+      ...formProps,
+      {
+        prop: "title",
+        type: "string",
+        defaultValue: '"What happened?"',
+        description: "Heading above the text field.",
+      },
+      {
+        prop: "placeholder",
+        type: "string",
+        defaultValue: '"Tell us what went wrong or what you expected…"',
+        description: "Hint inside the named text field.",
+      },
+      {
+        prop: "thankYouMessage",
+        type: "ReactNode",
+        defaultValue: '"Got it. Sorry about that."',
+        description:
+          "Persistent confirmation, followed by We read every message.",
+      },
+      {
+        prop: "submit",
+        type: "WidgetSubmit",
+        defaultValue: "-",
+        description:
+          "Async handler receiving widgetType: form, location, trimmed text, and context. Without it, completion is local.",
+      },
+      {
+        prop: "onDone",
+        type: "() => void",
+        defaultValue: "-",
+        description:
+          "Fires once about 2 seconds after confirmation appears. Hosts can close their container; unmounting cancels the callback.",
+      },
+    ],
   },
 };
 

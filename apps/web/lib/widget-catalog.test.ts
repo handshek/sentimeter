@@ -15,6 +15,7 @@ test("every launch widget has a complete, compatible registry install", () => {
     "like-dislike",
     "star-rating",
     "nps",
+    "feedback-form",
   ]);
 
   for (const widget of widgetDocs) {
@@ -56,6 +57,7 @@ test("generated examples keep submission options and stay free of hosted details
     "like-dislike": true,
     "star-rating": false,
     nps: false,
+    "feedback-form": false,
   });
   expect(getWidgetMarkdown(getWidgetDoc("like-dislike")!)).toContain(
     'layout="inline"',
@@ -66,10 +68,16 @@ test("generated examples keep submission options and stay free of hosted details
       { layout: "inline", followUp: "always", size: "lg" },
       "custom",
     );
-    expect(example).toContain('layout="inline"');
-    expect(example).toContain('followUp="always"');
+    if (widget.preview === "form") {
+      expect(example).not.toContain("layout=");
+      expect(example).not.toContain("followUp=");
+      expect(example).not.toContain("size=");
+    } else {
+      expect(example).toContain('layout="inline"');
+      expect(example).toContain('followUp="always"');
+      expect(example).toContain('size="lg"');
+    }
     expect(example).not.toContain("autoHide");
-    expect(example).toContain('size="lg"');
     expect(example).toContain("submit={saveFeedback}");
     const markdown = getWidgetMarkdown(widget);
     expect(markdown).not.toContain("apiKey");
@@ -93,5 +101,28 @@ test("NPS docs connect the public item to its source and launch behavior", () =>
     type: "page",
     name: "NPS",
     url: "/components/nps",
+  });
+});
+
+test("FeedbackForm docs describe its payload, context, and container callback", () => {
+  const form = getWidgetDoc("feedback-form")!;
+  expect(form.componentName).toBe("FeedbackForm");
+  expect(getUsageSnippet(form)).toContain(
+    "@/components/sentimeter/feedback-form",
+  );
+  expect(form.props.map((row) => row.prop)).toContain("onDone");
+  expect(form.props.map((row) => row.prop)).not.toContain("followUp");
+  const markdown = getWidgetMarkdown(form);
+  expect(markdown).toContain('widgetType: "form"');
+  expect(markdown).toContain("window.innerWidth/innerHeight in CSS pixels");
+  expect(markdown).toContain("including query string and hash");
+  expect(markdown).toContain("Unmounting cancels the pending callback");
+  expect(markdown).not.toContain('layout="inline"');
+  expect(markdown).not.toContain("Negative means");
+  expect(getAgentIndex()).toContain("/components/feedback-form/markdown");
+  expect(docsTree.children).toContainEqual({
+    type: "page",
+    name: "Feedback Form",
+    url: "/components/feedback-form",
   });
 });

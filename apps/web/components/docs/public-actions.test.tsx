@@ -160,3 +160,20 @@ test("a new package manager choice still applies when storage rejects writes", (
     Object.defineProperty(globalThis, "localStorage", original);
   }
 });
+
+test("FeedbackForm preview completes locally and Reset restores the empty field and focus", async () => {
+  const form = widgetDocs.find((widget) => widget.slug === "feedback-form")!;
+  render(<WidgetDemo widget={form} />);
+  fireEvent.change(screen.getByRole("textbox"), {
+    target: { value: "The save button did nothing." },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  await screen.findByText("Got it. Sorry about that.");
+  fireEvent.click(screen.getByRole("button", { name: "Reset" }));
+  const field = screen.getByRole("textbox") as HTMLTextAreaElement;
+  expect(field.value).toBe("");
+  expect(document.activeElement).toBe(field);
+  expect(
+    screen.getByRole("button", { name: "Send" }).hasAttribute("disabled"),
+  ).toBe(true);
+});

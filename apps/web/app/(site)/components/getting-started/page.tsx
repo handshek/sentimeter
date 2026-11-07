@@ -93,8 +93,10 @@ export default function GettingStartedPage() {
           </h2>
           <p className="ds-body text-muted-foreground">
             Pass an asynchronous <code>submit</code> handler. It receives{" "}
-            <code>location</code>, <code>widgetType</code>, <code>value</code>,
-            and optional <code>text</code>. The <code>location</code> prop
+            <code>location</code> and <code>widgetType</code>. Ratings include a
+            numeric <code>value</code> and optional <code>text</code>.
+            FeedbackForm includes required <code>text</code> and optional
+            page/device <code>context</code>. The <code>location</code> prop
             defaults to <code>{'"/"'}</code>; set it to identify the feedback
             source. Resolve only after saving succeeds; throw on failure so
             users can retry.
@@ -110,7 +112,12 @@ export default function GettingStartedPage() {
             does not provide that route. Validate untrusted input, apply your
             app’s authentication and abuse protection, and persist it before
             returning a successful response. Emoji and stars use values 1–5;
-            thumbs use 0 or 1; NPS uses 0–10.
+            thumbs use 0 or 1; NPS uses 0–10. FeedbackForm carries no numeric
+            value. Its{" "}
+            <Link href="/components/feedback-form" className="docs-link">
+              component docs
+            </Link>{" "}
+            describe exactly which page and device details it attaches.
           </p>
           <p className="ds-body text-muted-foreground">
             Your handler can throw <code>WidgetSubmitError</code> with a
