@@ -10,6 +10,7 @@ import {
   useFeedbackDone,
   useFeedbackSubmission,
   type FeedbackStyle,
+  type SurveyPayload,
   type WidgetCallbacks,
   type WidgetSubmit,
 } from "./feedback-system";
@@ -56,7 +57,7 @@ export type SurveyProps = {
   disabled?: boolean;
   className?: string;
   style?: FeedbackStyle;
-  submit?: WidgetSubmit;
+  submit?: WidgetSubmit<SurveyPayload>;
   onDone?: () => void;
   description?: string;
   /** Values must be unique. Each reason can supply its own note prompt. */
@@ -64,7 +65,7 @@ export type SurveyProps = {
   /** Skip saves nothing; the host decides whether to dismiss or continue. */
   onSkip?: () => void;
 } & Pick<
-  WidgetCallbacks,
+  WidgetCallbacks<SurveyPayload>,
   "onStateChange" | "onSubmitStart" | "onSubmitSuccess" | "onSubmitError"
 >;
 
