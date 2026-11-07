@@ -32,8 +32,10 @@ test("floating pill opens the form and closes it after the thank-you, returning 
   await screen.findByText("Got it. Sorry about that.");
   assert.equal(payloads[0]?.location, "floating-feedback");
   await waitFor(
-    () => assert.equal(screen.queryByText("Got it. Sorry about that."), null),
-    { timeout: 3000 },
+    () => assert.equal(pill.getAttribute("aria-expanded"), "false"),
+    {
+      timeout: 3000,
+    },
   );
   assert.equal(document.activeElement, pill);
 });
