@@ -2,6 +2,7 @@ import { afterEach, expect, test } from "bun:test";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { CopyButton } from "./copy-button";
 import { WidgetDemo } from "./widget-demo";
+import { WidgetDocsContent } from "./widget-docs-content";
 import { WidgetInstallCommand } from "./widget-install-command";
 import { REGISTRY_BASE_URL, widgetDocs } from "@/lib/widget-catalog";
 
@@ -195,4 +196,44 @@ test("Survey preview resets its reason and restores keyboard focus", async () =>
   expect(
     screen.getByRole("button", { name: "Send" }).hasAttribute("disabled"),
   ).toBe(true);
+});
+
+test("Replay picks a negative rating, types the reason, then shows the thank-you", async () => {
+  const widget = widgetDocs.find((doc) => doc.slug === "emoji-feedback")!;
+  const view = render(<WidgetDemo widget={widget} replay={0} />);
+  view.rerender(<WidgetDemo widget={widget} replay={1} />);
+  await screen.findByDisplayValue(widget.replayText, undefined, {
+    timeout: 3000,
+  });
+  const choices = screen
+    .getAllByRole("button")
+    .filter((button) => button.hasAttribute("aria-pressed"));
+  expect(choices[1]!.getAttribute("aria-pressed")).toBe("true");
+  await screen.findByText("Thanks!", undefined, { timeout: 3000 });
+});
+
+test("layout switch moves with arrow keys and keeps one tab stop", () => {
+  const widget = widgetDocs.find((doc) => doc.slug === "emoji-feedback")!;
+  render(<WidgetDocsContent widget={widget} />);
+  const stacked = screen.getByRole("radio", { name: "Stacked" });
+  expect(screen.getByRole("radio", { name: "Inline" }).tabIndex).toBe(-1);
+  fireEvent.keyDown(stacked, { key: "ArrowRight" });
+  const inline = screen.getByRole("radio", { name: "Inline" });
+  expect(inline.getAttribute("aria-checked")).toBe("true");
+  expect(document.activeElement).toBe(inline);
+});
+
+test("Replay pressed on the Code tab brings the preview back", () => {
+  const widget = widgetDocs.find((doc) => doc.slug === "emoji-feedback")!;
+  render(<WidgetDocsContent widget={widget} />);
+  fireEvent.mouseDown(screen.getByRole("tab", { name: "Code" }), {
+    button: 0,
+  });
+  expect(
+    screen.getByRole("tab", { name: "Code" }).getAttribute("aria-selected"),
+  ).toBe("true");
+  fireEvent.click(screen.getByRole("button", { name: "Replay" }));
+  expect(
+    screen.getByRole("tab", { name: "Preview" }).getAttribute("aria-selected"),
+  ).toBe("true");
 });

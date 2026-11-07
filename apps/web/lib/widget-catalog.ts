@@ -123,6 +123,8 @@ export type WidgetDocConfig = {
     | "Survey";
   defaultVariant: "emoji" | "icons" | null;
   example: WidgetDemoOptions;
+  /** What Replay types into the follow-up after a negative pick. */
+  replayText: string;
   installSnippet: string;
   usageSnippet: string;
   props: WidgetDocRow[];
@@ -428,6 +430,7 @@ const widgetDefinitions: Record<
     tabLabel: "Emoji",
     icon: "emoji",
     preview: "emoji",
+    replayText: "Card got declined twice.",
     componentName: "EmojiFeedback",
     defaultVariant: "emoji",
     example: {
@@ -463,6 +466,7 @@ const widgetDefinitions: Record<
     tabLabel: "Thumbs",
     icon: "thumbs",
     preview: "thumbs",
+    replayText: "The steps skipped the env vars.",
     componentName: "LikeDislike",
     defaultVariant: "icons",
     example: {
@@ -498,6 +502,7 @@ const widgetDefinitions: Record<
     tabLabel: "Stars",
     icon: "star",
     preview: "star",
+    replayText: "Setup took longer than expected.",
     componentName: "StarRating",
     defaultVariant: "icons",
     example: {
@@ -533,6 +538,7 @@ const widgetDefinitions: Record<
     tabLabel: "NPS",
     icon: "nps",
     preview: "nps",
+    replayText: "Faster exports would help.",
     componentName: "NpsScore",
     defaultVariant: null,
     example: {
@@ -552,6 +558,7 @@ const widgetDefinitions: Record<
     tabLabel: "Form",
     icon: "emoji",
     preview: "form",
+    replayText: "Save button does nothing on billing.",
     componentName: "FeedbackForm",
     defaultVariant: null,
     example: {
@@ -606,6 +613,7 @@ const widgetDefinitions: Record<
     tabLabel: "Survey",
     icon: "emoji",
     preview: "survey",
+    replayText: "CSV export kept timing out.",
     componentName: "Survey",
     defaultVariant: null,
     example: {

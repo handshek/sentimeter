@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
+import { Play, Smartphone } from "lucide-react";
+import { cn } from "@workspace/ui/lib/utils";
 import Link from "next/link";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -9,14 +11,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@workspace/ui/components/accordion";
-import { Label } from "@workspace/ui/components/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select";
 import {
   Tabs,
   TabsContent,
@@ -46,10 +40,70 @@ import { WidgetInstallCommand } from "./widget-install-command";
 import { WidgetDemo } from "./widget-demo";
 import { CodeBlock } from "./code-block";
 
+function Segmented<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: T;
+  options: readonly (readonly [T, string])[];
+  onChange: (value: T) => void;
+}) {
+  // Radio-group keyboard: one tab stop, arrow keys move and select.
+  function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    const step =
+      event.key === "ArrowRight" || event.key === "ArrowDown"
+        ? 1
+        : event.key === "ArrowLeft" || event.key === "ArrowUp"
+          ? -1
+          : 0;
+    if (!step) return;
+    event.preventDefault();
+    const index = options.findIndex(([option]) => option === value);
+    const next = options[(index + step + options.length) % options.length]!;
+    onChange(next[0]);
+    event.currentTarget
+      .querySelector<HTMLElement>(`[data-value="${next[0]}"]`)
+      ?.focus();
+  }
+  return (
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className="flex rounded-lg bg-muted p-0.5"
+      onKeyDown={onKeyDown}
+    >
+      {options.map(([option, text]) => (
+        <Button
+          key={option}
+          type="button"
+          role="radio"
+          data-value={option}
+          aria-checked={value === option}
+          tabIndex={value === option ? 0 : -1}
+          variant="ghost"
+          className={cn(
+            "text-muted-foreground",
+            value === option && "bg-background text-foreground shadow-sm",
+          )}
+          onClick={() => onChange(option)}
+        >
+          {text}
+        </Button>
+      ))}
+    </div>
+  );
+}
+
 export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
   const rating = widget.preview !== "form" && widget.preview !== "survey";
   const defaults = widget.example;
   const [options, setOptions] = useState<WidgetDemoOptions>(defaults);
+  const [replay, setReplay] = useState(0);
+  const [phone, setPhone] = useState(false);
+  const [tab, setTab] = useState("preview");
   function updateOptions(next: Partial<WidgetDemoOptions>) {
     setOptions((current) => ({ ...current, ...next }));
   }
@@ -57,13 +111,80 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
   return (
     <div className="docs-content">
       <section id="preview" aria-label="Live Preview" className="min-w-0">
-        <Tabs defaultValue="preview">
-          <TabsList aria-label="Widget Example" className="mb-3">
-            <TabsTrigger value="preview">Preview</TabsTrigger>
-            <TabsTrigger value="code">Code</TabsTrigger>
-          </TabsList>
+        <Tabs
+          value={tab}
+          onValueChange={setTab}
+          className="gap-0 overflow-hidden rounded-xl border"
+        >
+          <div className="flex flex-wrap items-center gap-2 border-b bg-card p-2">
+            <TabsList aria-label="Widget Example">
+              <TabsTrigger value="preview">Preview</TabsTrigger>
+              <TabsTrigger value="code">Code</TabsTrigger>
+            </TabsList>
+            <div className="ml-auto flex flex-wrap items-center gap-1">
+              {rating ? (
+                <Segmented
+                  label="Layout"
+                  value={options.layout}
+                  options={[
+                    ["stacked", "Stacked"],
+                    ["inline", "Inline"],
+                  ]}
+                  onChange={(layout) => updateOptions({ layout })}
+                />
+              ) : null}
+              {rating && widget.defaultVariant !== null ? (
+                <Segmented
+                  label="Glyphs"
+                  value={options.variant}
+                  options={[
+                    ["emoji", "Emoji"],
+                    ["icons", "Icons"],
+                  ]}
+                  onChange={(variant) => updateOptions({ variant })}
+                />
+              ) : null}
+              <Button
+                type="button"
+                variant="ghost"
+                className="text-muted-foreground"
+                onClick={() => {
+                  setTab("preview");
+                  setReplay((value) => value + 1);
+                }}
+              >
+                <Play aria-hidden="true" className="size-3.5" />
+                Replay
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label="Phone width"
+                aria-pressed={phone}
+                className={cn("max-sm:hidden", phone && "bg-accent")}
+                onClick={() => setPhone((value) => !value)}
+              >
+                <Smartphone aria-hidden="true" className="size-4" />
+              </Button>
+            </div>
+          </div>
           <TabsContent value="preview" className="m-0">
-            <WidgetDemo widget={widget} options={options} />
+            <div className="bg-muted/40">
+              <div
+                className={cn(
+                  "mx-auto w-full",
+                  phone && "max-w-sm border-x border-border",
+                )}
+              >
+                <WidgetDemo
+                  widget={widget}
+                  options={options}
+                  replay={replay}
+                  framed={false}
+                />
+              </div>
+            </div>
           </TabsContent>
           <TabsContent value="code" className="m-0">
             <CodeBlock
@@ -72,127 +193,9 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
             />
           </TabsContent>
         </Tabs>
-        <div className="px-1 pt-2">
-          <p className="ds-caption text-muted-foreground">{localExampleNote}</p>
-          {rating ? (
-            <Accordion type="single" collapsible>
-              <AccordionItem value="customize" className="border-0">
-                <AccordionTrigger className="min-h-11 py-2 text-sm">
-                  Customize Preview
-                </AccordionTrigger>
-                <AccordionContent className="space-y-4 pt-2">
-                  <div className="grid max-w-xl grid-cols-2 gap-4 sm:grid-cols-3">
-                    <div className="space-y-2">
-                      <Label htmlFor="preview-layout">Layout</Label>
-                      <Select
-                        value={options.layout}
-                        onValueChange={(layout) =>
-                          updateOptions({
-                            layout: layout as WidgetDemoOptions["layout"],
-                          })
-                        }
-                      >
-                        <SelectTrigger id="preview-layout" className="w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="stacked">Stacked</SelectItem>
-                          <SelectItem value="inline">Inline</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    {widget.defaultVariant !== null ? (
-                      <div className="space-y-2">
-                        <Label htmlFor="preview-variant">Variant</Label>
-                        <Select
-                          value={options.variant}
-                          onValueChange={(variant) =>
-                            updateOptions({
-                              variant: variant as WidgetDemoOptions["variant"],
-                            })
-                          }
-                        >
-                          <SelectTrigger
-                            id="preview-variant"
-                            className="w-full"
-                          >
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="emoji">Emoji</SelectItem>
-                            <SelectItem value="icons">Icons</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    ) : null}
-                    <div className="space-y-2">
-                      <Label htmlFor="preview-size">Size</Label>
-                      <Select
-                        value={options.size}
-                        onValueChange={(size) =>
-                          updateOptions({
-                            size: size as WidgetDemoOptions["size"],
-                          })
-                        }
-                      >
-                        <SelectTrigger id="preview-size" className="w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {["sm", "default", "md", "lg"].map((size) => (
-                            <SelectItem key={size} value={size}>
-                              {size}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <p className="ds-body text-muted-foreground">
-                    Presets and layouts share the same parts, states, and glyph
-                    options. Explore the{" "}
-                    <Link href="/design-system/widgets" className="docs-link">
-                      design system
-                    </Link>{" "}
-                    for typography, tokens, and composition rules.
-                  </p>
-                  <div className="max-w-xs space-y-2">
-                    <Label htmlFor="preview-follow-up">Ask for a comment</Label>
-                    <Select
-                      value={options.followUp}
-                      onValueChange={(followUp) => {
-                        if (
-                          followUp === "negative" ||
-                          followUp === "always" ||
-                          followUp === "never"
-                        )
-                          updateOptions({ followUp });
-                      }}
-                    >
-                      <SelectTrigger id="preview-follow-up" className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="negative">
-                          After a negative pick
-                        </SelectItem>
-                        <SelectItem value="always">After every pick</SelectItem>
-                        <SelectItem value="never">Never</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setOptions(defaults)}
-                  >
-                    Restore Defaults
-                  </Button>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          ) : null}
-        </div>
+        <p className="ds-caption px-1 pt-3 text-muted-foreground">
+          {localExampleNote}
+        </p>
       </section>
       <section aria-labelledby="installation" className="docs-section min-w-0">
         <h2 id="installation" className="ds-section-title">
