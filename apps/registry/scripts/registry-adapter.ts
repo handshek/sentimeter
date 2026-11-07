@@ -431,6 +431,22 @@ async function validateHostFixture(options: {
         }),
       );
 
+      if (installedTargets.has("components/sentimeter/nps-score.tsx")) {
+        await writeFile(
+          path.join(fixtureRoot, "components", "host-example.tsx"),
+          `import { NpsScore } from "./sentimeter/nps-score";
+import type { WidgetPayload } from "./sentimeter/feedback-system";
+
+export function HostExample() {
+  return <NpsScore layout="inline" followUp="negative" submit={async (payload: WidgetPayload) => {
+    JSON.stringify({ ...payload, source: "host-example" });
+  }} />;
+}
+`,
+          "utf8",
+        );
+      }
+
       const tsconfigPath = path.join(fixtureRoot, "tsconfig.json");
       const uiRoot = path.join(options.paths.repoRoot, "packages", "ui", "src");
       const widgetDependenciesRoot = path.join(

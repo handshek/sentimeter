@@ -34,7 +34,8 @@ apps/registry/.generated/sentimeter/
 │   └── compound/
 ├── emoji-feedback.tsx
 ├── like-dislike.tsx
-└── star-rating.tsx
+├── star-rating.tsx
+└── nps-score.tsx
 ```
 
 The staging directory is ignored and must not be edited. `registry:emit`
