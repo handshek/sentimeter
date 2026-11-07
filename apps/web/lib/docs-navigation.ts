@@ -50,7 +50,7 @@ export const gettingStartedSections = [
     url: "#accessibility",
     depth: 2,
     content:
-      "Keyboard focus, accessible reaction names, aria-pressed, success and error announcements. Minimum container width 288px. Touch targets at least 44×44px.",
+      "Keyboard focus, accessible reaction names, aria-pressed, success and error announcements. Minimum container width 288px. Reaction targets stay 44px tall; NPS fits eleven segments into 288px. Arrow keys move within the scale.",
   },
   {
     title: "Using an Agent?",

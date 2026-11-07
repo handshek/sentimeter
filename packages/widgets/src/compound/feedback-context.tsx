@@ -4,13 +4,18 @@ import * as React from "react";
 import type {
   WidgetCallbacks,
   WidgetLayout,
+  WidgetFollowUp,
   WidgetPayload,
   WidgetState,
   WidgetSubmit,
   WidgetSubmitError,
   WidgetType,
 } from "../types";
-import { notify, useWidgetMachine } from "../core/use-widget-machine";
+import {
+  notify,
+  requiresFollowUp,
+  useWidgetMachine,
+} from "../core/use-widget-machine";
 
 export type WidgetSize = "sm" | "default" | "md" | "lg";
 
@@ -22,6 +27,7 @@ export type FeedbackContextValue = {
   disabled: boolean;
   size: WidgetSize;
   layout: WidgetLayout;
+  showFollowUp: boolean;
   select: (value: number) => void;
   submitSelected: (text?: string) => Promise<void>;
   /** Clears an unsent choice and comment, returning to idle. */
@@ -32,6 +38,7 @@ export type FeedbackContextValue = {
   setText: React.Dispatch<React.SetStateAction<string>>;
   containerRef: React.RefObject<HTMLDivElement | null>;
   focusAnchorRef: React.RefObject<HTMLSpanElement | null>;
+  selectionHadFocusRef: React.RefObject<boolean>;
 };
 
 const Ctx = React.createContext<FeedbackContextValue | null>(null);
@@ -52,8 +59,7 @@ export type FeedbackProviderProps = {
   disabled?: boolean;
   size?: WidgetSize;
   layout?: WidgetLayout;
-  doneDurationMs?: number;
-  autoHide?: boolean;
+  followUp?: WidgetFollowUp;
   submit?: WidgetSubmit;
   children: React.ReactNode;
 } & WidgetCallbacks;
@@ -64,8 +70,7 @@ export function FeedbackProvider({
   disabled = false,
   size = "default",
   layout = "stacked",
-  doneDurationMs = 2000,
-  autoHide = true,
+  followUp,
   submit,
   children,
   onSelect,
@@ -87,6 +92,7 @@ export function FeedbackProvider({
 
   const machine = useWidgetMachine({
     payloadBase,
+    followUp,
     disabled,
     submit: resolvedSubmit,
     onSelect,
@@ -101,6 +107,7 @@ export function FeedbackProvider({
   const [text, setText] = React.useState("");
   const containerRef = React.useRef<HTMLDivElement>(null);
   const focusAnchorRef = React.useRef<HTMLSpanElement>(null);
+  const selectionHadFocusRef = React.useRef(false);
   const shouldRestoreFocusRef = React.useRef(false);
 
   const hide = React.useCallback(() => {
@@ -109,12 +116,6 @@ export function FeedbackProvider({
       !!containerRef.current?.contains(document.activeElement);
     hideMachine();
   }, [hideMachine]);
-
-  React.useEffect(() => {
-    if (machine.state !== "done" || !autoHide) return;
-    const timer = window.setTimeout(hide, doneDurationMs);
-    return () => window.clearTimeout(timer);
-  }, [autoHide, doneDurationMs, hide, machine.state]);
 
   React.useEffect(() => {
     if (machine.hidden && shouldRestoreFocusRef.current) {
@@ -146,6 +147,30 @@ export function FeedbackProvider({
       ?.focus();
   }, [machine.state]);
 
+  const select = React.useCallback(
+    (value: number) => {
+      if (
+        disabled ||
+        machine.state === "submitting" ||
+        machine.state === "done"
+      )
+        return;
+      selectionHadFocusRef.current = !!containerRef.current?.contains(
+        document.activeElement,
+      );
+      if (
+        machine.select(value) &&
+        !requiresFollowUp(followUp, widgetType, value)
+      ) {
+        setText("");
+      }
+    },
+    [disabled, followUp, machine, widgetType],
+  );
+  const showFollowUp =
+    machine.selectedValue !== null &&
+    requiresFollowUp(followUp, widgetType, machine.selectedValue);
+
   const value = React.useMemo<FeedbackContextValue>(
     () => ({
       state: machine.state,
@@ -155,7 +180,8 @@ export function FeedbackProvider({
       disabled: !!disabled,
       size,
       layout,
-      select: machine.select,
+      showFollowUp,
+      select,
       submitSelected: machine.submitSelected,
       reset,
       cancel,
@@ -163,8 +189,19 @@ export function FeedbackProvider({
       setText,
       containerRef,
       focusAnchorRef,
+      selectionHadFocusRef,
     }),
-    [machine, disabled, size, layout, reset, cancel, text],
+    [
+      machine,
+      disabled,
+      size,
+      layout,
+      reset,
+      cancel,
+      text,
+      showFollowUp,
+      select,
+    ],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

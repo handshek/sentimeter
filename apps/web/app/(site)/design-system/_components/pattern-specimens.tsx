@@ -73,7 +73,6 @@ function MarketingPattern() {
             <EmojiFeedback
               title="How does this feel?"
               description="Try the real component."
-              autoHide={false}
             />
           </div>
         </div>
@@ -136,7 +135,7 @@ function DocumentationPattern() {
             <CodeBlock
               label="feedback.tsx"
               code={
-                '<EmojiFeedback\n  title="How was getting started?"\n  autoHide={false}\n  submit={saveFeedback}\n/>'
+                '<EmojiFeedback\n  title="How was getting started?"\n  submit={saveFeedback}\n/>'
               }
             />
           </div>
@@ -156,7 +155,6 @@ function DocumentationPattern() {
               key={example}
               title="Was this page useful?"
               layout="inline"
-              autoHide={false}
             />
             <Button
               variant="ghost"

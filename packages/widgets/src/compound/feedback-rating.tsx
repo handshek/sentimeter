@@ -33,10 +33,10 @@ const THUMBS = [
   { value: 0, label: "Dislike", emoji: "👎", Icon: ThumbsDown },
 ] as const;
 
-const EXPECTED_GLYPHS = { emoji: 5, thumbs: 2, stars: 1 } as const;
+const EXPECTED_GLYPHS = { emoji: 5, thumbs: 2, stars: 1, nps: 0 } as const;
 
 export type FeedbackRatingProps = {
-  variant: "emoji" | "stars" | "thumbs";
+  variant: "emoji" | "stars" | "thumbs" | "nps";
   /** Built-in faces: native emoji or Lucide icons. */
   emojiStyle?: "emoji" | "icons";
   /** Built-in thumbs or stars: Lucide icons or native emoji. */
@@ -71,6 +71,13 @@ function builtInChoices(
   variant: FeedbackRatingProps["variant"],
   useEmoji: boolean,
 ): Choice[] {
+  if (variant === "nps") {
+    return Array.from({ length: 11 }, (_, value) => ({
+      value,
+      label: `Score ${value} of 10`,
+      glyph: value,
+    }));
+  }
   if (variant === "stars") {
     return FACES.map(({ value }) => ({
       value,
@@ -131,13 +138,15 @@ export function FeedbackRating({
   const { state, selectedValue, disabled, select, layout } =
     useFeedbackContext();
   const [hoverValue, setHoverValue] = React.useState<number | null>(null);
+  const [focusedValue, setFocusedValue] = React.useState<number | null>(null);
   const locked = disabled || state === "submitting" || state === "done";
   const useEmoji = (variant === "emoji" ? emojiStyle : ratingStyle) === "emoji";
   const stars = variant === "stars";
   const thumbs = variant === "thumbs";
+  const nps = variant === "nps";
   const inline = layout === "inline";
   const expected = EXPECTED_GLYPHS[variant];
-  const validGlyphs = glyphs?.length === expected ? glyphs : undefined;
+  const validGlyphs = !nps && glyphs?.length === expected ? glyphs : undefined;
 
   React.useEffect(() => {
     if (glyphs && glyphs.length !== expected) {
@@ -157,7 +166,13 @@ export function FeedbackRating({
       data-slot="feedback-rating"
       role="group"
       aria-label={
-        stars ? "Star rating" : thumbs ? "Helpfulness" : "Experience rating"
+        nps
+          ? "Recommendation score"
+          : stars
+            ? "Star rating"
+            : thumbs
+              ? "Helpfulness"
+              : "Experience rating"
       }
       className={cn(
         feedbackStyles.rating,
@@ -167,6 +182,7 @@ export function FeedbackRating({
           (inline
             ? feedbackStyles.inlineStarsRating
             : feedbackStyles.starsRating),
+        nps && feedbackStyles.npsRating,
         className,
       )}
     >
@@ -183,37 +199,81 @@ export function FeedbackRating({
             aria-pressed={selected}
             aria-label={label}
             title={label}
+            tabIndex={
+              value === (focusedValue ?? selectedValue ?? options[0]?.value)
+                ? 0
+                : -1
+            }
             data-slot="feedback-choice"
             data-state={selected ? "selected" : "idle"}
             onMouseEnter={
               stars && !locked ? () => setHoverValue(value) : undefined
             }
             onMouseLeave={stars ? () => setHoverValue(null) : undefined}
-            onFocus={stars && !locked ? () => setHoverValue(value) : undefined}
+            onFocus={() => {
+              setFocusedValue(value);
+              if (stars && !locked) setHoverValue(value);
+            }}
             onBlur={stars ? () => setHoverValue(null) : undefined}
+            onKeyDown={(event) => {
+              if (locked) return;
+              const choices = Array.from(
+                event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
+                  '[data-slot="feedback-choice"]',
+                ) ?? [],
+              );
+              const index = choices.indexOf(event.currentTarget);
+              let next: number;
+              switch (event.key) {
+                case "ArrowRight":
+                case "ArrowDown":
+                  next = (index + 1) % choices.length;
+                  break;
+                case "ArrowLeft":
+                case "ArrowUp":
+                  next = (index - 1 + choices.length) % choices.length;
+                  break;
+                case "Home":
+                  next = 0;
+                  break;
+                case "End":
+                  next = choices.length - 1;
+                  break;
+                default:
+                  return;
+              }
+              event.preventDefault();
+              choices[next]?.focus();
+            }}
             onClick={() => select(value)}
             className={cn(
               feedbackStyles.choice,
               feedbackStyles.focus,
               thumbs && !inline && feedbackStyles.thumbChoice,
               inline && feedbackStyles.inlineChoice,
+              nps && feedbackStyles.npsChoice,
               !stars && selected && feedbackStyles.selected,
+              nps && selected && feedbackStyles.npsSelected,
               filled && feedbackStyles.filledStar,
               (state === "done" || state === "submitting") &&
                 selected &&
                 feedbackStyles.submittedChoice,
             )}
           >
-            <span
-              aria-hidden="true"
-              data-slot="feedback-glyph"
-              className={cn(
-                feedbackStyles.glyph,
-                filled && feedbackStyles.filledGlyph,
-              )}
-            >
-              {glyph}
-            </span>
+            {nps ? (
+              glyph
+            ) : (
+              <span
+                aria-hidden="true"
+                data-slot="feedback-glyph"
+                className={cn(
+                  feedbackStyles.glyph,
+                  filled && feedbackStyles.filledGlyph,
+                )}
+              >
+                {glyph}
+              </span>
+            )}
             {thumbs && !inline ? (
               <span aria-hidden="true" className={feedbackStyles.thumbLabel}>
                 {label}
@@ -222,6 +282,12 @@ export function FeedbackRating({
           </Button>
         );
       })}
+      {nps ? (
+        <div className={feedbackStyles.npsLegend}>
+          <span>Not likely</span>
+          <span>Very likely</span>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import {
   LikeDislike,
   StarRating,
   type WidgetSize,
+  type WidgetFollowUp,
 } from "@workspace/widgets";
 import { Button } from "@workspace/ui/components/button";
 import { Label } from "@workspace/ui/components/label";
@@ -17,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-import { Switch } from "@workspace/ui/components/switch";
 import {
   Tabs,
   TabsContent,
@@ -52,9 +52,8 @@ function SubmissionSpecimen() {
           key={instance}
           title="How did the release go?"
           description="Every detail helps us improve the next one."
-          showInput
+          followUp="always"
           submit={submit}
-          autoHide={false}
         />
         <Button
           variant="ghost"
@@ -103,14 +102,13 @@ function LayoutSpecimen() {
           <EmojiFeedback
             title="How was getting started?"
             description="A little feedback goes a long way."
-            showInput
-            autoHide={false}
+            followUp="always"
           />
         </div>
         <figcaption className="ds-body-sm text-muted-foreground">
           <span className="ds-label text-foreground">Stacked</span> · the
           default. A card with a heading, one recessed well for the rating and
-          comment, and a paired Cancel and Submit row.
+          comment, and a paired Cancel and Send row.
         </figcaption>
       </figure>
       <figure className="min-w-0 space-y-3">
@@ -118,8 +116,7 @@ function LayoutSpecimen() {
           <EmojiFeedback
             layout="inline"
             title="Was this page helpful?"
-            showInput
-            autoHide={false}
+            followUp="always"
           />
         </div>
         <figcaption className="ds-body-sm text-muted-foreground">
@@ -146,7 +143,6 @@ function GlyphSpecimen() {
             { glyph: "😀", label: "Good" },
             { glyph: "🔥", label: "On fire" },
           ]}
-          autoHide={false}
           className="w-full"
         />
       </div>
@@ -154,7 +150,6 @@ function GlyphSpecimen() {
         <StarRating
           title="Rate this recipe"
           glyph={{ glyph: <Heart aria-hidden="true" />, label: "heart" }}
-          autoHide={false}
           className="w-full"
         />
       </div>
@@ -165,7 +160,6 @@ function GlyphSpecimen() {
             { glyph: <Flame aria-hidden="true" />, label: "Useful" },
             { glyph: <Snowflake aria-hidden="true" />, label: "Not useful" },
           ]}
-          autoHide={false}
           className="w-full"
         />
       </div>
@@ -176,12 +170,12 @@ function GlyphSpecimen() {
 export function WidgetSpecimens() {
   const [variant, setVariant] = useState<"icons" | "emoji">("emoji");
   const [size, setSize] = useState<WidgetSize>("default");
-  const [showInput, setShowInput] = useState(true);
+  const [followUp, setFollowUp] = useState<WidgetFollowUp>("negative");
   return (
     <>
       <SystemSection
         id="families"
-        title="One structure. Three ways to listen."
+        title="One structure. Four ways to listen."
         description="Try each family with your choice of glyphs, size, and comment field. All interactions on this page stay in your browser; no feedback is sent."
       >
         <div className="flex flex-wrap items-end gap-5 border-b border-border pb-6">
@@ -225,13 +219,28 @@ export function WidgetSpecimens() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex min-h-11 items-center gap-3">
-            <Switch
-              id="widget-comment"
-              checked={showInput}
-              onCheckedChange={setShowInput}
-            />
-            <Label htmlFor="widget-comment">Comment field</Label>
+          <div className="space-y-2">
+            <Label htmlFor="widget-follow-up">Ask for a comment</Label>
+            <Select
+              value={followUp}
+              onValueChange={(value) => {
+                if (
+                  value === "negative" ||
+                  value === "always" ||
+                  value === "never"
+                )
+                  setFollowUp(value);
+              }}
+            >
+              <SelectTrigger id="widget-follow-up" className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="negative">After a negative pick</SelectItem>
+                <SelectItem value="always">After every pick</SelectItem>
+                <SelectItem value="never">Never</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <Tabs defaultValue="emoji-feedback">
@@ -246,7 +255,7 @@ export function WidgetSpecimens() {
             <TabsContent key={widget.slug} value={widget.slug} className="pt-6">
               <WidgetDemo
                 widget={widget}
-                options={{ variant, size, showInput }}
+                options={{ variant, size, followUp }}
               />
               <Button asChild variant="link" className="mt-6 px-0">
                 <Link href={`/components/${widget.slug}`}>
@@ -294,7 +303,7 @@ export function WidgetSpecimens() {
       <SystemSection
         id="anatomy"
         title="A composition you can keep building on."
-        description="Each part has one job and a predictable place. The same anatomy carries through all three families."
+        description="Each part has one job and a predictable place. The same anatomy carries through all four families."
       >
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           <div className="space-y-5">
@@ -317,7 +326,7 @@ export function WidgetSpecimens() {
               ],
               [
                 "Footer",
-                "Cancel and Submit, nearby errors, then a confirmation of the same height.",
+                "Cancel and Send, nearby errors, then a confirmation of the same height.",
               ],
             ].map(([title, description]) => (
               <div key={title} className="border-l border-border pl-4">
@@ -337,7 +346,7 @@ export function WidgetSpecimens() {
               tabIndex={0}
               aria-label="Widget usage example"
             >
-              <code>{`<EmojiFeedback\n  title="How was your experience?"\n  showInput\n  autoHide={false}\n/>`}</code>
+              <code>{`<EmojiFeedback\n  title="How was your experience?"\n  followUp="always"\n/>`}</code>
             </pre>
             <p className="ds-body-sm text-muted-foreground">
               Use the wrappers for a quick start, or compose the header,

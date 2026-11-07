@@ -74,9 +74,9 @@ export default function GettingStartedPage() {
           </div>
           <p className="ds-body text-muted-foreground">
             Without a <code>submit</code> handler, submission completes locally.
-            Nothing is sent or stored. These examples use{" "}
-            <code>{"autoHide={false}"}</code> so success stays readable; the
-            widget default is to hide it after 2 seconds.
+            Nothing is sent or stored. Negative picks ask for an optional
+            comment; other picks submit immediately. The thank-you stays on
+            screen.
           </p>
           <p className="ds-body text-muted-foreground">
             The widget follows your app’s theme. Adjust scoped tokens through
@@ -110,7 +110,7 @@ export default function GettingStartedPage() {
             does not provide that route. Validate untrusted input, apply your
             app’s authentication and abuse protection, and persist it before
             returning a successful response. Emoji and stars use values 1–5;
-            thumbs use 0 or 1.
+            thumbs use 0 or 1; NPS uses 0–10.
           </p>
           <p className="ds-body text-muted-foreground">
             Your handler can throw <code>WidgetSubmitError</code> with a
@@ -130,7 +130,9 @@ export default function GettingStartedPage() {
             installed code. Give the widget at least 288px of container width.
             Rating tiles stay on one row at 44 px; the inline layout uses 32 px
             choices with a 44 px tall hit area. Size follows the container, not
-            the viewport.
+            the viewport. NPS divides the available width into eleven 44px tall
+            segments. Arrow keys move focus within a scale; Enter or Space
+            chooses the focused value.
           </p>
           <Button asChild variant="outline">
             <Link href="/components">Browse components</Link>

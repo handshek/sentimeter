@@ -45,7 +45,7 @@ ${metadata.targetFiles.map((path) => `- \`${path}\``).join("\n")}
 
 ${code("tsx", getUsageSnippet(widget))}
 
-This completes locally: nothing is sent or stored. Examples use autoHide={false} so success stays readable; the default is true with a 2000ms delay.
+This completes locally: nothing is sent or stored. The thank-you stays on screen until the host removes the component.
 
 ## Your Backend
 
@@ -53,9 +53,11 @@ ${code("tsx", getUsageSnippet(widget, undefined, "custom"))}
 
 Implement /api/feedback in your own app. Validate untrusted input, enforce your app's authentication and abuse protection, and persist before returning success. That endpoint is not supplied by Sentimeter.
 
-The submit payload contains location, widgetType, value, and optional text. The location prop defaults to "/"; set it to identify the feedback source. Emoji and stars use 1–5; thumbs use 0 or 1. Custom glyphs change only the presentation: faces always take five glyphs, thumbs two (like, then dislike), and stars one repeated glyph, so the values stay the same. Resolve only after persistence succeeds; throw on failure to keep the widget retryable. onSubmitError receives the original error.
+The submit payload contains location, widgetType, value, and optional text. The location prop defaults to "/"; set it to identify the feedback source. Emoji and stars use 1–5; thumbs use 0 or 1; NPS uses 0–10. Custom glyphs change only the presentation: faces always take five glyphs, thumbs two (like, then dislike), and stars one repeated glyph, so the values stay the same. Resolve only after persistence succeeds; throw on failure to keep the widget retryable. onSubmitError receives the original error.
 
 ## Submission behavior
+
+By default, negative picks open an optional text box with Cancel and Send. Negative means emoji or stars 1–2, thumbs down (0), or NPS 0–6. Other picks submit immediately. Set followUp="always" to ask after every pick, or "never" to submit every pick immediately. The thank-you persists after success.
 
 A supplied custom submit handler saves feedback. Without one, the widget completes locally without sending or storing anything.
 Custom handlers can throw WidgetSubmitError with a user-facing message and optional status and retryAfterMs. Other errors show a safe retry message. onSubmitError receives the original error for your own logging.
@@ -74,19 +76,19 @@ ${code("tsx", getCompoundSnippet(widget))}
 
 The widget inherits the host app’s shadcn colors, font, and radius. It does not change the surrounding app.
 
-${code("tsx", getUsageSnippet(widget, { layout: "inline", showInput: true }))}
+${code("tsx", getUsageSnippet(widget, { layout: "inline", followUp: "always" }))}
 
 The installed feedback-system/design-system.ts holds the recipe and its --feedback-* tokens. Import FeedbackStyle from @/components/sentimeter/feedback-system and use the style prop for local token overrides. The icon variants use Lucide.
 
 Below a 320px widget content-box width, the stacked card's inset is 16px. At 320px and above, the preset’s inset applies. This is a container breakpoint, not a viewport breakpoint. layout="inline" sizes to its content and wraps the question above the choices when space runs out.
 
-Preserve the shared composition: heading, supporting description, a response well (FeedbackResponse) holding the rating and the optional comment, then Cancel and an explicit Submit. Cancel clears an unsent choice; closeButton dismisses the widget. The comment is named by a visually hidden label and hinted by its placeholder. Selection and keyboard focus are distinct states. A submitted comment remains read-only while confirmation replaces the action row. With autoHide enabled in page flow, reserve space in the host layout if later removal would cause a jump.
+Preserve the shared composition: heading, supporting description, a response well (FeedbackResponse) holding the rating and the optional comment, then Cancel and Send during follow-up. Cancel clears an unsent choice; closeButton dismisses the widget. The comment is named by a visually hidden label and hinted by its placeholder. Selection and keyboard focus are distinct states. After success, the comment closes and a persistent confirmation replaces the action row.
 
 Widget token and composition reference: ${SITE_URL}/design-system/widgets.
 
 ## Accessibility and Layout
 
-Provide at least 288px of container width. Reaction controls stay on one row and retain at least 44×44px targets. Scaling follows the container, not the viewport.
+Provide at least 288px of container width. Reaction controls stay on one row and retain 44px tall targets. NPS divides the available width into eleven segments, with the legend "Not likely" / "Very likely". Use arrow keys to move focus within the scale and Enter or Space to choose. Scaling follows the container, not the viewport.
 Preserve accessible names, aria-pressed, visible keyboard focus, disabled states, and success/error announcements when customizing installed source.
 `;
 }
@@ -102,7 +104,7 @@ Requires React, TypeScript, Tailwind CSS, and a configured shadcn app. Public de
 
 - [Getting Started](${SITE_URL}/components/getting-started): Prerequisites, installation, custom persistence, errors, and accessibility.
 - [Design System](${SITE_URL}/design-system): Typography, semantic color, spacing, components, page patterns, and widget composition.
-- [Widget Catalog](${SITE_URL}/components): Try all three launch widgets.
+- [Widget Catalog](${SITE_URL}/components): Try all four rating components.
 - [Repository](${REPOSITORY_URL}): Canonical source, MIT license, and contributor guidance.
 
 ## Widget Documentation (Markdown)
@@ -115,7 +117,7 @@ Add this entry under registries in your existing components.json:
 
 ${code("json", namespaceConfig)}
 
-Then use bunx shadcn@latest add @sentimeter/emoji-feedback (or @sentimeter/like-dislike or @sentimeter/star-rating).
+Then use bunx shadcn@latest add @sentimeter/emoji-feedback (or @sentimeter/like-dislike, @sentimeter/star-rating, or @sentimeter/nps).
 Full-URL commands in each widget document work without namespace configuration.
 Use shadcn's existing MCP integration: https://ui.shadcn.com/docs/mcp. No custom Sentimeter MCP server is needed.
 `;

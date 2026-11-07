@@ -83,7 +83,7 @@ const typeRoles = [
     className: "ds-code",
     size: "13 / 1.6",
     use: "Commands, identifiers, and source",
-    sample: "<EmojiFeedback showInput />",
+    sample: '<EmojiFeedback followUp="always" />',
   },
   {
     name: "Eyebrow",
