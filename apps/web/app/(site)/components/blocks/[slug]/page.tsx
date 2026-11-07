@@ -4,10 +4,12 @@ import { DocsPage } from "fumadocs-ui/layouts/notebook/page";
 import { BlockPreview } from "@/components/docs/block-preview";
 import { CodeBlock } from "@/components/docs/code-block";
 import { CopyButton } from "@/components/docs/copy-button";
+import { PropsTable } from "@/components/docs/props-table";
 import { WidgetInstallCommand } from "@/components/docs/widget-install-command";
 import { blockDocs, getBlockDoc, getBlockFiles } from "@/lib/block-catalog";
 import { getBlockMarkdown } from "@/lib/block-markdown";
 import { blockUsage } from "@/lib/block-usage";
+import { widgetToc } from "@/lib/docs-navigation";
 
 export async function generateMetadata({
   params,
@@ -17,8 +19,13 @@ export async function generateMetadata({
   const block = getBlockDoc((await params).slug);
   if (!block) notFound();
   return {
-    title: block.name,
+    title: `${block.name} block for React and shadcn/ui`,
     description: block.description,
+    openGraph: {
+      title: `${block.name} · Sentimeter`,
+      description: block.description,
+      url: `/components/blocks/${block.slug}`,
+    },
     alternates: {
       canonical: `/components/blocks/${block.slug}`,
       types: { "text/markdown": `/components/blocks/${block.slug}/markdown` },
@@ -40,7 +47,13 @@ export default async function BlockPage({
   const files = getBlockFiles(block);
 
   return (
-    <DocsPage role="main" tabIndex={-1} full breadcrumb={{ enabled: false }}>
+    <DocsPage
+      role="main"
+      tabIndex={-1}
+      toc={widgetToc}
+      breadcrumb={{ enabled: false }}
+      tableOfContentPopover={{ enabled: false }}
+    >
       <header className="docs-header">
         <p className="ds-eyebrow text-muted-foreground">
           Block · {block.situationGroup}
@@ -55,7 +68,7 @@ export default async function BlockPage({
         </div>
         <p className="ds-lead text-muted-foreground">{block.description}</p>
       </header>
-      <section aria-label="Preview" className="mb-12">
+      <section id="preview" aria-label="Preview" className="mb-12">
         <BlockPreview
           slug={block.slug}
           title={block.name}
@@ -82,11 +95,17 @@ export default async function BlockPage({
           and the component it uses.
         </p>
       </section>
-      <section aria-labelledby="usage" className="space-y-4">
+      <section aria-labelledby="usage" className="mb-12 space-y-4">
         <h2 id="usage" className="ds-section-title">
           Usage
         </h2>
         <CodeBlock code={blockUsage[block.slug]} label="Usage" />
+      </section>
+      <section aria-labelledby="props" className="space-y-4">
+        <h2 id="props" className="ds-section-title">
+          Props
+        </h2>
+        <PropsTable name={block.name} rows={block.props} />
       </section>
     </DocsPage>
   );

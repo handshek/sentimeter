@@ -13,7 +13,7 @@ export const { GET } = createSearchAPI("simple", {
       title: "Components",
       url: "/components",
       content:
-        "Open-source React feedback widgets for shadcn apps. Emoji, thumbs and stars. MIT licensed source you own.",
+        "Open-source feedback components and blocks for React and shadcn/ui: a feedback form, ratings, NPS and a cancellation survey. MIT licensed source you own.",
     },
     ...gettingStartedSections.map((section) => ({
       title: section.title,

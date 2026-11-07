@@ -10,23 +10,23 @@ import { ThemeProvider } from "@/components/theme-provider";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Sentimeter — Open-Source Feedback Widgets",
+    default: "Sentimeter: feedback components for shadcn/ui and React",
     template: "%s | Sentimeter",
   },
   description:
-    "Accessible, open-code React feedback widgets for shadcn apps. Install the source and connect your own backend. No account required.",
+    "Open-source feedback components for React and shadcn/ui: a feedback button, report-a-problem form, ratings, NPS and a cancellation survey. Install the source with the shadcn CLI and save to your own backend.",
   openGraph: {
     type: "website",
     siteName: "Sentimeter",
-    title: "Sentimeter | Feedback widgets for shadcn apps",
+    title: "Sentimeter: feedback components for shadcn/ui and React",
     description:
-      "Accessible, open-source React feedback widgets. Install the source and connect your own backend.",
+      "Let users tell you what broke in seconds. Open-source feedback components that install as code into your shadcn/ui app.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sentimeter | Feedback widgets for shadcn apps",
+    title: "Sentimeter: feedback components for shadcn/ui and React",
     description:
-      "Accessible, open-source React feedback widgets. Install the source and connect your own backend.",
+      "Let users tell you what broke in seconds. Open-source feedback components that install as code into your shadcn/ui app.",
   },
 };
 

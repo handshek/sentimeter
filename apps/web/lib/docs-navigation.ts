@@ -32,35 +32,35 @@ export const widgetToc = [
 
 export const gettingStartedSections = [
   {
-    title: "Start With a shadcn App",
+    title: "Start with a shadcn app",
     url: "#prerequisites",
     depth: 2,
     content:
       "Prerequisites: React, TypeScript, Tailwind CSS and shadcn. Uses your local Button, Textarea, Label, theme tokens and utilities.",
   },
   {
-    title: "Install a Component",
+    title: "Install a component",
     url: "#install",
     depth: 2,
     content:
       "Install open source with bun, pnpm, npm or Yarn using shadcn add. Local demos send no requests and do not store feedback.",
   },
   {
-    title: "Connect Your Backend",
+    title: "Connect your backend",
     url: "#submission",
     depth: 2,
     content:
       "Pass an asynchronous submit handler to validate and persist feedback. Without a handler, submission completes locally. Custom handlers can throw WidgetSubmitError with a user-facing message and retryAfterMs. Failed submissions remain retryable.",
   },
   {
-    title: "Keep the Component Accessible",
+    title: "Keep it accessible",
     url: "#accessibility",
     depth: 2,
     content:
       "Keyboard focus, accessible reaction names, aria-pressed, success and error announcements. Minimum container width 288px. Reaction targets stay 44px tall; NPS fits eleven segments into 288px. Arrow keys move within a rating scale and choose Survey reasons. FeedbackForm attaches page and device context; Survey collects a reason and optional note.",
   },
   {
-    title: "Using an Agent?",
+    title: "Using an AI agent",
     url: "#agents",
     depth: 2,
     content:

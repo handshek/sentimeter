@@ -46,8 +46,7 @@ export function FooterSection({ hostedMode }: { hostedMode: HostedMode }) {
               Sentimeter
             </Link>
             <p className="ds-label mt-2 max-w-64 font-normal leading-6 text-muted-foreground">
-              A small way to listen.
-              <br />A thoughtful way to build.
+              Open-source feedback components for shadcn/ui and React.
             </p>
           </div>
           {groups.map((group) => (

@@ -14,6 +14,16 @@ import type { BlockSlug } from "@/lib/block-catalog";
 import { CodeBlock } from "./code-block";
 import { CopyButton } from "./copy-button";
 
+// Each block gets room for its open state (popover, dialog) and no more.
+const stageHeight: Record<BlockSlug, string> = {
+  "floating-feedback": "h-[34rem]",
+  "report-problem": "h-[30rem]",
+  "error-feedback": "h-[38rem]",
+  "was-this-helpful": "h-[22rem]",
+  "after-task-rating": "h-[24rem]",
+  "cancel-flow-survey": "h-[34rem]",
+};
+
 export function BlockPreview({
   slug,
   title,
@@ -70,7 +80,7 @@ export function BlockPreview({
           </Button>
           <CopyButton
             text={installCommand}
-            label="Copy install"
+            label="Copy command"
             className="max-sm:hidden"
           />
         </div>
@@ -84,7 +94,8 @@ export function BlockPreview({
             src={`/block-frame/${slug}`}
             title={`${title} preview`}
             className={cn(
-              "h-[38rem] w-full rounded-lg border bg-background",
+              "w-full rounded-lg border bg-background",
+              stageHeight[slug],
               device === "phone" && "max-w-[390px]",
             )}
           />

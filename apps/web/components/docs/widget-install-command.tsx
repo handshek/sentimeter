@@ -117,7 +117,7 @@ export function WidgetInstallCommand({
               <CopyButton
                 key={activeCommand}
                 text={activeCommand}
-                label="Copy Command"
+                label="Copy command"
                 className="px-2 text-xs sm:px-3 sm:text-sm"
               />
             </div>

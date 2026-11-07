@@ -330,7 +330,7 @@ const sharedProps: WidgetDocRow[] = [
   },
   {
     prop: "submit",
-    type: "WidgetSubmit",
+    type: "WidgetSubmit<RatingPayload>",
     defaultValue: "-",
     description:
       "Custom async handler receiving widgetType, value, optional text, and location. Without a handler, submission completes locally.",
@@ -349,19 +349,19 @@ const sharedProps: WidgetDocRow[] = [
   },
   {
     prop: "onSubmitStart",
-    type: "(payload: WidgetPayload) => void",
+    type: "(payload: RatingPayload) => void",
     defaultValue: "-",
     description: "Fires right before submission begins.",
   },
   {
     prop: "onSubmitSuccess",
-    type: "(payload: WidgetPayload) => void",
+    type: "(payload: RatingPayload) => void",
     defaultValue: "-",
     description: "Fires after a successful submission.",
   },
   {
     prop: "onSubmitError",
-    type: "(error: unknown, payload: WidgetPayload) => void",
+    type: "(error: unknown, payload: RatingPayload) => void",
     defaultValue: "-",
     description:
       "Fires with the original thrown error and payload when submission fails.",
@@ -403,19 +403,25 @@ export const surveyOptionsDescription =
 export const surveyCompletionDescription =
   "Pick one reason, then optionally add a note. Changing the reason clears the previous note. Send stays disabled until a reason is picked. Skip calls onSkip without submitting, resetting, or showing a thank-you; the host decides whether to dismiss its container. Skip appears only when onSkip is passed, works before or after a pick, and is disabled while submitting. Send includes the chosen reason value and any non-empty trimmed note. Success shows Thanks for telling us. persistently; onDone fires once about 2 seconds later. Unmounting cancels the pending callback. Errors retain the selected reason and note for retry. Survey collects no page or device context.";
 
-const formProps = sharedProps.filter((row) =>
-  [
-    "location",
-    "disabled",
-    "className",
-    "style",
-    "submitLabel",
-    "onStateChange",
-    "onSubmitStart",
-    "onSubmitSuccess",
-    "onSubmitError",
-  ].includes(row.prop),
-);
+const formProps = (payload: "FormPayload" | "SurveyPayload") =>
+  sharedProps
+    .filter((row) =>
+      [
+        "location",
+        "disabled",
+        "className",
+        "style",
+        "submitLabel",
+        "onStateChange",
+        "onSubmitStart",
+        "onSubmitSuccess",
+        "onSubmitError",
+      ].includes(row.prop),
+    )
+    .map((row) => ({
+      ...row,
+      type: row.type.replace("RatingPayload", payload),
+    }));
 
 const widgetDefinitions: Record<
   WidgetSlug,
@@ -425,7 +431,7 @@ const widgetDefinitions: Record<
     slug: "emoji-feedback",
     name: "Emoji Feedback",
     description:
-      "Five faces. A sad pick asks what went wrong; a happy pick says thanks at once.",
+      "An emoji rating component for React and shadcn/ui. A sad face asks what went wrong; a happy face says thanks.",
     registryName: "emoji-feedback",
     tabLabel: "Emoji",
     icon: "emoji",
@@ -461,7 +467,7 @@ const widgetDefinitions: Record<
     slug: "like-dislike",
     name: "Like / Dislike",
     description:
-      "Thumbs down asks what went wrong. Thumbs up sends feedback and says thanks at once.",
+      "A thumbs up/down feedback component for React and shadcn/ui. Thumbs down asks what went wrong.",
     registryName: "like-dislike",
     tabLabel: "Thumbs",
     icon: "thumbs",
@@ -497,7 +503,7 @@ const widgetDefinitions: Record<
     slug: "star-rating",
     name: "Star Rating",
     description:
-      "Five stars. One or two asks what went wrong; three to five sends feedback at once.",
+      "A 1–5 star rating component for React and shadcn/ui. One or two stars ask what went wrong.",
     registryName: "star-rating",
     tabLabel: "Stars",
     icon: "star",
@@ -533,7 +539,7 @@ const widgetDefinitions: Record<
     slug: "nps",
     name: "NPS",
     description:
-      "An eleven-point recommendation scale. Scores 0–6 ask what would make it better; 7–10 say thanks at once.",
+      "An NPS survey component (0–10) for React and shadcn/ui. Scores of 0–6 ask what would make it better.",
     registryName: "nps",
     tabLabel: "NPS",
     icon: "nps",
@@ -553,7 +559,7 @@ const widgetDefinitions: Record<
     slug: "feedback-form",
     name: "Feedback Form",
     description:
-      "One text box for what went wrong, with page and device context attached.",
+      "A feedback form for React and shadcn/ui. One text box, with the page, browser and screen size attached.",
     registryName: "feedback-form",
     tabLabel: "Form",
     icon: "emoji",
@@ -568,7 +574,7 @@ const widgetDefinitions: Record<
       followUp: "negative",
     },
     props: [
-      ...formProps,
+      ...formProps("FormPayload"),
       {
         prop: "title",
         type: "string",
@@ -590,7 +596,7 @@ const widgetDefinitions: Record<
       },
       {
         prop: "submit",
-        type: "WidgetSubmit",
+        type: "WidgetSubmit<FormPayload>",
         defaultValue: "-",
         description:
           "Async handler receiving widgetType: form, location, trimmed text, and context. Without it, completion is local.",
@@ -608,7 +614,7 @@ const widgetDefinitions: Record<
     slug: "survey",
     name: "Survey",
     description:
-      "One reason and an optional note for questions with known answers, such as why someone leaves.",
+      "A one-question survey for React and shadcn/ui. Users pick a reason, then add an optional note.",
     registryName: "survey",
     tabLabel: "Survey",
     icon: "emoji",
@@ -623,7 +629,7 @@ const widgetDefinitions: Record<
       followUp: "negative",
     },
     props: [
-      ...formProps,
+      ...formProps("SurveyPayload"),
       {
         prop: "title",
         type: "string",
@@ -650,7 +656,7 @@ const widgetDefinitions: Record<
       },
       {
         prop: "submit",
-        type: "WidgetSubmit",
+        type: "WidgetSubmit<SurveyPayload>",
         defaultValue: "-",
         description:
           "Async handler receiving widgetType: survey, location, the chosen string value, and optional trimmed text. Without it, completion is local.",

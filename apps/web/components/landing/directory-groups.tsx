@@ -9,16 +9,11 @@ export function DirectoryGroups() {
         const id = title.toLowerCase().replaceAll(" ", "-");
         return (
           <section key={title} id={id} aria-labelledby={`${id}-title`}>
-            <div className="mb-5 flex items-end justify-between gap-4">
-              <div className="space-y-1">
-                <h2 id={`${id}-title`} className="ds-section-title">
-                  {title}
-                </h2>
-                <p className="ds-body text-muted-foreground">{lead}</p>
-              </div>
-              <span className="ds-caption shrink-0 font-mono text-muted-foreground">
-                {entries.length} items
-              </span>
+            <div className="mb-5 space-y-1">
+              <h2 id={`${id}-title`} className="ds-section-title">
+                {title}
+              </h2>
+              <p className="ds-body text-muted-foreground">{lead}</p>
             </div>
             <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               {entries.map((entry) => (

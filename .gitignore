@@ -54,3 +54,6 @@ apps/registry/.tmp
 /skills-lock.json
 /docs/qa/
 testsprite_tests/tmp/
+
+# Local UI review captures
+/.ui-review/

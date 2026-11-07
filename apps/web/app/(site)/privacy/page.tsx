@@ -23,7 +23,7 @@ export default function PrivacyPage() {
               A small amount of data, for a clear purpose
             </h1>
             <p className="ds-body text-muted-foreground">
-              Sentimeter publishes open-source feedback widgets. Browsing or
+              Sentimeter publishes open-source feedback components. Browsing or
               installing them does not require an account.
             </p>
           </header>
@@ -55,9 +55,9 @@ export default function PrivacyPage() {
           <section className="space-y-3 ds-body text-muted-foreground">
             <h2 className="ds-title text-foreground">Installed components</h2>
             <p>
-              Widgets complete locally by default. A developer can supply their
-              own submit handler to save feedback. That developer controls the
-              destination and its privacy practices.
+              Components complete locally by default. A developer can supply
+              their own submit handler to save feedback. That developer controls
+              the destination and its privacy practices.
             </p>
           </section>
           <section className="space-y-3 ds-body text-muted-foreground">
