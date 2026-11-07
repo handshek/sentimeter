@@ -47,6 +47,8 @@ import {
 } from "@workspace/ui/components/popover";
 import {
   EmojiFeedback,
+  FeedbackForm,
+  Survey,
   LikeDislike,
   StarRating,
   NpsScore,
@@ -586,6 +588,14 @@ function ShowcaseWidget({
 
   if (slug === "star-rating") {
     return <StarRating key={key} {...commonProps} />;
+  }
+
+  if (slug === "feedback-form") {
+    return <FeedbackForm key={key} {...commonProps} />;
+  }
+
+  if (slug === "survey") {
+    return <Survey key={key} {...commonProps} />;
   }
 
   if (slug === "nps") {

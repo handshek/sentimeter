@@ -467,6 +467,31 @@ export function HostFormExample() {
         );
       }
 
+      if (installedTargets.has("components/sentimeter/survey.tsx")) {
+        await writeFile(
+          path.join(fixtureRoot, "components", "host-survey-example.tsx"),
+          `import { Survey } from "./sentimeter/survey";
+import type { WidgetPayload } from "./sentimeter/feedback-system";
+
+const options = [
+  { label: "Missing a feature", value: "missing-feature", notePlaceholder: "Which feature? (optional)" },
+  { label: "Other", value: "other" },
+] as const;
+
+export function HostSurveyExample() {
+  return <Survey options={options} onSkip={() => {}} onDone={() => {}} submit={async (payload: WidgetPayload) => {
+    if (payload.widgetType === "survey") {
+      const reason: string = payload.value;
+      const note: string | undefined = payload.text;
+      JSON.stringify({ reason, note });
+    }
+  }} />;
+}
+`,
+          "utf8",
+        );
+      }
+
       const tsconfigPath = path.join(fixtureRoot, "tsconfig.json");
       const uiRoot = path.join(options.paths.repoRoot, "packages", "ui", "src");
       const widgetDependenciesRoot = path.join(

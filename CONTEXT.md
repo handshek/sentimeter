@@ -39,7 +39,7 @@ Sentimeter uses three runtime surfaces:
 ### Widget
 
 An installable React feedback surface. Current widget types are `emoji`,
-`thumbs`, `star`, `nps`, and `form`. Widgets must work as open code inside the developer's
+`thumbs`, `star`, `nps`, `form`, and `survey`. Widgets must work as open code inside the developer's
 shadcn project, not as opaque iframes or remote embeds. `packages/widgets` is
 the sole canonical source for Widget behavior; workspace imports and Registry
 Items are two forms of that behavior.
@@ -64,6 +64,23 @@ Success shows "Got it. Sorry about that." and "We read every message." persisten
 `onDone` fires once about two seconds after confirmation appears, allowing a host
 container to close itself. Unmounting cancels the pending callback. The form owns
 no popover, dialog, sheet, or floating trigger.
+
+### Survey
+
+A stacked single-choice widget, installed as `survey`. It asks "Why are you
+leaving?" with a host-supplied list of label/value pairs or five default reasons.
+Picking a reason opens an optional note whose prompt follows the reason. Each
+option may override that prompt with `notePlaceholder`; custom reasons default
+to "Tell us more (optional)". Radio rows support arrow-key selection and stay
+44px tall. Its `survey` payload includes the chosen string `value`, optional
+trimmed `text`, and `location`; it collects no page or device context.
+
+Skip calls `onSkip` without submitting, resetting, or showing confirmation. The
+host decides whether to dismiss its container. Send requires a selected reason;
+success shows "Thanks for telling us." persistently and calls `onDone` about two
+seconds later. Unmounting cancels that pending callback. Failed submissions retain
+the reason and note for retry. The host owns subscription cancellation and any
+container around the widget.
 
 ### Registry Item
 
@@ -96,7 +113,7 @@ specimens.
 
 A host-supplied async `submit` handler that receives `widgetType` and `location`,
 with numeric `value` and optional `text` for ratings, or required `text` and optional
-`context` for a form. The host decides how to save the feedback. The
+`context` for a form, or a string reason `value` and optional `text` for a survey. The host decides how to save the feedback. The
 widget shows confirmation when the handler resolves and retains the response
 for retry when it throws. `WidgetSubmitError` carries a useful message and an
 optional retry delay.

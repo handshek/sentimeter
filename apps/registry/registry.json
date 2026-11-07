@@ -177,6 +177,22 @@
           "target": "components/sentimeter/feedback-form.tsx"
         }
       ]
+    },
+    {
+      "name": "survey",
+      "type": "registry:block",
+      "title": "Survey",
+      "description": "Single-choice reasons with an optional follow-up note.",
+      "registryDependencies": [
+        "https://registry.handshek.workers.dev/r/feedback-system.json"
+      ],
+      "files": [
+        {
+          "path": ".generated/sentimeter/survey.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/survey.tsx"
+        }
+      ]
     }
   ]
 }

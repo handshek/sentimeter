@@ -1,6 +1,7 @@
 export type {
   FeedbackContext,
   FormPayload,
+  SurveyPayload,
   RatingPayload,
   RatingWidgetType,
   FaceGlyphs,
@@ -44,3 +45,5 @@ export { StarRating } from "./star-rating";
 export { NpsScore } from "./nps-score";
 
 export { FeedbackForm, type FeedbackFormProps } from "./feedback-form";
+
+export { Survey, type SurveyProps, type SurveyOption } from "./survey";

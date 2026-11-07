@@ -96,10 +96,11 @@ export default function GettingStartedPage() {
             <code>location</code> and <code>widgetType</code>. Ratings include a
             numeric <code>value</code> and optional <code>text</code>.
             FeedbackForm includes required <code>text</code> and optional
-            page/device <code>context</code>. The <code>location</code> prop
-            defaults to <code>{'"/"'}</code>; set it to identify the feedback
-            source. Resolve only after saving succeeds; throw on failure so
-            users can retry.
+            page/device <code>context</code>. Survey includes the chosen string{" "}
+            <code>value</code> and optional <code>text</code>. The{" "}
+            <code>location</code> prop defaults to <code>{'"/"'}</code>; set it
+            to identify the feedback source. Resolve only after saving succeeds;
+            throw on failure so users can retry.
           </p>
           <div className="not-prose">
             <CodeBlock
@@ -117,7 +118,8 @@ export default function GettingStartedPage() {
             <Link href="/components/feedback-form" className="docs-link">
               component docs
             </Link>{" "}
-            describe exactly which page and device details it attaches.
+            describe exactly which page and device details it attaches. Survey
+            collects no page or device context; its value is the chosen reason.
           </p>
           <p className="ds-body text-muted-foreground">
             Your handler can throw <code>WidgetSubmitError</code> with a
@@ -139,7 +141,8 @@ export default function GettingStartedPage() {
             choices with a 44 px tall hit area. Size follows the container, not
             the viewport. NPS divides the available width into eleven 44px tall
             segments. Arrow keys move focus within a scale; Enter or Space
-            chooses the focused value.
+            chooses the focused value. Survey reason rows use radio semantics
+            and 44px targets; arrow keys choose the adjacent reason.
           </p>
           <Button asChild variant="outline">
             <Link href="/components">Browse components</Link>

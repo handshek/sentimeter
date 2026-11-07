@@ -16,6 +16,7 @@ test("every launch widget has a complete, compatible registry install", () => {
     "star-rating",
     "nps",
     "feedback-form",
+    "survey",
   ]);
 
   for (const widget of widgetDocs) {
@@ -58,6 +59,7 @@ test("generated examples keep submission options and stay free of hosted details
     "star-rating": false,
     nps: false,
     "feedback-form": false,
+    survey: false,
   });
   expect(getWidgetMarkdown(getWidgetDoc("like-dislike")!)).toContain(
     'layout="inline"',
@@ -68,7 +70,7 @@ test("generated examples keep submission options and stay free of hosted details
       { layout: "inline", followUp: "always", size: "lg" },
       "custom",
     );
-    if (widget.preview === "form") {
+    if (widget.preview === "form" || widget.preview === "survey") {
       expect(example).not.toContain("layout=");
       expect(example).not.toContain("followUp=");
       expect(example).not.toContain("size=");
@@ -124,5 +126,31 @@ test("FeedbackForm docs describe its payload, context, and container callback", 
     type: "page",
     name: "Feedback Form",
     url: "/components/feedback-form",
+  });
+});
+
+test("Survey docs describe reason values, optional notes, and host-owned Skip", () => {
+  const survey = getWidgetDoc("survey")!;
+  expect(survey.componentName).toBe("Survey");
+  expect(getUsageSnippet(survey)).toContain("@/components/sentimeter/survey");
+  expect(survey.props.map((row) => row.prop)).toContain("options");
+  expect(survey.props.map((row) => row.prop)).toContain("onSkip");
+  expect(survey.props.map((row) => row.prop)).not.toContain("followUp");
+  const markdown = getWidgetMarkdown(survey);
+  expect(markdown).toContain('widgetType: "survey"');
+  expect(markdown).toContain("value: string");
+  expect(markdown).toContain(
+    "Skip calls onSkip without submitting, resetting, or showing a thank-you",
+  );
+  expect(markdown).toContain("notePlaceholder");
+  expect(markdown).toContain("too-expensive");
+  expect(markdown).toContain("Survey collects no page or device context");
+  expect(markdown).not.toContain('layout="inline"');
+  expect(markdown).not.toContain("Negative means");
+  expect(getAgentIndex()).toContain("/components/survey/markdown");
+  expect(docsTree.children).toContainEqual({
+    type: "page",
+    name: "Survey",
+    url: "/components/survey",
   });
 });
