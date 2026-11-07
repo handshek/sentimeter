@@ -88,7 +88,7 @@ type WidgetSlug = WidgetInstallMetadata["slug"];
 
 const DEFAULT_WIDGET_SLUG: WidgetSlug = "emoji-feedback";
 
-type WidgetCommon = {
+export type WidgetCommon = {
   location: string;
   disabled: boolean;
   thankYouMessage: string;
@@ -205,9 +205,10 @@ function PlaygroundCard({
   );
 }
 
-function PopoverWidgetDemo({ common }: { common: WidgetCommon }) {
+export function PopoverWidgetDemo({ common }: { common: WidgetCommon }) {
   const [open, setOpen] = React.useState(false);
-  const [state, setState] = React.useState<WidgetState>("idle");
+  const [openCount, setOpenCount] = React.useState(0);
+  const latestOpenRef = React.useRef(0);
   const closeTimerRef = React.useRef<number | null>(null);
 
   const clearCloseTimer = React.useCallback(() => {
@@ -218,18 +219,16 @@ function PopoverWidgetDemo({ common }: { common: WidgetCommon }) {
 
   React.useEffect(() => clearCloseTimer, [clearCloseTimer]);
 
-  React.useEffect(() => {
-    if (!open || state !== "done") {
-      clearCloseTimer();
-      return;
+  // The popover unmounts its content when it closes, so every reopen starts
+  // a fresh widget and only a finished one needs to close it.
+  function setPopoverOpen(nextOpen: boolean) {
+    clearCloseTimer();
+    if (nextOpen) {
+      latestOpenRef.current += 1;
+      setOpenCount(latestOpenRef.current);
     }
-
-    closeTimerRef.current = window.setTimeout(() => {
-      setOpen(false);
-    }, common.doneDurationMs);
-
-    return clearCloseTimer;
-  }, [clearCloseTimer, common.doneDurationMs, open, state]);
+    setOpen(nextOpen);
+  }
 
   return (
     <div className="rounded-xl border border-border bg-muted/30 p-6">
@@ -246,14 +245,7 @@ function PopoverWidgetDemo({ common }: { common: WidgetCommon }) {
           </p>
         </div>
 
-        <Popover
-          open={open}
-          onOpenChange={(nextOpen) => {
-            setOpen(nextOpen);
-            clearCloseTimer();
-            if (!nextOpen) setState("idle");
-          }}
-        >
+        <Popover open={open} onOpenChange={setPopoverOpen}>
           <PopoverTrigger asChild>
             <Button type="button" variant="default" className="w-fit">
               <MessageCircle className="mr-2 h-4 w-4" />
@@ -277,12 +269,18 @@ function PopoverWidgetDemo({ common }: { common: WidgetCommon }) {
               submit={common.submit}
               doneDurationMs={common.doneDurationMs}
               closeButton
-              onCancel={() => {
+              onCancel={() => setPopoverOpen(false)}
+              onStateChange={(state) => {
+                // A dismissed widget's submission can still finish after the
+                // popover reopens with a new one.
+                if (state !== "done" || openCount !== latestOpenRef.current)
+                  return;
                 clearCloseTimer();
-                setOpen(false);
-                setState("idle");
+                closeTimerRef.current = window.setTimeout(
+                  () => setPopoverOpen(false),
+                  common.doneDurationMs,
+                );
               }}
-              onStateChange={setState}
             />
           </PopoverContent>
         </Popover>
