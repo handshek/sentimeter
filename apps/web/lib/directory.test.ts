@@ -11,7 +11,7 @@ test("the homepage groups every component and block by situation", () => {
   expect(entriesFor("After something works")).toHaveLength(6);
   expect(entriesFor("When someone leaves").map((e) => e.href)).toEqual([
     "/components/survey",
-    "/blocks/cancel-flow-survey",
+    "/components/blocks/cancel-flow-survey",
   ]);
   expect(directory).toHaveLength(12);
 });

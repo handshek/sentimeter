@@ -82,37 +82,13 @@ const componentCopy: Record<
   },
 };
 
-const blockCopy: Record<
-  string,
-  Pick<DirectoryEntry, "description" | "meta">
-> = {
-  "floating-feedback": {
-    description:
-      "A small pill bottom-right on every page that opens the Feedback Form.",
-    meta: "1 file",
-  },
-  "report-problem": {
-    description:
-      "A header or account-menu item that opens the Feedback Form in a dialog.",
-    meta: "1 file",
-  },
-  "error-feedback": {
-    description:
-      "A Next.js error page that asks what the user was doing when it broke.",
-    meta: "error.tsx",
-  },
-  "was-this-helpful": {
-    description: "Thumbs under a docs page or an AI answer.",
-    meta: "1 file",
-  },
-  "after-task-rating": {
-    description: "A rating that appears once checkout or onboarding finishes.",
-    meta: "1 file",
-  },
-  "cancel-flow-survey": {
-    description: "“Why are you leaving?” inside the cancel dialog.",
-    meta: "1 file",
-  },
+const blockMeta: Record<string, string> = {
+  "floating-feedback": "1 file",
+  "report-problem": "1 file",
+  "error-feedback": "error.tsx",
+  "was-this-helpful": "1 file",
+  "after-task-rating": "1 file",
+  "cancel-flow-survey": "1 file",
 };
 
 export const directory: DirectoryEntry[] = [
@@ -127,18 +103,15 @@ export const directory: DirectoryEntry[] = [
       ...copy,
     };
   }),
-  ...blockDocs.map((block) => {
-    const copy = blockCopy[block.slug];
-    if (!copy) throw new Error(`Missing directory copy: ${block.slug}`);
-    return {
-      name: block.name,
-      href: `/blocks/${block.slug}`,
-      kind: "Block" as const,
-      situation: block.situationGroup,
-      preview: block.slug,
-      ...copy,
-    };
-  }),
+  ...blockDocs.map((block) => ({
+    name: block.name,
+    href: `/components/blocks/${block.slug}`,
+    description: block.description,
+    meta: blockMeta[block.slug] ?? "1 file",
+    kind: "Block" as const,
+    situation: block.situationGroup,
+    preview: block.slug,
+  })),
 ];
 
 const order: PreviewId[] = [
