@@ -24,7 +24,12 @@ export type PackageManager = (typeof packageManagers)[number];
 
 // See CONTRIBUTING.md.
 export type WidgetSlug =
-  "emoji-feedback" | "like-dislike" | "star-rating" | "nps" | "feedback-form";
+  | "emoji-feedback"
+  | "like-dislike"
+  | "star-rating"
+  | "nps"
+  | "feedback-form"
+  | "survey";
 
 export type WidgetInstallMetadata = {
   slug: WidgetSlug;
@@ -108,13 +113,14 @@ export type WidgetDocConfig = {
   registryName: string;
   tabLabel: string;
   icon: "emoji" | "thumbs" | "star" | "nps";
-  preview: "emoji" | "thumbs" | "star" | "nps" | "form";
+  preview: "emoji" | "thumbs" | "star" | "nps" | "form" | "survey";
   componentName:
     | "EmojiFeedback"
     | "LikeDislike"
     | "StarRating"
     | "NpsScore"
-    | "FeedbackForm";
+    | "FeedbackForm"
+    | "Survey";
   defaultVariant: "emoji" | "icons" | null;
   example: WidgetDemoOptions;
   installSnippet: string;
@@ -145,7 +151,9 @@ export function getUsageSnippet(
     ...widget.example,
     ...options,
   };
-  const rating = widget.componentName !== "FeedbackForm";
+  const rating =
+    widget.componentName !== "FeedbackForm" &&
+    widget.componentName !== "Survey";
   const props = [
     ...(rating && layout !== "stacked" ? [`layout="${layout}"`] : []),
     ...(widget.defaultVariant !== null && variant !== widget.defaultVariant
@@ -189,7 +197,8 @@ export function FeedbackExample() {
 }
 
 export function getCompoundSnippet(widget: WidgetDocConfig) {
-  if (widget.preview === "form") return getUsageSnippet(widget);
+  if (widget.preview === "form" || widget.preview === "survey")
+    return getUsageSnippet(widget);
   const ratingVariant = widget.preview === "star" ? "stars" : widget.preview;
   const styleProp = widget.preview === "emoji" ? "emojiStyle" : "ratingStyle";
   const ratingStyle =
@@ -386,6 +395,12 @@ export const feedbackFormContextDescription =
 export const feedbackFormCompletionDescription =
   "Send is disabled for empty or whitespace-only text. A successful submission replaces the field with Got it. Sorry about that. and We read every message. The thank-you stays mounted. onDone fires once about 2 seconds after it appears, so a host can close its popover, dialog, or sheet. Unmounting cancels the pending callback. A failed submission retains the text and offers Try again.";
 
+export const surveyOptionsDescription =
+  "Pass options as readonly { label: string, value: string, notePlaceholder?: string } pairs with unique values. Defaults are Too expensive (too-expensive), Something didn't work (not-working), Missing a feature I need (missing-feature), Switching to another tool (switching), and Other (other). Each reason opens an optional note: What would make it worth the price?, What didn't work?, What's missing?, What are you switching to?, or Tell us more, each marked (optional). Set notePlaceholder on a reason to replace its prompt; custom reasons default to Tell us more (optional).";
+
+export const surveyCompletionDescription =
+  "Pick one reason, then optionally add a note. Changing the reason clears the previous note. Send stays disabled until a reason is picked. Skip calls onSkip without submitting, resetting, or showing a thank-you; the host decides whether to dismiss its container. Skip is available before or after a pick and is disabled while submitting. Send includes the chosen reason value and any non-empty trimmed note. Success shows Thanks for telling us. persistently; onDone fires once about 2 seconds later. Unmounting cancels the pending callback. Errors retain the selected reason and note for retry. Survey collects no page or device context.";
+
 const formProps = sharedProps.filter((row) =>
   [
     "location",
@@ -579,6 +594,72 @@ const widgetDefinitions: Record<
         defaultValue: "-",
         description:
           "Fires once about 2 seconds after confirmation appears. Hosts can close their container; unmounting cancels the callback.",
+      },
+    ],
+  },
+  survey: {
+    slug: "survey",
+    name: "Survey",
+    description:
+      "One reason and an optional note for questions with known answers, such as why someone leaves.",
+    registryName: "survey",
+    tabLabel: "Survey",
+    icon: "emoji",
+    preview: "survey",
+    componentName: "Survey",
+    defaultVariant: null,
+    example: {
+      layout: "stacked",
+      variant: "icons",
+      size: "default",
+      followUp: "negative",
+    },
+    props: [
+      ...formProps,
+      {
+        prop: "title",
+        type: "string",
+        defaultValue: '"Why are you leaving?"',
+        description: "Question naming the reason group.",
+      },
+      {
+        prop: "description",
+        type: "string",
+        defaultValue: '"One click helps us improve."',
+        description: "Supporting text below the question.",
+      },
+      {
+        prop: "options",
+        type: "readonly SurveyOption[]",
+        defaultValue: "Five cancellation reasons",
+        description: surveyOptionsDescription,
+      },
+      {
+        prop: "thankYouMessage",
+        type: "ReactNode",
+        defaultValue: '"Thanks for telling us."',
+        description: "Persistent confirmation after Send succeeds.",
+      },
+      {
+        prop: "submit",
+        type: "WidgetSubmit",
+        defaultValue: "-",
+        description:
+          "Async handler receiving widgetType: survey, location, the chosen string value, and optional trimmed text. Without it, completion is local.",
+      },
+      {
+        prop: "onSkip",
+        type: "() => void",
+        defaultValue: "-",
+        description:
+          "Called by Skip before or after a pick. Does not submit, reset, or show confirmation. The host owns dismissal.",
+      },
+      {
+        prop: "onDone",
+        type: "() => void",
+        defaultValue: "-",
+        description:
+          "Fires once about 2 seconds after confirmation appears. Unmounting cancels the callback.",
       },
     ],
   },

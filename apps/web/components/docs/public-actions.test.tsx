@@ -177,3 +177,22 @@ test("FeedbackForm preview completes locally and Reset restores the empty field 
     screen.getByRole("button", { name: "Send" }).hasAttribute("disabled"),
   ).toBe(true);
 });
+
+test("Survey preview resets its reason and restores keyboard focus", async () => {
+  const survey = widgetDocs.find((widget) => widget.slug === "survey")!;
+  render(<WidgetDemo widget={survey} />);
+  fireEvent.click(screen.getByRole("radio", { name: "Something didn't work" }));
+  fireEvent.change(screen.getByRole("textbox"), {
+    target: { value: "Exports kept timing out." },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  await screen.findByText("Thanks for telling us.");
+  fireEvent.click(screen.getByRole("button", { name: "Reset" }));
+  const firstReason = screen.getByRole("radio", { name: "Too expensive" });
+  expect(firstReason.getAttribute("aria-checked")).toBe("false");
+  expect(document.activeElement).toBe(firstReason);
+  expect(screen.queryByRole("textbox")).toBeNull();
+  expect(
+    screen.getByRole("button", { name: "Send" }).hasAttribute("disabled"),
+  ).toBe(true);
+});

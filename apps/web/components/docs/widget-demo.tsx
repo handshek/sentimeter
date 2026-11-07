@@ -7,6 +7,7 @@ import {
   LikeDislike,
   NpsScore,
   StarRating,
+  Survey,
   type WidgetState,
 } from "@workspace/widgets";
 import { Button } from "@workspace/ui/components/button";
@@ -48,7 +49,7 @@ function WidgetDemoInstance({
   const container = useRef<HTMLDivElement>(null);
   const focusAfterReset = useRef(false);
   const Widget =
-    widget.preview === "form"
+    widget.preview === "form" || widget.preview === "survey"
       ? null
       : widget.preview === "nps"
         ? NpsScore
@@ -57,7 +58,9 @@ function WidgetDemoInstance({
   useEffect(() => {
     if (!focusAfterReset.current) return;
     container.current
-      ?.querySelector<HTMLElement>("button[aria-pressed], textarea")
+      ?.querySelector<HTMLElement>(
+        'button[aria-pressed], [role="radio"], textarea',
+      )
       ?.focus();
     focusAfterReset.current = false;
   }, [instance]);
@@ -87,6 +90,8 @@ function WidgetDemoInstance({
             followUp={options.followUp}
             onStateChange={setState}
           />
+        ) : widget.preview === "survey" ? (
+          <Survey key={instance} onStateChange={setState} />
         ) : (
           <FeedbackForm key={instance} onStateChange={setState} />
         )}

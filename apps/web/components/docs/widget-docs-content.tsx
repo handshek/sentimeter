@@ -34,6 +34,8 @@ import {
 import {
   feedbackFormContextDescription,
   feedbackFormCompletionDescription,
+  surveyOptionsDescription,
+  surveyCompletionDescription,
   getCompoundSnippet,
   getUsageSnippet,
   localExampleNote,
@@ -45,7 +47,7 @@ import { WidgetDemo } from "./widget-demo";
 import { CodeBlock } from "./code-block";
 
 export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
-  const rating = widget.preview !== "form";
+  const rating = widget.preview !== "form" && widget.preview !== "survey";
   const defaults = widget.example;
   const [options, setOptions] = useState<WidgetDemoOptions>(defaults);
   function updateOptions(next: Partial<WidgetDemoOptions>) {
@@ -237,6 +239,11 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
                 <>
                   <code>value</code> and optional <code>text</code>.
                 </>
+              ) : widget.preview === "survey" ? (
+                <>
+                  the chosen string <code>value</code> and optional{" "}
+                  <code>text</code>.
+                </>
               ) : (
                 <>
                   <code>text</code> and <code>context</code>.
@@ -266,10 +273,14 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
         ) : (
           <div className="space-y-4">
             <p className="ds-body text-muted-foreground">
-              {feedbackFormContextDescription}
+              {widget.preview === "survey"
+                ? surveyOptionsDescription
+                : feedbackFormContextDescription}
             </p>
             <p className="ds-body text-muted-foreground">
-              {feedbackFormCompletionDescription}
+              {widget.preview === "survey"
+                ? surveyCompletionDescription
+                : feedbackFormCompletionDescription}
             </p>
           </div>
         )}

@@ -465,6 +465,20 @@ confirmation replaces the field with "Got it. Sorry about that." and "We read
 every message." and stays until the host removes it. The field's hidden label
 matches its question. The context line wraps at narrow widths.
 
+### Single-choice survey
+
+Survey uses the stacked card with a recessed reason list. Each radio row is at
+least 44px tall and may wrap. Arrow keys choose and focus the adjacent reason,
+wrapping at the ends; Home and End choose the first and last. One radio is in
+the tab order. Selection and keyboard focus remain distinct.
+
+Picking a reason reveals its optional note; changing the reason clears an unsent
+note. Skip calls the host's `onSkip` without saving or completing the survey.
+Send stays disabled until a reason is selected. Pending locks reasons, note,
+and actions. Success keeps the chosen reason visible and shows "Thanks for
+telling us." The host can close a container with the same delayed `onDone`
+callback as FeedbackForm.
+
 ## Governance and verification
 
 Run `bun run check-design`. It exercises deliberately failing and passing
