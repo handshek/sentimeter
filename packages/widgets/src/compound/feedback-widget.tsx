@@ -17,6 +17,7 @@ import {
 } from "./feedback-context";
 import { Button } from "@workspace/ui/components/button";
 import { X } from "lucide-react";
+import { useIdleHeight } from "./feedback-footer";
 import {
   feedbackLayouts,
   feedbackSizes,
@@ -62,6 +63,7 @@ function FeedbackWidgetInner({
     layout,
   } = useFeedbackContext();
   const inline = layout === "inline";
+  const idle = useIdleHeight(state);
 
   if (hidden) {
     return (
@@ -109,6 +111,8 @@ function FeedbackWidgetInner({
         </Button>
       ) : null}
       <div
+        ref={inline ? undefined : idle.ref}
+        style={inline ? undefined : idle.style}
         className={cn(
           inline ? feedbackStyles.contentInline : feedbackStyles.content,
           closeButton &&

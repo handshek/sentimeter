@@ -200,8 +200,8 @@ export function getCompoundSnippet(widget: WidgetDocConfig) {
       : "How was your experience?";
   const placeholder =
     widget.preview === "nps"
-      ? "What would make it better? (optional)"
-      : "What went wrong? (optional)";
+      ? "What would make it better?"
+      : "What went wrong?";
   return `"use client";
 
 import {
@@ -301,7 +301,14 @@ const sharedProps: WidgetDocRow[] = [
     prop: "thankYouMessage",
     type: "ReactNode",
     defaultValue: '"Thanks!"',
-    description: "Persistent message shown after a successful submission.",
+    description:
+      "Persistent message shown after a successful submission. In the stacked card it replaces the whole card at its idle height.",
+  },
+  {
+    prop: "thankYouDescription",
+    type: "ReactNode",
+    defaultValue: '"Your feedback helps us improve."',
+    description: "Quieter line under the thank-you in the stacked card.",
   },
   {
     prop: "size",
@@ -385,7 +392,7 @@ export const feedbackFormCompletionDescription =
   "Send is disabled for empty or whitespace-only text. A successful submission replaces the field with Got it. Sorry about that. and We read every message. The thank-you stays mounted. onDone fires once about 2 seconds after it appears, so a host can close its popover, dialog, or sheet. Unmounting cancels the pending callback. A failed submission retains the text and offers Try again.";
 
 export const surveyOptionsDescription =
-  "Pass options as readonly { label: string, value: string, notePlaceholder?: string } pairs with unique values. Defaults are Too expensive (too-expensive), Something didn't work (not-working), Missing a feature I need (missing-feature), Switching to another tool (switching), and Other (other). Each reason opens an optional note: What would make it worth the price?, What didn't work?, What's missing?, What are you switching to?, or Tell us more, each marked (optional). Set notePlaceholder on a reason to replace its prompt; custom reasons default to Tell us more (optional).";
+  "Pass options as readonly { label: string, value: string, notePlaceholder?: string } pairs with unique values. Defaults are Too expensive (too-expensive), Something didn't work (not-working), Missing a feature I need (missing-feature), Switching to another tool (switching), and Other (other). Each reason opens an optional note: What would make it worth the price?, What didn't work?, What's missing?, What are you switching to?, or Tell us more. Screen readers hear each prompt followed by (optional). Set notePlaceholder on a reason to replace its prompt; custom reasons default to Tell us more.";
 
 export const surveyCompletionDescription =
   "Pick one reason, then optionally add a note. Changing the reason clears the previous note. Send stays disabled until a reason is picked. Skip calls onSkip without submitting, resetting, or showing a thank-you; the host decides whether to dismiss its container. Skip appears only when onSkip is passed, works before or after a pick, and is disabled while submitting. Send includes the chosen reason value and any non-empty trimmed note. Success shows Thanks for telling us. persistently; onDone fires once about 2 seconds later. Unmounting cancels the pending callback. Errors retain the selected reason and note for retry. Survey collects no page or device context.";

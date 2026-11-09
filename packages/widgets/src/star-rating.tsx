@@ -26,6 +26,7 @@ const DEFAULTS = {
   followUp: "negative",
   submitLabel: "Send",
   thankYouMessage: "Thanks!",
+  thankYouDescription: "Your feedback helps us improve.",
   size: "default" as const,
 } as const;
 
@@ -39,6 +40,8 @@ export type StarRatingProps = {
   followUp?: WidgetFollowUp;
   submitLabel?: string;
   thankYouMessage?: React.ReactNode;
+  /** A quieter line under the thank-you in the stacked card. */
+  thankYouDescription?: React.ReactNode;
   size?: WidgetSize;
   closeButton?: boolean;
   submit?: WidgetSubmit<RatingPayload>;
@@ -61,6 +64,7 @@ export function StarRating({
   followUp = DEFAULTS.followUp,
   submitLabel,
   thankYouMessage = DEFAULTS.thankYouMessage,
+  thankYouDescription = DEFAULTS.thankYouDescription,
   size = DEFAULTS.size,
   closeButton = false,
   submit,
@@ -83,6 +87,7 @@ export function StarRating({
       cancelLabel={cancelLabel}
       showCancel={showCancel}
       thankYouMessage={thankYouMessage}
+      thankYouDescription={thankYouDescription}
       hint={inline ? "Optional" : undefined}
     />
   );
@@ -107,7 +112,7 @@ export function StarRating({
             {title ? <FeedbackTitle>{title}</FeedbackTitle> : null}
             {rating}
           </div>
-          <FeedbackInput placeholder="What went wrong? (optional)" />
+          <FeedbackInput placeholder="What went wrong?" />
           {footer}
         </>
       ) : (
@@ -122,7 +127,7 @@ export function StarRating({
           ) : null}
           <FeedbackResponse>
             {rating}
-            <FeedbackInput placeholder="What went wrong? (optional)" />
+            <FeedbackInput placeholder="What went wrong?" />
           </FeedbackResponse>
           {footer}
         </>

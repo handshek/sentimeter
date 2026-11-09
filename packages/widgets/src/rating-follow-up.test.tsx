@@ -35,8 +35,8 @@ const ratings = [
   {
     name: "thumbs",
     Widget: LikeDislike,
-    negative: "Dislike",
-    positive: "Like",
+    negative: "No",
+    positive: "Yes",
     value: 0,
     positiveValue: 1,
     widgetType: "thumbs",
@@ -70,10 +70,7 @@ for (const rating of ratings) {
     fireEvent.click(screen.getByRole("button", { name: rating.negative }));
     assert.deepEqual(payloads, []);
     const input = screen.getByRole("textbox", { name: "Additional feedback" });
-    assert.equal(
-      input.getAttribute("placeholder"),
-      "What went wrong? (optional)",
-    );
+    assert.equal(input.getAttribute("placeholder"), "What went wrong?");
     assert.ok(screen.getByRole("button", { name: "Cancel" }));
     fireEvent.change(input, { target: { value: "Checkout failed" } });
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
@@ -100,6 +97,11 @@ for (const rating of ratings) {
     );
     fireEvent.click(screen.getByRole("button", { name: rating.positive }));
     assert.equal(screen.queryByRole("textbox"), null);
+    assert.equal(
+      screen.queryByRole("button", { name: "Cancel" }),
+      null,
+      "a pick without a note sends without showing the action row",
+    );
     await screen.findByText("Thanks!");
     assert.deepEqual(payloads, [
       {
@@ -122,7 +124,7 @@ test("never follows up even after a negative pick", async () => {
       }}
     />,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Dislike" }));
+  fireEvent.click(screen.getByRole("button", { name: "No" }));
   await screen.findByText("Thanks!");
   assert.equal(screen.queryByRole("textbox"), null);
   assert.deepEqual(payloads, [
@@ -139,11 +141,11 @@ test("changing a negative draft to a positive pick omits its unsent comment", as
       }}
     />,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Dislike" }));
+  fireEvent.click(screen.getByRole("button", { name: "No" }));
   fireEvent.change(screen.getByRole("textbox"), {
     target: { value: "An abandoned explanation" },
   });
-  fireEvent.click(screen.getByRole("button", { name: "Like" }));
+  fireEvent.click(screen.getByRole("button", { name: "Yes" }));
   await screen.findByText("Thanks!");
   assert.deepEqual(payloads, [
     { location: "/", widgetType: "thumbs", value: 1 },
@@ -174,7 +176,10 @@ test("repeated immediate picks in one tick send only the first payload", async (
     { location: "/", widgetType: "emoji", value: 5 },
   ]);
   await act(async () => complete());
-  assert.equal(screen.getByRole("status").textContent, "Thanks!");
+  assert.equal(
+    screen.getByRole("status").textContent,
+    "Thanks!Your feedback helps us improve.",
+  );
 });
 
 test("an immediate submission can retry its retained rating after failure", async () => {
@@ -202,7 +207,7 @@ test("an immediate submission can retry its retained rating after failure", asyn
 
 test("an immediate inline submission focuses its confirmation", async () => {
   render(<LikeDislike layout="inline" />);
-  const like = screen.getByRole("button", { name: "Like" });
+  const like = screen.getByRole("button", { name: "Yes" });
   act(() => like.focus());
   fireEvent.click(like);
   await screen.findByText("Thanks!");
@@ -220,7 +225,7 @@ test("immediate completion preserves focus moved outside while pending", async (
       <LikeDislike layout="inline" submit={() => pending} />
     </>,
   );
-  const like = screen.getByRole("button", { name: "Like" });
+  const like = screen.getByRole("button", { name: "Yes" });
   act(() => like.focus());
   fireEvent.click(like);
   const outside = screen.getByRole("button", { name: "Continue browsing" });
@@ -262,7 +267,7 @@ test("the default thank-you remains visible beyond the former dismissal delay", 
       <FeedbackFooter />
     </FeedbackWidget>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Like" }));
+  fireEvent.click(screen.getByRole("button", { name: "Yes" }));
   fireEvent.click(screen.getByRole("button", { name: "Submit" }));
   await screen.findByText("Thanks!");
   await act(async () => {
@@ -286,9 +291,7 @@ test("NPS zero opens the follow-up and sends its score and text", async () => {
   assert.ok(screen.getByText("Not likely"));
   assert.ok(screen.getByText("Very likely"));
   fireEvent.click(within(scale).getByRole("button", { name: "Score 0 of 10" }));
-  const input = screen.getByPlaceholderText(
-    "What would make it better? (optional)",
-  );
+  const input = screen.getByPlaceholderText("What would make it better?");
   assert.deepEqual(payloads, []);
   fireEvent.change(input, { target: { value: "A working export" } });
   fireEvent.click(screen.getByRole("button", { name: "Send" }));

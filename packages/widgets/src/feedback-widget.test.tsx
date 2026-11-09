@@ -57,7 +57,7 @@ describe("feedback widget lifecycle and theme", () => {
     {
       name: "thumbs",
       Component: LikeDislike,
-      selectedControl: "Like",
+      selectedControl: "Yes",
       widgetType: "thumbs",
       value: 1,
     },
@@ -172,7 +172,7 @@ describe("feedback widget lifecycle and theme", () => {
 
     assert.equal(roots.length, 2);
     for (const root of roots) {
-      fireEvent.click(within(root).getByRole("button", { name: "Like" }));
+      fireEvent.click(within(root).getByRole("button", { name: "Yes" }));
       const input = within(root).getByLabelText(
         "Additional feedback (optional)",
         { selector: "textarea" },
@@ -214,7 +214,7 @@ describe("rendered feedback widget", () => {
           />
         </FeedbackWidget>,
       );
-      fireEvent.click(screen.getByRole("button", { name: "Like" }));
+      fireEvent.click(screen.getByRole("button", { name: "Yes" }));
       const submitButton = screen.getByRole("button", {
         name: scenario.submitLabel,
       });
@@ -241,15 +241,39 @@ describe("rendered feedback widget", () => {
       rowHeight = 44;
       fireEvent.click(retry);
 
-      const success = (await screen.findByText("Thanks!")).closest<HTMLElement>(
-        '[role="status"]',
-      );
-      assert.ok(success);
-      assert.equal(success.style.minHeight, minimumHeight);
-      assert.equal(success.style.height, "", "longer confirmations can grow");
+      assert.ok(await screen.findByText("Thanks!"));
       assert.equal(attempts, 2);
     });
   }
+
+  test("a finished card keeps its idle height", async () => {
+    const observed: (() => void)[] = [];
+    const original = globalThis.ResizeObserver;
+    globalThis.ResizeObserver = class {
+      constructor(callback: () => void) {
+        observed.push(callback);
+      }
+      observe() {}
+      disconnect() {}
+      unobserve() {}
+    } as unknown as typeof ResizeObserver;
+    try {
+      const { container } = render(<EmojiFeedback followUp="never" />);
+      const content = container.querySelector<HTMLElement>(
+        '[data-slot="feedback-widget"] > div',
+      );
+      assert.ok(content);
+      Object.defineProperty(content, "offsetHeight", { get: () => 180 });
+      act(() => observed.forEach((callback) => callback()));
+      assert.equal(content.style.minHeight, "");
+
+      fireEvent.click(screen.getByRole("button", { name: "Happy (4 of 5)" }));
+      assert.ok(await screen.findByText("Your feedback helps us improve."));
+      assert.equal(content.style.minHeight, "180px");
+    } finally {
+      globalThis.ResizeObserver = original;
+    }
+  });
 
   for (const [name, widget, controlCount] of [
     [
@@ -292,7 +316,7 @@ describe("rendered feedback widget", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Like" }));
+    fireEvent.click(screen.getByRole("button", { name: "Yes" }));
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
 
     assert.ok(await screen.findByText("Thanks!"));
@@ -330,9 +354,9 @@ describe("rendered feedback widget", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Like" }));
+    fireEvent.click(screen.getByRole("button", { name: "Yes" }));
     const input = screen.getByPlaceholderText(
-      "What went wrong? (optional)",
+      "What went wrong?",
     ) as HTMLTextAreaElement;
     fireEvent.change(input, { target: { value: "Clear and useful" } });
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
@@ -370,7 +394,7 @@ describe("rendered feedback widget", () => {
         onSubmitError={(failure) => failures.push(failure)}
       />,
     );
-    fireEvent.click(screen.getByRole("button", { name: "Like" }));
+    fireEvent.click(screen.getByRole("button", { name: "Yes" }));
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
     assert.ok(await screen.findByText(error.message));
     assert.equal(failures[0], error);
@@ -387,7 +411,7 @@ describe("rendered feedback widget", () => {
   test("names the text field and caps it at the default comment limit", () => {
     render(<LikeDislike followUp="always" />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Like" }));
+    fireEvent.click(screen.getByRole("button", { name: "Yes" }));
     const input = screen.getByRole("textbox", {
       name: "Additional feedback",
     }) as HTMLTextAreaElement;
@@ -414,7 +438,7 @@ describe("rendered feedback widget", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Like" }));
+    fireEvent.click(screen.getByRole("button", { name: "Yes" }));
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
 
     assert.ok(await screen.findByText("Thanks!"));
@@ -442,7 +466,7 @@ describe("rendered feedback widget", () => {
         />,
       );
 
-      fireEvent.click(screen.getByRole("button", { name: "Like" }));
+      fireEvent.click(screen.getByRole("button", { name: "Yes" }));
       fireEvent.click(screen.getByRole("button", { name: "Send" }));
 
       assert.ok(await screen.findByText("Thanks!"));
@@ -475,7 +499,7 @@ describe("rendered feedback widget", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Like" }));
+    fireEvent.click(screen.getByRole("button", { name: "Yes" }));
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
 
     fireEvent.click(await screen.findByRole("button", { name: "Try again" }));
@@ -515,7 +539,7 @@ describe("rendered feedback widget", () => {
       </FeedbackWidget>,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Like" }));
+    fireEvent.click(screen.getByRole("button", { name: "Yes" }));
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: "Send" }));
     });
@@ -526,7 +550,7 @@ describe("rendered feedback widget", () => {
   test("keeps success visible and focuses its status after explicit send", async () => {
     render(<LikeDislike followUp="always" />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Like" }));
+    fireEvent.click(screen.getByRole("button", { name: "Yes" }));
     const submitButton = screen.getByRole("button", { name: "Send" });
     submitButton.focus();
     fireEvent.click(submitButton);
@@ -535,7 +559,10 @@ describe("rendered feedback widget", () => {
       '[role="status"]',
     );
     assert.ok(successStatus);
-    assert.equal(successStatus.textContent, "Thanks!");
+    assert.equal(
+      successStatus.textContent,
+      "Thanks!Your feedback helps us improve.",
+    );
     assert.equal(document.activeElement, successStatus);
 
     await new Promise((resolve) => setTimeout(resolve, 20));
@@ -555,7 +582,7 @@ describe("rendered feedback widget", () => {
       </>,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Like" }));
+    fireEvent.click(screen.getByRole("button", { name: "Yes" }));
     const submitButton = screen.getByRole("button", { name: "Send" });
     submitButton.focus();
     fireEvent.click(submitButton);
@@ -705,7 +732,7 @@ describe("cancel, custom glyphs, and inline layout", () => {
 
   test("hides Cancel when showCancel is false", () => {
     render(<LikeDislike followUp="always" showCancel={false} />);
-    fireEvent.click(screen.getByRole("button", { name: "Like" }));
+    fireEvent.click(screen.getByRole("button", { name: "Yes" }));
     assert.equal(screen.queryByRole("button", { name: "Cancel" }), null);
     assert.ok(screen.getByRole("button", { name: "Send" }));
   });

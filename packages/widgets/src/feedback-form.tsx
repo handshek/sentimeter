@@ -5,6 +5,7 @@ import {
   collectFeedbackContext,
   FeedbackFormActions,
   FeedbackFormCard,
+  FeedbackResponse,
   FeedbackTextField,
   feedbackStyles,
   useFeedbackDone,
@@ -65,7 +66,7 @@ export function FeedbackForm({
       style={style}
     >
       {machine.state !== "done" ? (
-        <>
+        <FeedbackResponse>
           <FeedbackTextField
             label={title}
             placeholder={placeholder}
@@ -81,7 +82,7 @@ export function FeedbackForm({
               ? `${context.route} · ${context.browser} · ${context.os} · ${context.viewport.width}×${context.viewport.height}`
               : "Page details are attached."}
           </p>
-        </>
+        </FeedbackResponse>
       ) : null}
       <FeedbackFormActions
         state={machine.state}
