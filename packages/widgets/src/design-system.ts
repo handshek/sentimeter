@@ -80,7 +80,7 @@ export const feedbackStyles = {
   contentInline: "flex min-w-0 flex-col",
   // A finished card shows only its thank-you, centred at the idle height.
   content:
-    "flex min-w-0 flex-col gap-[var(--feedback-gap)] p-4 @[320px]/feedback:p-[var(--feedback-inset)] group-data-[state=done]/feedback:justify-center group-data-[state=done]/feedback:[&>*:not([data-slot=feedback-status])]:hidden",
+    "flex min-w-0 flex-col gap-[var(--feedback-gap)] p-4 @[320px]/feedback:p-[var(--feedback-inset)] group-data-[state=done]/feedback:justify-center group-data-[state=done]/feedback:[&>[data-slot=feedback-header]]:hidden group-data-[state=done]/feedback:[&>[data-slot=feedback-title]]:hidden group-data-[state=done]/feedback:[&>[data-slot=feedback-description]]:hidden group-data-[state=done]/feedback:[&>[data-slot=feedback-response]]:hidden",
   header: "flex min-w-0 flex-col gap-1.5",
   title:
     "font-[family-name:var(--feedback-heading-font)] text-[length:var(--feedback-heading-size)] leading-6 font-[number:var(--feedback-heading-weight)] tracking-[-0.01em] text-[var(--feedback-foreground)] [overflow-wrap:anywhere]",
@@ -130,7 +130,7 @@ export const feedbackStyles = {
   inlineField: "border-t-0 px-2 pb-2 group-data-[state=done]/feedback:hidden",
   // The inline bar draws the field as its own outline.
   inlineInput:
-    "rounded-[var(--feedback-control-radius)] border border-[var(--feedback-input-edge,var(--input))] bg-transparent shadow-none focus-visible:border-[var(--feedback-field-ring)] focus-visible:ring-3 focus-visible:ring-[var(--feedback-field-glow)] dark:bg-transparent",
+    "rounded-[var(--feedback-control-radius)] border border-[var(--feedback-input-edge,var(--input))] bg-transparent shadow-none focus-visible:border focus-visible:border-[var(--feedback-field-ring)] focus-visible:ring-3 focus-visible:ring-[var(--feedback-field-glow)] dark:bg-transparent",
   label: "sr-only",
   // Inside the response group the field has no box of its own.
   input:

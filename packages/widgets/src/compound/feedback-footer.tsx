@@ -92,6 +92,7 @@ export function FeedbackFooter({
     selectionHadFocusRef,
     layout,
     showFollowUp,
+    selectedValue,
   } = useFeedbackContext();
   const inline = layout === "inline";
   const actionsRef = React.useRef<HTMLDivElement>(null);
@@ -103,6 +104,10 @@ export function FeedbackFooter({
     ? { minHeight: `max(var(--feedback-action-height), ${actionHeight}px)` }
     : undefined;
   const sending = state === "submitting";
+  // A retry keeps its row mounted so focus stays on Try again.
+  const [retryValue, setRetryValue] = React.useState<number | null>(null);
+  const retrying =
+    sending && retryValue !== null && retryValue === selectedValue;
 
   React.useEffect(() => {
     const activeElement = document.activeElement;
@@ -159,7 +164,7 @@ export function FeedbackFooter({
   if (state !== "selected" && !sending) return null;
 
   // A pick without a note sends on its own, so there is nothing to confirm.
-  if (!showFollowUp && !submitError) {
+  if (!showFollowUp && !submitError && !retrying) {
     return sending ? (
       <p
         role="status"
@@ -225,7 +230,10 @@ export function FeedbackFooter({
             type="button"
             variant="outline"
             disabled={pending}
-            onClick={reset}
+            onClick={() => {
+              setRetryValue(null);
+              reset();
+            }}
             className={cn(
               feedbackStyles.action,
               inline && feedbackStyles.compactAction,
@@ -248,6 +256,7 @@ export function FeedbackFooter({
             );
             shouldFocusSuccessRef.current =
               document.activeElement === submitButtonRef.current;
+            setRetryValue(submitError ? selectedValue : null);
             void submitSelected(text);
           }}
           onBlur={(event) => {

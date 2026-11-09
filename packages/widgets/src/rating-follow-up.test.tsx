@@ -184,11 +184,16 @@ test("repeated immediate picks in one tick send only the first payload", async (
 
 test("an immediate submission can retry its retained rating after failure", async () => {
   const payloads: WidgetPayload[] = [];
+  let finishRetry!: () => void;
+  const retried = new Promise<void>((resolve) => {
+    finishRetry = resolve;
+  });
   render(
     <NpsScore
       submit={async (payload) => {
         payloads.push(payload);
         if (payloads.length === 1) throw new Error("offline");
+        await retried;
       }}
     />,
   );
@@ -197,7 +202,14 @@ test("an immediate submission can retry its retained rating after failure", asyn
   const retry = await screen.findByRole("button", { name: "Try again" });
   assert.equal(score.getAttribute("aria-pressed"), "true");
   assert.equal(screen.queryByRole("textbox"), null);
+  act(() => retry.focus());
   fireEvent.click(retry);
+  assert.equal(
+    document.activeElement,
+    screen.getByRole("button", { name: /Submitting/ }),
+    "the retried row stays mounted, so focus stays on its button",
+  );
+  await act(async () => finishRetry());
   await screen.findByText("Thanks!");
   assert.deepEqual(payloads, [
     { location: "/", widgetType: "nps", value: 7 },
