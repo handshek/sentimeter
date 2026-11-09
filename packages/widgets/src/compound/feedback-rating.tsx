@@ -297,10 +297,16 @@ function NpsScale({ className }: { className?: string }) {
     disabled,
     select,
     reset,
+    resets,
     layout,
     showFollowUp,
   } = useFeedbackContext();
-  const [chosenBand, setChosenBand] = React.useState<NpsBand | null>(null);
+  // An answer belongs to the reset it was chosen after, so Cancel clears it.
+  const [chosen, setChosen] = React.useState<{
+    band: NpsBand;
+    resets: number;
+  } | null>(null);
+  const chosenBand = chosen?.resets === resets ? chosen.band : null;
   const scoresRef = React.useRef<HTMLDivElement>(null);
   const focusScoresRef = React.useRef(false);
   const locked = disabled || state === "submitting" || state === "done";
@@ -364,8 +370,12 @@ function NpsScale({ className }: { className?: string }) {
                 focusScoresRef.current =
                   document.activeElement === event.currentTarget;
                 // A new answer discards the score and note from the old one.
-                if (selectedValue !== null) reset();
-                setChosenBand(candidate);
+                const cleared =
+                  selectedValue !== null && reset({ restoreFocus: false });
+                setChosen({
+                  band: candidate,
+                  resets: cleared ? resets + 1 : resets,
+                });
               }}
               className={cn(
                 choiceClass(selected),

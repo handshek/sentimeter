@@ -30,8 +30,13 @@ export type FeedbackContextValue = {
   showFollowUp: boolean;
   select: (value: number) => void;
   submitSelected: (text?: string) => Promise<void>;
-  /** Clears an unsent choice and comment, returning to idle. */
-  reset: () => void;
+  /**
+   * Clears an unsent choice and comment, returning to idle. Focus returns to
+   * the first choice unless `restoreFocus` is false. Returns whether it reset.
+   */
+  reset: (options?: { restoreFocus?: boolean }) => boolean;
+  /** Counts completed resets, so parts can drop their own unsent state. */
+  resets: number;
   /** Dismisses the whole widget. */
   cancel: () => void;
   text: string;
@@ -130,14 +135,21 @@ export function FeedbackProvider({
 
   // Cancel unmounts itself, so focus returns to the choices it cleared.
   const focusChoiceRef = React.useRef(false);
-  const reset = React.useCallback(() => {
-    focusChoiceRef.current =
-      typeof document !== "undefined" &&
-      !!containerRef.current?.contains(document.activeElement);
-    if (!resetMachine()) return;
-    setText("");
-    notify(onReset);
-  }, [onReset, resetMachine]);
+  const [resets, setResets] = React.useState(0);
+  const reset = React.useCallback(
+    ({ restoreFocus = true }: { restoreFocus?: boolean } = {}) => {
+      focusChoiceRef.current =
+        restoreFocus &&
+        typeof document !== "undefined" &&
+        !!containerRef.current?.contains(document.activeElement);
+      if (!resetMachine()) return false;
+      setText("");
+      setResets((count) => count + 1);
+      notify(onReset);
+      return true;
+    },
+    [onReset, resetMachine],
+  );
 
   React.useEffect(() => {
     if (machine.state !== "idle" || !focusChoiceRef.current) return;
@@ -184,6 +196,7 @@ export function FeedbackProvider({
       select,
       submitSelected: machine.submitSelected,
       reset,
+      resets,
       cancel,
       text,
       setText,
@@ -197,6 +210,7 @@ export function FeedbackProvider({
       size,
       layout,
       reset,
+      resets,
       cancel,
       text,
       showFollowUp,

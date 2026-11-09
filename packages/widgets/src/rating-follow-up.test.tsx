@@ -411,8 +411,15 @@ test("NPS changing the answer drops the unsent score and note", () => {
   fireEvent.change(screen.getByRole("textbox"), {
     target: { value: "Draft" },
   });
-  fireEvent.click(screen.getByRole("button", { name: "Maybe" }));
+  const maybe = screen.getByRole("button", { name: "Maybe" });
+  act(() => maybe.focus());
+  fireEvent.click(maybe);
   assert.equal(screen.queryByRole("textbox"), null);
+  assert.equal(
+    document.activeElement,
+    screen.getByRole("button", { name: "Score 7 of 10" }),
+    "focus follows the new answer to its first score",
+  );
   assert.equal(
     screen.getByRole("button", { name: "Maybe" }).getAttribute("aria-pressed"),
     "true",
@@ -422,6 +429,23 @@ test("NPS changing the answer drops the unsent score and note", () => {
       .getAllByRole("button")
       .map((button) => button.getAttribute("aria-pressed")),
     ["false", "false"],
+  );
+});
+
+test("NPS Cancel returns to the question in words", () => {
+  render(<NpsScore />);
+  fireEvent.click(screen.getByRole("button", { name: "Not likely" }));
+  fireEvent.click(screen.getByRole("button", { name: "Score 3 of 10" }));
+  fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+  assert.equal(
+    screen.queryByRole("group", { name: "Recommendation score" }),
+    null,
+  );
+  assert.equal(
+    screen
+      .getByRole("button", { name: "Not likely" })
+      .getAttribute("aria-pressed"),
+    "false",
   );
 });
 
