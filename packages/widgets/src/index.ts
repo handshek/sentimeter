@@ -4,6 +4,7 @@ export type {
   ThumbGlyphs,
   WidgetCallbacks,
   WidgetLayout,
+  WidgetFollowUp,
   WidgetPayload,
   WidgetState,
   WidgetSubmit,
@@ -35,3 +36,5 @@ export {
 export { EmojiFeedback } from "./emoji-feedback";
 export { LikeDislike } from "./like-dislike";
 export { StarRating } from "./star-rating";
+
+export { NpsScore } from "./nps-score";

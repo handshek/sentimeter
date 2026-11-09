@@ -1,5 +1,9 @@
 import registry from "registry/registry.json";
-import type { WidgetLayout, WidgetSize } from "@workspace/widgets";
+import type {
+  WidgetFollowUp,
+  WidgetLayout,
+  WidgetSize,
+} from "@workspace/widgets";
 import { REGISTRY_URL } from "registry/site.config";
 
 export {
@@ -19,7 +23,8 @@ export const packageManagers = ["bun", "pnpm", "npm", "yarn"] as const;
 export type PackageManager = (typeof packageManagers)[number];
 
 // See CONTRIBUTING.md.
-export type WidgetSlug = "emoji-feedback" | "like-dislike" | "star-rating";
+export type WidgetSlug =
+  "emoji-feedback" | "like-dislike" | "star-rating" | "nps";
 
 export type WidgetInstallMetadata = {
   slug: WidgetSlug;
@@ -102,10 +107,10 @@ export type WidgetDocConfig = {
   description: string;
   registryName: string;
   tabLabel: string;
-  icon: "emoji" | "thumbs" | "star";
-  preview: "emoji" | "thumbs" | "star";
-  componentName: "EmojiFeedback" | "LikeDislike" | "StarRating";
-  defaultVariant: "emoji" | "icons";
+  icon: "emoji" | "thumbs" | "star" | "nps";
+  preview: "emoji" | "thumbs" | "star" | "nps";
+  componentName: "EmojiFeedback" | "LikeDislike" | "StarRating" | "NpsScore";
+  defaultVariant: "emoji" | "icons" | null;
   example: WidgetDemoOptions;
   installSnippet: string;
   usageSnippet: string;
@@ -120,27 +125,28 @@ export type WidgetDemoOptions = {
   layout: WidgetLayout;
   variant: "emoji" | "icons";
   size: WidgetSize;
-  showInput: boolean;
+  followUp: WidgetFollowUp;
 };
 
 export function getUsageSnippet(
   widget: Pick<
     WidgetDocConfig,
-    "slug" | "componentName" | "defaultVariant" | "example"
+    "registryName" | "componentName" | "defaultVariant" | "example"
   >,
   options?: Partial<WidgetDemoOptions>,
   submission: "local" | "custom" = "local",
 ) {
-  const { variant, size, layout, showInput } = {
+  const { variant, size, layout, followUp } = {
     ...widget.example,
     ...options,
   };
   const props = [
-    "autoHide={false}",
     ...(layout !== "stacked" ? [`layout="${layout}"`] : []),
-    ...(variant !== widget.defaultVariant ? [`variant="${variant}"`] : []),
+    ...(widget.defaultVariant !== null && variant !== widget.defaultVariant
+      ? [`variant="${variant}"`]
+      : []),
     ...(size !== "default" ? [`size="${size}"`] : []),
-    ...(showInput ? ["showInput"] : []),
+    ...(followUp !== "negative" ? [`followUp="${followUp}"`] : []),
     ...(submission === "custom" ? ["submit={saveFeedback}"] : []),
   ].join("\n      ");
   const customSubmit =
@@ -158,15 +164,20 @@ const saveFeedback: WidgetSubmit = async (payload) => {
 };\n`
       : "";
 
+  const sourcePath = getRegistryItem(
+    widget.registryName,
+  ).files[0]!.target.replace(/\.tsx?$/, "");
+  const component = props
+    ? `<${widget.componentName}\n      ${props}\n    />`
+    : `<${widget.componentName} />`;
+
   return `"use client";
 
-import { ${widget.componentName} } from "@/components/sentimeter/${widget.slug}";${customSubmit}
+import { ${widget.componentName} } from "@/${sourcePath}";${customSubmit}
 
 export function FeedbackExample() {
   return (
-    <${widget.componentName}
-      ${props}
-    />
+    ${component}
   );
 }`;
 }
@@ -174,6 +185,18 @@ export function FeedbackExample() {
 export function getCompoundSnippet(widget: WidgetDocConfig) {
   const ratingVariant = widget.preview === "star" ? "stars" : widget.preview;
   const styleProp = widget.preview === "emoji" ? "emojiStyle" : "ratingStyle";
+  const ratingStyle =
+    widget.defaultVariant === null
+      ? ""
+      : ` ${styleProp}="${widget.defaultVariant}"`;
+  const title =
+    widget.preview === "nps"
+      ? "How likely are you to recommend us?"
+      : "How was your experience?";
+  const placeholder =
+    widget.preview === "nps"
+      ? "What would make it better? (optional)"
+      : "What went wrong? (optional)";
   return `"use client";
 
 import {
@@ -183,16 +206,16 @@ import {
 
 export function FeedbackExample() {
   return (
-    <FeedbackWidget widgetType="${widget.preview}" autoHide={false}>
+    <FeedbackWidget widgetType="${widget.preview}" followUp="negative">
       <div data-slot="feedback-header" className="flex flex-col gap-1">
-        <FeedbackTitle>How was your experience?</FeedbackTitle>
+        <FeedbackTitle>${title}</FeedbackTitle>
         <FeedbackDescription>Your feedback helps us improve.</FeedbackDescription>
       </div>
       <FeedbackResponse>
-        <FeedbackRating variant="${ratingVariant}" ${styleProp}="${widget.defaultVariant}" />
-        <FeedbackInput />
+        <FeedbackRating variant="${ratingVariant}"${ratingStyle} />
+        <FeedbackInput placeholder="${placeholder}" />
       </FeedbackResponse>
-      <FeedbackFooter />
+      <FeedbackFooter submitLabel="Send" />
     </FeedbackWidget>
   );
 }`;
@@ -244,15 +267,16 @@ const sharedProps: WidgetDocRow[] = [
     description: "Optional supporting text below the title.",
   },
   {
-    prop: "showInput",
-    type: "boolean",
-    defaultValue: "false",
-    description: "Shows the optional free-text input field.",
+    prop: "followUp",
+    type: '"negative" | "always" | "never"',
+    defaultValue: '"negative"',
+    description:
+      '"negative" asks for optional text after a negative pick; "always" asks after every pick; "never" submits every pick immediately.',
   },
   {
     prop: "submitLabel",
     type: "string",
-    defaultValue: '"Submit" / inline "Send"',
+    defaultValue: '"Send"',
     description: "Label used for the submit action.",
   },
   {
@@ -260,7 +284,7 @@ const sharedProps: WidgetDocRow[] = [
     type: "boolean",
     defaultValue: "true",
     description:
-      "Shows Cancel beside Submit after a choice. Cancel clears the unsent choice and comment.",
+      "Shows Cancel beside Send during follow-up. Cancel clears the unsent choice and comment.",
   },
   {
     prop: "cancelLabel",
@@ -272,20 +296,7 @@ const sharedProps: WidgetDocRow[] = [
     prop: "thankYouMessage",
     type: "ReactNode",
     defaultValue: '"Thanks!"',
-    description: "Message shown after a successful submission.",
-  },
-  {
-    prop: "doneDurationMs",
-    type: "number",
-    defaultValue: "2000",
-    description: "How long the success state stays visible before auto-hide.",
-  },
-  {
-    prop: "autoHide",
-    type: "boolean",
-    defaultValue: "true",
-    description:
-      "Automatically hides the widget after success. Set false to keep the done state mounted.",
+    description: "Persistent message shown after a successful submission.",
   },
   {
     prop: "size",
@@ -351,6 +362,17 @@ const sharedProps: WidgetDocRow[] = [
   },
 ];
 
+function propsForTitle(title: string) {
+  return sharedProps.map((row) =>
+    row.prop === "title"
+      ? {
+          ...row,
+          defaultValue: JSON.stringify(title),
+        }
+      : row,
+  );
+}
+
 const widgetDefinitions: Record<
   WidgetSlug,
   Omit<WidgetDocConfig, "installMetadata" | "installSnippet" | "usageSnippet">
@@ -359,7 +381,7 @@ const widgetDefinitions: Record<
     slug: "emoji-feedback",
     name: "Emoji Feedback",
     description:
-      "Emoji-based feedback component with a 5-point scale. Users tap a face that matches their mood.",
+      "Five faces. A sad pick asks what went wrong; a happy pick says thanks at once.",
     registryName: "emoji-feedback",
     tabLabel: "Emoji",
     icon: "emoji",
@@ -370,10 +392,10 @@ const widgetDefinitions: Record<
       layout: "stacked",
       variant: "emoji",
       size: "default",
-      showInput: false,
+      followUp: "negative",
     },
     props: [
-      ...sharedProps,
+      ...propsForTitle("Rate your experience"),
       {
         prop: "variant",
         type: '"emoji" | "icons"',
@@ -394,7 +416,7 @@ const widgetDefinitions: Record<
     slug: "like-dislike",
     name: "Like / Dislike",
     description:
-      "Thumbs up or thumbs down feedback component. Simple binary sentiment.",
+      "Thumbs down asks what went wrong. Thumbs up sends feedback and says thanks at once.",
     registryName: "like-dislike",
     tabLabel: "Thumbs",
     icon: "thumbs",
@@ -405,10 +427,10 @@ const widgetDefinitions: Record<
       layout: "inline",
       variant: "icons",
       size: "default",
-      showInput: false,
+      followUp: "negative",
     },
     props: [
-      ...sharedProps,
+      ...propsForTitle("Was this helpful?"),
       {
         prop: "variant",
         type: '"icons" | "emoji"',
@@ -429,7 +451,7 @@ const widgetDefinitions: Record<
     slug: "star-rating",
     name: "Star Rating",
     description:
-      "Five-star rating feedback component. Hover to preview, click to lock.",
+      "Five stars. One or two asks what went wrong; three to five sends feedback at once.",
     registryName: "star-rating",
     tabLabel: "Stars",
     icon: "star",
@@ -440,10 +462,10 @@ const widgetDefinitions: Record<
       layout: "stacked",
       variant: "icons",
       size: "default",
-      showInput: false,
+      followUp: "negative",
     },
     props: [
-      ...sharedProps,
+      ...propsForTitle("Rate your experience"),
       {
         prop: "variant",
         type: '"icons" | "emoji"',
@@ -459,6 +481,25 @@ const widgetDefinitions: Record<
           'One custom glyph repeated five times, such as a heart. Pass { glyph, label: "heart" } so controls read “Rate 3 hearts”. Replaces variant.',
       },
     ],
+  },
+  nps: {
+    slug: "nps",
+    name: "NPS",
+    description:
+      "An eleven-point recommendation scale. Scores 0–6 ask what would make it better; 7–10 say thanks at once.",
+    registryName: "nps",
+    tabLabel: "NPS",
+    icon: "nps",
+    preview: "nps",
+    componentName: "NpsScore",
+    defaultVariant: null,
+    example: {
+      layout: "stacked",
+      variant: "icons",
+      size: "default",
+      followUp: "negative",
+    },
+    props: propsForTitle("How likely are you to recommend us?"),
   },
 };
 

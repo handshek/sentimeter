@@ -34,6 +34,7 @@ export function FeedbackFooter({
     reset,
     text,
     containerRef,
+    selectionHadFocusRef,
     layout,
   } = useFeedbackContext();
   const inline = layout === "inline";
@@ -55,12 +56,12 @@ export function FeedbackFooter({
 
     if (
       state === "done" &&
-      shouldFocusSuccessRef.current &&
+      (shouldFocusSuccessRef.current || selectionHadFocusRef.current) &&
       !focusMovedOutside
     ) {
       successRef.current?.focus();
     }
-  }, [containerRef, state]);
+  }, [containerRef, selectionHadFocusRef, state]);
 
   if (state === "done") {
     return (

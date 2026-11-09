@@ -98,8 +98,15 @@ export const feedbackStyles = {
   starsRating: "[--feedback-icon-size:1.375rem]",
   inlineStarsRating: "[--feedback-icon-size:1.125rem]",
   inlineRating: "flex w-auto items-center gap-0.5 py-0",
+  npsRating: "grid w-full grid-cols-[repeat(11,minmax(0,1fr))] gap-0 py-0",
+  npsChoice:
+    "h-11 w-full rounded-[var(--feedback-inner-radius)] text-xs after:hidden",
+  npsSelected:
+    "bg-[var(--feedback-primary)] text-[var(--feedback-primary-foreground)] hover:bg-[var(--feedback-primary)] hover:text-[var(--feedback-primary-foreground)] dark:bg-[var(--feedback-primary)] dark:hover:bg-[var(--feedback-primary)]",
+  npsLegend:
+    "col-span-full flex w-full justify-between gap-2 px-1 pb-1 pt-2 text-xs leading-4 text-[var(--feedback-muted)]",
   choice:
-    "group/choice relative size-[var(--feedback-target)] min-w-0 shrink-0 rounded-[var(--feedback-inner-radius)] border-0 p-0 text-[var(--feedback-muted)] shadow-none transition-[background-color,color,box-shadow] duration-150 hover:bg-[var(--feedback-hover)] hover:text-[var(--feedback-foreground)] dark:hover:bg-[var(--feedback-hover)] disabled:opacity-45 motion-reduce:transition-none",
+    "group/choice relative size-[var(--feedback-target)] min-w-0 shrink-0 rounded-[var(--feedback-inner-radius)] border-0 p-0 text-[var(--feedback-muted)] shadow-none transition-[transform,opacity] duration-150 hover:bg-[var(--feedback-hover)] hover:text-[var(--feedback-foreground)] dark:hover:bg-[var(--feedback-hover)] disabled:opacity-45 motion-reduce:transition-none",
   thumbChoice:
     "h-[var(--feedback-target)] w-full gap-1.5 px-2 [--feedback-icon-size:1.125rem] font-[family-name:var(--feedback-label-font)] text-sm leading-5 font-medium",
   inlineChoice:
@@ -110,7 +117,7 @@ export const feedbackStyles = {
   filledStar: "text-[var(--feedback-star)] hover:text-[var(--feedback-star)]",
   submittedChoice: "disabled:opacity-100",
   glyph:
-    "pointer-events-none inline-flex size-[var(--feedback-glyph-size)] shrink-0 select-none items-center justify-center text-[length:var(--feedback-emoji-size)] leading-none grayscale transition-[filter] duration-150 motion-reduce:transition-none [&_img]:size-full [&_img]:object-contain [&_svg]:size-[var(--feedback-icon-size)]! [&_svg]:stroke-[length:var(--feedback-icon-stroke)] group-hover/choice:grayscale-0 group-data-[state=selected]/choice:grayscale-0",
+    "pointer-events-none inline-flex size-[var(--feedback-glyph-size)] shrink-0 select-none items-center justify-center text-[length:var(--feedback-emoji-size)] leading-none grayscale transition-[transform,opacity] duration-150 motion-reduce:transition-none [&_img]:size-full [&_img]:object-contain [&_svg]:size-[var(--feedback-icon-size)]! [&_svg]:stroke-[length:var(--feedback-icon-stroke)] group-hover/choice:grayscale-0 group-data-[state=selected]/choice:grayscale-0",
   filledGlyph: "grayscale-0 [&_svg]:fill-current",
   field: "flex min-w-0 flex-col",
   inlineField: "px-2 pb-2 group-data-[state=done]/feedback:hidden",
@@ -119,7 +126,7 @@ export const feedbackStyles = {
     "rounded-[var(--feedback-control-radius)] border-[var(--feedback-input-edge,var(--input))] bg-transparent shadow-none dark:bg-transparent",
   label: "sr-only",
   input:
-    "h-[var(--feedback-input-height)] min-h-0 field-sizing-fixed w-full resize-none rounded-[var(--feedback-inner-radius)] border-[var(--feedback-border)] bg-[var(--feedback-input)] px-3 py-2.5 text-base leading-5 text-[var(--feedback-foreground)] shadow-(--feedback-input-shadow) placeholder:text-[var(--feedback-muted)] focus-visible:border-[var(--feedback-field-ring)] focus-visible:ring-3 focus-visible:ring-[var(--feedback-field-glow)] md:text-sm dark:bg-[var(--feedback-input)] motion-reduce:transition-none",
+    "h-[var(--feedback-input-height)] min-h-0 field-sizing-fixed w-full resize-none rounded-[var(--feedback-inner-radius)] border-[var(--feedback-border)] bg-[var(--feedback-input)] px-3 py-2.5 text-base leading-5 text-[var(--feedback-foreground)] shadow-(--feedback-input-shadow) placeholder:text-[var(--feedback-muted)] focus-visible:border-[var(--feedback-field-ring)] focus-visible:ring-3 focus-visible:ring-[var(--feedback-field-glow)] md:text-sm dark:bg-[var(--feedback-input)] transition-none",
   footer: "flex min-w-0 flex-col gap-2",
   inlineFooter:
     "flex min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t border-[var(--feedback-border)] py-2.5 ps-4 pe-2.5",
@@ -127,7 +134,7 @@ export const feedbackStyles = {
   actions: "grid min-w-0 auto-cols-fr grid-flow-col gap-3",
   inlineActions: "flex items-center gap-1",
   action:
-    "relative h-auto min-h-[var(--feedback-action-height)] min-w-0 gap-2 rounded-[var(--feedback-control-radius)] px-4 py-2 text-sm leading-5 font-medium whitespace-normal [overflow-wrap:anywhere] after:absolute after:inset-x-0 after:-inset-y-1 motion-reduce:transition-none",
+    "relative h-auto min-h-[var(--feedback-action-height)] min-w-0 gap-2 rounded-[var(--feedback-control-radius)] px-4 py-2 text-sm leading-5 font-medium whitespace-normal [overflow-wrap:anywhere] after:absolute after:inset-x-0 after:-inset-y-1 transition-[transform,opacity] motion-reduce:transition-none",
   compactAction: "px-3 py-1 text-[0.8125rem] leading-4 after:-inset-y-1.5",
   submit:
     "border-transparent bg-[var(--feedback-primary)] text-[var(--feedback-primary-foreground)] shadow-(--feedback-action-shadow) hover:bg-[var(--feedback-primary)] hover:brightness-95",
@@ -145,7 +152,7 @@ export const feedbackStyles = {
   errorIcon: "mt-0.5 size-3.5 shrink-0",
   inlineErrorIcon: "mt-0 size-3.5",
   close:
-    "absolute top-3 right-3 z-20 size-7 rounded-[var(--feedback-control-radius)] text-[var(--feedback-muted)] after:absolute after:-inset-2 hover:bg-[var(--feedback-hover)] hover:text-[var(--feedback-foreground)] dark:hover:bg-[var(--feedback-hover)]",
+    "absolute top-3 right-3 z-20 size-7 rounded-[var(--feedback-control-radius)] text-[var(--feedback-muted)] after:absolute after:-inset-2 hover:bg-[var(--feedback-hover)] hover:text-[var(--feedback-foreground)] dark:hover:bg-[var(--feedback-hover)] transition-[transform,opacity] motion-reduce:transition-none",
   inlineClose: "top-2 right-2 size-8",
   closeHeader:
     "[&>[data-slot=feedback-header]]:pr-9 [&>[data-slot=feedback-title]]:pr-9 [&:not(:has(>[data-slot=feedback-header],>[data-slot=feedback-title]))]:pt-10",

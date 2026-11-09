@@ -45,6 +45,28 @@ describe("Registry Item Adapter", () => {
     );
   });
 
+  test("installs NPS with its shared dependency and host-local export", async () => {
+    const paths = await createTestPaths();
+    await runRegistryCommand("check", {
+      paths,
+      shadcnBuild: writeFakeShadcnOutput,
+      hostTypecheck: async ({ fixtureRoot }) => {
+        const source = await readFile(
+          path.join(fixtureRoot, "components/sentimeter/nps-score.tsx"),
+          "utf8",
+        );
+        assert.match(source, /export function NpsScore/);
+        assert.match(source, /from "\.\/feedback-system"/);
+        assert.doesNotMatch(source, /@workspace\//);
+        const example = await readFile(
+          path.join(fixtureRoot, "components/host-example.tsx"),
+          "utf8",
+        );
+        assert.match(example, /<NpsScore layout="inline" followUp="negative"/);
+      },
+    });
+  });
+
   test("preserves the previous directory when preparation fails", async () => {
     const root = await makeTemporaryRoot("sentimeter-atomic-");
     const target = path.join(root, "target");

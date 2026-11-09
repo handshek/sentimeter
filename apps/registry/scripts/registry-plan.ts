@@ -9,7 +9,12 @@ export type SourceMapping = Readonly<{
   source: string;
   staged: string;
   target: string;
-  item: "feedback-system" | "emoji-feedback" | "like-dislike" | "star-rating";
+  item:
+    | "feedback-system"
+    | "emoji-feedback"
+    | "like-dislike"
+    | "star-rating"
+    | "nps";
 }>;
 
 export type PlannedArtifact = Readonly<{
@@ -129,6 +134,12 @@ export const SOURCE_MAPPINGS: readonly SourceMapping[] = [
     target: "components/sentimeter/star-rating.tsx",
     item: "star-rating",
   },
+  {
+    source: "nps-score.tsx",
+    staged: "nps-score.tsx",
+    target: "components/sentimeter/nps-score.tsx",
+    item: "nps",
+  },
 ] as const;
 
 const IMPORT_REWRITES = new Map<string, string>([
@@ -209,6 +220,14 @@ export function createExpectedRegistry(
         description: "Five-star rating feedback widget.",
         registryDependencies: [`${REGISTRY_BASE_URL}/feedback-system.json`],
         files: filesFor("star-rating"),
+      },
+      {
+        name: "nps",
+        type: "registry:block",
+        title: "NPS",
+        description: "A 0–10 recommendation scale with optional follow-up.",
+        registryDependencies: [`${REGISTRY_BASE_URL}/feedback-system.json`],
+        files: filesFor("nps"),
       },
     ],
   } as const;

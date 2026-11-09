@@ -24,11 +24,11 @@ export function FeedbackInput({
   maxLength = FEEDBACK_TEXT_MAX_LENGTH,
   className,
 }: FeedbackInputProps) {
-  const { state, disabled, text, setText, selectedValue, layout } =
+  const { state, disabled, text, setText, showFollowUp, layout } =
     useFeedbackContext();
   const inputId = React.useId();
 
-  if (selectedValue === null) return null;
+  if (!showFollowUp || state === "done") return null;
 
   return (
     <div
@@ -54,11 +54,9 @@ export function FeedbackInput({
         maxLength={maxLength}
         value={text}
         onChange={(e) => {
-          if (!disabled && state !== "submitting" && state !== "done")
-            setText(e.target.value);
+          if (!disabled && state !== "submitting") setText(e.target.value);
         }}
-        readOnly={state === "done"}
-        disabled={disabled || state === "submitting" || state === "done"}
+        disabled={disabled || state === "submitting"}
       />
     </div>
   );

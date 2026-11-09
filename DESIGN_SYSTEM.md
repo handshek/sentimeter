@@ -262,9 +262,9 @@ Two layouts share every part and state:
 
 - **Stacked** (default) is a card: a heading, one recessed response well that
   holds the rating and, after a choice, the comment, then a paired Cancel and
-  Submit row.
+  Send row during follow-up.
 - **Inline** (`layout="inline"`) is a one-line bar: a muted question beside
-  compact choices. A choice opens it into a card with the comment and a footer
+  compact choices. A negative choice opens it into a card with the comment and a footer
   strip; Cancel or a sent response collapses it back to a bar of the same
   height. The description is not shown inline.
 
@@ -280,8 +280,8 @@ well has a 4 px inset and 4 px between its rating and comment.
 | Rating        | Evenly spaced 44 px tiles. Glyphs stay grayscale until hovered or chosen; the choice lifts onto a tile in color. |
 | Stars         | Bare tiles with cumulative fill in the primary color; selection and keyboard focus remain distinct.              |
 | Comment       | Opens inside the well after a choice. A visually hidden label names it; the placeholder is a hint.               |
-| Actions       | Cancel and Submit as an equal 40 px pair. Cancel clears an unsent choice; `closeButton` dismisses the widget.    |
-| Confirmation  | A status line replaces the action row at the same height; the submitted comment stays read-only.                 |
+| Actions       | Cancel and Send as an equal 40 px pair. Cancel clears an unsent choice; `closeButton` dismisses the widget.      |
+| Confirmation  | A status line replaces the action row at the same height; the comment closes and the thank-you persists.         |
 
 The parent owns section gaps. Parts own internal gaps and do not add competing
 outer margins. Omit an optional part entirely when it is not needed; do not leave
@@ -289,16 +289,16 @@ an empty header or spacer. A new widget family should compose the existing parts
 and add behavior only for a new response type.
 
 ```tsx
-<FeedbackWidget widgetType="emoji" autoHide={false}>
+<FeedbackWidget widgetType="emoji" followUp="negative">
   <div data-slot="feedback-header" className="flex flex-col gap-1.5">
     <FeedbackTitle>How was your experience?</FeedbackTitle>
     <FeedbackDescription>Your feedback helps us improve.</FeedbackDescription>
   </div>
   <FeedbackResponse>
     <FeedbackRating variant="emoji" />
-    <FeedbackInput />
+    <FeedbackInput placeholder="What went wrong? (optional)" />
   </FeedbackResponse>
-  <FeedbackFooter />
+  <FeedbackFooter submitLabel="Send" />
 </FeedbackWidget>
 ```
 
@@ -342,8 +342,6 @@ import { EmojiFeedback } from "@workspace/widgets";
 <EmojiFeedback
   title="How was your experience?"
   description="Your feedback helps us improve."
-  showInput
-  autoHide={false}
 />;
 ```
 
@@ -355,8 +353,6 @@ deliberate scoped token override:
 
 ```tsx
 <EmojiFeedback
-  showInput
-  autoHide={false}
   style={{
     "--feedback-heading-font": "var(--font-heading)",
     "--feedback-font": "var(--font-sans)",
@@ -384,7 +380,7 @@ colors. Do not reach into a widget's DOM with page-specific selectors.
 | `--feedback-font`, `--feedback-heading-font`, `--feedback-label-font`, `--feedback-heading-size`, `--feedback-heading-weight`               | Typography roles        |
 
 Keep shared styling in `feedbackStyles`. A recurring visual change belongs in a
-named recipe or role there, with examples across the three families, both
+named recipe or role there, with examples across the four families, both
 layouts, and both themes. `feedbackStyles` is an internal composition helper;
 the public package exports `FeedbackStyle` for scoped overrides.
 
@@ -424,11 +420,11 @@ reaction and comment.
 | State      | Behavior                                                                                      |
 | ---------- | --------------------------------------------------------------------------------------------- |
 | Idle       | Response choices are available. Comment and actions appear after a choice.                    |
-| Selected   | The selected value is exposed accessibly. Submission is explicit.                             |
+| Selected   | The selected value is exposed accessibly. Follow-up offers an optional comment and Send.      |
 | Reset      | Cancel clears the unsent choice and comment, returns to idle, and focuses the first choice.   |
 | Submitting | Keep the response, comment, action footprint and pending feedback; block repeated submission. |
 | Failure    | Keep entered data, show the error near the action, and provide "Try again".                   |
-| Done       | Show confirmation; retain submitted text as read-only content (inline collapses to its bar).  |
+| Done       | Close the comment and show persistent confirmation (inline collapses to its bar).             |
 | Disabled   | Prevent activation while keeping the context readable.                                        |
 | Dismissed  | `closeButton` closes the whole widget and uses the existing focus-restoration behavior.       |
 
@@ -443,12 +439,22 @@ names. Status and errors should announce once, without several competing live
 regions reading the same update. Reduced-motion users must retain all state
 cues without requiring animation.
 
-The existing lifecycle defaults remain `autoHide={true}` and
-`doneDurationMs={2000}`. For feedback embedded in page flow, use
-`autoHide={false}` when a persistent confirmation is desired. If auto-hide is
-enabled, the host must reserve the widget's footprint to avoid a later page
-shift; the component does not reserve space after dismissal. Floating placement
-is owned by the host.
+Convenience ratings default to `followUp="negative"`. Emoji and stars 1–2,
+thumbs down (0), and NPS 0–6 open the optional comment with Cancel and Send.
+Other choices submit immediately. `followUp="always"` opens the comment after
+every choice; `followUp="never"` submits every choice immediately. The compound
+`FeedbackWidget` keeps manual submission when `followUp` is omitted, so custom
+compositions choose their own disclosure policy.
+
+Confirmation stays mounted until the host removes the widget or its close
+button dismisses it. Widgets do not start an auto-hide timer. Overlay closing
+belongs to a later FeedbackForm slice.
+
+NPS uses one segmented row with eleven values from 0 through 10 and the legend
+"Not likely" / "Very likely". Segments divide the available width evenly and
+stay 44px tall, including inside a 288px container. It uses the host primary
+color for selection and keeps the keyboard-focus ring separate. Arrow keys
+move focus within the row; Enter or Space chooses the focused value.
 
 ## Governance and verification
 

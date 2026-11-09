@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   EmojiFeedback,
   LikeDislike,
+  NpsScore,
   StarRating,
   type WidgetState,
 } from "@workspace/widgets";
@@ -29,7 +30,7 @@ export function WidgetDemo({ widget, options }: WidgetDemoProps) {
     resolved.layout,
     resolved.variant,
     resolved.size,
-    resolved.showInput,
+    resolved.followUp,
   ].join(":");
   return <WidgetDemoInstance key={key} widget={widget} options={resolved} />;
 }
@@ -45,7 +46,7 @@ function WidgetDemoInstance({
   const [state, setState] = useState<WidgetState>("idle");
   const container = useRef<HTMLDivElement>(null);
   const focusAfterReset = useRef(false);
-  const Widget = widgets[widget.preview];
+  const Widget = widget.preview === "nps" ? NpsScore : widgets[widget.preview];
 
   useEffect(() => {
     if (!focusAfterReset.current) return;
@@ -74,10 +75,9 @@ function WidgetDemoInstance({
         <Widget
           key={instance}
           layout={options.layout}
-          variant={options.variant}
+          {...(widget.preview === "nps" ? {} : { variant: options.variant })}
           size={options.size}
-          showInput={options.showInput}
-          autoHide={false}
+          followUp={options.followUp}
           onStateChange={setState}
         />
       </div>
