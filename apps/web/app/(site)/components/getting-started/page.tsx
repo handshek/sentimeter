@@ -143,10 +143,11 @@ export default function GettingStartedPage() {
             installed code. Give the widget at least 288px of container width.
             Rating tiles stay on one row at 44 px; the inline layout uses 32 px
             choices with a 44 px tall hit area. Size follows the container, not
-            the viewport. NPS divides the available width into eleven 44px tall
-            segments. Arrow keys move focus within a scale; Enter or Space
-            chooses the focused value. Survey reason rows use radio semantics
-            and 44px targets; arrow keys choose the adjacent reason.
+            the viewport. NPS asks in words first, then shows only that
+            answer&apos;s scores, never more than seven 44px tall segments.
+            Arrow keys move focus within a scale; Enter or Space chooses the
+            focused value. Survey reason rows use radio semantics and 44px
+            targets; arrow keys choose the adjacent reason.
           </p>
           <Button asChild variant="outline">
             <Link href="/components">Browse components</Link>

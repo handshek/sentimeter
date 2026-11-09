@@ -197,6 +197,7 @@ test("an immediate submission can retry its retained rating after failure", asyn
       }}
     />,
   );
+  fireEvent.click(screen.getByRole("button", { name: "Maybe" }));
   const score = screen.getByRole("button", { name: "Score 7 of 10" });
   fireEvent.click(score);
   const retry = await screen.findByRole("button", { name: "Try again" });
@@ -298,10 +299,19 @@ test("NPS zero opens the follow-up and sends its score and text", async () => {
       }}
     />,
   );
+  assert.equal(
+    screen.queryByRole("group", { name: "Recommendation score" }),
+    null,
+    "scores stay hidden until the person answers in words",
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Not likely" }));
   const scale = screen.getByRole("group", { name: "Recommendation score" });
-  assert.equal(within(scale).getAllByRole("button").length, 11);
-  assert.ok(screen.getByText("Not likely"));
-  assert.ok(screen.getByText("Very likely"));
+  assert.deepEqual(
+    within(scale)
+      .getAllByRole("button")
+      .map((button) => button.textContent),
+    ["0", "1", "2", "3", "4", "5", "6"],
+  );
   fireEvent.click(within(scale).getByRole("button", { name: "Score 0 of 10" }));
   const input = screen.getByPlaceholderText("What would make it better?");
   assert.deepEqual(payloads, []);
@@ -328,6 +338,7 @@ test("NPS six still asks why and allows an empty comment inline", async () => {
       }}
     />,
   );
+  fireEvent.click(screen.getByRole("button", { name: "Not likely" }));
   fireEvent.click(screen.getByRole("button", { name: "Score 6 of 10" }));
   assert.ok(screen.getByRole("textbox"));
   assert.deepEqual(payloads, []);
@@ -336,7 +347,10 @@ test("NPS six still asks why and allows an empty comment inline", async () => {
   assert.deepEqual(payloads, [{ location: "/", widgetType: "nps", value: 6 }]);
 });
 
-for (const score of [7, 10]) {
+for (const [band, score] of [
+  ["Maybe", 7],
+  ["Very likely", 10],
+] as const) {
   test(`NPS ${score} submits immediately`, async () => {
     const payloads: WidgetPayload[] = [];
     render(
@@ -346,6 +360,7 @@ for (const score of [7, 10]) {
         }}
       />,
     );
+    fireEvent.click(screen.getByRole("button", { name: band }));
     fireEvent.click(
       screen.getByRole("button", { name: `Score ${score} of 10` }),
     );
@@ -357,7 +372,7 @@ for (const score of [7, 10]) {
   });
 }
 
-test("NPS arrow keys and endpoints focus scores for keyboard activation", async () => {
+test("NPS keyboard answers in words, then moves to that band's scores", async () => {
   const payloads: WidgetPayload[] = [];
   render(
     <NpsScore
@@ -366,26 +381,72 @@ test("NPS arrow keys and endpoints focus scores for keyboard activation", async 
       }}
     />,
   );
-  const zero = screen.getByRole("button", { name: "Score 0 of 10" });
-  const one = screen.getByRole("button", { name: "Score 1 of 10" });
-  const ten = screen.getByRole("button", { name: "Score 10 of 10" });
-  act(() => zero.focus());
-  fireEvent.keyDown(zero, { key: "ArrowRight" });
-  assert.equal(document.activeElement, one);
-  fireEvent.keyDown(one, { key: "End" });
-  assert.equal(document.activeElement, ten);
-  fireEvent.keyDown(ten, { key: "Home" });
-  assert.equal(document.activeElement, zero);
-  fireEvent.keyDown(zero, { key: "ArrowLeft" });
-  assert.equal(document.activeElement, ten);
+  const notLikely = screen.getByRole("button", { name: "Not likely" });
+  const maybe = screen.getByRole("button", { name: "Maybe" });
+  act(() => notLikely.focus());
+  fireEvent.keyDown(notLikely, { key: "ArrowRight" });
+  assert.equal(document.activeElement, maybe);
+  fireEvent.click(maybe);
+  const seven = screen.getByRole("button", { name: "Score 7 of 10" });
+  const eight = screen.getByRole("button", { name: "Score 8 of 10" });
+  assert.equal(document.activeElement, seven);
+  fireEvent.keyDown(seven, { key: "End" });
+  assert.equal(document.activeElement, eight);
+  fireEvent.keyDown(eight, { key: "ArrowRight" });
+  assert.equal(document.activeElement, seven);
   assert.deepEqual(
     payloads,
     [],
     "navigation does not submit before activation",
   );
-  fireEvent.click(ten);
+  fireEvent.click(eight);
   await screen.findByText("Thanks!");
-  assert.deepEqual(payloads, [{ location: "/", widgetType: "nps", value: 10 }]);
+  assert.deepEqual(payloads, [{ location: "/", widgetType: "nps", value: 8 }]);
+});
+
+test("NPS changing the answer drops the unsent score and note", () => {
+  render(<NpsScore />);
+  fireEvent.click(screen.getByRole("button", { name: "Not likely" }));
+  fireEvent.click(screen.getByRole("button", { name: "Score 3 of 10" }));
+  fireEvent.change(screen.getByRole("textbox"), {
+    target: { value: "Draft" },
+  });
+  const maybe = screen.getByRole("button", { name: "Maybe" });
+  act(() => maybe.focus());
+  fireEvent.click(maybe);
+  assert.equal(screen.queryByRole("textbox"), null);
+  assert.equal(
+    document.activeElement,
+    screen.getByRole("button", { name: "Score 7 of 10" }),
+    "focus follows the new answer to its first score",
+  );
+  assert.equal(
+    screen.getByRole("button", { name: "Maybe" }).getAttribute("aria-pressed"),
+    "true",
+  );
+  assert.deepEqual(
+    within(screen.getByRole("group", { name: "Recommendation score" }))
+      .getAllByRole("button")
+      .map((button) => button.getAttribute("aria-pressed")),
+    ["false", "false"],
+  );
+});
+
+test("NPS Cancel returns to the question in words", () => {
+  render(<NpsScore />);
+  fireEvent.click(screen.getByRole("button", { name: "Not likely" }));
+  fireEvent.click(screen.getByRole("button", { name: "Score 3 of 10" }));
+  fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+  assert.equal(
+    screen.queryByRole("group", { name: "Recommendation score" }),
+    null,
+  );
+  assert.equal(
+    screen
+      .getByRole("button", { name: "Not likely" })
+      .getAttribute("aria-pressed"),
+    "false",
+  );
 });
 
 test("a rating submit handler reads the score straight from its payload", async () => {
@@ -397,6 +458,7 @@ test("a rating submit handler reads the score straight from its payload", async 
       }}
     />,
   );
+  fireEvent.click(screen.getByRole("button", { name: "Very likely" }));
   await act(async () => {
     fireEvent.click(screen.getByRole("button", { name: "Score 9 of 10" }));
   });

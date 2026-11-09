@@ -100,12 +100,18 @@ export const feedbackStyles = {
   starsRating: "[--feedback-icon-size:1.375rem]",
   inlineStarsRating: "[--feedback-icon-size:1.125rem]",
   inlineRating: "flex w-auto items-center gap-0.5",
-  npsRating: "grid-cols-[repeat(11,minmax(0,1fr))]",
-  npsChoice: "text-xs",
+  nps: "flex w-full min-w-0 flex-col",
+  npsBands: "grid w-full grid-cols-3",
+  npsBand:
+    "px-2 font-[family-name:var(--feedback-label-font)] text-sm leading-5 font-medium",
+  npsScores: "grid w-full border-t border-[var(--feedback-border)]",
+  npsChoice: "text-sm tabular-nums",
+  inlineNps: "flex flex-col items-end gap-1",
+  inlineNpsRow: "flex flex-wrap items-center justify-end gap-0.5",
+  inlineBand:
+    "w-auto px-3 font-[family-name:var(--feedback-label-font)] text-[0.8125rem] leading-4 font-medium",
   npsSelected:
     "bg-[var(--feedback-primary)] text-[var(--feedback-primary-foreground)] hover:bg-[var(--feedback-primary)] hover:text-[var(--feedback-primary-foreground)] dark:bg-[var(--feedback-primary)] dark:hover:bg-[var(--feedback-primary)]",
-  npsLegend:
-    "col-span-full flex w-full justify-between gap-2 border-t border-[var(--feedback-border)] px-3 py-2 text-xs leading-4 text-[var(--feedback-muted)]",
   choice:
     "group/choice relative min-w-0 shrink-0 border-0 p-0 text-[var(--feedback-muted)] shadow-none transition-[transform,opacity] duration-150 hover:bg-[var(--feedback-hover)] hover:text-[var(--feedback-foreground)] dark:hover:bg-[var(--feedback-hover)] disabled:opacity-45 motion-reduce:transition-none",
   // A segment fills its cell, so its focus ring sits inside the outline.

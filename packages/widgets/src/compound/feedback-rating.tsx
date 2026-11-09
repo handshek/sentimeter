@@ -24,7 +24,47 @@ const THUMBS = [
   { value: 0, label: "No", Icon: ThumbsDown },
 ] as const;
 
-const EXPECTED_GLYPHS = { emoji: 5, thumbs: 2, stars: 1, nps: 0 } as const;
+const EXPECTED_GLYPHS = { emoji: 5, thumbs: 2, stars: 1 } as const;
+
+// NPS asks a plain question first, then shows only that answer's scores.
+const NPS_BANDS = [
+  { label: "Not likely", scores: [0, 1, 2, 3, 4, 5, 6] },
+  { label: "Maybe", scores: [7, 8] },
+  { label: "Very likely", scores: [9, 10] },
+] as const;
+
+type NpsBand = (typeof NPS_BANDS)[number];
+
+/** Arrow keys, Home, and End move focus among the choices in one row. */
+function moveFocus(event: React.KeyboardEvent<HTMLButtonElement>) {
+  const choices = Array.from(
+    event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
+      '[data-slot="feedback-choice"]',
+    ) ?? [],
+  );
+  const index = choices.indexOf(event.currentTarget);
+  let next: number;
+  switch (event.key) {
+    case "ArrowRight":
+    case "ArrowDown":
+      next = (index + 1) % choices.length;
+      break;
+    case "ArrowLeft":
+    case "ArrowUp":
+      next = (index - 1 + choices.length) % choices.length;
+      break;
+    case "Home":
+      next = 0;
+      break;
+    case "End":
+      next = choices.length - 1;
+      break;
+    default:
+      return;
+  }
+  event.preventDefault();
+  choices[next]?.focus();
+}
 
 export type FeedbackRatingProps = {
   variant: "emoji" | "stars" | "thumbs" | "nps";
@@ -54,14 +94,9 @@ function readGlyph(glyph: FeedbackGlyph) {
     : { node: glyph as React.ReactNode, label: undefined };
 }
 
-function builtInChoices(variant: FeedbackRatingProps["variant"]): Choice[] {
-  if (variant === "nps") {
-    return Array.from({ length: 11 }, (_, value) => ({
-      value,
-      label: `Score ${value} of 10`,
-      glyph: value,
-    }));
-  }
+type GlyphVariant = Exclude<FeedbackRatingProps["variant"], "nps">;
+
+function builtInChoices(variant: GlyphVariant): Choice[] {
   if (variant === "stars") {
     return FACES.map(({ value }) => ({
       value,
@@ -84,7 +119,7 @@ function builtInChoices(variant: FeedbackRatingProps["variant"]): Choice[] {
 }
 
 function customChoices(
-  variant: FeedbackRatingProps["variant"],
+  variant: GlyphVariant,
   glyphs: readonly FeedbackGlyph[],
 ): Choice[] {
   if (variant === "stars") {
@@ -118,6 +153,17 @@ export function FeedbackRating({
   glyphs,
   className,
 }: FeedbackRatingProps) {
+  if (variant === "nps") return <NpsScale className={className} />;
+  return (
+    <GlyphRating variant={variant} glyphs={glyphs} className={className} />
+  );
+}
+
+function GlyphRating({
+  variant,
+  glyphs,
+  className,
+}: Omit<FeedbackRatingProps, "variant"> & { variant: GlyphVariant }) {
   const { state, selectedValue, disabled, select, layout, showFollowUp } =
     useFeedbackContext();
   const [hoverValue, setHoverValue] = React.useState<number | null>(null);
@@ -125,10 +171,9 @@ export function FeedbackRating({
   const locked = disabled || state === "submitting" || state === "done";
   const stars = variant === "stars";
   const thumbs = variant === "thumbs";
-  const nps = variant === "nps";
   const inline = layout === "inline";
   const expected = EXPECTED_GLYPHS[variant];
-  const validGlyphs = !nps && glyphs?.length === expected ? glyphs : undefined;
+  const validGlyphs = glyphs?.length === expected ? glyphs : undefined;
 
   React.useEffect(() => {
     if (glyphs && glyphs.length !== expected) {
@@ -148,13 +193,7 @@ export function FeedbackRating({
       data-slot="feedback-rating"
       role="group"
       aria-label={
-        nps
-          ? "Recommendation score"
-          : stars
-            ? "Star rating"
-            : thumbs
-              ? "Helpfulness"
-              : "Experience rating"
+        stars ? "Star rating" : thumbs ? "Helpfulness" : "Experience rating"
       }
       className={cn(
         feedbackStyles.rating,
@@ -164,7 +203,6 @@ export function FeedbackRating({
           (inline
             ? feedbackStyles.inlineStarsRating
             : feedbackStyles.starsRating),
-        nps && feedbackStyles.npsRating,
         className,
       )}
     >
@@ -200,34 +238,7 @@ export function FeedbackRating({
             }}
             onBlur={stars ? () => setHoverValue(null) : undefined}
             onKeyDown={(event) => {
-              if (locked) return;
-              const choices = Array.from(
-                event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
-                  '[data-slot="feedback-choice"]',
-                ) ?? [],
-              );
-              const index = choices.indexOf(event.currentTarget);
-              let next: number;
-              switch (event.key) {
-                case "ArrowRight":
-                case "ArrowDown":
-                  next = (index + 1) % choices.length;
-                  break;
-                case "ArrowLeft":
-                case "ArrowUp":
-                  next = (index - 1 + choices.length) % choices.length;
-                  break;
-                case "Home":
-                  next = 0;
-                  break;
-                case "End":
-                  next = choices.length - 1;
-                  break;
-                default:
-                  return;
-              }
-              event.preventDefault();
-              choices[next]?.focus();
+              if (!locked) moveFocus(event);
             }}
             onClick={() => select(value)}
             className={cn(
@@ -236,13 +247,11 @@ export function FeedbackRating({
                 ? [feedbackStyles.inlineChoice, feedbackStyles.focus]
                 : feedbackStyles.segment,
               thumbs && !inline && feedbackStyles.thumbChoice,
-              nps && feedbackStyles.npsChoice,
               !stars &&
                 selected &&
                 (inline
                   ? feedbackStyles.selected
                   : feedbackStyles.segmentSelected),
-              nps && selected && feedbackStyles.npsSelected,
               filled && feedbackStyles.filledStar,
               (state === "done" || state === "submitting") &&
                 selected &&
@@ -257,8 +266,6 @@ export function FeedbackRating({
                   "animate-spin text-current motion-reduce:animate-none",
                 )}
               />
-            ) : nps ? (
-              glyph
             ) : (
               <span
                 aria-hidden="true"
@@ -279,10 +286,166 @@ export function FeedbackRating({
           </Button>
         );
       })}
-      {nps ? (
-        <div className={feedbackStyles.npsLegend}>
-          <span>Not likely</span>
-          <span>Very likely</span>
+    </div>
+  );
+}
+
+function NpsScale({ className }: { className?: string }) {
+  const {
+    state,
+    selectedValue,
+    disabled,
+    select,
+    reset,
+    resets,
+    layout,
+    showFollowUp,
+  } = useFeedbackContext();
+  // An answer belongs to the reset it was chosen after, so Cancel clears it.
+  const [chosen, setChosen] = React.useState<{
+    band: NpsBand;
+    resets: number;
+  } | null>(null);
+  const chosenBand = chosen?.resets === resets ? chosen.band : null;
+  const scoresRef = React.useRef<HTMLDivElement>(null);
+  const focusScoresRef = React.useRef(false);
+  const locked = disabled || state === "submitting" || state === "done";
+  const inline = layout === "inline";
+  const band =
+    NPS_BANDS.find((candidate) =>
+      (candidate.scores as readonly number[]).includes(selectedValue ?? -1),
+    ) ?? chosenBand;
+
+  React.useEffect(() => {
+    if (!focusScoresRef.current) return;
+    focusScoresRef.current = false;
+    scoresRef.current
+      ?.querySelector<HTMLButtonElement>('[data-slot="feedback-choice"]')
+      ?.focus();
+  }, [band]);
+
+  const choiceClass = (selected: boolean) =>
+    cn(
+      feedbackStyles.choice,
+      inline
+        ? [feedbackStyles.inlineChoice, feedbackStyles.focus]
+        : feedbackStyles.segment,
+      (state === "done" || state === "submitting") &&
+        selected &&
+        feedbackStyles.submittedChoice,
+    );
+
+  return (
+    <div
+      data-slot="feedback-rating"
+      className={cn(
+        inline ? feedbackStyles.inlineNps : feedbackStyles.nps,
+        className,
+      )}
+    >
+      <div
+        role="group"
+        aria-label="How likely are you to recommend us?"
+        className={
+          inline ? feedbackStyles.inlineNpsRow : feedbackStyles.npsBands
+        }
+      >
+        {NPS_BANDS.map((candidate, index) => {
+          const selected = band === candidate;
+          return (
+            <Button
+              key={candidate.label}
+              type="button"
+              variant="ghost"
+              disabled={locked}
+              aria-pressed={selected}
+              tabIndex={(band ? selected : index === 0) ? 0 : -1}
+              data-slot="feedback-choice"
+              data-state={selected ? "selected" : "idle"}
+              onKeyDown={(event) => {
+                if (!locked) moveFocus(event);
+              }}
+              onClick={(event) => {
+                if (locked || selected) return;
+                focusScoresRef.current =
+                  document.activeElement === event.currentTarget;
+                // A new answer discards the score and note from the old one.
+                const cleared =
+                  selectedValue !== null && reset({ restoreFocus: false });
+                setChosen({
+                  band: candidate,
+                  resets: cleared ? resets + 1 : resets,
+                });
+              }}
+              className={cn(
+                choiceClass(selected),
+                inline ? feedbackStyles.inlineBand : feedbackStyles.npsBand,
+                selected &&
+                  (inline
+                    ? feedbackStyles.selected
+                    : feedbackStyles.segmentSelected),
+              )}
+            >
+              {candidate.label}
+            </Button>
+          );
+        })}
+      </div>
+      {band ? (
+        <div
+          ref={scoresRef}
+          role="group"
+          aria-label="Recommendation score"
+          className={
+            inline ? feedbackStyles.inlineNpsRow : feedbackStyles.npsScores
+          }
+          style={
+            inline
+              ? undefined
+              : { gridTemplateColumns: `repeat(${band.scores.length}, 1fr)` }
+          }
+        >
+          {band.scores.map((value, index) => {
+            const selected = selectedValue === value;
+            const sending = selected && state === "submitting" && !showFollowUp;
+            return (
+              <Button
+                key={value}
+                type="button"
+                variant="ghost"
+                disabled={locked}
+                aria-pressed={selected}
+                aria-label={`Score ${value} of 10`}
+                title={`Score ${value} of 10`}
+                tabIndex={
+                  (selectedValue === null ? index === 0 : selected) ? 0 : -1
+                }
+                data-slot="feedback-choice"
+                data-state={selected ? "selected" : "idle"}
+                onKeyDown={(event) => {
+                  if (!locked) moveFocus(event);
+                }}
+                onClick={() => select(value)}
+                className={cn(
+                  choiceClass(selected),
+                  feedbackStyles.npsChoice,
+                  selected && feedbackStyles.npsSelected,
+                )}
+              >
+                {sending ? (
+                  <LoaderCircle
+                    aria-hidden="true"
+                    className={cn(
+                      feedbackStyles.statusIcon,
+                      "animate-spin text-current motion-reduce:animate-none",
+                    )}
+                  />
+                ) : (
+                  value
+                )}
+              </Button>
+            );
+          })}
         </div>
       ) : null}
     </div>

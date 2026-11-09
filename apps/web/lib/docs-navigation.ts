@@ -57,7 +57,7 @@ export const gettingStartedSections = [
     url: "#accessibility",
     depth: 2,
     content:
-      "Keyboard focus, accessible reaction names, aria-pressed, success and error announcements. Minimum container width 288px. Reaction targets stay 44px tall; NPS fits eleven segments into 288px. Arrow keys move within a rating scale and choose Survey reasons. FeedbackForm attaches page and device context; Survey collects a reason and optional note.",
+      "Keyboard focus, accessible reaction names, aria-pressed, success and error announcements. Minimum container width 288px. Reaction targets stay 44px tall; NPS asks in words first, then shows at most seven 44px scores. Arrow keys move within a rating scale and choose Survey reasons. FeedbackForm attaches page and device context; Survey collects a reason and optional note.",
   },
   {
     title: "Using an AI agent",

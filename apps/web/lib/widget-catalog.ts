@@ -506,7 +506,7 @@ const widgetDefinitions: Record<
     slug: "nps",
     name: "NPS",
     description:
-      "An NPS survey component (0–10) for React and shadcn/ui. Scores of 0–6 ask what would make it better.",
+      "An NPS survey component (0–10) for React and shadcn/ui. People answer in words first, then pick a score from that range. Scores of 0–6 ask what would make it better.",
     registryName: "nps",
     tabLabel: "NPS",
     icon: "nps",

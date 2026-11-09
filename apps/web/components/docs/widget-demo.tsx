@@ -43,9 +43,13 @@ async function playFlow(
   if (cancelled()) return;
   if (preview === "survey") {
     root.querySelectorAll<HTMLElement>('[role="radio"]')[1]?.click();
+  } else if (preview === "nps") {
+    root.querySelector<HTMLElement>("button[aria-pressed]")?.click();
+    await wait(450);
+    if (cancelled()) return;
+    root.querySelector<HTMLElement>('[aria-label="Score 3 of 10"]')?.click();
   } else if (preview !== "form") {
-    const choices = root.querySelectorAll<HTMLElement>("button[aria-pressed]");
-    choices[preview === "nps" ? 3 : 1]?.click();
+    root.querySelectorAll<HTMLElement>("button[aria-pressed]")[1]?.click();
   }
   await wait(450);
   const field = root.querySelector("textarea");
