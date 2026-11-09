@@ -59,7 +59,7 @@ test("custom options keep their values and note prompt; an empty note is omitted
         {
           label: "Leaving the team",
           value: "team",
-          notePlaceholder: "Which team? (optional)",
+          notePlaceholder: "Which team?",
         },
       ]}
       submit={async (payload) => {

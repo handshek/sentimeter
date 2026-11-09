@@ -29,8 +29,8 @@ const widgetCases = [
   {
     name: "thumbs",
     Widget: LikeDislike,
-    ratingName: "Like",
-    alternateName: "Dislike",
+    ratingName: "Yes",
+    alternateName: "No",
     widgetType: "thumbs",
     value: 1,
     alternateValue: 0,
@@ -95,7 +95,10 @@ for (const {
     );
 
     await act(async () => resolveSubmit());
-    assert.equal(screen.getByRole("status").textContent, "Thanks!");
+    assert.equal(
+      screen.getByRole("status").textContent,
+      "Thanks!Your feedback helps us improve.",
+    );
     assert.equal(screen.queryByRole("textbox"), null);
     assert.equal(
       controls.every((control) => control.disabled),
@@ -202,7 +205,10 @@ test(`stars retain the submitted fill while locked despite hover or focus previe
   fireEvent.click(screen.getByRole("button", { name: "Send" }));
   assert.equal(filledStars(), 5);
   await act(async () => resolveSubmit());
-  assert.equal(screen.getByRole("status").textContent, "Thanks!");
+  assert.equal(
+    screen.getByRole("status").textContent,
+    "Thanks!Your feedback helps us improve.",
+  );
   assert.equal(filledStars(), 5);
   fireEvent.mouseLeave(firstStar);
   fireEvent.mouseEnter(firstStar);

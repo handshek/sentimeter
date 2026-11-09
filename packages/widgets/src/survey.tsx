@@ -25,27 +25,27 @@ const DEFAULT_OPTIONS = [
   {
     label: "Too expensive",
     value: "too-expensive",
-    notePlaceholder: "What would make it worth the price? (optional)",
+    notePlaceholder: "What would make it worth the price?",
   },
   {
     label: "Something didn't work",
     value: "not-working",
-    notePlaceholder: "What didn't work? (optional)",
+    notePlaceholder: "What didn't work?",
   },
   {
     label: "Missing a feature I need",
     value: "missing-feature",
-    notePlaceholder: "What's missing? (optional)",
+    notePlaceholder: "What's missing?",
   },
   {
     label: "Switching to another tool",
     value: "switching",
-    notePlaceholder: "What are you switching to? (optional)",
+    notePlaceholder: "What are you switching to?",
   },
   {
     label: "Other",
     value: "other",
-    notePlaceholder: "Tell us more (optional)",
+    notePlaceholder: "Tell us more",
   },
 ] as const satisfies readonly SurveyOption[];
 
@@ -95,8 +95,7 @@ export function Survey({
   const selectedOption = options.find((option) => option.value === value);
   const pending = disabled || machine.state === "submitting";
   const locked = pending || machine.state === "done";
-  const notePrompt =
-    selectedOption?.notePlaceholder ?? "Tell us more (optional)";
+  const notePrompt = selectedOption?.notePlaceholder ?? "Tell us more";
   return (
     <FeedbackFormCard
       state={machine.state}
@@ -123,7 +122,7 @@ export function Survey({
         />
         {selectedOption && machine.state !== "done" ? (
           <FeedbackTextField
-            label={notePrompt}
+            label={`${notePrompt} (optional)`}
             placeholder={notePrompt}
             text={text}
             setText={setText}
@@ -140,6 +139,7 @@ export function Survey({
         submitLabel={submitLabel}
         errorId={errorId}
         thankYouMessage={thankYouMessage}
+        thankYouDescription="Your feedback helps us improve."
         onSkip={onSkip}
         skipLabel={skipLabel}
         onSubmit={() => {

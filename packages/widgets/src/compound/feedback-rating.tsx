@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Star, ThumbsDown, ThumbsUp } from "lucide-react";
+import { LoaderCircle, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
 import { feedbackStyles } from "../design-system";
@@ -20,8 +20,8 @@ const FACES = [
 
 // Display order: the positive response first.
 const THUMBS = [
-  { value: 1, label: "Like", Icon: ThumbsUp },
-  { value: 0, label: "Dislike", Icon: ThumbsDown },
+  { value: 1, label: "Yes", Icon: ThumbsUp },
+  { value: 0, label: "No", Icon: ThumbsDown },
 ] as const;
 
 const EXPECTED_GLYPHS = { emoji: 5, thumbs: 2, stars: 1, nps: 0 } as const;
@@ -118,7 +118,7 @@ export function FeedbackRating({
   glyphs,
   className,
 }: FeedbackRatingProps) {
-  const { state, selectedValue, disabled, select, layout } =
+  const { state, selectedValue, disabled, select, layout, showFollowUp } =
     useFeedbackContext();
   const [hoverValue, setHoverValue] = React.useState<number | null>(null);
   const [focusedValue, setFocusedValue] = React.useState<number | null>(null);
@@ -171,6 +171,8 @@ export function FeedbackRating({
       {options.map(({ value, label, glyph }) => {
         const selected = selectedValue === value;
         const filled = stars && value <= previewValue;
+        // Without a note, the pick itself shows that it is sending.
+        const sending = selected && state === "submitting" && !showFollowUp;
 
         return (
           <Button
@@ -230,11 +232,16 @@ export function FeedbackRating({
             onClick={() => select(value)}
             className={cn(
               feedbackStyles.choice,
-              feedbackStyles.focus,
+              inline
+                ? [feedbackStyles.inlineChoice, feedbackStyles.focus]
+                : feedbackStyles.segment,
               thumbs && !inline && feedbackStyles.thumbChoice,
-              inline && feedbackStyles.inlineChoice,
               nps && feedbackStyles.npsChoice,
-              !stars && selected && feedbackStyles.selected,
+              !stars &&
+                selected &&
+                (inline
+                  ? feedbackStyles.selected
+                  : feedbackStyles.segmentSelected),
               nps && selected && feedbackStyles.npsSelected,
               filled && feedbackStyles.filledStar,
               (state === "done" || state === "submitting") &&
@@ -242,7 +249,15 @@ export function FeedbackRating({
                 feedbackStyles.submittedChoice,
             )}
           >
-            {nps ? (
+            {sending ? (
+              <LoaderCircle
+                aria-hidden="true"
+                className={cn(
+                  feedbackStyles.statusIcon,
+                  "animate-spin text-current motion-reduce:animate-none",
+                )}
+              />
+            ) : nps ? (
               glyph
             ) : (
               <span

@@ -6,11 +6,11 @@ import { LikeDislike } from "./index";
 afterEach(cleanup);
 
 describe("canonical widget feedback system", () => {
-  test("shows Like before Dislike", () => {
+  test("shows Yes before No", () => {
     render(<LikeDislike />);
     assert.deepEqual(
       screen.getAllByRole("button").map((button) => button.textContent),
-      ["Like", "Dislike"],
+      ["Yes", "No"],
     );
   });
 

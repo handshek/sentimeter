@@ -25,6 +25,7 @@ const DEFAULTS = {
   followUp: "negative",
   submitLabel: "Send",
   thankYouMessage: "Thanks!",
+  thankYouDescription: "Your feedback helps us improve.",
   size: "default" as const,
 } as const;
 
@@ -38,6 +39,8 @@ export type NpsScoreProps = {
   followUp?: WidgetFollowUp;
   submitLabel?: string;
   thankYouMessage?: React.ReactNode;
+  /** A quieter line under the thank-you in the stacked card. */
+  thankYouDescription?: React.ReactNode;
   size?: WidgetSize;
   closeButton?: boolean;
   submit?: WidgetSubmit<RatingPayload>;
@@ -58,6 +61,7 @@ export function NpsScore({
   followUp = DEFAULTS.followUp,
   submitLabel,
   thankYouMessage = DEFAULTS.thankYouMessage,
+  thankYouDescription = DEFAULTS.thankYouDescription,
   size = DEFAULTS.size,
   closeButton = false,
   submit,
@@ -74,6 +78,7 @@ export function NpsScore({
       cancelLabel={cancelLabel}
       showCancel={showCancel}
       thankYouMessage={thankYouMessage}
+      thankYouDescription={thankYouDescription}
       hint={inline ? "Optional" : undefined}
     />
   );
@@ -98,7 +103,7 @@ export function NpsScore({
             {title ? <FeedbackTitle>{title}</FeedbackTitle> : null}
             {rating}
           </div>
-          <FeedbackInput placeholder="What would make it better? (optional)" />
+          <FeedbackInput placeholder="What would make it better?" />
           {footer}
         </>
       ) : (
@@ -113,7 +118,7 @@ export function NpsScore({
           ) : null}
           <FeedbackResponse>
             {rating}
-            <FeedbackInput placeholder="What would make it better? (optional)" />
+            <FeedbackInput placeholder="What would make it better?" />
           </FeedbackResponse>
           {footer}
         </>

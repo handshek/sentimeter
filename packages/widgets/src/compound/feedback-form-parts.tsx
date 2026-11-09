@@ -5,7 +5,7 @@ import { Button } from "@workspace/ui/components/button";
 import { Label } from "@workspace/ui/components/label";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { cn } from "@workspace/ui/lib/utils";
-import { CheckCircle2, CircleAlert, LoaderCircle } from "lucide-react";
+import { CircleAlert, LoaderCircle } from "lucide-react";
 import {
   feedbackSizes,
   feedbackStyles,
@@ -14,6 +14,7 @@ import {
 } from "../design-system";
 import { notify } from "../core/use-feedback-submission";
 import type { WidgetState, WidgetSubmitError } from "../types";
+import { FeedbackThanks, useIdleHeight } from "./feedback-footer";
 
 export function useFeedbackDone(state: WidgetState, onDone?: () => void) {
   const callbackRef = React.useRef(onDone);
@@ -46,6 +47,7 @@ export function FeedbackFormCard({
   style?: FeedbackStyle;
   children: React.ReactNode;
 }) {
+  const idle = useIdleHeight(state);
   return (
     <div
       data-slot="feedback-widget"
@@ -61,7 +63,7 @@ export function FeedbackFormCard({
       )}
       style={{ ...feedbackTheme.style, ...feedbackSizes.default, ...style }}
     >
-      <div className={feedbackStyles.content}>
+      <div ref={idle.ref} style={idle.style} className={feedbackStyles.content}>
         <div data-slot="feedback-header" className={feedbackStyles.header}>
           <h3
             id={titleId}
@@ -143,10 +145,8 @@ export function FeedbackFormActions({
   thankYouMessage: React.ReactNode;
   thankYouDescription?: React.ReactNode;
 }) {
-  const actionsRef = React.useRef<HTMLDivElement>(null);
   const successRef = React.useRef<HTMLDivElement>(null);
   const hadFocusRef = React.useRef(false);
-  const [actionHeight, setActionHeight] = React.useState(0);
   React.useEffect(() => {
     if (
       state === "done" &&
@@ -155,42 +155,13 @@ export function FeedbackFormActions({
     )
       successRef.current?.focus();
   }, [state]);
-  const actionStyle = actionHeight ? { minHeight: actionHeight } : undefined;
   if (state === "done")
     return (
-      <div
+      <FeedbackThanks
         ref={successRef}
-        tabIndex={-1}
-        role="status"
-        data-slot="feedback-status"
-        className={cn(
-          feedbackStyles.success,
-          thankYouDescription && feedbackStyles.formSuccess,
-          feedbackStyles.focus,
-        )}
-        // A two-line thank-you keeps its own minimum; the measured button row
-        // only stops the card from shrinking.
-        style={
-          actionHeight
-            ? {
-                minHeight: thankYouDescription
-                  ? `max(7rem, ${actionHeight}px)`
-                  : actionHeight,
-              }
-            : undefined
-        }
-      >
-        <CheckCircle2
-          className={feedbackStyles.statusIcon}
-          aria-hidden="true"
-        />
-        <span>{thankYouMessage}</span>
-        {thankYouDescription ? (
-          <span className={feedbackStyles.description}>
-            {thankYouDescription}
-          </span>
-        ) : null}
-      </div>
+        message={thankYouMessage}
+        description={thankYouDescription}
+      />
     );
   const pending = disabled || state === "submitting";
   return (
@@ -200,20 +171,7 @@ export function FeedbackFormActions({
           Submitting feedback
         </p>
       ) : null}
-      {submitError ? (
-        <p id={errorId} role="status" className={feedbackStyles.error}>
-          <CircleAlert
-            className={feedbackStyles.errorIcon}
-            aria-hidden="true"
-          />
-          <span>{submitError.message}</span>
-        </p>
-      ) : null}
-      <div
-        ref={actionsRef}
-        className={feedbackStyles.actions}
-        style={actionStyle}
-      >
+      <div className={feedbackStyles.actions}>
         {onSkip ? (
           <Button
             type="button"
@@ -241,7 +199,6 @@ export function FeedbackFormActions({
           onClick={(event) => {
             hadFocusRef.current =
               document.activeElement === event.currentTarget;
-            setActionHeight(actionsRef.current?.offsetHeight ?? 0);
             notify(onSubmit);
           }}
         >
@@ -263,6 +220,15 @@ export function FeedbackFormActions({
           )}
         </Button>
       </div>
+      {submitError ? (
+        <p id={errorId} role="status" className={feedbackStyles.error}>
+          <CircleAlert
+            className={feedbackStyles.errorIcon}
+            aria-hidden="true"
+          />
+          <span>{submitError.message}</span>
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -298,9 +264,9 @@ export function FeedbackRadioGroup({
             value === option.value || (value === null && index === 0) ? 0 : -1
           }
           className={cn(
+            feedbackStyles.segment,
             feedbackStyles.surveyOption,
-            feedbackStyles.focus,
-            value === option.value && feedbackStyles.selected,
+            value === option.value && feedbackStyles.segmentSelected,
             value === option.value && feedbackStyles.submittedChoice,
           )}
           onClick={() => selectOption(option.value)}
