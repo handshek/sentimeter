@@ -1,16 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  Angry,
-  Frown,
-  Laugh,
-  Meh,
-  Smile,
-  Star,
-  ThumbsDown,
-  ThumbsUp,
-} from "lucide-react";
+import { Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
 import { feedbackStyles } from "../design-system";
@@ -20,27 +11,23 @@ import { useFeedbackContext } from "./feedback-context";
 type Choice = { value: number; label: string; glyph: React.ReactNode };
 
 const FACES = [
-  { value: 1, label: "Angry", emoji: "😖", Icon: Angry },
-  { value: 2, label: "Sad", emoji: "😕", Icon: Frown },
-  { value: 3, label: "Neutral", emoji: "😐", Icon: Meh },
-  { value: 4, label: "Happy", emoji: "😊", Icon: Smile },
-  { value: 5, label: "Delighted", emoji: "😍", Icon: Laugh },
+  { value: 1, label: "Angry", emoji: "😖" },
+  { value: 2, label: "Sad", emoji: "😕" },
+  { value: 3, label: "Neutral", emoji: "😐" },
+  { value: 4, label: "Happy", emoji: "😊" },
+  { value: 5, label: "Delighted", emoji: "😍" },
 ] as const;
 
 // Display order: the positive response first.
 const THUMBS = [
-  { value: 1, label: "Like", emoji: "👍", Icon: ThumbsUp },
-  { value: 0, label: "Dislike", emoji: "👎", Icon: ThumbsDown },
+  { value: 1, label: "Like", Icon: ThumbsUp },
+  { value: 0, label: "Dislike", Icon: ThumbsDown },
 ] as const;
 
 const EXPECTED_GLYPHS = { emoji: 5, thumbs: 2, stars: 1, nps: 0 } as const;
 
 export type FeedbackRatingProps = {
   variant: "emoji" | "stars" | "thumbs" | "nps";
-  /** Built-in faces: native emoji or Lucide icons. */
-  emojiStyle?: "emoji" | "icons";
-  /** Built-in thumbs or stars: Lucide icons or native emoji. */
-  ratingStyle?: "icons" | "emoji";
   /**
    * Custom glyphs, replacing the built-in set. Faces take five (worst to
    * best), thumbs take two (like, then dislike), stars take one, repeated.
@@ -67,10 +54,7 @@ function readGlyph(glyph: FeedbackGlyph) {
     : { node: glyph as React.ReactNode, label: undefined };
 }
 
-function builtInChoices(
-  variant: FeedbackRatingProps["variant"],
-  useEmoji: boolean,
-): Choice[] {
+function builtInChoices(variant: FeedbackRatingProps["variant"]): Choice[] {
   if (variant === "nps") {
     return Array.from({ length: 11 }, (_, value) => ({
       value,
@@ -82,19 +66,20 @@ function builtInChoices(
     return FACES.map(({ value }) => ({
       value,
       label: `Rate ${value} star${value === 1 ? "" : "s"}`,
-      glyph: useEmoji ? "⭐" : <Star aria-hidden="true" />,
+      glyph: <Star aria-hidden="true" />,
     }));
   }
-  const set = variant === "thumbs" ? THUMBS : FACES;
-  return set.map(({ value, label, emoji, Icon }) => ({
+  if (variant === "thumbs") {
+    return THUMBS.map(({ value, label, Icon }) => ({
+      value,
+      label,
+      glyph: <Icon aria-hidden="true" />,
+    }));
+  }
+  return FACES.map(({ value, label, emoji }) => ({
     value,
-    label:
-      variant === "thumbs"
-        ? label
-        : useEmoji
-          ? `Rating ${value} of 5`
-          : `${label} (${value} of 5)`,
-    glyph: useEmoji ? emoji : <Icon aria-hidden="true" />,
+    label: `${label} (${value} of 5)`,
+    glyph: emoji,
   }));
 }
 
@@ -130,8 +115,6 @@ function customChoices(
 
 export function FeedbackRating({
   variant,
-  emojiStyle = "emoji",
-  ratingStyle = "icons",
   glyphs,
   className,
 }: FeedbackRatingProps) {
@@ -140,7 +123,6 @@ export function FeedbackRating({
   const [hoverValue, setHoverValue] = React.useState<number | null>(null);
   const [focusedValue, setFocusedValue] = React.useState<number | null>(null);
   const locked = disabled || state === "submitting" || state === "done";
-  const useEmoji = (variant === "emoji" ? emojiStyle : ratingStyle) === "emoji";
   const stars = variant === "stars";
   const thumbs = variant === "thumbs";
   const nps = variant === "nps";
@@ -158,7 +140,7 @@ export function FeedbackRating({
 
   const options = validGlyphs
     ? customChoices(variant, validGlyphs)
-    : builtInChoices(variant, useEmoji);
+    : builtInChoices(variant);
   const previewValue = (!locked ? hoverValue : null) ?? selectedValue ?? 0;
 
   return (

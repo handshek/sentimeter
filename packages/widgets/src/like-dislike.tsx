@@ -26,7 +26,6 @@ const DEFAULTS = {
   followUp: "negative",
   submitLabel: "Send",
   thankYouMessage: "Thanks!",
-  variant: "icons" as const,
   size: "default" as const,
 } as const;
 
@@ -40,14 +39,12 @@ export type LikeDislikeProps = {
   followUp?: WidgetFollowUp;
   submitLabel?: string;
   thankYouMessage?: React.ReactNode;
-  /** Lucide thumbs vs Unicode 👍 / 👎 */
-  variant?: "icons" | "emoji";
   size?: WidgetSize;
   closeButton?: boolean;
   submit?: WidgetSubmit<RatingPayload>;
   /** `stacked` (default) is the card; `inline` is a one-line bar. */
   layout?: WidgetLayout;
-  /** Two custom glyphs: like, then dislike. Replaces `variant`. */
+  /** Two custom glyphs: like, then dislike. Replaces the built-in thumbs. */
   glyphs?: ThumbGlyphs;
   /** Shows Cancel, which clears an unsent choice. Defaults to true. */
   showCancel?: boolean;
@@ -64,7 +61,6 @@ export function LikeDislike({
   followUp = DEFAULTS.followUp,
   submitLabel,
   thankYouMessage = DEFAULTS.thankYouMessage,
-  variant = DEFAULTS.variant,
   size = DEFAULTS.size,
   closeButton = false,
   submit,
@@ -75,9 +71,7 @@ export function LikeDislike({
   ...callbacks
 }: LikeDislikeProps) {
   const inline = layout === "inline";
-  const rating = (
-    <FeedbackRating variant="thumbs" ratingStyle={variant} glyphs={glyphs} />
-  );
+  const rating = <FeedbackRating variant="thumbs" glyphs={glyphs} />;
   const footer = (
     <FeedbackFooter
       submitLabel={submitLabel ?? DEFAULTS.submitLabel}

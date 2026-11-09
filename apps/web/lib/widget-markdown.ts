@@ -82,7 +82,7 @@ The widget inherits the host app’s shadcn colors, font, and radius. It does no
 
 ${code("tsx", getUsageSnippet(widget, { layout: "inline", followUp: "always" }))}
 
-The installed feedback-system/design-system.ts holds the recipe and its --feedback-* tokens. Import FeedbackStyle from @/components/sentimeter/feedback-system and use the style prop for local token overrides. The icon variants use Lucide.
+The installed feedback-system/design-system.ts holds the recipe and its --feedback-* tokens. Import FeedbackStyle from @/components/sentimeter/feedback-system and use the style prop for local token overrides. Thumbs and stars use Lucide icons.
 
 ${
   rating

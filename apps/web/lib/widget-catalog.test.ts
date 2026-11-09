@@ -93,11 +93,9 @@ test("NPS docs connect the public item to its source and launch behavior", () =>
   const nps = getWidgetDoc("nps")!;
   expect(nps.componentName).toBe("NpsScore");
   expect(nps.example.followUp).toBe("negative");
-  const example = getUsageSnippet(nps, { variant: "emoji" });
+  const example = getUsageSnippet(nps);
   expect(example).toContain("@/components/sentimeter/nps-score");
-  expect(example).not.toContain("variant=");
   expect(getWidgetMarkdown(nps)).toContain("NPS 0–6");
-  expect(nps.props.map((row) => row.prop)).not.toContain("variant");
   expect(getAgentIndex()).toContain("/components/nps/markdown");
   expect(docsTree.children).toContainEqual({
     type: "page",

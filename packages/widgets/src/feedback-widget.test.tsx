@@ -73,7 +73,6 @@ describe("feedback widget lifecycle and theme", () => {
         });
         const { container } = render(
           <widget.Component
-            variant="icons"
             followUp="always"
             submit={async (payload) => {
               payloads.push(payload);
@@ -673,7 +672,6 @@ describe("cancel, custom glyphs, and inline layout", () => {
     let dismissed = false;
     render(
       <EmojiFeedback
-        variant="icons"
         followUp="always"
         onStateChange={(state) => states.push(state)}
         onReset={() => (resets += 1)}
@@ -784,7 +782,7 @@ describe("cancel, custom glyphs, and inline layout", () => {
       console.warn = originalWarn;
     }
     assert.equal(screen.getAllByRole("button").length, 5);
-    assert.ok(screen.getByRole("button", { name: "Rating 1 of 5" }));
+    assert.ok(screen.getByRole("button", { name: "Angry (1 of 5)" }));
     assert.match(String(warnings[0]?.[0]), /take 5 glyphs, received 2/);
   });
 
@@ -794,7 +792,6 @@ describe("cancel, custom glyphs, and inline layout", () => {
         layout="inline"
         title="Was this helpful?"
         description="Not shown inline"
-        variant="icons"
         followUp="always"
       />,
     );

@@ -312,19 +312,11 @@ function WidgetRig({
   kind,
   description,
   common,
-  emojiVariant,
-  setEmojiVariant,
-  ratingVariant,
-  setRatingVariant,
 }: {
   title: string;
   description: string;
   kind: "emoji" | "thumbs" | "stars";
   common: WidgetCommon;
-  emojiVariant?: "emoji" | "icons";
-  setEmojiVariant?: (v: "emoji" | "icons") => void;
-  ratingVariant?: "icons" | "emoji";
-  setRatingVariant?: (v: "icons" | "emoji") => void;
 }) {
   const [rigState, dispatch] = React.useReducer(
     widgetRigReducer,
@@ -400,51 +392,6 @@ function WidgetRig({
           description={description}
         >
           <div className="space-y-3">
-            {kind === "emoji" && emojiVariant && setEmojiVariant ? (
-              <Field
-                id={`${kind}-emojiVariant`}
-                label="Emoji Variant"
-                description="Native emoji or Lucide face icons"
-              >
-                <Select value={emojiVariant} onValueChange={setEmojiVariant}>
-                  <SelectTrigger id={`${kind}-emojiVariant`} className="w-full">
-                    <SelectValue placeholder="Select variant" />
-                  </SelectTrigger>
-                  <SelectContent position="popper">
-                    <SelectItem value="emoji">Native emoji</SelectItem>
-                    <SelectItem value="icons">Lucide faces</SelectItem>
-                  </SelectContent>
-                </Select>
-              </Field>
-            ) : null}
-
-            {(kind === "thumbs" || kind === "stars") &&
-            ratingVariant &&
-            setRatingVariant ? (
-              <Field
-                id={`${kind}-ratingVariant`}
-                label="Rating style"
-                description={
-                  kind === "thumbs"
-                    ? "Lucide thumbs or Unicode 👎 / 👍"
-                    : "Lucide stars or ⭐ emoji row (grayscale until preview)"
-                }
-              >
-                <Select value={ratingVariant} onValueChange={setRatingVariant}>
-                  <SelectTrigger
-                    id={`${kind}-ratingVariant`}
-                    className="w-full"
-                  >
-                    <SelectValue placeholder="Select style" />
-                  </SelectTrigger>
-                  <SelectContent position="popper">
-                    <SelectItem value="icons">Lucide icons</SelectItem>
-                    <SelectItem value="emoji">Emoji</SelectItem>
-                  </SelectContent>
-                </Select>
-              </Field>
-            ) : null}
-
             <div className="grid gap-2 sm:grid-cols-2">
               <Button
                 type="button"
@@ -534,23 +481,11 @@ function WidgetRig({
           <div className="-mx-4 overflow-hidden rounded-xl border border-border bg-muted/30 p-0 min-[360px]:mx-0 min-[360px]:p-3 sm:p-6">
             <div className="flex items-center justify-center">
               {kind === "emoji" ? (
-                <EmojiFeedback
-                  key={instance}
-                  {...widgetCommon}
-                  variant={emojiVariant ?? "emoji"}
-                />
+                <EmojiFeedback key={instance} {...widgetCommon} />
               ) : kind === "thumbs" ? (
-                <LikeDislike
-                  key={instance}
-                  {...widgetCommon}
-                  variant={ratingVariant ?? "icons"}
-                />
+                <LikeDislike key={instance} {...widgetCommon} />
               ) : (
-                <StarRating
-                  key={instance}
-                  {...widgetCommon}
-                  variant={ratingVariant ?? "icons"}
-                />
+                <StarRating key={instance} {...widgetCommon} />
               )}
             </div>
           </div>
@@ -732,15 +667,6 @@ export function WidgetsPlaygroundClient({
   const [submitMode, setSubmitMode] = React.useState<SubmitMode>("mock");
   const [mockOutcome, setMockOutcome] = React.useState<MockOutcome>("success");
   const [mockDelayMs, setMockDelayMs] = React.useState(450);
-  const [emojiVariant, setEmojiVariant] = React.useState<"emoji" | "icons">(
-    "emoji",
-  );
-  const [thumbsVariant, setThumbsVariant] = React.useState<"icons" | "emoji">(
-    "icons",
-  );
-  const [starsVariant, setStarsVariant] = React.useState<"icons" | "emoji">(
-    "icons",
-  );
   const [title, setTitle] = React.useState("Rate your experience");
   const [description, setDescription] = React.useState(
     "This helps us improve our product.",
@@ -1314,15 +1240,13 @@ export function WidgetsPlaygroundClient({
                   <WidgetSection
                     tag="W01"
                     title="Emoji"
-                    subtitle="Native emojis by default, optional Lucide faces."
+                    subtitle="Five emoji faces, worst to best."
                   >
                     <WidgetRig
                       title="Emoji"
                       description="5-point reaction"
                       kind="emoji"
                       common={common}
-                      emojiVariant={emojiVariant}
-                      setEmojiVariant={setEmojiVariant}
                     />
                   </WidgetSection>
 
@@ -1338,8 +1262,6 @@ export function WidgetsPlaygroundClient({
                       description="Binary feedback"
                       kind="thumbs"
                       common={common}
-                      ratingVariant={thumbsVariant}
-                      setRatingVariant={setThumbsVariant}
                     />
                   </WidgetSection>
 
@@ -1355,8 +1277,6 @@ export function WidgetsPlaygroundClient({
                       description="1–5 rating"
                       kind="stars"
                       common={common}
-                      ratingVariant={starsVariant}
-                      setRatingVariant={setStarsVariant}
                     />
                   </WidgetSection>
 

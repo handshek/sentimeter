@@ -26,7 +26,6 @@ const DEFAULTS = {
   followUp: "negative",
   submitLabel: "Send",
   thankYouMessage: "Thanks!",
-  variant: "emoji" as const,
   size: "default" as const,
 } as const;
 
@@ -40,13 +39,12 @@ export type EmojiFeedbackProps = {
   followUp?: WidgetFollowUp;
   submitLabel?: string;
   thankYouMessage?: React.ReactNode;
-  variant?: "emoji" | "icons";
   size?: WidgetSize;
   closeButton?: boolean;
   submit?: WidgetSubmit<RatingPayload>;
   /** `stacked` (default) is the card; `inline` is a one-line bar. */
   layout?: WidgetLayout;
-  /** Five custom glyphs, worst to best. Replaces `variant`. */
+  /** Five custom glyphs, worst to best. Replaces the built-in faces. */
   glyphs?: FaceGlyphs;
   /** Shows Cancel, which clears an unsent choice. Defaults to true. */
   showCancel?: boolean;
@@ -63,7 +61,6 @@ export function EmojiFeedback({
   followUp = DEFAULTS.followUp,
   submitLabel,
   thankYouMessage = DEFAULTS.thankYouMessage,
-  variant = DEFAULTS.variant,
   size = DEFAULTS.size,
   closeButton = false,
   submit,
@@ -74,9 +71,7 @@ export function EmojiFeedback({
   ...callbacks
 }: EmojiFeedbackProps) {
   const inline = layout === "inline";
-  const rating = (
-    <FeedbackRating variant="emoji" emojiStyle={variant} glyphs={glyphs} />
-  );
+  const rating = <FeedbackRating variant="emoji" glyphs={glyphs} />;
   const footer = (
     <FeedbackFooter
       submitLabel={submitLabel ?? DEFAULTS.submitLabel}

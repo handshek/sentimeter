@@ -168,7 +168,6 @@ function GlyphSpecimen() {
 }
 
 export function WidgetSpecimens() {
-  const [variant, setVariant] = useState<"icons" | "emoji">("emoji");
   const [size, setSize] = useState<WidgetSize>("default");
   const [followUp, setFollowUp] = useState<WidgetFollowUp>("negative");
   return (
@@ -176,24 +175,9 @@ export function WidgetSpecimens() {
       <SystemSection
         id="families"
         title="One structure. Four ways to listen."
-        description="Try each family with your choice of glyphs, size, and comment field. All interactions on this page stay in your browser; no feedback is sent."
+        description="Try each family with your choice of size and comment field. All interactions on this page stay in your browser; no feedback is sent."
       >
         <div className="flex flex-wrap items-end gap-5 border-b border-border pb-6">
-          <div className="space-y-2">
-            <Label htmlFor="widget-icon-style">Rating style</Label>
-            <Select
-              value={variant}
-              onValueChange={(value) => setVariant(value as typeof variant)}
-            >
-              <SelectTrigger id="widget-icon-style" className="w-36">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="emoji">Native emoji</SelectItem>
-                <SelectItem value="icons">Lucide icons</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
           <div className="space-y-2">
             <Label htmlFor="widget-size">Size</Label>
             <Select
@@ -253,10 +237,7 @@ export function WidgetSpecimens() {
           </TabsList>
           {widgetDocs.map((widget) => (
             <TabsContent key={widget.slug} value={widget.slug} className="pt-6">
-              <WidgetDemo
-                widget={widget}
-                options={{ variant, size, followUp }}
-              />
+              <WidgetDemo widget={widget} options={{ size, followUp }} />
               <Button asChild variant="link" className="mt-6 px-0">
                 <Link href={`/components/${widget.slug}`}>
                   Use {widget.name}

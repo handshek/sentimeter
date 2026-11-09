@@ -25,8 +25,8 @@ const ratings = [
   {
     name: "emoji",
     Widget: EmojiFeedback,
-    negative: "Rating 2 of 5",
-    positive: "Rating 3 of 5",
+    negative: "Sad (2 of 5)",
+    positive: "Neutral (3 of 5)",
     value: 2,
     positiveValue: 3,
     widgetType: "emoji",
@@ -164,8 +164,8 @@ test("repeated immediate picks in one tick send only the first payload", async (
       }}
     />,
   );
-  const first = screen.getByRole("button", { name: "Rating 5 of 5" });
-  const second = screen.getByRole("button", { name: "Rating 4 of 5" });
+  const first = screen.getByRole("button", { name: "Delighted (5 of 5)" });
+  const second = screen.getByRole("button", { name: "Happy (4 of 5)" });
   act(() => {
     fireEvent.click(first);
     fireEvent.click(second);
@@ -239,9 +239,9 @@ test("emoji arrows focus an adjacent rating without submitting before activation
       }}
     />,
   );
-  const first = screen.getByRole("button", { name: "Rating 1 of 5" });
-  const second = screen.getByRole("button", { name: "Rating 2 of 5" });
-  const last = screen.getByRole("button", { name: "Rating 5 of 5" });
+  const first = screen.getByRole("button", { name: "Angry (1 of 5)" });
+  const second = screen.getByRole("button", { name: "Sad (2 of 5)" });
+  const last = screen.getByRole("button", { name: "Delighted (5 of 5)" });
   act(() => first.focus());
   fireEvent.keyDown(first, { key: "ArrowRight" });
   assert.equal(document.activeElement, second);

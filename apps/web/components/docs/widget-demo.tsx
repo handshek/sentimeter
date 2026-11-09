@@ -20,7 +20,7 @@ const widgets = { emoji: EmojiFeedback, thumbs: LikeDislike, star: StarRating };
 type WidgetDemoProps = {
   widget: Pick<
     WidgetDocConfig,
-    "slug" | "preview" | "defaultVariant" | "name" | "example" | "replayText"
+    "slug" | "preview" | "name" | "example" | "replayText"
   >;
   options?: Partial<WidgetDemoOptions>;
   /** Increment to restart the example and play its scripted flow. */
@@ -79,7 +79,6 @@ export function WidgetDemo({
   const key = [
     widget.slug,
     resolved.layout,
-    resolved.variant,
     resolved.size,
     resolved.followUp,
   ].join(":");
@@ -175,7 +174,6 @@ function WidgetDemoInstance({
           <Widget
             key={instance}
             layout={options.layout}
-            {...(widget.preview === "nps" ? {} : { variant: options.variant })}
             size={options.size}
             followUp={options.followUp}
             onStateChange={setState}

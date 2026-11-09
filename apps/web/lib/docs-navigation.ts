@@ -97,7 +97,7 @@ export const designSystemSections = [
     title: "Icons and motion",
     url: "/design-system/icons-motion",
     content:
-      "Lucide icons, accessible labels, glyph size and stroke, touch targets, transitions, and reduced motion. Native emoji is an explicit widget option.",
+      "Lucide icons, accessible labels, glyph size and stroke, touch targets, transitions, and reduced motion. Emoji faces are the one built-in exception.",
   },
   {
     title: "Components",
