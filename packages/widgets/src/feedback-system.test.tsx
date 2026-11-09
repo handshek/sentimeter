@@ -6,11 +6,11 @@ import { LikeDislike } from "./index";
 afterEach(cleanup);
 
 describe("canonical widget feedback system", () => {
-  test("shows Like before Dislike with their canonical emoji", () => {
-    render(<LikeDislike variant="emoji" />);
+  test("shows Like before Dislike", () => {
+    render(<LikeDislike />);
     assert.deepEqual(
       screen.getAllByRole("button").map((button) => button.textContent),
-      ["\u{1F44D}Like", "\u{1F44E}Dislike"],
+      ["Like", "Dislike"],
     );
   });
 

@@ -126,17 +126,6 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
                   onChange={(layout) => updateOptions({ layout })}
                 />
               ) : null}
-              {rating && widget.defaultVariant !== null ? (
-                <Segmented
-                  label="Glyphs"
-                  value={options.variant}
-                  options={[
-                    ["emoji", "Emoji"],
-                    ["icons", "Icons"],
-                  ]}
-                  onChange={(variant) => updateOptions({ variant })}
-                />
-              ) : null}
               <Button
                 type="button"
                 variant="ghost"

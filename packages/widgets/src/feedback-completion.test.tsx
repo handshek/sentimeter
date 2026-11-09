@@ -18,19 +18,8 @@ afterEach(cleanup);
 
 const widgetCases = [
   {
-    name: "emoji symbols",
+    name: "emoji",
     Widget: EmojiFeedback,
-    variant: "emoji",
-    ratingName: "Rating 5 of 5",
-    alternateName: "Rating 1 of 5",
-    widgetType: "emoji",
-    value: 5,
-    alternateValue: 1,
-  },
-  {
-    name: "emoji icons",
-    Widget: EmojiFeedback,
-    variant: "icons",
     ratingName: "Delighted (5 of 5)",
     alternateName: "Angry (1 of 5)",
     widgetType: "emoji",
@@ -38,9 +27,8 @@ const widgetCases = [
     alternateValue: 1,
   },
   {
-    name: "thumb icons",
+    name: "thumbs",
     Widget: LikeDislike,
-    variant: "icons",
     ratingName: "Like",
     alternateName: "Dislike",
     widgetType: "thumbs",
@@ -48,29 +36,8 @@ const widgetCases = [
     alternateValue: 0,
   },
   {
-    name: "thumb emoji",
-    Widget: LikeDislike,
-    variant: "emoji",
-    ratingName: "Like",
-    alternateName: "Dislike",
-    widgetType: "thumbs",
-    value: 1,
-    alternateValue: 0,
-  },
-  {
-    name: "star icons",
+    name: "stars",
     Widget: StarRating,
-    variant: "icons",
-    ratingName: "Rate 5 stars",
-    alternateName: "Rate 1 star",
-    widgetType: "star",
-    value: 5,
-    alternateValue: 1,
-  },
-  {
-    name: "star emoji",
-    Widget: StarRating,
-    variant: "emoji",
     ratingName: "Rate 5 stars",
     alternateName: "Rate 1 star",
     widgetType: "star",
@@ -82,7 +49,6 @@ const widgetCases = [
 for (const {
   name,
   Widget,
-  variant,
   ratingName,
   alternateName,
   widgetType,
@@ -98,7 +64,6 @@ for (const {
     const { container, rerender } = render(
       <Widget
         key="original"
-        variant={variant}
         followUp="always"
         submit={(payload) => {
           payloads.push(payload);
@@ -154,7 +119,7 @@ for (const {
       },
     ]);
 
-    rerender(<Widget key="reset" variant={variant} followUp="always" />);
+    rerender(<Widget key="reset" followUp="always" />);
     assert.equal(screen.queryByRole("status"), null);
     assert.equal(screen.queryByRole("textbox"), null);
     const resetControl = screen.getByRole("button", {
@@ -170,53 +135,51 @@ for (const {
     assert.equal(resetControl.getAttribute("aria-pressed"), "true");
   });
 
-  if (variant === "icons")
-    test(`${name} permits corrections after a failed submission`, async () => {
-      const payloads: WidgetPayload[] = [];
-      const { container } = render(
-        <Widget
-          variant={variant}
-          followUp="always"
-          submit={async (payload) => {
-            payloads.push(payload);
-            if (payloads.length === 1) throw new Error("offline");
-          }}
-        />,
-      );
-      fireEvent.click(screen.getByRole("button", { name: ratingName }));
-      const input = screen.getByRole("textbox", {
-        name: "Additional feedback",
-      }) as HTMLTextAreaElement;
-      fireEvent.change(input, { target: { value: "Original feedback" } });
-      fireEvent.click(screen.getByRole("button", { name: "Send" }));
-      await screen.findByRole("button", { name: "Try again" });
-      assert.equal(input.disabled, false);
-      assert.equal(
-        Array.from(
-          container.querySelectorAll<HTMLButtonElement>("button[aria-pressed]"),
-        ).every((control) => !control.disabled),
-        true,
-      );
-      fireEvent.change(input, { target: { value: "Corrected feedback" } });
-      fireEvent.click(screen.getByRole("button", { name: alternateName }));
-      fireEvent.click(screen.getByRole("button", { name: "Send" }));
-      await screen.findByText("Thanks!");
-      assert.deepEqual(payloads, [
-        {
-          location: "/",
-          widgetType,
-          value,
-          text: "Original feedback",
-        },
-        {
-          location: "/",
-          widgetType,
-          value: alternateValue,
-          text: "Corrected feedback",
-        },
-      ]);
-      assert.equal(screen.queryByRole("textbox"), null);
-    });
+  test(`${name} permits corrections after a failed submission`, async () => {
+    const payloads: WidgetPayload[] = [];
+    const { container } = render(
+      <Widget
+        followUp="always"
+        submit={async (payload) => {
+          payloads.push(payload);
+          if (payloads.length === 1) throw new Error("offline");
+        }}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: ratingName }));
+    const input = screen.getByRole("textbox", {
+      name: "Additional feedback",
+    }) as HTMLTextAreaElement;
+    fireEvent.change(input, { target: { value: "Original feedback" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    await screen.findByRole("button", { name: "Try again" });
+    assert.equal(input.disabled, false);
+    assert.equal(
+      Array.from(
+        container.querySelectorAll<HTMLButtonElement>("button[aria-pressed]"),
+      ).every((control) => !control.disabled),
+      true,
+    );
+    fireEvent.change(input, { target: { value: "Corrected feedback" } });
+    fireEvent.click(screen.getByRole("button", { name: alternateName }));
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    await screen.findByText("Thanks!");
+    assert.deepEqual(payloads, [
+      {
+        location: "/",
+        widgetType,
+        value,
+        text: "Original feedback",
+      },
+      {
+        location: "/",
+        widgetType,
+        value: alternateValue,
+        text: "Corrected feedback",
+      },
+    ]);
+    assert.equal(screen.queryByRole("textbox"), null);
+  });
 }
 
 test(`stars retain the submitted fill while locked despite hover or focus previews`, async () => {

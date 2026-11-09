@@ -149,9 +149,8 @@ export function IconMotionSpecimens() {
           <div>
             <h3 className="ds-heading">Keep the family consistent</h3>
             <p className="ds-body-sm mt-2 text-muted-foreground">
-              Use 1.75 px strokes in product specimens. Native emoji is a
-              deliberate feedback option; its appearance belongs to the
-              platform.
+              Use 1.75 px strokes in product specimens. The emoji faces are the
+              one built-in exception; their appearance belongs to the platform.
             </p>
           </div>
         </div>

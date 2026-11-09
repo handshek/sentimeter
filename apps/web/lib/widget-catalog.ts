@@ -121,7 +121,6 @@ export type WidgetDocConfig = {
     | "NpsScore"
     | "FeedbackForm"
     | "Survey";
-  defaultVariant: "emoji" | "icons" | null;
   example: WidgetDemoOptions;
   /** What Replay types into the follow-up after a negative pick. */
   replayText: string;
@@ -136,20 +135,16 @@ export const localExampleNote =
 
 export type WidgetDemoOptions = {
   layout: WidgetLayout;
-  variant: "emoji" | "icons";
   size: WidgetSize;
   followUp: WidgetFollowUp;
 };
 
 export function getUsageSnippet(
-  widget: Pick<
-    WidgetDocConfig,
-    "registryName" | "componentName" | "defaultVariant" | "example"
-  >,
+  widget: Pick<WidgetDocConfig, "registryName" | "componentName" | "example">,
   options?: Partial<WidgetDemoOptions>,
   submission: "local" | "custom" = "local",
 ) {
-  const { variant, size, layout, followUp } = {
+  const { size, layout, followUp } = {
     ...widget.example,
     ...options,
   };
@@ -158,9 +153,6 @@ export function getUsageSnippet(
     widget.componentName !== "Survey";
   const props = [
     ...(rating && layout !== "stacked" ? [`layout="${layout}"`] : []),
-    ...(widget.defaultVariant !== null && variant !== widget.defaultVariant
-      ? [`variant="${variant}"`]
-      : []),
     ...(rating && size !== "default" ? [`size="${size}"`] : []),
     ...(rating && followUp !== "negative" ? [`followUp="${followUp}"`] : []),
     ...(submission === "custom" ? ["submit={saveFeedback}"] : []),
@@ -202,11 +194,6 @@ export function getCompoundSnippet(widget: WidgetDocConfig) {
   if (widget.preview === "form" || widget.preview === "survey")
     return getUsageSnippet(widget);
   const ratingVariant = widget.preview === "star" ? "stars" : widget.preview;
-  const styleProp = widget.preview === "emoji" ? "emojiStyle" : "ratingStyle";
-  const ratingStyle =
-    widget.defaultVariant === null
-      ? ""
-      : ` ${styleProp}="${widget.defaultVariant}"`;
   const title =
     widget.preview === "nps"
       ? "How likely are you to recommend us?"
@@ -230,7 +217,7 @@ export function FeedbackExample() {
         <FeedbackDescription>Your feedback helps us improve.</FeedbackDescription>
       </div>
       <FeedbackResponse>
-        <FeedbackRating variant="${ratingVariant}"${ratingStyle} />
+        <FeedbackRating variant="${ratingVariant}" />
         <FeedbackInput placeholder="${placeholder}" />
       </FeedbackResponse>
       <FeedbackFooter submitLabel="Send" />
@@ -438,28 +425,19 @@ const widgetDefinitions: Record<
     preview: "emoji",
     replayText: "Card got declined twice.",
     componentName: "EmojiFeedback",
-    defaultVariant: "emoji",
     example: {
       layout: "stacked",
-      variant: "emoji",
       size: "default",
       followUp: "negative",
     },
     props: [
       ...propsForTitle("Rate your experience"),
       {
-        prop: "variant",
-        type: '"emoji" | "icons"',
-        defaultValue: '"emoji"',
-        description:
-          "Built-in faces: five native emoji (worst to best: 😖 😕 😐 😊 😍), or Lucide face icons. Faces stay grayscale until hovered or chosen.",
-      },
-      {
         prop: "glyphs",
         type: "FaceGlyphs",
         defaultValue: "-",
         description:
-          "Five custom glyphs, worst to best (values 1–5): emoji, icons, images, or { glyph, label }. Replaces variant.",
+          "Five custom glyphs, worst to best (values 1–5), replacing the built-in faces 😖 😕 😐 😊 😍. Pass emoji, icons, images, or { glyph, label } to name each one.",
       },
     ],
   },
@@ -474,28 +452,19 @@ const widgetDefinitions: Record<
     preview: "thumbs",
     replayText: "The steps skipped the env vars.",
     componentName: "LikeDislike",
-    defaultVariant: "icons",
     example: {
       layout: "inline",
-      variant: "icons",
       size: "default",
       followUp: "negative",
     },
     props: [
       ...propsForTitle("Was this helpful?"),
       {
-        prop: "variant",
-        type: '"icons" | "emoji"',
-        defaultValue: '"icons"',
-        description:
-          "Lucide thumbs up/down, or Unicode 👍 (1) / 👎 (0) for the same payload values. Like is shown first.",
-      },
-      {
         prop: "glyphs",
         type: "ThumbGlyphs",
         defaultValue: "-",
         description:
-          "Two custom glyphs: like (value 1), then dislike (value 0). Emoji, icons, images, or { glyph, label }. Replaces variant.",
+          "Two custom glyphs, replacing the built-in thumb icons: like (value 1), then dislike (value 0). Pass emoji, icons, images, or { glyph, label } to name each one.",
       },
     ],
   },
@@ -510,28 +479,19 @@ const widgetDefinitions: Record<
     preview: "star",
     replayText: "Setup took longer than expected.",
     componentName: "StarRating",
-    defaultVariant: "icons",
     example: {
       layout: "stacked",
-      variant: "icons",
       size: "default",
       followUp: "negative",
     },
     props: [
       ...propsForTitle("Rate your experience"),
       {
-        prop: "variant",
-        type: '"icons" | "emoji"',
-        defaultValue: '"icons"',
-        description:
-          "Lucide stars with hover preview, or five ⭐ emoji (grayscale until included in the preview) for values 1–5.",
-      },
-      {
         prop: "glyph",
         type: "FeedbackGlyph",
         defaultValue: "-",
         description:
-          'One custom glyph repeated five times, such as a heart. Pass { glyph, label: "heart" } so controls read “Rate 3 hearts”. Replaces variant.',
+          'One custom glyph repeated five times, replacing the built-in star, such as a heart. Pass { glyph, label: "heart" } so controls read “Rate 3 hearts”.',
       },
     ],
   },
@@ -546,10 +506,8 @@ const widgetDefinitions: Record<
     preview: "nps",
     replayText: "Faster exports would help.",
     componentName: "NpsScore",
-    defaultVariant: null,
     example: {
       layout: "stacked",
-      variant: "icons",
       size: "default",
       followUp: "negative",
     },
@@ -566,10 +524,8 @@ const widgetDefinitions: Record<
     preview: "form",
     replayText: "Save button does nothing on billing.",
     componentName: "FeedbackForm",
-    defaultVariant: null,
     example: {
       layout: "stacked",
-      variant: "icons",
       size: "default",
       followUp: "negative",
     },
@@ -621,10 +577,8 @@ const widgetDefinitions: Record<
     preview: "survey",
     replayText: "CSV export kept timing out.",
     componentName: "Survey",
-    defaultVariant: null,
     example: {
       layout: "stacked",
-      variant: "icons",
       size: "default",
       followUp: "negative",
     },

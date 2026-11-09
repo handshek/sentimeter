@@ -231,7 +231,7 @@ TabsList in a wrapper with `overflow-x-auto py-2 -my-2` so it scrolls in one
 row without clipping the triggers' hit areas. Links without a
 visible box keep `min-h-11` as their target.
 Decorative icons have `aria-hidden`; icon-only actions have an accessible name.
-Native emoji remains a deliberate widget option with platform-dependent rendering.
+Emoji faces are the built-in Emoji glyphs; their rendering belongs to the platform.
 
 Motion communicates a state change. Animate only transform, opacity, and
 clip-path; never animate layout-driven text. Use one strong ease-out through

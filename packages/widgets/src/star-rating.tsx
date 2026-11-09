@@ -26,7 +26,6 @@ const DEFAULTS = {
   followUp: "negative",
   submitLabel: "Send",
   thankYouMessage: "Thanks!",
-  variant: "icons" as const,
   size: "default" as const,
 } as const;
 
@@ -40,14 +39,12 @@ export type StarRatingProps = {
   followUp?: WidgetFollowUp;
   submitLabel?: string;
   thankYouMessage?: React.ReactNode;
-  /** Lucide stars vs ⭐ emoji row, grayscale until included in preview (same hover behavior) */
-  variant?: "icons" | "emoji";
   size?: WidgetSize;
   closeButton?: boolean;
   submit?: WidgetSubmit<RatingPayload>;
   /** `stacked` (default) is the card; `inline` is a one-line bar. */
   layout?: WidgetLayout;
-  /** One custom glyph, repeated five times. Replaces `variant`. */
+  /** One custom glyph, repeated five times. Replaces the built-in star. */
   glyph?: FeedbackGlyph;
   /** Shows Cancel, which clears an unsent choice. Defaults to true. */
   showCancel?: boolean;
@@ -64,7 +61,6 @@ export function StarRating({
   followUp = DEFAULTS.followUp,
   submitLabel,
   thankYouMessage = DEFAULTS.thankYouMessage,
-  variant = DEFAULTS.variant,
   size = DEFAULTS.size,
   closeButton = false,
   submit,
@@ -78,7 +74,6 @@ export function StarRating({
   const rating = (
     <FeedbackRating
       variant="stars"
-      ratingStyle={variant}
       glyphs={glyph === undefined ? undefined : [glyph]}
     />
   );

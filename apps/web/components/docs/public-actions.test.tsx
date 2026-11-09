@@ -48,24 +48,21 @@ test("local demo submits without a request and resets selection with keyboard fo
     expect(document.activeElement).toBe(firstReaction);
     fireEvent.click(firstReaction);
     view.rerender(
-      <WidgetDemo
-        widget={widgetDocs[0]!}
-        options={{ variant: "icons", size: "lg" }}
-      />,
+      <WidgetDemo widget={widgetDocs[0]!} options={{ size: "lg" }} />,
     );
     expect(
       screen
         .getAllByRole("button")
         .filter((button) => button.getAttribute("aria-pressed") === "true"),
     ).toHaveLength(0);
-    const iconReaction = screen
+    const resizedReaction = screen
       .getAllByRole("button")
       .find((button) => button.hasAttribute("aria-pressed"))!;
-    fireEvent.click(iconReaction);
+    fireEvent.click(resizedReaction);
     view.rerender(
       <WidgetDemo
         widget={widgetDocs[0]!}
-        options={{ variant: "icons", size: "lg", layout: "inline" }}
+        options={{ size: "lg", layout: "inline" }}
       />,
     );
     expect(
