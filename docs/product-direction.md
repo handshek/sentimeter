@@ -58,6 +58,13 @@ The public API may break freely before launch; launch is the first stable API.
   URL and route, browser, OS, and viewport. No category picker.
 - **Survey.** Pick one reason, then an optional note. For questions with known
   answers, such as why someone cancels.
+- **Glyphs.** Each rating ships one built-in look (colour emoji faces, icon
+  thumbs, icon stars) and keeps the `glyphs` prop for custom ones. `variant`
+  is removed.
+- **Labels.** Picks show glyphs only; each label is the pick's accessible name
+  and tooltip. Thumbs keep visible "Yes" and "No" text.
+- **Layouts.** Emoji, Thumbs, and Stars keep `layout="inline" | "stacked"`.
+  Inline serves "Was this helpful?"; stacked serves the after-task rating.
 - **After submit.** The thank-you stays on screen. Popovers and dialogs close
   themselves about two seconds after it appears. This replaces the current
   auto-hide default.
@@ -106,6 +113,11 @@ shadcn registry index, docs keep the full registry URL as a fallback.
 Pen boards were approved on 2026-11-07. They live in the git-ignored
 `design/sentimeter-launch.pen` with exports in `design/launch-exports/`. Code
 follows the boards.
+
+### Build order
+
+Components first: restyle Emoji, Thumbs, and Stars to the final board, then add
+NPS, FeedbackForm, and Survey. Blocks follow, then the homepage.
 
 ### Not at launch
 
