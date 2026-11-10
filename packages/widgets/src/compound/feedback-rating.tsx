@@ -1,7 +1,17 @@
 "use client";
 
 import * as React from "react";
-import { LoaderCircle, Star, ThumbsDown, ThumbsUp } from "lucide-react";
+import {
+  Angry,
+  Frown,
+  Laugh,
+  LoaderCircle,
+  Meh,
+  Smile,
+  Star,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
 import { feedbackStyles } from "../design-system";
@@ -10,12 +20,13 @@ import { useFeedbackContext } from "./feedback-context";
 
 type Choice = { value: number; label: string; glyph: React.ReactNode };
 
+// The stacked card shows colour emoji; the inline bar shows line faces.
 const FACES = [
-  { value: 1, label: "Angry", emoji: "😖" },
-  { value: 2, label: "Sad", emoji: "😕" },
-  { value: 3, label: "Neutral", emoji: "😐" },
-  { value: 4, label: "Happy", emoji: "😊" },
-  { value: 5, label: "Delighted", emoji: "😍" },
+  { value: 1, label: "Angry", emoji: "😖", Icon: Angry },
+  { value: 2, label: "Sad", emoji: "😕", Icon: Frown },
+  { value: 3, label: "Neutral", emoji: "😐", Icon: Meh },
+  { value: 4, label: "Happy", emoji: "😊", Icon: Smile },
+  { value: 5, label: "Delighted", emoji: "😍", Icon: Laugh },
 ] as const;
 
 // Display order: the positive response first.
@@ -96,7 +107,7 @@ function readGlyph(glyph: FeedbackGlyph) {
 
 type GlyphVariant = Exclude<FeedbackRatingProps["variant"], "nps">;
 
-function builtInChoices(variant: GlyphVariant): Choice[] {
+function builtInChoices(variant: GlyphVariant, inline: boolean): Choice[] {
   if (variant === "stars") {
     return FACES.map(({ value }) => ({
       value,
@@ -111,10 +122,10 @@ function builtInChoices(variant: GlyphVariant): Choice[] {
       glyph: <Icon aria-hidden="true" />,
     }));
   }
-  return FACES.map(({ value, label, emoji }) => ({
+  return FACES.map(({ value, label, emoji, Icon }) => ({
     value,
     label: `${label} (${value} of 5)`,
-    glyph: emoji,
+    glyph: inline ? <Icon aria-hidden="true" /> : emoji,
   }));
 }
 
@@ -185,7 +196,7 @@ function GlyphRating({
 
   const options = validGlyphs
     ? customChoices(variant, validGlyphs)
-    : builtInChoices(variant);
+    : builtInChoices(variant, inline);
   const previewValue = (!locked ? hoverValue : null) ?? selectedValue ?? 0;
 
   return (

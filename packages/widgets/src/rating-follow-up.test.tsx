@@ -207,7 +207,7 @@ test("an immediate submission can retry its retained rating after failure", asyn
   fireEvent.click(retry);
   assert.equal(
     document.activeElement,
-    screen.getByRole("button", { name: /Submitting/ }),
+    screen.getByRole("button", { name: /Sending/ }),
     "the retried row stays mounted, so focus stays on its button",
   );
   await act(async () => finishRetry());
