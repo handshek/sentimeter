@@ -8,7 +8,10 @@ import { useFeedbackContext } from "./feedback-context";
 import { feedbackStyles } from "../design-system";
 
 export type FeedbackInputProps = {
+  /** Hint after a negative pick. */
   placeholder?: string;
+  /** Hint after any other pick, when `followUp` asks for a note there too. */
+  positivePlaceholder?: string;
   /** Accessible name for the text field. */
   label?: string;
   /** Maximum comment length. Defaults to 500 characters. */
@@ -20,11 +23,12 @@ export const FEEDBACK_TEXT_MAX_LENGTH = 500;
 
 export function FeedbackInput({
   placeholder = "Share your thoughts",
+  positivePlaceholder = "Tell us more",
   label = "Additional feedback",
   maxLength = FEEDBACK_TEXT_MAX_LENGTH,
   className,
 }: FeedbackInputProps) {
-  const { state, disabled, text, setText, showFollowUp, layout } =
+  const { state, disabled, text, setText, showFollowUp, negativePick, layout } =
     useFeedbackContext();
   const inputId = React.useId();
 
@@ -50,7 +54,7 @@ export function FeedbackInput({
         )}
         rows={4}
         aria-label={label}
-        placeholder={placeholder}
+        placeholder={negativePick ? placeholder : positivePlaceholder}
         maxLength={maxLength}
         value={text}
         onChange={(e) => {

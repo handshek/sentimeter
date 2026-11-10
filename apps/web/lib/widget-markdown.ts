@@ -53,7 +53,16 @@ ${code("tsx", getUsageSnippet(widget))}
 
 This completes locally: nothing is sent or stored. The thank-you stays on screen until the host removes the component.
 
-## Your backend
+${
+  widget.examples.length
+    ? `## Examples\n\n${widget.examples
+        .map(
+          (example) =>
+            `### ${example.title}\n\n${example.description}\n\n${code("tsx", getUsageSnippet(widget, example.props))}`,
+        )
+        .join("\n\n")}\n\n`
+    : ""
+}## Your backend
 
 ${code("tsx", getUsageSnippet(widget, undefined, "custom"))}
 

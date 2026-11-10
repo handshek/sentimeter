@@ -28,6 +28,8 @@ export type FeedbackContextValue = {
   size: WidgetSize;
   layout: WidgetLayout;
   showFollowUp: boolean;
+  /** Whether the current pick is a negative one, such as 1–2 stars. */
+  negativePick: boolean;
   select: (value: number) => void;
   submitSelected: (text?: string) => Promise<void>;
   /**
@@ -183,6 +185,10 @@ export function FeedbackProvider({
     machine.selectedValue !== null &&
     requiresFollowUp(followUp, widgetType, machine.selectedValue);
 
+  const negativePick =
+    machine.selectedValue !== null &&
+    requiresFollowUp("negative", widgetType, machine.selectedValue);
+
   const value = React.useMemo<FeedbackContextValue>(
     () => ({
       state: machine.state,
@@ -193,6 +199,7 @@ export function FeedbackProvider({
       size,
       layout,
       showFollowUp,
+      negativePick,
       select,
       submitSelected: machine.submitSelected,
       reset,
@@ -214,6 +221,7 @@ export function FeedbackProvider({
       cancel,
       text,
       showFollowUp,
+      negativePick,
       select,
     ],
   );

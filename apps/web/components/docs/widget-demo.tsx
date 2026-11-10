@@ -8,116 +8,123 @@ import {
   NpsScore,
   StarRating,
   Survey,
+  type FaceGlyphs,
+  type ThumbGlyphs,
   type WidgetState,
 } from "@workspace/widgets";
 import { Button } from "@workspace/ui/components/button";
 import { RotateCcw } from "lucide-react";
 import { cn } from "@workspace/ui/lib/utils";
-import type { WidgetDemoOptions, WidgetDocConfig } from "@/lib/widget-catalog";
+import type {
+  WidgetDemoOptions,
+  WidgetDocConfig,
+  WidgetExampleProps,
+} from "@/lib/widget-catalog";
 
-const widgets = { emoji: EmojiFeedback, thumbs: LikeDislike, star: StarRating };
+type DemoOptions = WidgetDemoOptions & WidgetExampleProps;
 
 type WidgetDemoProps = {
-  widget: Pick<
-    WidgetDocConfig,
-    "slug" | "preview" | "name" | "example" | "replayText"
-  >;
-  options?: Partial<WidgetDemoOptions>;
-  /** Increment to restart the example and play its scripted flow. */
-  replay?: number;
-  /** Drops the frame when a surrounding toolbar box already draws one. */
+  widget: Pick<WidgetDocConfig, "slug" | "preview" | "name" | "example">;
+  options?: Partial<DemoOptions>;
+  /** Increment to restart the example from a control outside the frame. */
+  reset?: number;
+  /** Drops the frame and its Reset when a surrounding toolbar draws them. */
   framed?: boolean;
 };
-
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// Drives the real widget through pick, type, send, and thanks, so visitors
-// see the whole flow without clicking.
-async function playFlow(
-  root: HTMLElement,
-  preview: WidgetDocConfig["preview"],
-  text: string,
-  cancelled: () => boolean,
-) {
-  await wait(450);
-  if (cancelled()) return;
-  if (preview === "survey") {
-    root.querySelectorAll<HTMLElement>('[role="radio"]')[1]?.click();
-  } else if (preview === "nps") {
-    root.querySelector<HTMLElement>("button[aria-pressed]")?.click();
-    await wait(450);
-    if (cancelled()) return;
-    root.querySelector<HTMLElement>('[aria-label="Score 3 of 10"]')?.click();
-  } else if (preview !== "form") {
-    root.querySelectorAll<HTMLElement>("button[aria-pressed]")[1]?.click();
-  }
-  await wait(450);
-  const field = root.querySelector("textarea");
-  const setValue = Object.getOwnPropertyDescriptor(
-    HTMLTextAreaElement.prototype,
-    "value",
-  )?.set;
-  if (field && setValue) {
-    for (let index = 1; index <= text.length; index++) {
-      if (cancelled()) return;
-      setValue.call(field, text.slice(0, index));
-      field.dispatchEvent(new Event("input", { bubbles: true }));
-      await wait(30);
-    }
-  }
-  await wait(350);
-  if (cancelled()) return;
-  [...root.querySelectorAll("button")]
-    .find((button) => button.textContent?.trim() === "Send")
-    ?.click();
-}
 
 /** The one frame every live example renders in. */
 export function WidgetDemo({
   widget,
   options,
-  replay = 0,
+  reset = 0,
   framed = true,
 }: WidgetDemoProps) {
-  const resolved = { ...widget.example, ...options };
-  const key = [
-    widget.slug,
-    resolved.layout,
-    resolved.size,
-    resolved.followUp,
-  ].join(":");
+  const resolved: DemoOptions = { ...widget.example, ...options };
+  // Any option change starts a fresh example.
+  const key = `${widget.slug}:${JSON.stringify(resolved)}`;
   return (
     <WidgetDemoInstance
       key={key}
       widget={widget}
       options={resolved}
-      replay={replay}
+      reset={reset}
       framed={framed}
     />
   );
 }
 
+function DemoWidget({
+  preview,
+  options,
+  onStateChange,
+}: {
+  preview: WidgetDocConfig["preview"];
+  options: DemoOptions;
+  onStateChange: (state: WidgetState) => void;
+}) {
+  const { layout, size, followUp, title, description } = options;
+  const rating = { layout, size, followUp, onStateChange };
+  const text = {
+    ...(title === undefined ? {} : { title }),
+    ...(description === undefined ? {} : { description }),
+  };
+  switch (preview) {
+    case "emoji":
+      return (
+        <EmojiFeedback
+          {...rating}
+          {...text}
+          glyphs={options.glyphs as FaceGlyphs | undefined}
+        />
+      );
+    case "thumbs":
+      return (
+        <LikeDislike
+          {...rating}
+          {...text}
+          glyphs={options.glyphs as ThumbGlyphs | undefined}
+        />
+      );
+    case "star":
+      return <StarRating {...rating} {...text} glyph={options.glyph} />;
+    case "nps":
+      return <NpsScore {...rating} {...text} />;
+    case "survey":
+      return (
+        <Survey
+          {...(title === undefined ? {} : { title })}
+          options={options.options}
+          onStateChange={onStateChange}
+        />
+      );
+    default:
+      return (
+        <FeedbackForm
+          {...(title === undefined ? {} : { title })}
+          {...(options.placeholder === undefined
+            ? {}
+            : { placeholder: options.placeholder })}
+          onStateChange={onStateChange}
+        />
+      );
+  }
+}
+
 function WidgetDemoInstance({
   widget,
   options,
-  replay,
+  reset,
   framed,
 }: {
   widget: WidgetDemoProps["widget"];
-  options: WidgetDemoOptions;
-  replay: number;
+  options: DemoOptions;
+  reset: number;
   framed: boolean;
 }) {
   const [instance, setInstance] = useState(0);
   const [state, setState] = useState<WidgetState>("idle");
   const container = useRef<HTMLDivElement>(null);
   const focusAfterReset = useRef(false);
-  const Widget =
-    widget.preview === "form" || widget.preview === "survey"
-      ? null
-      : widget.preview === "nps"
-        ? NpsScore
-        : widgets[widget.preview];
 
   useEffect(() => {
     if (!focusAfterReset.current) return;
@@ -129,75 +136,52 @@ function WidgetDemoInstance({
     focusAfterReset.current = false;
   }, [instance]);
 
-  const replaying = useRef(false);
-  // Option changes remount this instance; only a new Replay press plays.
-  const seenReplay = useRef(replay);
-  useEffect(() => {
-    if (replay === seenReplay.current) return;
-    seenReplay.current = replay;
-    replaying.current = true;
-    setState("idle");
-    setInstance((value) => value + 1);
-  }, [replay]);
-
-  useEffect(() => {
-    if (!replaying.current || !container.current) return;
-    replaying.current = false;
-    let cancelled = false;
-    void playFlow(
-      container.current,
-      widget.preview,
-      widget.replayText,
-      () => cancelled,
-    );
-    return () => {
-      cancelled = true;
-    };
-  }, [instance, widget.preview, widget.replayText]);
-
-  function reset() {
+  function restart() {
     focusAfterReset.current = true;
     setState("idle");
     setInstance((value) => value + 1);
   }
+
+  // Option changes remount this instance; only a new outside Reset restarts it.
+  const seenReset = useRef(reset);
+  useEffect(() => {
+    if (reset === seenReset.current) return;
+    seenReset.current = reset;
+    restart();
+  }, [reset]);
 
   return (
     <div
       role="group"
       aria-label={`${widget.name} example`}
       className={cn(
-        "@container relative flex min-h-64 w-full min-w-0 items-center justify-center pt-14 pb-8",
-        framed ? "ds-inset" : "bg-background",
+        "@container relative flex min-h-64 w-full min-w-0 items-center justify-center py-10",
+        framed ? "ds-inset pt-14 pb-8" : "bg-background",
       )}
     >
       <div
         ref={container}
         className="flex w-full min-w-0 justify-center @sm:px-3 @lg:px-8"
       >
-        {Widget ? (
-          <Widget
-            key={instance}
-            layout={options.layout}
-            size={options.size}
-            followUp={options.followUp}
-            onStateChange={setState}
-          />
-        ) : widget.preview === "survey" ? (
-          <Survey key={instance} onStateChange={setState} />
-        ) : (
-          <FeedbackForm key={instance} onStateChange={setState} />
-        )}
+        <DemoWidget
+          key={instance}
+          preview={widget.preview}
+          options={options}
+          onStateChange={setState}
+        />
       </div>
-      <Button
-        type="button"
-        variant="ghost"
-        className="absolute top-2 right-2 text-muted-foreground"
-        onClick={reset}
-        disabled={state === "submitting"}
-      >
-        <RotateCcw className="size-3.5" aria-hidden="true" />
-        Reset
-      </Button>
+      {framed ? (
+        <Button
+          type="button"
+          variant="ghost"
+          className="absolute top-2 right-2 text-muted-foreground"
+          onClick={restart}
+          disabled={state === "submitting"}
+        >
+          <RotateCcw className="size-3.5" aria-hidden="true" />
+          Reset
+        </Button>
+      ) : null}
     </div>
   );
 }

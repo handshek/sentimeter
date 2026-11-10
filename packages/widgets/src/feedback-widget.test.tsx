@@ -353,7 +353,7 @@ describe("rendered feedback widget", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Yes" }));
     const input = screen.getByPlaceholderText(
-      "What went wrong?",
+      "Tell us more",
     ) as HTMLTextAreaElement;
     fireEvent.change(input, { target: { value: "Clear and useful" } });
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
@@ -838,6 +838,20 @@ describe("cancel, custom glyphs, and inline layout", () => {
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
     assert.ok(await screen.findByText("Thanks!"));
     assert.equal(root?.getAttribute("data-state"), "done");
+  });
+
+  test("a note after a good pick asks for more, not what went wrong", () => {
+    render(<StarRating followUp="always" />);
+    fireEvent.click(screen.getByRole("button", { name: "Rate 5 stars" }));
+    assert.equal(
+      screen.getByRole("textbox").getAttribute("placeholder"),
+      "Tell us more",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Rate 1 star" }));
+    assert.equal(
+      screen.getByRole("textbox").getAttribute("placeholder"),
+      "What went wrong?",
+    );
   });
 
   test("inline faces are line icons while the stacked card keeps emoji", () => {
