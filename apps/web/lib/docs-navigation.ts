@@ -30,6 +30,24 @@ export const widgetToc = [
   { title: "Props", url: "#props", depth: 2 },
 ];
 
+/** A component page lists its examples between Preview and Installation. */
+export function componentToc(
+  examples: readonly { id: string; title: string }[],
+) {
+  if (!examples.length) return widgetToc;
+  const [preview, ...rest] = widgetToc;
+  return [
+    preview!,
+    { title: "Examples", url: "#examples", depth: 2 },
+    ...examples.map((example) => ({
+      title: example.title,
+      url: `#example-${example.id}`,
+      depth: 3,
+    })),
+    ...rest,
+  ];
+}
+
 export const gettingStartedSections = [
   {
     title: "Start with a shadcn app",

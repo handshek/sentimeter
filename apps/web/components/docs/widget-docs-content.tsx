@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, type KeyboardEvent } from "react";
-import { Play, Smartphone } from "lucide-react";
+import { useState, type KeyboardEvent, type ReactNode } from "react";
+import { RotateCcw, Smartphone } from "lucide-react";
 import { cn } from "@workspace/ui/lib/utils";
 import Link from "next/link";
 import { Button } from "@workspace/ui/components/button";
@@ -27,6 +27,7 @@ import {
   localExampleNote,
   type WidgetDemoOptions,
   type WidgetDocConfig,
+  type WidgetExample,
 } from "@/lib/widget-catalog";
 import { WidgetInstallCommand } from "./widget-install-command";
 import { WidgetDemo } from "./widget-demo";
@@ -90,13 +91,100 @@ function Segmented<T extends string>({
   );
 }
 
+/** Preview and Code tabs with Reset, shared by the main preview and examples. */
+function PreviewPanel({
+  label,
+  code,
+  controls,
+  children,
+}: {
+  label: string;
+  code: string;
+  controls?: ReactNode;
+  children: (reset: number) => ReactNode;
+}) {
+  const [tab, setTab] = useState("preview");
+  const [reset, setReset] = useState(0);
+  return (
+    <Tabs
+      value={tab}
+      onValueChange={setTab}
+      className="gap-0 overflow-hidden rounded-xl border"
+    >
+      <div className="flex flex-wrap items-center gap-2 border-b bg-card p-2">
+        <TabsList aria-label={label}>
+          <TabsTrigger value="preview">Preview</TabsTrigger>
+          <TabsTrigger value="code">Code</TabsTrigger>
+        </TabsList>
+        <div className="ml-auto flex flex-wrap items-center gap-1">
+          {controls}
+          <Button
+            type="button"
+            variant="ghost"
+            className="text-muted-foreground"
+            onClick={() => {
+              setTab("preview");
+              setReset((value) => value + 1);
+            }}
+          >
+            <RotateCcw aria-hidden="true" className="size-3.5" />
+            Reset
+          </Button>
+        </div>
+      </div>
+      <TabsContent value="preview" className="m-0">
+        <div className="bg-muted/40">{children(reset)}</div>
+      </TabsContent>
+      <TabsContent value="code" className="m-0">
+        <CodeBlock code={code} label={`${label} code`} />
+      </TabsContent>
+    </Tabs>
+  );
+}
+
+function WidgetExamples({ widget }: { widget: WidgetDocConfig }) {
+  if (!widget.examples.length) return null;
+  return (
+    <section aria-labelledby="examples" className="docs-section min-w-0">
+      <h2 id="examples" className="ds-section-title">
+        Examples
+      </h2>
+      {widget.examples.map((example: WidgetExample) => (
+        <div
+          key={example.id}
+          id={`example-${example.id}`}
+          className="min-w-0 space-y-3 scroll-mt-24"
+        >
+          <div className="space-y-1">
+            <h3 className="ds-heading">{example.title}</h3>
+            <p className="ds-body text-muted-foreground">
+              {example.description}
+            </p>
+          </div>
+          <PreviewPanel
+            label={example.title}
+            code={getUsageSnippet(widget, example.props)}
+          >
+            {(reset) => (
+              <WidgetDemo
+                widget={widget}
+                options={example.props}
+                reset={reset}
+                framed={false}
+              />
+            )}
+          </PreviewPanel>
+        </div>
+      ))}
+    </section>
+  );
+}
+
 export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
   const rating = widget.preview !== "form" && widget.preview !== "survey";
   const defaults = widget.example;
   const [options, setOptions] = useState<WidgetDemoOptions>(defaults);
-  const [replay, setReplay] = useState(0);
   const [phone, setPhone] = useState(false);
-  const [tab, setTab] = useState("preview");
   function updateOptions(next: Partial<WidgetDemoOptions>) {
     setOptions((current) => ({ ...current, ...next }));
   }
@@ -104,17 +192,11 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
   return (
     <div className="docs-content">
       <section id="preview" aria-label="Live Preview" className="min-w-0">
-        <Tabs
-          value={tab}
-          onValueChange={setTab}
-          className="gap-0 overflow-hidden rounded-xl border"
-        >
-          <div className="flex flex-wrap items-center gap-2 border-b bg-card p-2">
-            <TabsList aria-label="Widget Example">
-              <TabsTrigger value="preview">Preview</TabsTrigger>
-              <TabsTrigger value="code">Code</TabsTrigger>
-            </TabsList>
-            <div className="ml-auto flex flex-wrap items-center gap-1">
+        <PreviewPanel
+          label="Widget Example"
+          code={getUsageSnippet(widget, options)}
+          controls={
+            <>
               {rating ? (
                 <Segmented
                   label="Layout"
@@ -129,18 +211,6 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
               <Button
                 type="button"
                 variant="ghost"
-                className="text-muted-foreground"
-                onClick={() => {
-                  setTab("preview");
-                  setReplay((value) => value + 1);
-                }}
-              >
-                <Play aria-hidden="true" className="size-3.5" />
-                Replay
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
                 size="icon"
                 aria-label="Phone width"
                 aria-pressed={phone}
@@ -149,36 +219,30 @@ export function WidgetDocsContent({ widget }: { widget: WidgetDocConfig }) {
               >
                 <Smartphone aria-hidden="true" className="size-4" />
               </Button>
+            </>
+          }
+        >
+          {(reset) => (
+            <div
+              className={cn(
+                "mx-auto w-full",
+                phone && "max-w-sm border-x border-border",
+              )}
+            >
+              <WidgetDemo
+                widget={widget}
+                options={options}
+                reset={reset}
+                framed={false}
+              />
             </div>
-          </div>
-          <TabsContent value="preview" className="m-0">
-            <div className="bg-muted/40">
-              <div
-                className={cn(
-                  "mx-auto w-full",
-                  phone && "max-w-sm border-x border-border",
-                )}
-              >
-                <WidgetDemo
-                  widget={widget}
-                  options={options}
-                  replay={replay}
-                  framed={false}
-                />
-              </div>
-            </div>
-          </TabsContent>
-          <TabsContent value="code" className="m-0">
-            <CodeBlock
-              code={getUsageSnippet(widget, options)}
-              label="Preview Code"
-            />
-          </TabsContent>
-        </Tabs>
+          )}
+        </PreviewPanel>
         <p className="ds-caption px-1 pt-3 text-muted-foreground">
           {localExampleNote}
         </p>
       </section>
+      <WidgetExamples widget={widget} />
       <section aria-labelledby="installation" className="docs-section min-w-0">
         <h2 id="installation" className="ds-section-title">
           Installation

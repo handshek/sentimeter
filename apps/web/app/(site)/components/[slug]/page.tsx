@@ -4,7 +4,7 @@ import { WidgetDocsContent } from "@/components/docs/widget-docs-content";
 import { getWidgetDoc, widgetDocs } from "@/lib/widget-catalog";
 import { getWidgetMarkdown } from "@/lib/widget-markdown";
 import { DocsPage } from "fumadocs-ui/layouts/notebook/page";
-import { widgetToc } from "@/lib/docs-navigation";
+import { componentToc } from "@/lib/docs-navigation";
 import { CopyButton } from "@/components/docs/copy-button";
 
 export async function generateMetadata({
@@ -47,7 +47,7 @@ export default async function WidgetDocsPage({
     <DocsPage
       role="main"
       tabIndex={-1}
-      toc={widgetToc}
+      toc={componentToc(widget.examples)}
       breadcrumb={{ enabled: false }}
       tableOfContentPopover={{ enabled: false }}
     >

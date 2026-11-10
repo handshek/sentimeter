@@ -122,8 +122,8 @@ export type WidgetDocConfig = {
     | "FeedbackForm"
     | "Survey";
   example: WidgetDemoOptions;
-  /** What Replay types into the follow-up after a negative pick. */
-  replayText: string;
+  /** Variations shown under the preview, each with its exact code. */
+  examples: WidgetExample[];
   installSnippet: string;
   usageSnippet: string;
   props: WidgetDocRow[];
@@ -139,9 +139,56 @@ export type WidgetDemoOptions = {
   followUp: WidgetFollowUp;
 };
 
+/** Props an example may set. Each one renders live and prints as code. */
+export type WidgetExampleProps = {
+  layout?: WidgetLayout;
+  followUp?: WidgetFollowUp;
+  title?: string;
+  description?: string;
+  glyphs?: readonly string[];
+  glyph?: { glyph: string; label: string };
+  placeholder?: string;
+  options?: readonly { label: string; value: string }[];
+};
+
+export type WidgetExample = {
+  id: string;
+  title: string;
+  description: string;
+  props: WidgetExampleProps;
+};
+
+const quote = (value: string) => JSON.stringify(value);
+
+// Example props print in this order, after the preview's own options.
+function exampleProps(props: WidgetExampleProps = {}) {
+  const lines: string[] = [];
+  if (props.title !== undefined) lines.push(`title=${quote(props.title)}`);
+  if (props.description !== undefined)
+    lines.push(`description=${quote(props.description)}`);
+  if (props.placeholder !== undefined)
+    lines.push(`placeholder=${quote(props.placeholder)}`);
+  if (props.glyphs)
+    lines.push(`glyphs={[${props.glyphs.map(quote).join(", ")}]}`);
+  if (props.glyph)
+    lines.push(
+      `glyph={{ glyph: ${quote(props.glyph.glyph)}, label: ${quote(props.glyph.label)} }}`,
+    );
+  if (props.options)
+    lines.push(
+      `options={[\n${props.options
+        .map(
+          (option) =>
+            `        { label: ${quote(option.label)}, value: ${quote(option.value)} },`,
+        )
+        .join("\n")}\n      ]}`,
+    );
+  return lines;
+}
+
 export function getUsageSnippet(
   widget: Pick<WidgetDocConfig, "registryName" | "componentName" | "example">,
-  options?: Partial<WidgetDemoOptions>,
+  options?: Partial<WidgetDemoOptions> & WidgetExampleProps,
   submission: "local" | "custom" = "local",
 ) {
   const { size, layout, followUp } = {
@@ -155,6 +202,7 @@ export function getUsageSnippet(
     ...(rating && layout !== "stacked" ? [`layout="${layout}"`] : []),
     ...(rating && size !== "default" ? [`size="${size}"`] : []),
     ...(rating && followUp !== "negative" ? [`followUp="${followUp}"`] : []),
+    ...exampleProps(options),
     ...(submission === "custom" ? ["submit={saveFeedback}"] : []),
   ].join("\n      ");
   const customSubmit =
@@ -430,8 +478,55 @@ const widgetDefinitions: Record<
     tabLabel: "Emoji",
     icon: "emoji",
     preview: "emoji",
-    replayText: "Card got declined twice.",
     componentName: "EmojiFeedback",
+    examples: [
+      {
+        id: "inline",
+        title: "Inline",
+        description:
+          "A one-line bar for the end of an article or answer. A sad face opens a note; a happy face sends at once.",
+        props: { layout: "inline", title: "Was this helpful?" },
+      },
+      {
+        id: "inline-note",
+        title: "Inline with a note every time",
+        description:
+          "Every face opens the note box, so people can always say why.",
+        props: {
+          layout: "inline",
+          followUp: "always",
+          title: "Was this helpful?",
+        },
+      },
+      {
+        id: "always",
+        title: "Ask for a note after every pick",
+        description: "Happy faces open the note box too.",
+        props: { followUp: "always" },
+      },
+      {
+        id: "never",
+        title: "Send every pick at once",
+        description: "No note box. Each face sends straight away.",
+        props: { followUp: "never" },
+      },
+      {
+        id: "glyphs",
+        title: "Your own faces",
+        description:
+          "Pass five glyphs, worst to best. Emoji, icons, and images all work.",
+        props: { glyphs: ["😡", "🙁", "😐", "🙂", "🤩"] },
+      },
+      {
+        id: "question",
+        title: "Your own question",
+        description: "Set the title, and a description under it.",
+        props: {
+          title: "How was checkout?",
+          description: "Tell us how it went.",
+        },
+      },
+    ],
     example: {
       layout: "stacked",
       size: "default",
@@ -457,8 +552,39 @@ const widgetDefinitions: Record<
     tabLabel: "Thumbs",
     icon: "thumbs",
     preview: "thumbs",
-    replayText: "The steps skipped the env vars.",
     componentName: "LikeDislike",
+    examples: [
+      {
+        id: "stacked",
+        title: "Stacked",
+        description: "A card with Yes and No, for the end of a task.",
+        props: { layout: "stacked", title: "Did setup go smoothly?" },
+      },
+      {
+        id: "always",
+        title: "A note after every answer",
+        description: "Yes opens the note box too.",
+        props: { followUp: "always" },
+      },
+      {
+        id: "never",
+        title: "Send every answer at once",
+        description: "No note box. Yes and No both send straight away.",
+        props: { followUp: "never" },
+      },
+      {
+        id: "glyphs",
+        title: "Your own glyphs",
+        description: "Pass two glyphs: like, then dislike.",
+        props: { glyphs: ["👍", "👎"] },
+      },
+      {
+        id: "question",
+        title: "Your own question",
+        description: "Set the title to fit the page.",
+        props: { title: "Did this answer your question?" },
+      },
+    ],
     example: {
       layout: "inline",
       size: "default",
@@ -484,8 +610,45 @@ const widgetDefinitions: Record<
     tabLabel: "Stars",
     icon: "star",
     preview: "star",
-    replayText: "Setup took longer than expected.",
     componentName: "StarRating",
+    examples: [
+      {
+        id: "inline",
+        title: "Inline",
+        description:
+          "A one-line bar. One or two stars open a note; three to five send at once.",
+        props: { layout: "inline", title: "Rate this page" },
+      },
+      {
+        id: "inline-note",
+        title: "Inline with a note every time",
+        description: "Every rating opens the note box.",
+        props: {
+          layout: "inline",
+          followUp: "always",
+          title: "Rate this page",
+        },
+      },
+      {
+        id: "always",
+        title: "Ask for a note after every rating",
+        description: "Five stars open the note box too.",
+        props: { followUp: "always" },
+      },
+      {
+        id: "hearts",
+        title: "Hearts instead of stars",
+        description:
+          "Pass one glyph and its name. Controls read “Rate 3 hearts”.",
+        props: { glyph: { glyph: "❤️", label: "heart" } },
+      },
+      {
+        id: "question",
+        title: "Your own question",
+        description: "Set the title to fit the moment.",
+        props: { title: "Rate your onboarding" },
+      },
+    ],
     example: {
       layout: "stacked",
       size: "default",
@@ -511,8 +674,27 @@ const widgetDefinitions: Record<
     tabLabel: "NPS",
     icon: "nps",
     preview: "nps",
-    replayText: "Faster exports would help.",
     componentName: "NpsScore",
+    examples: [
+      {
+        id: "always",
+        title: "A note after every score",
+        description: "Promoters get the note box too.",
+        props: { followUp: "always" },
+      },
+      {
+        id: "never",
+        title: "Send every score at once",
+        description: "No note box. Each score sends straight away.",
+        props: { followUp: "never" },
+      },
+      {
+        id: "question",
+        title: "Your own question",
+        description: "Name your product in the question.",
+        props: { title: "How likely are you to recommend Acme to a teammate?" },
+      },
+    ],
     example: {
       layout: "stacked",
       size: "default",
@@ -529,8 +711,18 @@ const widgetDefinitions: Record<
     tabLabel: "Form",
     icon: "emoji",
     preview: "form",
-    replayText: "Save button does nothing on billing.",
     componentName: "FeedbackForm",
+    examples: [
+      {
+        id: "bug",
+        title: "A bug report",
+        description: "Change the title and the hint in the text box.",
+        props: {
+          title: "Report a bug",
+          placeholder: "What did you expect to happen?",
+        },
+      },
+    ],
     example: {
       layout: "stacked",
       size: "default",
@@ -582,8 +774,24 @@ const widgetDefinitions: Record<
     tabLabel: "Survey",
     icon: "emoji",
     preview: "survey",
-    replayText: "CSV export kept timing out.",
     componentName: "Survey",
+    examples: [
+      {
+        id: "reasons",
+        title: "Your own reasons",
+        description:
+          "Pass the reasons that fit your question. Each one opens an optional note.",
+        props: {
+          title: "Why are you downgrading?",
+          options: [
+            { label: "Too expensive", value: "price" },
+            { label: "I only needed it once", value: "one-off" },
+            { label: "Missing an integration", value: "integration" },
+            { label: "Other", value: "other" },
+          ],
+        },
+      },
+    ],
     example: {
       layout: "stacked",
       size: "default",

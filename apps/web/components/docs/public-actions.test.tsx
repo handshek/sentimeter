@@ -1,5 +1,11 @@
 import { afterEach, expect, test } from "bun:test";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react";
 import { CopyButton } from "./copy-button";
 import { WidgetDemo } from "./widget-demo";
 import { WidgetDocsContent } from "./widget-docs-content";
@@ -195,20 +201,6 @@ test("Survey preview resets its reason and restores keyboard focus", async () =>
   ).toBe(true);
 });
 
-test("Replay picks a negative rating, types the reason, then shows the thank-you", async () => {
-  const widget = widgetDocs.find((doc) => doc.slug === "emoji-feedback")!;
-  const view = render(<WidgetDemo widget={widget} replay={0} />);
-  view.rerender(<WidgetDemo widget={widget} replay={1} />);
-  await screen.findByDisplayValue(widget.replayText, undefined, {
-    timeout: 3000,
-  });
-  const choices = screen
-    .getAllByRole("button")
-    .filter((button) => button.hasAttribute("aria-pressed"));
-  expect(choices[1]!.getAttribute("aria-pressed")).toBe("true");
-  await screen.findByText("Thanks!", undefined, { timeout: 3000 });
-});
-
 test("layout switch moves with arrow keys and keeps one tab stop", () => {
   const widget = widgetDocs.find((doc) => doc.slug === "emoji-feedback")!;
   render(<WidgetDocsContent widget={widget} />);
@@ -220,17 +212,40 @@ test("layout switch moves with arrow keys and keeps one tab stop", () => {
   expect(document.activeElement).toBe(inline);
 });
 
-test("Replay pressed on the Code tab brings the preview back", () => {
+test("toolbar Reset clears the preview and brings it back from the Code tab", () => {
   const widget = widgetDocs.find((doc) => doc.slug === "emoji-feedback")!;
   render(<WidgetDocsContent widget={widget} />);
-  fireEvent.mouseDown(screen.getByRole("tab", { name: "Code" }), {
+  const [preview] = screen.getAllByRole("group", {
+    name: "Emoji Feedback example",
+  });
+  const sad = within(preview!).getByRole("button", { name: "Sad (2 of 5)" });
+  fireEvent.click(sad);
+  expect(sad.getAttribute("aria-pressed")).toBe("true");
+  const [mainCode] = screen.getAllByRole("tab", { name: "Code" });
+  fireEvent.mouseDown(mainCode!, { button: 0 });
+  const [mainReset] = screen.getAllByRole("button", { name: "Reset" });
+  fireEvent.click(mainReset!);
+  const [mainPreview] = screen.getAllByRole("tab", { name: "Preview" });
+  expect(mainPreview!.getAttribute("aria-selected")).toBe("true");
+  expect(
+    within(screen.getAllByRole("group", { name: "Emoji Feedback example" })[0]!)
+      .getByRole("button", { name: "Sad (2 of 5)" })
+      .getAttribute("aria-pressed"),
+  ).toBe("false");
+  expect(screen.queryByRole("button", { name: "Replay" })).toBeNull();
+});
+
+test("an example renders its variation live and prints the same props", () => {
+  const widget = widgetDocs.find((doc) => doc.slug === "emoji-feedback")!;
+  render(<WidgetDocsContent widget={widget} />);
+  const example = document.getElementById("example-inline-note")!;
+  fireEvent.click(
+    within(example).getByRole("button", { name: "Delighted (5 of 5)" }),
+  );
+  expect(within(example).getByRole("textbox")).toBeTruthy();
+  fireEvent.mouseDown(within(example).getByRole("tab", { name: "Code" }), {
     button: 0,
   });
-  expect(
-    screen.getByRole("tab", { name: "Code" }).getAttribute("aria-selected"),
-  ).toBe("true");
-  fireEvent.click(screen.getByRole("button", { name: "Replay" }));
-  expect(
-    screen.getByRole("tab", { name: "Preview" }).getAttribute("aria-selected"),
-  ).toBe("true");
+  expect(example.textContent).toContain('followUp="always"');
+  expect(example.textContent).toContain('layout="inline"');
 });
