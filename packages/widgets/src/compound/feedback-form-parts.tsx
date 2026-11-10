@@ -168,7 +168,7 @@ export function FeedbackFormActions({
     <div data-slot="feedback-footer" className={feedbackStyles.footer}>
       {state === "submitting" ? (
         <p role="status" className="sr-only">
-          Submitting feedback
+          Sending feedback
         </p>
       ) : null}
       <div className={feedbackStyles.actions}>

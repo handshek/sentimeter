@@ -172,7 +172,7 @@ export function FeedbackFooter({
         aria-atomic="true"
         className="sr-only"
       >
-        Submitting feedback
+        Sending feedback
       </p>
     ) : null;
   }
@@ -211,12 +211,18 @@ export function FeedbackFooter({
           aria-atomic="true"
           className="sr-only"
         >
-          Submitting feedback
+          Sending feedback
         </p>
       ) : null}
       {inline
         ? (error ??
-          (hint ? <p className={feedbackStyles.hint}>{hint}</p> : null))
+          (sending ? (
+            <p aria-hidden="true" className={feedbackStyles.hint}>
+              Sending…
+            </p>
+          ) : hint ? (
+            <p className={feedbackStyles.hint}>{hint}</p>
+          ) : null))
         : null}
       <div
         ref={actionsRef}
@@ -225,7 +231,8 @@ export function FeedbackFooter({
         }
         style={actionStyle}
       >
-        {showCancel ? (
+        {/* Inline keeps one action while sending or retrying. */}
+        {showCancel && !(inline && (sending || submitError)) ? (
           <Button
             type="button"
             variant="outline"
@@ -269,7 +276,9 @@ export function FeedbackFooter({
             feedbackStyles.focus,
           )}
         >
-          {state === "submitting" ? (
+          {state === "submitting" && inline ? (
+            submitLabel
+          ) : state === "submitting" ? (
             <>
               <LoaderCircle
                 className={cn(
@@ -278,7 +287,7 @@ export function FeedbackFooter({
                 )}
                 aria-hidden="true"
               />
-              Submitting…
+              Sending…
             </>
           ) : submitError ? (
             "Try again"

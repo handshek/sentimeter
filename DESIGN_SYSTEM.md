@@ -310,8 +310,9 @@ card's maximum width.
 
 ### Glyphs
 
-`variant` picks a built-in set: native emoji (the `EmojiFeedback` default) or
-Lucide icons. `glyphs` (faces, thumbs) and `glyph` (stars) replace the set with
+Each rating ships one built-in set: colour emoji faces in the stacked card and
+Lucide line faces in the inline bar, Lucide thumbs, and Lucide stars. `glyphs`
+(faces, thumbs) and `glyph` (stars) replace the set in both layouts with
 anything renderable: an emoji string, an icon element, an `<img>`, or
 `{ glyph, label }` for an accessible name. The scale never changes: faces take
 five glyphs worst to best (values 1–5), thumbs take two in display order (like

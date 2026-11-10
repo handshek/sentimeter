@@ -228,10 +228,7 @@ describe("rendered feedback widget", () => {
       assert.equal(actionRow.style.minHeight, "");
 
       fireEvent.click(submitButton);
-      assert.equal(
-        screen.getByRole("status").textContent,
-        "Submitting feedback",
-      );
+      assert.equal(screen.getByRole("status").textContent, "Sending feedback");
       const minimumHeight = `max(var(--feedback-action-height), ${scenario.height}px)`;
       assert.equal(actionRow.style.minHeight, minimumHeight);
 
@@ -587,7 +584,7 @@ describe("rendered feedback widget", () => {
     submitButton.focus();
     fireEvent.click(submitButton);
 
-    assert.equal(screen.getByRole("status").textContent, "Submitting feedback");
+    assert.equal(screen.getByRole("status").textContent, "Sending feedback");
     assert.ok(submitButton.closest('[aria-busy="true"]'));
 
     const outsideButton = screen.getByRole("button", {
@@ -841,6 +838,42 @@ describe("cancel, custom glyphs, and inline layout", () => {
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
     assert.ok(await screen.findByText("Thanks!"));
     assert.equal(root?.getAttribute("data-state"), "done");
+  });
+
+  test("inline faces are line icons while the stacked card keeps emoji", () => {
+    render(<EmojiFeedback layout="inline" />);
+    const inlineFace = screen.getByRole("button", { name: "Sad (2 of 5)" });
+    assert.ok(inlineFace.querySelector("svg"));
+    assert.equal(inlineFace.textContent, "");
+    cleanup();
+    render(<EmojiFeedback />);
+    assert.equal(
+      screen.getByRole("button", { name: "Sad (2 of 5)" }).textContent,
+      "😕",
+    );
+  });
+
+  test("inline keeps one action while sending and after an error", async () => {
+    let fail: (error: Error) => void = () => {};
+    render(
+      <LikeDislike
+        layout="inline"
+        followUp="always"
+        submit={() =>
+          new Promise<void>((_, reject) => {
+            fail = reject;
+          })
+        }
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "No" }));
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    assert.ok(screen.getByText("Sending…"));
+    assert.equal(screen.queryByRole("button", { name: "Cancel" }), null);
+
+    await act(async () => fail(new Error("offline")));
+    assert.ok(screen.getByRole("button", { name: "Try again" }));
+    assert.equal(screen.queryByRole("button", { name: "Cancel" }), null);
   });
 
   test("stacked widgets group the rating and comment in one response well", () => {
