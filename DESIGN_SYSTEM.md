@@ -37,6 +37,30 @@ should reduce doubt rather than decorate the page.
   and useful labels. Text fits on mobile and desktop. Ratings, controls, charts,
   and panels keep stable dimensions so updates don't shift the layout.
 
+## Working from a reference
+
+A reference (a link, screenshot, or another library's page) is evidence of a
+quality the user likes. It is never the spec. Sentimeter's look comes from this
+file, so every reference is _translated_ into it:
+
+1. **Start from what exists.** Find the surface's current composition (the
+   closest card, list, or panel already on the site) and any approved board.
+   The change extends that. Done when you can name the file you are extending.
+2. **Name the borrowed quality.** Write down, in the user's words, what they
+   like about the reference, such as "the layout and the width of the cards".
+   Only that quality transfers. If they have not said, ask before building.
+3. **Split structure from signature.** _Structure_ is grid columns, card
+   proportions, density, information order, and what is left out. _Signature_
+   is the reference's icons and where they sit, its hover and motion effects,
+   badges, count styles, copy, colors, and radii. Structure may transfer;
+   signature is rendered with Sentimeter's own roles, recipes, and components.
+4. **Compare side by side.** Put the result beside the reference and beside the
+   existing site. Done when it reads as a sibling of the site and nobody could
+   mistake it for the reference. Then say what was borrowed and from where.
+
+The test holds for any reference, however close or far from Sentimeter's
+style: the output always looks like Sentimeter.
+
 ## Scope and source ownership
 
 | Source                                                               | Owns                                                                                               |
