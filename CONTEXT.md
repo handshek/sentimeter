@@ -44,6 +44,18 @@ shadcn project, not as opaque iframes or remote embeds. `packages/widgets` is
 the sole canonical source for Widget behavior; workspace imports and Registry
 Items are two forms of that behavior.
 
+### Directory
+
+The public catalogue of every Widget and Block Sentimeter builds and
+maintains. A Widget belongs in it only when the user tells the team something
+that arrives through `submit`. It never lists third-party libraries.
+
+### Situation
+
+A moment in a user's journey (something breaks, something works, someone
+leaves, someone has an idea) used as an alternative way to browse the
+Directory. The primary grouping is by type.
+
 ### Registry Item
 
 The shadcn registry JSON and generated source tree that install a Widget into a

@@ -26,32 +26,151 @@ Comparable paid products earn from what happens after submission: captured
 context, triage, integrations, and closing the loop with the user. The widget
 itself is the free front door.
 
+### Directory (decided 2026-11-24)
+
+Sentimeter is a directory of every kind of in-app feedback, all built and
+maintained here; it does not list third-party libraries. The free side sells
+breadth ("every feedback pattern, native to shadcn"). The hosted inbox keeps
+the "close the loop" story.
+
+A widget belongs in the directory when the user tells the team something and
+the team receives it through `submit`. Changelogs, announcements, and
+onboarding nudges do not qualify.
+
+Integration must be as simple as one `shadcn add` command, with almost no work
+for the developer or their coding agent. With no `submit` wired, a widget
+completes locally, thanks the user, and logs the payload to the console.
+
 ## Order of work
 
-1. **UI consistency (now).** One shell, one directory, one preview frame, one
-   component page template, one install story. Spec below.
-2. **Components organized by moment.** Purpose-built components with few props,
-   sharing the existing state machine and `submit` contract: an always-visible
-   feedback button, a "Report a problem" dialog with captured context, an error
-   page that asks what happened, and a failure toast action. Emoji, thumbs, and
-   stars remain as the "after something went well" group. The report payload
-   should borrow the open category, severity, and evidence fields of the
-   [agent feedback protocol](https://feedback.now/) so any backend can accept it.
-   This step changes the public widget API on purpose and updates
-   [CONTEXT.md](../CONTEXT.md).
+1. **UI consistency (first half landed 2026-11-07).** One shell, one
+   directory, one preview frame, one component page template, one install
+   story. Spec below; its second half is now defined by the launch spec.
+2. **Launch set.** Modify the three ratings, add new components and placement
+   blocks, and redesign the homepage around situations. Everything launches
+   together on X. Spec below.
 3. **Waitlist for the hosted inbox.** Reposition the unreleased hosted work from
-   sentiment analytics to an inbox with replies. Build only after demand shows.
+   sentiment analytics to an inbox with replies. At launch it is one quiet
+   homepage section; build only after demand shows.
+
+## Launch spec
+
+Decided 2026-11-07. The "moments" proposed earlier turned out to be one of
+three shapes placed in different spots, so the launch has few components and
+one block per spot.
+
+### Components
+
+The public API may break freely before launch; launch is the first stable API.
+
+- **Emoji, Thumbs, Stars.** A negative pick (sad face, thumbs down, one or two
+  stars) always asks "What went wrong?" with an optional text box. A positive
+  pick submits and thanks the user at once. `showInput` loses its old meaning.
+- **NPS.** A 0–10 scale on the rating shape, one segmented row that fits a
+  288px container (each segment stays 44px tall). A score of 0–6 asks "What
+  would make it better?"; 7–10 thanks at once. Component only, no block.
+- **FeedbackForm.** "What happened?" plus one text box. It attaches the page
+  URL and route, browser, OS, and viewport. No category picker.
+- **Survey.** Pick one reason, then an optional note. For questions with known
+  answers, such as why someone cancels.
+- **Glyphs.** Each rating ships one built-in look (colour emoji faces, icon
+  thumbs, icon stars) and keeps the `glyphs` prop for custom ones. `variant`
+  is removed.
+- **Labels.** Picks show glyphs only; each label is the pick's accessible name
+  and tooltip. Thumbs keep visible "Yes" and "No" text.
+- **Layouts.** Emoji, Thumbs, and Stars keep `layout="inline" | "stacked"`.
+  Inline serves "Was this helpful?"; stacked serves the after-task rating.
+- **After submit.** The thank-you stays on screen. Popovers and dialogs close
+  themselves about two seconds after it appears. This replaces the current
+  auto-hide default.
+
+Added 2026-11-24, before launch, designed in Pen first. Launch is capped at
+this set; later widgets ship one at a time after launch.
+
+- **Response feedback.** Two thumbs under an AI or chat answer. Good sends at
+  once; Bad asks for a reason (chips) and an optional note. Once picked, only
+  the chosen thumb stays, filled, and the vote is final. It ships only its own
+  buttons; the host keeps Copy and Regenerate.
+- **Selection feedback.** Selecting text in docs or an answer shows a small
+  "Suggest edit / Report" toolbar; the note opens with the quote attached.
+  Every selection edge case gets a test before release.
+- **Toast feedback.** After a failed request or repeated dead clicks, at most
+  once per session, a quiet toast asks "Something not working?" and expands
+  into the Feedback Form with the error attached.
+
+Considered and dropped for now: feature request, bug report with screenshot,
+poll, and CSAT/CES (variations of existing shapes), and a point-and-click bug
+pin (too many edge cases).
+
+### Blocks
+
+A block installs a ready-made file for one spot and pulls in the component it
+uses.
+
+| Block                    | Uses                                                                                |
+| ------------------------ | ----------------------------------------------------------------------------------- |
+| Floating feedback button | FeedbackForm. A small pill bottom-right; popover on desktop, bottom sheet on mobile |
+| Header or menu item      | FeedbackForm in a dialog                                                            |
+| Error page               | FeedbackForm inline in a Next.js `error.tsx`                                        |
+| Was this helpful?        | Thumbs under docs, help articles, or AI answers                                     |
+| After-task rating        | Emoji or Stars after checkout or onboarding                                         |
+| Cancel-flow survey       | Survey inside a cancel-subscription dialog                                          |
+
+### Site
+
+- **Hero.** Leads with breakage: "Your app will break. Let users tell you in
+  seconds."
+- **Browsing (2026-11-24).** The directory is grouped by type (Ratings, Forms,
+  Surveys, Blocks), with a separate "Situations" tab that regroups the same
+  items by situation, like shadcn's separate Create tab.
+- **Homepage.** Grouped by situation: "When something breaks", "After
+  something works", "When someone leaves". Each group mixes components and
+  blocks. One quiet hosted-inbox waitlist section follows.
+- **Card.** A flat muted shell around an inset live preview, then title with a
+  small meta, a two-line description, and a category label. Equal heights.
+- **Component page.** The step 1 outline, with a variant switch, Replay (a
+  scripted pick, type, send, thanks), and a mobile-width toggle in the preview.
+- **Block page.** One toolbar with Preview and Code, desktop and mobile, and
+  the install command, above a live mock app that shows the block in its spot.
+- **Look.** Neutral base, violet primary, `--radius: 0.625rem`. No gradients
+  or glows.
+
+References studied: TuffUI (directory and card), shadcn/ui blocks (block
+toolbar), and Tailark Pro (neutral canvas, hairlines, restrained accent).
+
+### Install
+
+Install commands use the `@sentimeter/<name>` namespace (for example
+`npx shadcn add @sentimeter/emoji`). Until the namespace is listed in the
+shadcn registry index, docs keep the full registry URL as a fallback.
+
+### Process
+
+Pen boards were approved on 2026-11-07. They live in the git-ignored
+`design/sentimeter-launch.pen` with exports in `design/launch-exports/`. Code
+follows the boards.
+
+### Build order
+
+Components first: restyle Emoji, Thumbs, and Stars to the final board, then add
+NPS, FeedbackForm, and Survey. Blocks follow, then the homepage.
+
+### Not at launch
+
+Console errors and screenshots in reports, a toast block, an NPS prompt block,
+and a category picker.
 
 ## Step 1 spec: UI consistency
 
 Scope is the public site and docs. Widget behavior and props do not change in
 this step.
 
-Step 1 ships in two halves. The first half holds regardless of what step 2
-decides about components: one public noun, one shell, one preview frame, one
-copy source, the component page outline, and the install story. The second half
-depends on step 2 and waits for it: homepage content and order, directory
-grouping, the card meta line, and the preview's layout and glyph controls.
+Step 1 ships in two halves. The first half (landed in #63–#67) holds
+regardless of components: one public noun, one shell, one preview frame, one
+copy source, the component page outline, and the install story. The second
+half (homepage content and order, directory grouping, the card meta line, and
+the preview controls) is now specified by the launch spec; where the two
+disagree, the launch spec wins.
 
 ### Decisions
 
