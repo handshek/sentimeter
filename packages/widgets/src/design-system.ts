@@ -98,9 +98,9 @@ export const feedbackStyles = {
   response:
     "relative flex min-w-0 flex-col overflow-hidden rounded-[var(--feedback-well-radius)] border border-[var(--feedback-border)] bg-[var(--feedback-surface)] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--feedback-ring)] has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-[var(--feedback-surface)] transition-opacity duration-150 data-[sending=true]:opacity-60 motion-reduce:transition-none",
   stackedRating:
-    "grid w-full auto-cols-fr grid-flow-col justify-items-stretch gap-0 divide-x divide-[var(--feedback-border)] py-0",
+    "grid w-full auto-cols-fr grid-flow-col justify-items-stretch gap-0 py-0",
   stackedChoice:
-    "h-[var(--feedback-target)] w-full rounded-none focus-visible:z-auto focus-visible:border-transparent focus-visible:bg-[var(--feedback-hover)] focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none",
+    "h-[var(--feedback-target)] w-full rounded-none border-0 not-last:border-e not-last:border-[var(--feedback-border)] focus-visible:z-auto focus-visible:not-last:border-[var(--feedback-border)] focus-visible:bg-[var(--feedback-hover)] focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none",
   stackedField: "border-t border-[var(--feedback-border)] first:border-t-0",
   stackedInput:
     "rounded-none border-0 bg-transparent shadow-none focus-visible:border-0 focus-visible:ring-0 dark:bg-transparent",
@@ -123,6 +123,18 @@ export const feedbackStyles = {
     "h-11 w-full rounded-[var(--feedback-inner-radius)] text-xs after:hidden",
   npsSelected:
     "bg-[var(--feedback-primary)] text-[var(--feedback-primary-foreground)] hover:bg-[var(--feedback-primary)] hover:text-[var(--feedback-primary-foreground)] dark:bg-[var(--feedback-primary)] dark:hover:bg-[var(--feedback-primary)]",
+  responseRoot:
+    "flex w-full max-w-[var(--feedback-max-width)] flex-col gap-2 font-[family-name:var(--feedback-font)] text-sm leading-5 text-[var(--feedback-foreground)]",
+  // 32 px icons with a 44 px hit area, sized to sit beside a host's own
+  // Copy and Regenerate buttons.
+  responseThumb:
+    "relative size-8 rounded-[var(--feedback-control-radius)] text-[var(--feedback-muted)] after:absolute after:-inset-1.5 hover:bg-[var(--feedback-hover)] hover:text-[var(--feedback-foreground)] disabled:opacity-100 transition-[transform,opacity] motion-reduce:transition-none",
+  responseThumbPicked: "text-[var(--feedback-foreground)]",
+  responseThanks: "ms-1.5 text-xs leading-4 text-[var(--feedback-muted)]",
+  responsePanel:
+    "flex flex-col gap-3 rounded-[var(--feedback-radius)] bg-[var(--feedback-surface)] p-4 shadow-(--feedback-shadow)",
+  chips: "flex flex-wrap gap-1.5 p-2",
+  chip: "h-auto min-h-8 rounded-full border-[var(--feedback-border)] bg-transparent px-3 py-1 text-[0.8125rem] leading-4 font-normal shadow-none whitespace-normal after:absolute after:-inset-y-1.5 after:inset-x-0 hover:bg-[var(--feedback-hover)] dark:border-[var(--feedback-border)] dark:bg-transparent",
   npsRefine: "flex min-w-0 flex-col",
   npsScores: "border-t border-[var(--feedback-border)]",
   bandChoice:
@@ -151,10 +163,9 @@ export const feedbackStyles = {
   label: "sr-only",
   input:
     "h-[var(--feedback-input-height)] min-h-0 field-sizing-fixed w-full resize-none rounded-[var(--feedback-inner-radius)] border-[var(--feedback-border)] bg-[var(--feedback-input)] px-3 py-2.5 text-base leading-5 text-[var(--feedback-foreground)] shadow-(--feedback-input-shadow) placeholder:text-[var(--feedback-muted)] focus-visible:border-[var(--feedback-field-ring)] focus-visible:ring-3 focus-visible:ring-[var(--feedback-field-glow)] md:text-sm dark:bg-[var(--feedback-input)] transition-none",
-  surveyOptions:
-    "flex min-w-0 flex-col divide-y divide-[var(--feedback-border)]",
+  surveyOptions: "flex min-w-0 flex-col",
   surveyOption:
-    "h-auto min-h-11 w-full min-w-0 justify-start gap-3 rounded-none px-3 py-2 text-left text-sm leading-5 font-normal whitespace-normal [overflow-wrap:anywhere] text-[var(--feedback-foreground)] hover:bg-[var(--feedback-hover)] disabled:opacity-60 after:hidden transition-[transform,opacity] motion-reduce:transition-none focus-visible:z-auto focus-visible:border-transparent focus-visible:bg-[var(--feedback-hover)] focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none",
+    "h-auto min-h-11 w-full min-w-0 justify-start gap-3 rounded-none border-0 not-last:border-b not-last:border-[var(--feedback-border)] px-3 py-2 text-left text-sm leading-5 font-normal whitespace-normal [overflow-wrap:anywhere] text-[var(--feedback-foreground)] hover:bg-[var(--feedback-hover)] disabled:opacity-60 after:hidden transition-[transform,opacity] motion-reduce:transition-none focus-visible:z-auto focus-visible:not-last:border-[var(--feedback-border)] focus-visible:bg-[var(--feedback-hover)] focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none",
   surveyRadio:
     "size-4 shrink-0 rounded-full border border-[var(--feedback-border)] bg-[var(--feedback-input)]",
   surveyRadioSelected:
