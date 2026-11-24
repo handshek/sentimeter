@@ -87,11 +87,20 @@ The public API may break freely before launch; launch is the first stable API.
 Added 2026-11-24, before launch, designed in Pen first. Launch is capped at
 this set; later widgets ship one at a time after launch.
 
-- **Feature request.** A title and details for an idea.
-- **Bug report.** FeedbackForm with a screenshot of the page attached.
-- **Poll.** One question with two to five custom answers, picked in one tap.
-- **CSAT and CES.** "How satisfied are you?" and "How easy was it?" on the
-  rating shape.
+- **Response feedback.** Two thumbs under an AI or chat answer. Good sends at
+  once; Bad asks for a reason (chips) and an optional note. Once picked, only
+  the chosen thumb stays, filled, and the vote is final. It ships only its own
+  buttons; the host keeps Copy and Regenerate.
+- **Selection feedback.** Selecting text in docs or an answer shows a small
+  "Suggest edit / Report" toolbar; the note opens with the quote attached.
+  Every selection edge case gets a test before release.
+- **Toast feedback.** After a failed request or repeated dead clicks, at most
+  once per session, a quiet toast asks "Something not working?" and expands
+  into the Feedback Form with the error attached.
+
+Considered and dropped for now: feature request, bug report with screenshot,
+poll, and CSAT/CES (variations of existing shapes), and a point-and-click bug
+pin (too many edge cases).
 
 ### Blocks
 
@@ -148,7 +157,7 @@ NPS, FeedbackForm, and Survey. Blocks follow, then the homepage.
 
 ### Not at launch
 
-Console errors in reports, a toast block, an NPS prompt block,
+Console errors and screenshots in reports, a toast block, an NPS prompt block,
 and a category picker.
 
 ## Step 1 spec: UI consistency
