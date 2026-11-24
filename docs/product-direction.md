@@ -26,6 +26,21 @@ Comparable paid products earn from what happens after submission: captured
 context, triage, integrations, and closing the loop with the user. The widget
 itself is the free front door.
 
+### Directory (decided 2026-11-24)
+
+Sentimeter is a directory of every kind of in-app feedback, all built and
+maintained here; it does not list third-party libraries. The free side sells
+breadth ("every feedback pattern, native to shadcn"). The hosted inbox keeps
+the "close the loop" story.
+
+A widget belongs in the directory when the user tells the team something and
+the team receives it through `submit`. Changelogs, announcements, and
+onboarding nudges do not qualify.
+
+Integration must be as simple as one `shadcn add` command, with almost no work
+for the developer or their coding agent. With no `submit` wired, a widget
+completes locally, thanks the user, and logs the payload to the console.
+
 ## Order of work
 
 1. **UI consistency (first half landed 2026-11-07).** One shell, one
@@ -69,6 +84,15 @@ The public API may break freely before launch; launch is the first stable API.
   themselves about two seconds after it appears. This replaces the current
   auto-hide default.
 
+Added 2026-11-24, before launch, designed in Pen first. Launch is capped at
+this set; later widgets ship one at a time after launch.
+
+- **Feature request.** A title and details for an idea.
+- **Bug report.** FeedbackForm with a screenshot of the page attached.
+- **Poll.** One question with two to five custom answers, picked in one tap.
+- **CSAT and CES.** "How satisfied are you?" and "How easy was it?" on the
+  rating shape.
+
 ### Blocks
 
 A block installs a ready-made file for one spot and pulls in the component it
@@ -87,6 +111,9 @@ uses.
 
 - **Hero.** Leads with breakage: "Your app will break. Let users tell you in
   seconds."
+- **Browsing (2026-11-24).** The directory is grouped by type (Ratings, Forms,
+  Surveys, Blocks), with a separate "Situations" tab that regroups the same
+  items by situation, like shadcn's separate Create tab.
 - **Homepage.** Grouped by situation: "When something breaks", "After
   something works", "When someone leaves". Each group mixes components and
   blocks. One quiet hosted-inbox waitlist section follows.
@@ -121,7 +148,7 @@ NPS, FeedbackForm, and Survey. Blocks follow, then the homepage.
 
 ### Not at launch
 
-Console errors and screenshots in reports, a toast block, an NPS prompt block,
+Console errors in reports, a toast block, an NPS prompt block,
 and a category picker.
 
 ## Step 1 spec: UI consistency
