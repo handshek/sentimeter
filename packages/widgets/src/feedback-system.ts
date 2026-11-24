@@ -2,6 +2,8 @@ export type {
   FeedbackContext,
   FormPayload,
   SurveyPayload,
+  ResponsePayload,
+  SelectionPayload,
   RatingPayload,
   RatingWidgetType,
   FaceGlyphs,
@@ -18,7 +20,7 @@ export type {
 } from "./types";
 
 export { WidgetSubmitError } from "./types";
-export { feedbackStyles } from "./design-system";
+export { feedbackSizes, feedbackStyles, feedbackTheme } from "./design-system";
 export type { FeedbackStyle } from "./design-system";
 
 export {

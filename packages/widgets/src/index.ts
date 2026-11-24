@@ -2,6 +2,8 @@ export type {
   FeedbackContext,
   FormPayload,
   SurveyPayload,
+  ResponsePayload,
+  SelectionPayload,
   RatingPayload,
   RatingWidgetType,
   FaceGlyphs,
@@ -53,3 +55,7 @@ export { WasThisHelpful } from "./blocks/was-this-helpful";
 export { AfterTaskRating } from "./blocks/after-task-rating";
 export { CancelFlowSurvey } from "./blocks/cancel-flow-survey";
 export { default as ErrorFeedback } from "./blocks/error-feedback";
+export {
+  ResponseFeedback,
+  type ResponseFeedbackProps,
+} from "./response-feedback";
