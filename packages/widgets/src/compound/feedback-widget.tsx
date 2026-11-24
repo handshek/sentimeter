@@ -62,6 +62,14 @@ function FeedbackWidgetInner({
     layout,
   } = useFeedbackContext();
   const inline = layout === "inline";
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const [idleHeight, setIdleHeight] = React.useState<number>();
+
+  React.useEffect(() => {
+    if (state === "idle" && contentRef.current) {
+      setIdleHeight(contentRef.current.offsetHeight);
+    }
+  }, [state]);
 
   if (hidden) {
     return (
@@ -109,6 +117,12 @@ function FeedbackWidgetInner({
         </Button>
       ) : null}
       <div
+        ref={contentRef}
+        style={
+          !inline && state === "done" && idleHeight
+            ? { minHeight: idleHeight }
+            : undefined
+        }
         className={cn(
           inline ? feedbackStyles.contentInline : feedbackStyles.content,
           closeButton &&

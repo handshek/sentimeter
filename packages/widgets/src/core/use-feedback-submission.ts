@@ -58,7 +58,9 @@ export function useFeedbackSubmission<P extends WidgetPayload>({
       setStateSafe("submitting");
       notify(onSubmitStart, payload);
       try {
-        await submit?.(payload);
+        if (submit) await submit(payload);
+        // Local completion: show the payload so a developer can wire submit.
+        else console.info("Sentimeter: no submit handler, payload:", payload);
       } catch (error) {
         notify(onSubmitError, error, payload);
         setSubmitError(normalizeSubmitError(error));

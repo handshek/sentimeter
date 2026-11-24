@@ -5,6 +5,7 @@ import {
   Angry,
   Frown,
   Laugh,
+  LoaderCircle,
   Meh,
   Smile,
   Star,
@@ -128,6 +129,194 @@ function customChoices(
   });
 }
 
+// Arrow keys, Home, and End move focus within one row of choices.
+function moveFocus(event: React.KeyboardEvent<HTMLButtonElement>) {
+  const choices = Array.from(
+    event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
+      ":scope > button",
+    ) ?? [],
+  );
+  const index = choices.indexOf(event.currentTarget);
+  let next: number;
+  switch (event.key) {
+    case "ArrowRight":
+    case "ArrowDown":
+      next = (index + 1) % choices.length;
+      break;
+    case "ArrowLeft":
+    case "ArrowUp":
+      next = (index - 1 + choices.length) % choices.length;
+      break;
+    case "Home":
+      next = 0;
+      break;
+    case "End":
+      next = choices.length - 1;
+      break;
+    default:
+      return;
+  }
+  event.preventDefault();
+  choices[next]?.focus();
+}
+
+const NPS_BANDS = [
+  { id: "low", label: "Not likely", scores: [0, 1, 2, 3, 4, 5, 6] },
+  { id: "mid", label: "Maybe", scores: [7, 8] },
+  { id: "high", label: "Very likely", scores: [9, 10] },
+] as const;
+
+type NpsBand = (typeof NPS_BANDS)[number];
+
+function bandOf(score: number | null) {
+  if (score === null) return null;
+  return NPS_BANDS.find((band) => band.scores.some((s) => s === score)) ?? null;
+}
+
+/**
+ * Asks a plain question first, then refines it to that band's scores, so the
+ * payload still carries a true 0-10 score.
+ */
+function NpsRefine({ className }: { className?: string }) {
+  const { state, selectedValue, disabled, select, reset, showFollowUp } =
+    useFeedbackContext();
+  const [band, setBand] = React.useState<NpsBand | null>(null);
+  const scoresRef = React.useRef<HTMLDivElement>(null);
+  const focusScoresRef = React.useRef(false);
+  const switchingBandRef = React.useRef(false);
+  const locked = disabled || state === "submitting" || state === "done";
+  const activeBand = band ?? bandOf(selectedValue);
+
+  // Cancel clears the score, so it clears the band too.
+  React.useEffect(() => {
+    if (state !== "idle" || selectedValue !== null) return;
+    if (switchingBandRef.current) switchingBandRef.current = false;
+    else setBand(null);
+  }, [state, selectedValue]);
+
+  React.useEffect(() => {
+    if (!focusScoresRef.current) return;
+    focusScoresRef.current = false;
+    scoresRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
+  }, [band]);
+
+  const choiceClass = cn(
+    feedbackStyles.choice,
+    feedbackStyles.focus,
+    feedbackStyles.stackedChoice,
+  );
+
+  return (
+    <div
+      data-slot="feedback-rating"
+      role="group"
+      aria-label="Recommendation score"
+      className={cn(feedbackStyles.npsRefine, className)}
+    >
+      <div
+        role="group"
+        aria-label="How likely"
+        className={feedbackStyles.stackedRating}
+      >
+        {NPS_BANDS.map((option, index) => {
+          const picked = activeBand?.id === option.id;
+          return (
+            <Button
+              key={option.id}
+              type="button"
+              variant="ghost"
+              disabled={locked}
+              aria-expanded={picked}
+              tabIndex={(activeBand ? picked : index === 0) ? 0 : -1}
+              data-slot="feedback-band"
+              data-state={picked ? "selected" : "idle"}
+              onKeyDown={(event) => {
+                if (!locked) moveFocus(event);
+              }}
+              onClick={() => {
+                if (activeBand?.id === option.id) return;
+                // A new band drops a score that no longer belongs to it.
+                if (selectedValue !== null) {
+                  switchingBandRef.current = true;
+                  reset();
+                }
+                focusScoresRef.current = true;
+                setBand(option);
+              }}
+              className={cn(
+                choiceClass,
+                feedbackStyles.bandChoice,
+                picked && feedbackStyles.selected,
+              )}
+            >
+              {option.label}
+            </Button>
+          );
+        })}
+      </div>
+      {activeBand ? (
+        <div
+          ref={scoresRef}
+          role="group"
+          aria-label={`${activeBand.label}: pick a score`}
+          className={cn(feedbackStyles.stackedRating, feedbackStyles.npsScores)}
+        >
+          {activeBand.scores.map((score, index) => {
+            const selected = selectedValue === score;
+            const sendingHere =
+              selected && state === "submitting" && !showFollowUp;
+            return (
+              <Button
+                key={score}
+                type="button"
+                variant="ghost"
+                disabled={locked}
+                aria-pressed={selected}
+                aria-label={`Score ${score} of 10`}
+                title={`Score ${score} of 10`}
+                tabIndex={
+                  (
+                    selectedValue !== null &&
+                    activeBand.scores.some((s) => s === selectedValue)
+                      ? selected
+                      : index === 0
+                  )
+                    ? 0
+                    : -1
+                }
+                data-slot="feedback-choice"
+                data-state={selected ? "selected" : "idle"}
+                onKeyDown={(event) => {
+                  if (!locked) moveFocus(event);
+                }}
+                onClick={() => select(score)}
+                className={cn(
+                  choiceClass,
+                  "text-sm tabular-nums",
+                  selected && feedbackStyles.npsSelected,
+                  (state === "done" || state === "submitting") &&
+                    selected &&
+                    feedbackStyles.submittedChoice,
+                )}
+              >
+                {sendingHere ? (
+                  <LoaderCircle
+                    aria-hidden="true"
+                    data-slot="feedback-choice-spinner"
+                    className={cn(feedbackStyles.choiceSpinner, "text-current")}
+                  />
+                ) : (
+                  score
+                )}
+              </Button>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function FeedbackRating({
   variant,
   emojiStyle = "emoji",
@@ -135,7 +324,7 @@ export function FeedbackRating({
   glyphs,
   className,
 }: FeedbackRatingProps) {
-  const { state, selectedValue, disabled, select, layout } =
+  const { state, selectedValue, disabled, select, layout, showFollowUp } =
     useFeedbackContext();
   const [hoverValue, setHoverValue] = React.useState<number | null>(null);
   const [focusedValue, setFocusedValue] = React.useState<number | null>(null);
@@ -156,6 +345,8 @@ export function FeedbackRating({
     }
   }, [expected, glyphs, variant]);
 
+  if (nps && !inline) return <NpsRefine className={className} />;
+
   const options = validGlyphs
     ? customChoices(variant, validGlyphs)
     : builtInChoices(variant, useEmoji);
@@ -175,8 +366,7 @@ export function FeedbackRating({
               : "Experience rating"
       }
       className={cn(
-        feedbackStyles.rating,
-        thumbs && !inline && feedbackStyles.thumbsRating,
+        inline || nps ? feedbackStyles.rating : feedbackStyles.stackedRating,
         inline && feedbackStyles.inlineRating,
         stars &&
           (inline
@@ -189,6 +379,8 @@ export function FeedbackRating({
       {options.map(({ value, label, glyph }) => {
         const selected = selectedValue === value;
         const filled = stars && value <= previewValue;
+        // A pick that sends at once shows its progress in place.
+        const sendingHere = selected && state === "submitting" && !showFollowUp;
 
         return (
           <Button
@@ -216,39 +408,13 @@ export function FeedbackRating({
             }}
             onBlur={stars ? () => setHoverValue(null) : undefined}
             onKeyDown={(event) => {
-              if (locked) return;
-              const choices = Array.from(
-                event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
-                  '[data-slot="feedback-choice"]',
-                ) ?? [],
-              );
-              const index = choices.indexOf(event.currentTarget);
-              let next: number;
-              switch (event.key) {
-                case "ArrowRight":
-                case "ArrowDown":
-                  next = (index + 1) % choices.length;
-                  break;
-                case "ArrowLeft":
-                case "ArrowUp":
-                  next = (index - 1 + choices.length) % choices.length;
-                  break;
-                case "Home":
-                  next = 0;
-                  break;
-                case "End":
-                  next = choices.length - 1;
-                  break;
-                default:
-                  return;
-              }
-              event.preventDefault();
-              choices[next]?.focus();
+              if (!locked) moveFocus(event);
             }}
             onClick={() => select(value)}
             className={cn(
               feedbackStyles.choice,
               feedbackStyles.focus,
+              !inline && !nps && feedbackStyles.stackedChoice,
               thumbs && !inline && feedbackStyles.thumbChoice,
               inline && feedbackStyles.inlineChoice,
               nps && feedbackStyles.npsChoice,
@@ -260,7 +426,13 @@ export function FeedbackRating({
                 feedbackStyles.submittedChoice,
             )}
           >
-            {nps ? (
+            {sendingHere ? (
+              <LoaderCircle
+                aria-hidden="true"
+                data-slot="feedback-choice-spinner"
+                className={feedbackStyles.choiceSpinner}
+              />
+            ) : nps ? (
               glyph
             ) : (
               <span

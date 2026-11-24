@@ -107,7 +107,7 @@ export function Survey({
       className={className}
       style={style}
     >
-      <FeedbackResponse>
+      <FeedbackResponse sending={machine.state === "submitting"}>
         <FeedbackRadioGroup
           options={options}
           value={selectedOption?.value ?? null}
@@ -123,6 +123,7 @@ export function Survey({
         />
         {selectedOption && machine.state !== "done" ? (
           <FeedbackTextField
+            attached
             label={notePrompt}
             placeholder={notePrompt}
             text={text}

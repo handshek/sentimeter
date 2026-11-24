@@ -5,6 +5,7 @@ import {
   collectFeedbackContext,
   FeedbackFormActions,
   FeedbackFormCard,
+  FeedbackResponse,
   FeedbackTextField,
   feedbackStyles,
   useFeedbackDone,
@@ -16,6 +17,14 @@ import {
   type WidgetSubmit,
 } from "./feedback-system";
 
+function describeError(error: unknown) {
+  if (error === undefined || error === null) return undefined;
+  if (error instanceof Error) {
+    return { name: error.name, message: error.message.slice(0, 300) };
+  }
+  return { name: "Error", message: String(error).slice(0, 300) };
+}
+
 export type FeedbackFormProps = {
   title?: string;
   placeholder?: string;
@@ -26,6 +35,8 @@ export type FeedbackFormProps = {
   className?: string;
   style?: FeedbackStyle;
   submit?: WidgetSubmit<FormPayload>;
+  /** A failure to attach to the report, such as a failed request. */
+  error?: unknown;
   /** Fires two seconds after confirmation. Unmounting cancels the callback. */
   onDone?: () => void;
 } & Pick<
@@ -43,9 +54,11 @@ export function FeedbackForm({
   className,
   style,
   submit,
+  error,
   onDone,
   ...callbacks
 }: FeedbackFormProps) {
+  const attachedError = describeError(error);
   const machine = useFeedbackSubmission({ submit, ...callbacks });
   const [text, setText] = React.useState("");
   const [context, setContext] = React.useState<FeedbackContext>();
@@ -65,8 +78,9 @@ export function FeedbackForm({
       style={style}
     >
       {machine.state !== "done" ? (
-        <>
+        <FeedbackResponse sending={machine.state === "submitting"}>
           <FeedbackTextField
+            attached
             label={title}
             placeholder={placeholder}
             text={text}
@@ -80,8 +94,9 @@ export function FeedbackForm({
             {context
               ? `${context.route} · ${context.browser} · ${context.os} · ${context.viewport.width}×${context.viewport.height}`
               : "Page details are attached."}
+            {attachedError ? ` · Error: ${attachedError.message}` : null}
           </p>
-        </>
+        </FeedbackResponse>
       ) : null}
       <FeedbackFormActions
         state={machine.state}
@@ -101,6 +116,7 @@ export function FeedbackForm({
             location,
             text: text.trim(),
             ...(currentContext ? { context: currentContext } : {}),
+            ...(attachedError ? { error: attachedError } : {}),
           });
         }}
       />

@@ -17,6 +17,9 @@ export type SourceMapping = Readonly<{
     | "nps"
     | "feedback-form"
     | "survey"
+    | "response-feedback"
+    | "toast-feedback"
+    | "selection-feedback"
     | "floating-feedback"
     | "report-problem"
     | "error-feedback"
@@ -181,6 +184,24 @@ export const SOURCE_MAPPINGS: readonly SourceMapping[] = [
     item: "survey",
   },
   {
+    source: "response-feedback.tsx",
+    staged: "response-feedback.tsx",
+    target: "components/sentimeter/response-feedback.tsx",
+    item: "response-feedback",
+  },
+  {
+    source: "toast-feedback.tsx",
+    staged: "toast-feedback.tsx",
+    target: "components/sentimeter/toast-feedback.tsx",
+    item: "toast-feedback",
+  },
+  {
+    source: "selection-feedback.tsx",
+    staged: "selection-feedback.tsx",
+    target: "components/sentimeter/selection-feedback.tsx",
+    item: "selection-feedback",
+  },
+  {
     source: "blocks/floating-feedback.tsx",
     staged: "blocks/floating-feedback.tsx",
     target: "components/sentimeter/blocks/floating-feedback.tsx",
@@ -323,6 +344,36 @@ export function createExpectedRegistry(
         description: "Single-choice reasons with an optional follow-up note.",
         registryDependencies: [`${REGISTRY_BASE_URL}/feedback-system.json`],
         files: filesFor("survey"),
+      },
+      {
+        name: "response-feedback",
+        type: "registry:block",
+        title: "Response Feedback",
+        description:
+          "Two thumbs under an AI or chat answer; a bad vote asks why.",
+        dependencies: ["lucide-react"],
+        registryDependencies: [`${REGISTRY_BASE_URL}/feedback-system.json`],
+        files: filesFor("response-feedback"),
+      },
+      {
+        name: "toast-feedback",
+        type: "registry:block",
+        title: "Toast Feedback",
+        description:
+          "A once-per-session toast after a failure that opens the feedback form.",
+        dependencies: ["lucide-react"],
+        registryDependencies: [`${REGISTRY_BASE_URL}/feedback-form.json`],
+        files: filesFor("toast-feedback"),
+      },
+      {
+        name: "selection-feedback",
+        type: "registry:block",
+        title: "Selection Feedback",
+        description:
+          "Select text to suggest an edit or report it, with the quote attached.",
+        dependencies: ["lucide-react"],
+        registryDependencies: [`${REGISTRY_BASE_URL}/feedback-system.json`],
+        files: filesFor("selection-feedback"),
       },
       {
         name: "floating-feedback",

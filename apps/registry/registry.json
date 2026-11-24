@@ -150,7 +150,7 @@
       "name": "nps",
       "type": "registry:block",
       "title": "NPS",
-      "description": "A 0–10 recommendation scale with optional follow-up.",
+      "description": "A 0\u201310 recommendation scale with optional follow-up.",
       "registryDependencies": [
         "https://registry.handshek.workers.dev/r/feedback-system.json"
       ],
@@ -191,6 +191,57 @@
           "path": ".generated/sentimeter/survey.tsx",
           "type": "registry:component",
           "target": "components/sentimeter/survey.tsx"
+        }
+      ]
+    },
+    {
+      "name": "response-feedback",
+      "type": "registry:block",
+      "title": "Response Feedback",
+      "description": "Two thumbs under an AI or chat answer; a bad vote asks why.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "https://registry.handshek.workers.dev/r/feedback-system.json"
+      ],
+      "files": [
+        {
+          "path": ".generated/sentimeter/response-feedback.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/response-feedback.tsx"
+        }
+      ]
+    },
+    {
+      "name": "toast-feedback",
+      "type": "registry:block",
+      "title": "Toast Feedback",
+      "description": "A once-per-session toast after a failure that opens the feedback form.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "https://registry.handshek.workers.dev/r/feedback-form.json"
+      ],
+      "files": [
+        {
+          "path": ".generated/sentimeter/toast-feedback.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/toast-feedback.tsx"
+        }
+      ]
+    },
+    {
+      "name": "selection-feedback",
+      "type": "registry:block",
+      "title": "Selection Feedback",
+      "description": "Select text to suggest an edit or report it, with the quote attached.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "https://registry.handshek.workers.dev/r/feedback-system.json"
+      ],
+      "files": [
+        {
+          "path": ".generated/sentimeter/selection-feedback.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/selection-feedback.tsx"
         }
       ]
     },

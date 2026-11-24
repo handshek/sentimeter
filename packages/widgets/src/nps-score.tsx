@@ -74,7 +74,6 @@ export function NpsScore({
       cancelLabel={cancelLabel}
       showCancel={showCancel}
       thankYouMessage={thankYouMessage}
-      hint={inline ? "Optional" : undefined}
     />
   );
 

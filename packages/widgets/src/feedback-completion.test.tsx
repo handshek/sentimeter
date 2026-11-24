@@ -130,7 +130,7 @@ for (const {
     );
 
     await act(async () => resolveSubmit());
-    assert.equal(screen.getByRole("status").textContent, "Thanks!");
+    assert.match(screen.getByRole("status").textContent ?? "", /^Thanks!/);
     assert.equal(screen.queryByRole("textbox"), null);
     assert.equal(
       controls.every((control) => control.disabled),
@@ -239,7 +239,7 @@ test(`stars retain the submitted fill while locked despite hover or focus previe
   fireEvent.click(screen.getByRole("button", { name: "Send" }));
   assert.equal(filledStars(), 5);
   await act(async () => resolveSubmit());
-  assert.equal(screen.getByRole("status").textContent, "Thanks!");
+  assert.match(screen.getByRole("status").textContent ?? "", /^Thanks!/);
   assert.equal(filledStars(), 5);
   fireEvent.mouseLeave(firstStar);
   fireEvent.mouseEnter(firstStar);

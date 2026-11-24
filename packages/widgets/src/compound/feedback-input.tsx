@@ -35,7 +35,9 @@ export function FeedbackInput({
       data-slot="feedback-field"
       className={cn(
         feedbackStyles.field,
-        layout === "inline" && feedbackStyles.inlineField,
+        layout === "inline"
+          ? feedbackStyles.inlineField
+          : feedbackStyles.stackedField,
         className,
       )}
     >
@@ -46,7 +48,9 @@ export function FeedbackInput({
         id={inputId}
         className={cn(
           feedbackStyles.input,
-          layout === "inline" && feedbackStyles.inlineInput,
+          layout === "inline"
+            ? feedbackStyles.inlineInput
+            : feedbackStyles.stackedInput,
         )}
         rows={4}
         aria-label={label}

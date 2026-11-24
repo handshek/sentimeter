@@ -29,7 +29,8 @@ export class WidgetSubmitError extends Error {
 }
 
 export type RatingWidgetType = "emoji" | "thumbs" | "star" | "nps";
-export type WidgetType = RatingWidgetType | "form" | "survey";
+export type WidgetType =
+  RatingWidgetType | "form" | "survey" | "response" | "selection";
 
 export type FeedbackContext = {
   url: string;
@@ -51,6 +52,8 @@ export type FormPayload = {
   widgetType: "form";
   text: string;
   context?: FeedbackContext;
+  /** The failure that prompted the report, when one did. */
+  error?: { name: string; message: string };
 };
 
 export type SurveyPayload = {
@@ -60,7 +63,32 @@ export type SurveyPayload = {
   text?: string;
 };
 
-export type WidgetPayload = RatingPayload | FormPayload | SurveyPayload;
+/** A vote on one AI or chat answer. `value` is 1 for good, 0 for bad. */
+export type ResponsePayload = {
+  location: string;
+  widgetType: "response";
+  value: 0 | 1;
+  /** The host's id for the answer, when given. */
+  responseId?: string;
+  reason?: string;
+  text?: string;
+};
+
+/** A note about selected text. */
+export type SelectionPayload = {
+  location: string;
+  widgetType: "selection";
+  kind: "edit" | "report";
+  quote: string;
+  text?: string;
+};
+
+export type WidgetPayload =
+  | RatingPayload
+  | FormPayload
+  | SurveyPayload
+  | ResponsePayload
+  | SelectionPayload;
 
 /** Each widget passes its own payload shape, so hosts can read fields like `value` directly. */
 export type WidgetSubmit<P extends WidgetPayload = WidgetPayload> = (

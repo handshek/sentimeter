@@ -12,6 +12,7 @@ import {
   EmojiFeedback,
   FeedbackFooter,
   FeedbackRating,
+  FeedbackResponse,
   FeedbackWidget,
   LikeDislike,
   StarRating,
@@ -185,72 +186,67 @@ describe("feedback widget lifecycle and theme", () => {
 });
 
 describe("rendered feedback widget", () => {
-  for (const scenario of [
-    {
-      name: "a wrapped submit label",
-      submitLabel: "Send this feedback to the product team",
-      cancelLabel: undefined,
-      height: 58,
-    },
-  ]) {
-    test(`preserves the action row footprint through pending, retry, and success with ${scenario.name}`, async () => {
-      let rejectFirstAttempt!: (reason: Error) => void;
-      const firstAttempt = new Promise<void>((_resolve, reject) => {
-        rejectFirstAttempt = reject;
-      });
-      let attempts = 0;
-      render(
+  test("the thank-you replaces the card at its idle height, after a retry below the actions", async () => {
+    let rejectFirstAttempt!: (reason: Error) => void;
+    const firstAttempt = new Promise<void>((_resolve, reject) => {
+      rejectFirstAttempt = reject;
+    });
+    let attempts = 0;
+    const original = Object.getOwnPropertyDescriptor(
+      HTMLElement.prototype,
+      "offsetHeight",
+    );
+    Object.defineProperty(HTMLElement.prototype, "offsetHeight", {
+      configurable: true,
+      get: () => 132,
+    });
+    try {
+      const { container } = render(
         <FeedbackWidget
           widgetType="thumbs"
+          followUp="always"
           submit={async () => {
             attempts += 1;
             if (attempts === 1) await firstAttempt;
           }}
         >
-          <FeedbackRating variant="thumbs" />
-          <FeedbackFooter
-            submitLabel={scenario.submitLabel}
-            showCancel={!!scenario.cancelLabel}
-            cancelLabel={scenario.cancelLabel}
-          />
+          <FeedbackResponse>
+            <FeedbackRating variant="thumbs" />
+          </FeedbackResponse>
+          <FeedbackFooter submitLabel="Send" />
         </FeedbackWidget>,
       );
       fireEvent.click(screen.getByRole("button", { name: "Like" }));
-      const submitButton = screen.getByRole("button", {
-        name: scenario.submitLabel,
-      });
-      const actionRow = submitButton.parentElement;
-      assert.ok(actionRow);
-      let rowHeight = scenario.height;
-      Object.defineProperty(actionRow, "offsetHeight", {
-        configurable: true,
-        get: () => rowHeight,
-      });
-      assert.equal(actionRow.style.minHeight, "");
-
-      fireEvent.click(submitButton);
+      fireEvent.click(screen.getByRole("button", { name: "Send" }));
+      assert.equal(screen.getByRole("status").textContent, "Sending feedback");
+      assert.ok(screen.getByRole("button", { name: /Sending/ }));
       assert.equal(
-        screen.getByRole("status").textContent,
-        "Submitting feedback",
+        container
+          .querySelector('[data-slot="feedback-response"]')
+          ?.getAttribute("data-sending"),
+        "true",
       );
-      const minimumHeight = `max(var(--feedback-action-height), ${scenario.height}px)`;
-      assert.equal(actionRow.style.minHeight, minimumHeight);
 
       await act(async () => rejectFirstAttempt(new Error("offline")));
       const retry = await screen.findByRole("button", { name: "Try again" });
-      assert.equal(actionRow.style.minHeight, minimumHeight);
-      rowHeight = 44;
+      const footer = container.querySelector('[data-slot="feedback-footer"]');
+      assert.equal(
+        footer?.lastElementChild?.textContent,
+        "We couldn't send your feedback. Try again.",
+      );
       fireEvent.click(retry);
 
       const success = (await screen.findByText("Thanks!")).closest<HTMLElement>(
         '[role="status"]',
       );
       assert.ok(success);
-      assert.equal(success.style.minHeight, minimumHeight);
-      assert.equal(success.style.height, "", "longer confirmations can grow");
+      assert.equal(success.parentElement?.style.minHeight, "132px");
       assert.equal(attempts, 2);
-    });
-  }
+    } finally {
+      if (original)
+        Object.defineProperty(HTMLElement.prototype, "offsetHeight", original);
+    }
+  });
 
   for (const [name, widget, controlCount] of [
     [
@@ -536,7 +532,7 @@ describe("rendered feedback widget", () => {
       '[role="status"]',
     );
     assert.ok(successStatus);
-    assert.equal(successStatus.textContent, "Thanks!");
+    assert.match(successStatus.textContent ?? "", /^Thanks!/);
     assert.equal(document.activeElement, successStatus);
 
     await new Promise((resolve) => setTimeout(resolve, 20));
@@ -561,7 +557,7 @@ describe("rendered feedback widget", () => {
     submitButton.focus();
     fireEvent.click(submitButton);
 
-    assert.equal(screen.getByRole("status").textContent, "Submitting feedback");
+    assert.equal(screen.getByRole("status").textContent, "Sending feedback");
     assert.ok(submitButton.closest('[aria-busy="true"]'));
 
     const outsideButton = screen.getByRole("button", {
@@ -805,10 +801,7 @@ describe("cancel, custom glyphs, and inline layout", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Happy (4 of 5)" }));
     assert.ok(screen.getByRole("textbox"));
-    assert.ok(
-      screen.getByText("Optional"),
-      "the inline footer hints that the comment is optional",
-    );
+    assert.equal(screen.queryByText("Optional"), null);
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
     assert.equal(screen.queryByRole("textbox"), null);
     assert.equal(root?.getAttribute("data-state"), "idle");
@@ -817,6 +810,25 @@ describe("cancel, custom glyphs, and inline layout", () => {
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
     assert.ok(await screen.findByText("Thanks!"));
     assert.equal(root?.getAttribute("data-state"), "done");
+  });
+
+  test("an instant pick shows its spinner in the segment and no actions", async () => {
+    let finish!: () => void;
+    render(
+      <EmojiFeedback
+        submit={() =>
+          new Promise<void>((resolve) => {
+            finish = resolve;
+          })
+        }
+      />,
+    );
+    const happy = screen.getByRole("button", { name: "Rating 4 of 5" });
+    fireEvent.click(happy);
+    assert.ok(happy.querySelector('[data-slot="feedback-choice-spinner"]'));
+    assert.equal(screen.queryByRole("button", { name: /Send/ }), null);
+    await act(async () => finish());
+    assert.ok(await screen.findByText("Thanks!"));
   });
 
   test("stacked widgets group the rating and comment in one response well", () => {

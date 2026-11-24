@@ -5,7 +5,7 @@ import { Button } from "@workspace/ui/components/button";
 import { Label } from "@workspace/ui/components/label";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { cn } from "@workspace/ui/lib/utils";
-import { CheckCircle2, CircleAlert, LoaderCircle } from "lucide-react";
+import { Check, CircleAlert, LoaderCircle } from "lucide-react";
 import {
   feedbackSizes,
   feedbackStyles,
@@ -46,6 +46,13 @@ export function FeedbackFormCard({
   style?: FeedbackStyle;
   children: React.ReactNode;
 }) {
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const [idleHeight, setIdleHeight] = React.useState<number>();
+  React.useEffect(() => {
+    if (state === "idle" && contentRef.current) {
+      setIdleHeight(contentRef.current.offsetHeight);
+    }
+  }, [state]);
   return (
     <div
       data-slot="feedback-widget"
@@ -61,7 +68,13 @@ export function FeedbackFormCard({
       )}
       style={{ ...feedbackTheme.style, ...feedbackSizes.default, ...style }}
     >
-      <div className={feedbackStyles.content}>
+      <div
+        ref={contentRef}
+        className={feedbackStyles.content}
+        style={
+          state === "done" && idleHeight ? { minHeight: idleHeight } : undefined
+        }
+      >
         <div data-slot="feedback-header" className={feedbackStyles.header}>
           <h3
             id={titleId}
@@ -87,7 +100,10 @@ export function FeedbackTextField({
   setText,
   disabled,
   describedBy,
+  attached = false,
 }: {
+  /** Sits inside a response outline under a hairline. */
+  attached?: boolean;
   label: string;
   placeholder: string;
   text: string;
@@ -97,14 +113,23 @@ export function FeedbackTextField({
 }) {
   const id = React.useId();
   return (
-    <div data-slot="feedback-field" className={feedbackStyles.field}>
+    <div
+      data-slot="feedback-field"
+      className={cn(
+        feedbackStyles.field,
+        attached && feedbackStyles.stackedField,
+      )}
+    >
       <Label htmlFor={id} className={feedbackStyles.label}>
         {label}
       </Label>
       <Textarea
         id={id}
         aria-describedby={describedBy}
-        className={feedbackStyles.input}
+        className={cn(
+          feedbackStyles.input,
+          attached && feedbackStyles.stackedInput,
+        )}
         rows={4}
         maxLength={500}
         value={text}
@@ -143,10 +168,8 @@ export function FeedbackFormActions({
   thankYouMessage: React.ReactNode;
   thankYouDescription?: React.ReactNode;
 }) {
-  const actionsRef = React.useRef<HTMLDivElement>(null);
   const successRef = React.useRef<HTMLDivElement>(null);
   const hadFocusRef = React.useRef(false);
-  const [actionHeight, setActionHeight] = React.useState(0);
   React.useEffect(() => {
     if (
       state === "done" &&
@@ -155,7 +178,6 @@ export function FeedbackFormActions({
     )
       successRef.current?.focus();
   }, [state]);
-  const actionStyle = actionHeight ? { minHeight: actionHeight } : undefined;
   if (state === "done")
     return (
       <div
@@ -163,30 +185,14 @@ export function FeedbackFormActions({
         tabIndex={-1}
         role="status"
         data-slot="feedback-status"
-        className={cn(
-          feedbackStyles.success,
-          thankYouDescription && feedbackStyles.formSuccess,
-          feedbackStyles.focus,
-        )}
-        // A two-line thank-you keeps its own minimum; the measured button row
-        // only stops the card from shrinking.
-        style={
-          actionHeight
-            ? {
-                minHeight: thankYouDescription
-                  ? `max(7rem, ${actionHeight}px)`
-                  : actionHeight,
-              }
-            : undefined
-        }
+        className={cn(feedbackStyles.thanks, feedbackStyles.focus)}
       >
-        <CheckCircle2
-          className={feedbackStyles.statusIcon}
-          aria-hidden="true"
-        />
-        <span>{thankYouMessage}</span>
+        <span className={feedbackStyles.thanksBadge} aria-hidden="true">
+          <Check className="size-5" strokeWidth={2.25} />
+        </span>
+        <span className={feedbackStyles.thanksTitle}>{thankYouMessage}</span>
         {thankYouDescription ? (
-          <span className={feedbackStyles.description}>
+          <span className={feedbackStyles.thanksDetail}>
             {thankYouDescription}
           </span>
         ) : null}
@@ -197,23 +203,10 @@ export function FeedbackFormActions({
     <div data-slot="feedback-footer" className={feedbackStyles.footer}>
       {state === "submitting" ? (
         <p role="status" className="sr-only">
-          Submitting feedback
+          Sending feedback
         </p>
       ) : null}
-      {submitError ? (
-        <p id={errorId} role="status" className={feedbackStyles.error}>
-          <CircleAlert
-            className={feedbackStyles.errorIcon}
-            aria-hidden="true"
-          />
-          <span>{submitError.message}</span>
-        </p>
-      ) : null}
-      <div
-        ref={actionsRef}
-        className={feedbackStyles.actions}
-        style={actionStyle}
-      >
+      <div className={feedbackStyles.actions}>
         {onSkip ? (
           <Button
             type="button"
@@ -241,7 +234,6 @@ export function FeedbackFormActions({
           onClick={(event) => {
             hadFocusRef.current =
               document.activeElement === event.currentTarget;
-            setActionHeight(actionsRef.current?.offsetHeight ?? 0);
             notify(onSubmit);
           }}
         >
@@ -263,6 +255,15 @@ export function FeedbackFormActions({
           )}
         </Button>
       </div>
+      {submitError ? (
+        <p id={errorId} role="status" className={feedbackStyles.error}>
+          <CircleAlert
+            className={feedbackStyles.errorIcon}
+            aria-hidden="true"
+          />
+          <span>{submitError.message}</span>
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -298,8 +299,8 @@ export function FeedbackRadioGroup({
             value === option.value || (value === null && index === 0) ? 0 : -1
           }
           className={cn(
-            feedbackStyles.surveyOption,
             feedbackStyles.focus,
+            feedbackStyles.surveyOption,
             value === option.value && feedbackStyles.selected,
             value === option.value && feedbackStyles.submittedChoice,
           )}
