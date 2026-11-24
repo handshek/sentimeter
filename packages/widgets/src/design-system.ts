@@ -123,6 +123,10 @@ export const feedbackStyles = {
     "h-11 w-full rounded-[var(--feedback-inner-radius)] text-xs after:hidden",
   npsSelected:
     "bg-[var(--feedback-primary)] text-[var(--feedback-primary-foreground)] hover:bg-[var(--feedback-primary)] hover:text-[var(--feedback-primary-foreground)] dark:bg-[var(--feedback-primary)] dark:hover:bg-[var(--feedback-primary)]",
+  npsRefine: "flex min-w-0 flex-col",
+  npsScores: "border-t border-[var(--feedback-border)]",
+  bandChoice:
+    "px-1 text-[0.8125rem] leading-4 font-medium text-[var(--feedback-foreground)]",
   npsLegend:
     "col-span-full flex w-full justify-between gap-2 px-1 pb-1 pt-2 text-xs leading-4 text-[var(--feedback-muted)]",
   choice:
