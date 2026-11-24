@@ -3,15 +3,15 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { DocsPage } from "fumadocs-ui/layouts/notebook/page";
 import { Button } from "@workspace/ui/components/button";
-import { DirectoryGroups } from "@/components/landing/directory-groups";
+import { ComponentGrid } from "@/components/docs/component-grid";
 
 export const metadata: Metadata = {
-  title: "Feedback components and blocks for shadcn/ui",
+  title: "Feedback components for shadcn/ui",
   description:
-    "Feedback components and ready-made blocks for shadcn apps: a feedback form, ratings, NPS, a survey, and blocks for error pages, menus, and cancel flows.",
+    "Accessible feedback components for shadcn apps: a feedback form, emoji, thumbs and star ratings, NPS, and a survey.",
   alternates: { canonical: "/components" },
   openGraph: {
-    title: "Feedback components and blocks · Sentimeter",
+    title: "Feedback components · Sentimeter",
     url: "/components",
   },
 };
@@ -22,8 +22,8 @@ export default function ComponentsPage() {
       <header className="docs-header">
         <h1 className="ds-page-title">Components</h1>
         <p className="ds-lead max-w-prose text-muted-foreground">
-          Components are the feedback controls. Blocks are ready-made files that
-          place them in one spot of your app. Both install as open code.
+          Accessible feedback controls for shadcn apps. Each one installs as a
+          single file you own.
         </p>
         <div className="flex flex-wrap items-center gap-4">
           <Button asChild variant="outline">
@@ -36,7 +36,7 @@ export default function ComponentsPage() {
           </span>
         </div>
       </header>
-      <DirectoryGroups />
+      <ComponentGrid />
     </DocsPage>
   );
 }
