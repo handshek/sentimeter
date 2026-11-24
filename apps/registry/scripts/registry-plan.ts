@@ -18,6 +18,7 @@ export type SourceMapping = Readonly<{
     | "feedback-form"
     | "survey"
     | "response-feedback"
+    | "toast-feedback"
     | "floating-feedback"
     | "report-problem"
     | "error-feedback"
@@ -188,6 +189,12 @@ export const SOURCE_MAPPINGS: readonly SourceMapping[] = [
     item: "response-feedback",
   },
   {
+    source: "toast-feedback.tsx",
+    staged: "toast-feedback.tsx",
+    target: "components/sentimeter/toast-feedback.tsx",
+    item: "toast-feedback",
+  },
+  {
     source: "blocks/floating-feedback.tsx",
     staged: "blocks/floating-feedback.tsx",
     target: "components/sentimeter/blocks/floating-feedback.tsx",
@@ -340,6 +347,16 @@ export function createExpectedRegistry(
         dependencies: ["lucide-react"],
         registryDependencies: [`${REGISTRY_BASE_URL}/feedback-system.json`],
         files: filesFor("response-feedback"),
+      },
+      {
+        name: "toast-feedback",
+        type: "registry:block",
+        title: "Toast Feedback",
+        description:
+          "A once-per-session toast after a failure that opens the feedback form.",
+        dependencies: ["lucide-react"],
+        registryDependencies: [`${REGISTRY_BASE_URL}/feedback-form.json`],
+        files: filesFor("toast-feedback"),
       },
       {
         name: "floating-feedback",

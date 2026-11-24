@@ -59,3 +59,8 @@ export {
   ResponseFeedback,
   type ResponseFeedbackProps,
 } from "./response-feedback";
+export {
+  ToastFeedback,
+  reportProblem,
+  type ToastFeedbackProps,
+} from "./toast-feedback";

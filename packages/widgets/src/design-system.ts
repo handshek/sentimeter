@@ -135,6 +135,12 @@ export const feedbackStyles = {
     "flex flex-col gap-3 rounded-[var(--feedback-radius)] bg-[var(--feedback-surface)] p-4 shadow-(--feedback-shadow)",
   chips: "flex flex-wrap gap-1.5 p-2",
   chip: "h-auto min-h-8 rounded-full border-[var(--feedback-border)] bg-transparent px-3 py-1 text-[0.8125rem] leading-4 font-normal shadow-none whitespace-normal after:absolute after:-inset-y-1.5 after:inset-x-0 hover:bg-[var(--feedback-hover)] dark:border-[var(--feedback-border)] dark:bg-transparent",
+  toastRoot:
+    "fixed inset-x-4 bottom-4 z-50 font-[family-name:var(--feedback-font)] text-sm leading-5 text-[var(--feedback-foreground)] sm:inset-x-auto sm:right-4 sm:w-[23rem]",
+  toast:
+    "flex min-h-14 items-center gap-2 rounded-[var(--feedback-radius)] bg-[var(--feedback-surface)] py-2 ps-4 pe-2 shadow-(--feedback-shadow)",
+  toastClose:
+    "relative size-8 rounded-[var(--feedback-control-radius)] text-[var(--feedback-muted)] after:absolute after:-inset-1.5 hover:bg-[var(--feedback-hover)] hover:text-[var(--feedback-foreground)]",
   npsRefine: "flex min-w-0 flex-col",
   npsScores: "border-t border-[var(--feedback-border)]",
   bandChoice:

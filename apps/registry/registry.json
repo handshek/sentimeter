@@ -212,6 +212,23 @@
       ]
     },
     {
+      "name": "toast-feedback",
+      "type": "registry:block",
+      "title": "Toast Feedback",
+      "description": "A once-per-session toast after a failure that opens the feedback form.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "https://registry.handshek.workers.dev/r/feedback-form.json"
+      ],
+      "files": [
+        {
+          "path": ".generated/sentimeter/toast-feedback.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/toast-feedback.tsx"
+        }
+      ]
+    },
+    {
       "name": "floating-feedback",
       "type": "registry:block",
       "title": "Floating feedback button",
