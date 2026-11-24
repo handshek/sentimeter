@@ -229,6 +229,23 @@
       ]
     },
     {
+      "name": "selection-feedback",
+      "type": "registry:block",
+      "title": "Selection Feedback",
+      "description": "Select text to suggest an edit or report it, with the quote attached.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "https://registry.handshek.workers.dev/r/feedback-system.json"
+      ],
+      "files": [
+        {
+          "path": ".generated/sentimeter/selection-feedback.tsx",
+          "type": "registry:component",
+          "target": "components/sentimeter/selection-feedback.tsx"
+        }
+      ]
+    },
+    {
       "name": "floating-feedback",
       "type": "registry:block",
       "title": "Floating feedback button",

@@ -64,3 +64,8 @@ export {
   reportProblem,
   type ToastFeedbackProps,
 } from "./toast-feedback";
+export {
+  SelectionFeedback,
+  readSelection,
+  type SelectionFeedbackProps,
+} from "./selection-feedback";

@@ -19,6 +19,7 @@ export type SourceMapping = Readonly<{
     | "survey"
     | "response-feedback"
     | "toast-feedback"
+    | "selection-feedback"
     | "floating-feedback"
     | "report-problem"
     | "error-feedback"
@@ -195,6 +196,12 @@ export const SOURCE_MAPPINGS: readonly SourceMapping[] = [
     item: "toast-feedback",
   },
   {
+    source: "selection-feedback.tsx",
+    staged: "selection-feedback.tsx",
+    target: "components/sentimeter/selection-feedback.tsx",
+    item: "selection-feedback",
+  },
+  {
     source: "blocks/floating-feedback.tsx",
     staged: "blocks/floating-feedback.tsx",
     target: "components/sentimeter/blocks/floating-feedback.tsx",
@@ -357,6 +364,16 @@ export function createExpectedRegistry(
         dependencies: ["lucide-react"],
         registryDependencies: [`${REGISTRY_BASE_URL}/feedback-form.json`],
         files: filesFor("toast-feedback"),
+      },
+      {
+        name: "selection-feedback",
+        type: "registry:block",
+        title: "Selection Feedback",
+        description:
+          "Select text to suggest an edit or report it, with the quote attached.",
+        dependencies: ["lucide-react"],
+        registryDependencies: [`${REGISTRY_BASE_URL}/feedback-system.json`],
+        files: filesFor("selection-feedback"),
       },
       {
         name: "floating-feedback",

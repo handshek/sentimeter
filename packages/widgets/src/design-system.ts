@@ -141,6 +141,15 @@ export const feedbackStyles = {
     "flex min-h-14 items-center gap-2 rounded-[var(--feedback-radius)] bg-[var(--feedback-surface)] py-2 ps-4 pe-2 shadow-(--feedback-shadow)",
   toastClose:
     "relative size-8 rounded-[var(--feedback-control-radius)] text-[var(--feedback-muted)] after:absolute after:-inset-1.5 hover:bg-[var(--feedback-hover)] hover:text-[var(--feedback-foreground)]",
+  selectionToolbar:
+    "fixed z-50 flex items-center gap-0.5 rounded-[var(--feedback-radius)] bg-[var(--feedback-surface)] p-1 font-[family-name:var(--feedback-font)] text-[var(--feedback-foreground)] shadow-(--feedback-shadow)",
+  selectionAction:
+    "relative h-8 gap-1.5 rounded-[var(--feedback-control-radius)] px-2.5 text-[0.8125rem] leading-4 font-medium after:absolute after:inset-x-0 after:-inset-y-1.5 hover:bg-[var(--feedback-hover)]",
+  selectionDivider: "h-4 w-px bg-[var(--feedback-border)]",
+  selectionPanel:
+    "fixed z-50 flex w-[min(20rem,calc(100vw-1rem))] flex-col gap-3 rounded-[var(--feedback-radius)] bg-[var(--feedback-surface)] p-4 font-[family-name:var(--feedback-font)] text-sm leading-5 text-[var(--feedback-foreground)] shadow-(--feedback-shadow)",
+  selectionQuote:
+    "line-clamp-3 border-s-2 border-[var(--feedback-border)] ps-3 text-[var(--feedback-muted)] [overflow-wrap:anywhere]",
   npsRefine: "flex min-w-0 flex-col",
   npsScores: "border-t border-[var(--feedback-border)]",
   bandChoice:
