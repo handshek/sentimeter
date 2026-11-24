@@ -3,7 +3,16 @@ import { cn } from "@workspace/ui/lib/utils";
 import type { DirectoryEntry } from "@/lib/directory";
 import { CardPreview } from "./card-preview";
 
-export function DirectoryCard({ entry }: { entry: DirectoryEntry }) {
+export function DirectoryCard({
+  entry,
+  showKind = true,
+  headingLevel = 3,
+}: {
+  entry: DirectoryEntry;
+  showKind?: boolean;
+  headingLevel?: 2 | 3;
+}) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   return (
     <Link
       href={entry.href}
@@ -14,17 +23,19 @@ export function DirectoryCard({ entry }: { entry: DirectoryEntry }) {
       </div>
       <div className="flex flex-col gap-1 px-2.5 pt-3 pb-2">
         <div className="flex items-center justify-between gap-3">
-          <h3 className="ds-label truncate">{entry.name}</h3>
-          <span className="ds-caption flex shrink-0 items-center gap-1.5 text-muted-foreground">
-            <span
-              aria-hidden="true"
-              className={cn(
-                "size-1.5 rounded-full",
-                entry.kind === "Block" ? "bg-primary" : "bg-muted-foreground",
-              )}
-            />
-            {entry.kind}
-          </span>
+          <Heading className="ds-label truncate">{entry.name}</Heading>
+          {showKind && (
+            <span className="ds-caption flex shrink-0 items-center gap-1.5 text-muted-foreground">
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "size-1.5 rounded-full",
+                  entry.kind === "Block" ? "bg-primary" : "bg-muted-foreground",
+                )}
+              />
+              {entry.kind}
+            </span>
+          )}
         </div>
         <p className="ds-body-sm text-pretty text-muted-foreground">
           {entry.description}
