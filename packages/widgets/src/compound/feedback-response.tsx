@@ -6,12 +6,15 @@ import { feedbackStyles } from "../design-system";
 import { useOptionalFeedbackContext } from "./feedback-context";
 
 export type FeedbackResponseProps = {
+  /** Dims the group while a typed answer sends. Ratings set it themselves. */
+  sending?: boolean;
   className?: string;
   children: React.ReactNode;
 };
 
 /** The outline that groups the rating with its optional note. */
 export function FeedbackResponse({
+  sending,
   className,
   children,
 }: FeedbackResponseProps) {
@@ -19,7 +22,9 @@ export function FeedbackResponse({
   return (
     <div
       data-slot="feedback-response"
-      data-sending={ctx?.state === "submitting" && ctx.showFollowUp}
+      data-sending={
+        sending ?? (ctx?.state === "submitting" && ctx.showFollowUp)
+      }
       className={cn(feedbackStyles.response, className)}
     >
       {children}

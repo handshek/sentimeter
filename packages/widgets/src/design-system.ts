@@ -101,7 +101,7 @@ export const feedbackStyles = {
     "grid w-full auto-cols-fr grid-flow-col justify-items-stretch gap-0 divide-x divide-[var(--feedback-border)] py-0",
   stackedChoice:
     "h-[var(--feedback-target)] w-full rounded-none focus-visible:z-auto focus-visible:border-transparent focus-visible:bg-[var(--feedback-hover)] focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none",
-  stackedField: "border-t border-[var(--feedback-border)]",
+  stackedField: "border-t border-[var(--feedback-border)] first:border-t-0",
   stackedInput:
     "rounded-none border-0 bg-transparent shadow-none focus-visible:border-0 focus-visible:ring-0 dark:bg-transparent",
   choiceSpinner:
@@ -151,16 +151,16 @@ export const feedbackStyles = {
   label: "sr-only",
   input:
     "h-[var(--feedback-input-height)] min-h-0 field-sizing-fixed w-full resize-none rounded-[var(--feedback-inner-radius)] border-[var(--feedback-border)] bg-[var(--feedback-input)] px-3 py-2.5 text-base leading-5 text-[var(--feedback-foreground)] shadow-(--feedback-input-shadow) placeholder:text-[var(--feedback-muted)] focus-visible:border-[var(--feedback-field-ring)] focus-visible:ring-3 focus-visible:ring-[var(--feedback-field-glow)] md:text-sm dark:bg-[var(--feedback-input)] transition-none",
-  surveyOptions: "flex min-w-0 flex-col gap-1",
+  surveyOptions:
+    "flex min-w-0 flex-col divide-y divide-[var(--feedback-border)]",
   surveyOption:
-    "h-auto min-h-11 w-full min-w-0 justify-start gap-3 rounded-[var(--feedback-inner-radius)] px-3 py-2 text-left text-sm leading-5 font-normal whitespace-normal [overflow-wrap:anywhere] text-[var(--feedback-foreground)] hover:bg-[var(--feedback-hover)] disabled:opacity-60 after:hidden transition-[transform,opacity] motion-reduce:transition-none",
+    "h-auto min-h-11 w-full min-w-0 justify-start gap-3 rounded-none px-3 py-2 text-left text-sm leading-5 font-normal whitespace-normal [overflow-wrap:anywhere] text-[var(--feedback-foreground)] hover:bg-[var(--feedback-hover)] disabled:opacity-60 after:hidden transition-[transform,opacity] motion-reduce:transition-none focus-visible:z-auto focus-visible:border-transparent focus-visible:bg-[var(--feedback-hover)] focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none",
   surveyRadio:
     "size-4 shrink-0 rounded-full border border-[var(--feedback-border)] bg-[var(--feedback-input)]",
   surveyRadioSelected:
     "border-[var(--feedback-primary)] bg-[var(--feedback-primary)] after:mx-auto after:my-1 after:block after:size-1.5 after:rounded-full after:bg-[var(--feedback-primary-foreground)]",
   context:
-    "text-xs leading-4 text-[var(--feedback-muted)] [overflow-wrap:anywhere]",
-  formSuccess: "min-h-28 flex-col gap-2 text-center",
+    "border-t border-[var(--feedback-border)] px-3 py-2 text-xs leading-4 text-[var(--feedback-muted)] [overflow-wrap:anywhere]",
   footer: "flex min-w-0 flex-col gap-2",
   inlineFooter:
     "flex min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t border-[var(--feedback-border)] py-2.5 ps-4 pe-2.5",
