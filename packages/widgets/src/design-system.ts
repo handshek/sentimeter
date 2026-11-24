@@ -12,7 +12,7 @@ const surfaceShadow =
 // variables and corners follow its radius. Spacing is fixed.
 export const feedbackTheme = {
   className:
-    "[--feedback-surface:var(--card)] [--feedback-foreground:var(--card-foreground)] [--feedback-muted:var(--muted-foreground)] [--feedback-border:var(--border)] [--feedback-edge:color-mix(in_oklab,var(--foreground)_8%,transparent)] [--feedback-shadow-color:oklch(0_0_0/5%)] [--feedback-well:color-mix(in_oklab,var(--muted)_50%,var(--card))] [--feedback-input:var(--card)] [--feedback-hover:color-mix(in_oklab,var(--foreground)_4%,transparent)] [--feedback-selected:color-mix(in_oklab,var(--accent),var(--foreground)_6%)] [--feedback-selected-foreground:var(--foreground)] [--feedback-star:var(--primary)] [--feedback-primary:var(--primary)] [--feedback-primary-foreground:var(--primary-foreground)] [--feedback-ring:var(--ring)] [--feedback-field-ring:var(--ring)] [--feedback-field-glow:color-mix(in_oklab,var(--ring)_25%,transparent)] [--feedback-success:var(--success,oklch(0.55_0.14_155))] [--feedback-error:var(--destructive)] dark:[--feedback-shadow-color:oklch(0_0_0/40%)] dark:[--feedback-input:var(--background)] dark:[--feedback-success:var(--success,oklch(0.77_0.13_155))]",
+    "[--feedback-surface:var(--card)] [--feedback-foreground:var(--card-foreground)] [--feedback-muted:var(--muted-foreground)] [--feedback-border:var(--border)] [--feedback-edge:color-mix(in_oklab,var(--foreground)_8%,transparent)] [--feedback-shadow-color:oklch(0_0_0/5%)] [--feedback-well:color-mix(in_oklab,var(--muted)_50%,var(--card))] [--feedback-input:var(--card)] [--feedback-hover:color-mix(in_oklab,var(--foreground)_4%,transparent)] [--feedback-selected:color-mix(in_oklab,var(--foreground)_6%,transparent)] [--feedback-selected-foreground:var(--foreground)] [--feedback-star:var(--primary)] [--feedback-primary:var(--primary)] [--feedback-primary-foreground:var(--primary-foreground)] [--feedback-ring:var(--ring)] [--feedback-field-ring:var(--ring)] [--feedback-field-glow:color-mix(in_oklab,var(--ring)_25%,transparent)] [--feedback-success:var(--success,oklch(0.55_0.14_155))] [--feedback-error:var(--destructive)] dark:[--feedback-shadow-color:oklch(0_0_0/40%)] dark:[--feedback-input:var(--background)] dark:[--feedback-success:var(--success,oklch(0.77_0.13_155))]",
   style: {
     "--feedback-inset": "1.25rem",
     "--feedback-gap": "1rem",
@@ -35,7 +35,7 @@ export const feedbackTheme = {
     "--feedback-shadow": surfaceShadow,
     "--feedback-input-shadow": "none",
     "--feedback-action-shadow": "0 1px 2px var(--feedback-shadow-color)",
-    "--feedback-selected-shadow": "0 1px 2px var(--feedback-shadow-color)",
+    "--feedback-selected-shadow": "none",
   } satisfies FeedbackStyle,
 };
 
@@ -74,7 +74,9 @@ export const feedbackStyles = {
   root: "group/feedback relative w-full max-w-[var(--feedback-max-width)] rounded-[var(--feedback-radius)] bg-[var(--feedback-surface)] font-[family-name:var(--feedback-font)] text-sm leading-5 text-[var(--feedback-foreground)] shadow-(--feedback-shadow)",
   // Only the card queries its own width. The inline bar sizes to its content
   // until its footer opens.
-  rootStacked: "@container/feedback",
+  // The thank-you replaces the whole card at the height the card had.
+  rootStacked:
+    "@container/feedback [&[data-state=done]_[data-slot=feedback-header]]:hidden [&[data-state=done]_[data-slot=feedback-response]]:hidden",
   rootInline:
     "w-fit rounded-[calc(var(--feedback-radius)*2)] has-[[data-slot=feedback-footer]]:w-full has-[[data-slot=feedback-footer]]:rounded-[var(--feedback-radius)]",
   content:
@@ -90,11 +92,29 @@ export const feedbackStyles = {
   bar: "flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-1 py-2 ps-4 pe-2 group-data-[state=done]/feedback:hidden",
   focus:
     "focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--feedback-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--feedback-surface)]",
+  // Stacked answers sit in one outline: segments split by hairlines, the note
+  // attached under a hairline, and one offset ring when anything inside has
+  // keyboard focus.
   response:
-    "flex min-w-0 flex-col gap-1 rounded-[var(--feedback-well-radius)] border border-[var(--feedback-border)] bg-[var(--feedback-well)] p-1",
+    "relative flex min-w-0 flex-col overflow-hidden rounded-[var(--feedback-well-radius)] border border-[var(--feedback-border)] bg-[var(--feedback-surface)] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--feedback-ring)] has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-[var(--feedback-surface)] transition-opacity duration-150 data-[sending=true]:opacity-60 motion-reduce:transition-none",
+  stackedRating:
+    "grid w-full auto-cols-fr grid-flow-col justify-items-stretch gap-0 divide-x divide-[var(--feedback-border)] py-0",
+  stackedChoice:
+    "h-[var(--feedback-target)] w-full rounded-none focus-visible:z-auto focus-visible:border-transparent focus-visible:bg-[var(--feedback-hover)] focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none",
+  stackedField: "border-t border-[var(--feedback-border)]",
+  stackedInput:
+    "rounded-none border-0 bg-transparent shadow-none focus-visible:border-0 focus-visible:ring-0 dark:bg-transparent",
+  choiceSpinner:
+    "size-[var(--feedback-icon-size)] animate-spin text-[var(--feedback-muted)] motion-reduce:animate-none",
+  thanks:
+    "flex min-w-0 flex-1 flex-col items-center justify-center gap-1 text-center [overflow-wrap:anywhere]",
+  thanksBadge:
+    "mb-2 flex size-10 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--feedback-success)_12%,transparent)] text-[var(--feedback-success)]",
+  thanksTitle:
+    "text-sm leading-5 font-semibold text-[var(--feedback-foreground)]",
+  thanksDetail: "text-sm leading-5 text-[var(--feedback-muted)]",
   rating:
     "grid w-full grid-cols-5 justify-items-center py-1 [&>[data-slot=feedback-choice]]:max-w-full",
-  thumbsRating: "grid-cols-2 justify-items-stretch gap-1 py-0",
   starsRating: "[--feedback-icon-size:1.375rem]",
   inlineStarsRating: "[--feedback-icon-size:1.125rem]",
   inlineRating: "flex w-auto items-center gap-0.5 py-0",

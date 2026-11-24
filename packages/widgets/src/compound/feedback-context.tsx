@@ -53,6 +53,11 @@ export function useFeedbackContext(): FeedbackContextValue {
   return ctx;
 }
 
+/** For parts that Survey and FeedbackForm share with the ratings. */
+export function useOptionalFeedbackContext() {
+  return React.useContext(Ctx);
+}
+
 export type FeedbackProviderProps = {
   location?: string;
   widgetType: RatingWidgetType;
@@ -86,15 +91,11 @@ export function FeedbackProvider({
     [location, widgetType],
   );
 
-  const localSubmit = React.useCallback<WidgetSubmit>(async () => {}, []);
-
-  const resolvedSubmit = submit ?? localSubmit;
-
   const machine = useWidgetMachine({
     payloadBase,
     followUp,
     disabled,
-    submit: resolvedSubmit,
+    submit,
     onSelect,
     onStateChange,
     onSubmitStart,

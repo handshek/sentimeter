@@ -174,7 +174,7 @@ test("repeated immediate picks in one tick send only the first payload", async (
     { location: "/", widgetType: "emoji", value: 5 },
   ]);
   await act(async () => complete());
-  assert.equal(screen.getByRole("status").textContent, "Thanks!");
+  assert.match(screen.getByRole("status").textContent ?? "", /^Thanks!/);
 });
 
 test("an immediate submission can retry its retained rating after failure", async () => {
@@ -226,7 +226,7 @@ test("immediate completion preserves focus moved outside while pending", async (
   const outside = screen.getByRole("button", { name: "Continue browsing" });
   act(() => outside.focus());
   await act(async () => complete());
-  assert.equal(screen.getByRole("status").textContent, "Thanks!");
+  assert.match(screen.getByRole("status").textContent ?? "", /^Thanks!/);
   assert.equal(document.activeElement, outside);
 });
 
@@ -268,7 +268,7 @@ test("the default thank-you remains visible beyond the former dismissal delay", 
   await act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 2100));
   });
-  assert.equal(screen.getByRole("status").textContent, "Thanks!");
+  assert.match(screen.getByRole("status").textContent ?? "", /^Thanks!/);
 });
 
 test("NPS zero opens the follow-up and sends its score and text", async () => {

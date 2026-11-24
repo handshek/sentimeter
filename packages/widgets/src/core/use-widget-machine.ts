@@ -16,7 +16,7 @@ type UseWidgetMachineArgs = {
   payloadBase: Omit<RatingPayload, "value">;
   followUp?: WidgetFollowUp;
   disabled?: boolean;
-  submit: WidgetSubmit<RatingPayload>;
+  submit?: WidgetSubmit<RatingPayload>;
   onStateChange?: (state: WidgetState) => void;
   onSelect?: (value: number) => void;
   onSubmitStart?: (payload: RatingPayload) => void;

@@ -5,6 +5,7 @@ import {
   Angry,
   Frown,
   Laugh,
+  LoaderCircle,
   Meh,
   Smile,
   Star,
@@ -135,7 +136,7 @@ export function FeedbackRating({
   glyphs,
   className,
 }: FeedbackRatingProps) {
-  const { state, selectedValue, disabled, select, layout } =
+  const { state, selectedValue, disabled, select, layout, showFollowUp } =
     useFeedbackContext();
   const [hoverValue, setHoverValue] = React.useState<number | null>(null);
   const [focusedValue, setFocusedValue] = React.useState<number | null>(null);
@@ -175,8 +176,7 @@ export function FeedbackRating({
               : "Experience rating"
       }
       className={cn(
-        feedbackStyles.rating,
-        thumbs && !inline && feedbackStyles.thumbsRating,
+        inline || nps ? feedbackStyles.rating : feedbackStyles.stackedRating,
         inline && feedbackStyles.inlineRating,
         stars &&
           (inline
@@ -189,6 +189,8 @@ export function FeedbackRating({
       {options.map(({ value, label, glyph }) => {
         const selected = selectedValue === value;
         const filled = stars && value <= previewValue;
+        // A pick that sends at once shows its progress in place.
+        const sendingHere = selected && state === "submitting" && !showFollowUp;
 
         return (
           <Button
@@ -249,6 +251,7 @@ export function FeedbackRating({
             className={cn(
               feedbackStyles.choice,
               feedbackStyles.focus,
+              !inline && !nps && feedbackStyles.stackedChoice,
               thumbs && !inline && feedbackStyles.thumbChoice,
               inline && feedbackStyles.inlineChoice,
               nps && feedbackStyles.npsChoice,
@@ -260,7 +263,13 @@ export function FeedbackRating({
                 feedbackStyles.submittedChoice,
             )}
           >
-            {nps ? (
+            {sendingHere ? (
+              <LoaderCircle
+                aria-hidden="true"
+                data-slot="feedback-choice-spinner"
+                className={feedbackStyles.choiceSpinner}
+              />
+            ) : nps ? (
               glyph
             ) : (
               <span

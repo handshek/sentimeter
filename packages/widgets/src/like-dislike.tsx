@@ -84,7 +84,6 @@ export function LikeDislike({
       cancelLabel={cancelLabel}
       showCancel={showCancel}
       thankYouMessage={thankYouMessage}
-      hint={inline ? "Optional" : undefined}
     />
   );
 

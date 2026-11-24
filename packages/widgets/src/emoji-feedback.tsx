@@ -83,7 +83,6 @@ export function EmojiFeedback({
       cancelLabel={cancelLabel}
       showCancel={showCancel}
       thankYouMessage={thankYouMessage}
-      hint={inline ? "Optional" : undefined}
     />
   );
 
