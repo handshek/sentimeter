@@ -86,3 +86,5 @@ Do not start `dev` or `dev:hosted` yourself; assume the user runs the dev loop.
 9. Comments state a why the code cannot show. A file may open with one line of purpose. Widget source ships to hosts, so its comments use only public names.
 10. Untrack files with `git rm --cached`, and list local-only paths in `.gitignore`.
 11. Animate only transform, opacity, and clip-path. Rules live in DESIGN_SYSTEM.md.
+12. Translate design references into Sentimeter's style: before building from a
+    link or screenshot, follow [Working from a reference](DESIGN_SYSTEM.md#working-from-a-reference).
